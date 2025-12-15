@@ -12,12 +12,26 @@ import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen } from "lucide-react
 import { MediaSelector } from "./MediaSelector";
 import { DataHubDialog } from "./DataHubDialog";
 
-interface ChartSize {
+interface ChartSizeRow {
   id: string;
   sizeId: string;
-  title: string;
-  pictureSize: string;
+  aspectRatio43: string;
+  aspectRatio169: string;
   chartSize: string;
+}
+
+interface ChartSizeSection {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  rows: ChartSizeRow[];
+}
+
+interface ChartSizesData {
+  introText: string;
+  introImageUrl: string;
+  sections: ChartSizeSection[];
 }
 
 interface Product {
@@ -35,7 +49,7 @@ interface Product {
   specifications: Record<string, string>;
   features: string[];
   applications: string[];
-  chart_sizes: ChartSize[];
+  chart_sizes: ChartSizesData | null;
   price_info: string | null;
   availability: string;
   language_code: string;
@@ -113,7 +127,7 @@ const ProductsEditor = () => {
     specifications: {} as Record<string, string>,
     features: [] as string[],
     applications: [] as string[],
-    chart_sizes: [] as ChartSize[],
+    chart_sizes: null as ChartSizesData | null,
     price_info: "",
     availability: "available",
     language_code: "EN",
@@ -123,10 +137,10 @@ const ProductsEditor = () => {
   });
 
   // Chart size editor state
-  const [newChartSize, setNewChartSize] = useState<Omit<ChartSize, 'id'>>({
+  const [newChartSizeRow, setNewChartSizeRow] = useState<Omit<ChartSizeRow, 'id'>>({
     sizeId: "",
-    title: "",
-    pictureSize: "",
+    aspectRatio43: "",
+    aspectRatio169: "",
     chartSize: ""
   });
 
@@ -190,7 +204,7 @@ const ProductsEditor = () => {
       specifications: {},
       features: [],
       applications: [],
-      chart_sizes: [],
+      chart_sizes: null,
       price_info: "",
       availability: "available",
       language_code: "EN",
@@ -202,7 +216,7 @@ const ProductsEditor = () => {
     setNewSpecValue("");
     setNewFeature("");
     setNewApplication("");
-    setNewChartSize({ sizeId: "", title: "", pictureSize: "", chartSize: "" });
+    setNewChartSizeRow({ sizeId: "", aspectRatio43: "", aspectRatio169: "", chartSize: "" });
   };
 
   const handleCreate = () => {
@@ -226,7 +240,7 @@ const ProductsEditor = () => {
       specifications: product.specifications || {},
       features: product.features || [],
       applications: product.applications || [],
-      chart_sizes: product.chart_sizes || [],
+      chart_sizes: product.chart_sizes || null,
       price_info: product.price_info || "",
       availability: product.availability,
       language_code: product.language_code,
@@ -411,29 +425,116 @@ const ProductsEditor = () => {
   };
 
   // Chart size functions
-  const addChartSize = () => {
-    if (newChartSize.sizeId && newChartSize.title) {
+  const initChartSizes = () => {
+    if (!formData.chart_sizes) {
       setFormData(prev => ({
         ...prev,
-        chart_sizes: [...prev.chart_sizes, { ...newChartSize, id: crypto.randomUUID() }]
+        chart_sizes: {
+          introText: "",
+          introImageUrl: "",
+          sections: []
+        }
       }));
-      setNewChartSize({ sizeId: "", title: "", pictureSize: "", chartSize: "" });
     }
   };
 
-  const removeChartSize = (id: string) => {
+  const addChartSizeSection = () => {
+    initChartSizes();
     setFormData(prev => ({
       ...prev,
-      chart_sizes: prev.chart_sizes.filter(cs => cs.id !== id)
+      chart_sizes: {
+        ...(prev.chart_sizes || { introText: "", introImageUrl: "", sections: [] }),
+        sections: [...(prev.chart_sizes?.sections || []), {
+          id: crypto.randomUUID(),
+          title: "New Section",
+          description: "",
+          imageUrl: "",
+          rows: []
+        }]
+      }
     }));
   };
 
-  const updateChartSize = (id: string, field: keyof Omit<ChartSize, 'id'>, value: string) => {
+  const removeChartSizeSection = (sectionId: string) => {
     setFormData(prev => ({
       ...prev,
-      chart_sizes: prev.chart_sizes.map(cs => 
-        cs.id === id ? { ...cs, [field]: value } : cs
-      )
+      chart_sizes: prev.chart_sizes ? {
+        ...prev.chart_sizes,
+        sections: prev.chart_sizes.sections.filter(s => s.id !== sectionId)
+      } : null
+    }));
+  };
+
+  const updateChartSizeSection = (sectionId: string, field: keyof Omit<ChartSizeSection, 'id' | 'rows'>, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: prev.chart_sizes ? {
+        ...prev.chart_sizes,
+        sections: prev.chart_sizes.sections.map(s =>
+          s.id === sectionId ? { ...s, [field]: value } : s
+        )
+      } : null
+    }));
+  };
+
+  const addChartSizeRow = (sectionId: string) => {
+    if (newChartSizeRow.sizeId) {
+      setFormData(prev => ({
+        ...prev,
+        chart_sizes: prev.chart_sizes ? {
+          ...prev.chart_sizes,
+          sections: prev.chart_sizes.sections.map(s =>
+            s.id === sectionId ? {
+              ...s,
+              rows: [...s.rows, { ...newChartSizeRow, id: crypto.randomUUID() }]
+            } : s
+          )
+        } : null
+      }));
+      setNewChartSizeRow({ sizeId: "", aspectRatio43: "", aspectRatio169: "", chartSize: "" });
+    }
+  };
+
+  const removeChartSizeRow = (sectionId: string, rowId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: prev.chart_sizes ? {
+        ...prev.chart_sizes,
+        sections: prev.chart_sizes.sections.map(s =>
+          s.id === sectionId ? {
+            ...s,
+            rows: s.rows.filter(r => r.id !== rowId)
+          } : s
+        )
+      } : null
+    }));
+  };
+
+  const updateChartSizeRow = (sectionId: string, rowId: string, field: keyof Omit<ChartSizeRow, 'id'>, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: prev.chart_sizes ? {
+        ...prev.chart_sizes,
+        sections: prev.chart_sizes.sections.map(s =>
+          s.id === sectionId ? {
+            ...s,
+            rows: s.rows.map(r =>
+              r.id === rowId ? { ...r, [field]: value } : r
+            )
+          } : s
+        )
+      } : null
+    }));
+  };
+
+  const updateChartSizesIntro = (field: 'introText' | 'introImageUrl', value: string) => {
+    initChartSizes();
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: {
+        ...(prev.chart_sizes || { introText: "", introImageUrl: "", sections: [] }),
+        [field]: value
+      }
     }));
   };
 
@@ -894,111 +995,190 @@ const ProductsEditor = () => {
 
             {/* Chart Sizes Tab */}
             <TabsContent value="chart-sizes" className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-white">Chart Sizes</Label>
-                <p className="text-sm text-gray-400 mb-4">Add available chart sizes with ordering information.</p>
-                
-                {/* Existing Chart Sizes Table */}
-                {formData.chart_sizes.length > 0 && (
-                  <div className="rounded-lg border border-gray-700 overflow-hidden mb-6">
-                    <table className="w-full">
-                      <thead className="bg-[#2a2a2a]">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Size ID</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Title</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Picture Size</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Chart Size</th>
-                          <th className="px-4 py-3 w-12"></th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-700">
-                        {formData.chart_sizes.map((size) => (
-                          <tr key={size.id} className="bg-[#1a1a1a]">
-                            <td className="px-4 py-3">
-                              <Input
-                                value={size.sizeId}
-                                onChange={(e) => updateChartSize(size.id, 'sizeId', e.target.value)}
-                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <Input
-                                value={size.title}
-                                onChange={(e) => updateChartSize(size.id, 'title', e.target.value)}
-                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <Input
-                                value={size.pictureSize}
-                                onChange={(e) => updateChartSize(size.id, 'pictureSize', e.target.value)}
-                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <Input
-                                value={size.chartSize}
-                                onChange={(e) => updateChartSize(size.id, 'chartSize', e.target.value)}
-                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeChartSize(size.id)}
-                                className="text-red-400 hover:text-red-300"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* Add New Chart Size */}
-                <div className="bg-[#2a2a2a] p-4 rounded-lg space-y-4">
-                  <Label className="text-white text-sm">Add New Size</Label>
-                  <div className="grid grid-cols-4 gap-3">
-                    <Input
-                      value={newChartSize.sizeId}
-                      onChange={(e) => setNewChartSize(prev => ({ ...prev, sizeId: e.target.value }))}
-                      placeholder="Size ID (e.g., A1066)"
-                      className="bg-[#1a1a1a] border-gray-600 text-white"
-                    />
-                    <Input
-                      value={newChartSize.title}
-                      onChange={(e) => setNewChartSize(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Title (e.g., 4:3)"
-                      className="bg-[#1a1a1a] border-gray-600 text-white"
-                    />
-                    <Input
-                      value={newChartSize.pictureSize}
-                      onChange={(e) => setNewChartSize(prev => ({ ...prev, pictureSize: e.target.value }))}
-                      placeholder="Picture Size (e.g., 900 x 675 mm)"
-                      className="bg-[#1a1a1a] border-gray-600 text-white"
-                    />
-                    <Input
-                      value={newChartSize.chartSize}
-                      onChange={(e) => setNewChartSize(prev => ({ ...prev, chartSize: e.target.value }))}
-                      placeholder="Chart Size (e.g., 1200 x 900 mm)"
-                      className="bg-[#1a1a1a] border-gray-600 text-white"
-                    />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-white">Chart Sizes</Label>
+                    <p className="text-sm text-gray-400">Add chart size information with sections, tables, and images.</p>
                   </div>
                   <Button 
                     type="button" 
-                    onClick={addChartSize} 
-                    className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                    disabled={!newChartSize.sizeId || !newChartSize.title}
+                    onClick={addChartSizeSection}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Size
+                    Add Section
                   </Button>
                 </div>
+
+                {/* Intro Section */}
+                <div className="bg-[#2a2a2a] p-4 rounded-lg space-y-4">
+                  <Label className="text-white text-sm">Introduction</Label>
+                  <Textarea
+                    value={formData.chart_sizes?.introText || ""}
+                    onChange={(e) => updateChartSizesIntro('introText', e.target.value)}
+                    placeholder="Introduction text for chart sizes section..."
+                    className="bg-[#1a1a1a] border-gray-600 text-white"
+                    rows={3}
+                  />
+                  <div className="space-y-2">
+                    <Label className="text-white text-sm">Introduction Image</Label>
+                    <MediaSelector
+                      label=""
+                      currentImageUrl={formData.chart_sizes?.introImageUrl || ""}
+                      onFileSelect={async () => {}}
+                      onMediaSelect={(url) => updateChartSizesIntro('introImageUrl', url)}
+                      previewSize="small"
+                    />
+                  </div>
+                </div>
+
+                {/* Sections */}
+                {formData.chart_sizes?.sections?.map((section, sectionIndex) => (
+                  <div key={section.id} className="bg-[#2a2a2a] p-4 rounded-lg space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Input
+                        value={section.title}
+                        onChange={(e) => updateChartSizeSection(section.id, 'title', e.target.value)}
+                        placeholder="Section title (e.g., Reflective)"
+                        className="bg-[#1a1a1a] border-gray-600 text-white max-w-xs font-semibold"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeChartSizeSection(section.id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <Textarea
+                      value={section.description}
+                      onChange={(e) => updateChartSizeSection(section.id, 'description', e.target.value)}
+                      placeholder="Section description..."
+                      className="bg-[#1a1a1a] border-gray-600 text-white"
+                      rows={2}
+                    />
+
+                    {/* Section Image */}
+                    <div className="space-y-2">
+                      <Label className="text-white text-sm">Section Image</Label>
+                      <MediaSelector
+                        label=""
+                        currentImageUrl={section.imageUrl}
+                        onFileSelect={async () => {}}
+                        onMediaSelect={(url) => updateChartSizeSection(section.id, 'imageUrl', url)}
+                        previewSize="small"
+                      />
+                    </div>
+
+                    {/* Size Table */}
+                    {section.rows.length > 0 && (
+                      <div className="rounded-lg border border-gray-700 overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-[#1a1a1a]">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Size ID</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">4:3</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">16:9</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Chart Size</th>
+                              <th className="px-3 py-2 w-10"></th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-700">
+                            {section.rows.map((row) => (
+                              <tr key={row.id}>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    value={row.sizeId}
+                                    onChange={(e) => updateChartSizeRow(section.id, row.id, 'sizeId', e.target.value)}
+                                    className="bg-[#1a1a1a] border-gray-600 text-white h-7 text-sm"
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    value={row.aspectRatio43}
+                                    onChange={(e) => updateChartSizeRow(section.id, row.id, 'aspectRatio43', e.target.value)}
+                                    className="bg-[#1a1a1a] border-gray-600 text-white h-7 text-sm"
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    value={row.aspectRatio169}
+                                    onChange={(e) => updateChartSizeRow(section.id, row.id, 'aspectRatio169', e.target.value)}
+                                    className="bg-[#1a1a1a] border-gray-600 text-white h-7 text-sm"
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Input
+                                    value={row.chartSize}
+                                    onChange={(e) => updateChartSizeRow(section.id, row.id, 'chartSize', e.target.value)}
+                                    className="bg-[#1a1a1a] border-gray-600 text-white h-7 text-sm"
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeChartSizeRow(section.id, row.id)}
+                                    className="text-red-400 hover:text-red-300 h-7 w-7 p-0"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {/* Add Row */}
+                    <div className="grid grid-cols-5 gap-2">
+                      <Input
+                        value={newChartSizeRow.sizeId}
+                        onChange={(e) => setNewChartSizeRow(prev => ({ ...prev, sizeId: e.target.value }))}
+                        placeholder="Size ID"
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-sm"
+                      />
+                      <Input
+                        value={newChartSizeRow.aspectRatio43}
+                        onChange={(e) => setNewChartSizeRow(prev => ({ ...prev, aspectRatio43: e.target.value }))}
+                        placeholder="4:3 (e.g., 800 x 600)"
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-sm"
+                      />
+                      <Input
+                        value={newChartSizeRow.aspectRatio169}
+                        onChange={(e) => setNewChartSizeRow(prev => ({ ...prev, aspectRatio169: e.target.value }))}
+                        placeholder="16:9 (e.g., 1066 x 600)"
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-sm"
+                      />
+                      <Input
+                        value={newChartSizeRow.chartSize}
+                        onChange={(e) => setNewChartSizeRow(prev => ({ ...prev, chartSize: e.target.value }))}
+                        placeholder="Chart Size"
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-sm"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => addChartSizeRow(section.id)}
+                        disabled={!newChartSizeRow.sizeId}
+                        className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+
+                {(!formData.chart_sizes?.sections || formData.chart_sizes.sections.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 bg-[#2a2a2a] rounded-lg">
+                    No chart size sections yet. Click "Add Section" to create one.
+                  </div>
+                )}
               </div>
             </TabsContent>
 
