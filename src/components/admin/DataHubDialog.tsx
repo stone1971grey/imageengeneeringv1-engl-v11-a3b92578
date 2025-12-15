@@ -1049,7 +1049,7 @@ export function DataHubDialog({
                         )}
                         {isPdfFile && (
                           <div 
-                            className={`aspect-video bg-gradient-to-br from-red-900/30 to-red-800/20 flex flex-col items-center justify-center gap-2 ${selectionMode ? 'cursor-pointer' : ''}`}
+                            className={`aspect-video bg-gray-900 flex flex-col items-center justify-center gap-2 relative ${selectionMode ? 'cursor-pointer' : ''}`}
                             onClick={() => {
                               if (selectionMode && onSelect) {
                                 onSelect(fileUrl, {
@@ -1061,8 +1061,41 @@ export function DataHubDialog({
                               }
                             }}
                           >
-                            <FileText className="h-12 w-12 text-red-400" />
-                            <span className="text-[10px] font-bold text-red-400 bg-red-900/50 px-2 py-0.5 rounded">PDF</span>
+                            <FileText className="h-10 w-10 text-gray-400" />
+                            <span className="text-[10px] font-medium text-gray-400">PDF</span>
+                            {/* Visibility Badge for PDFs */}
+                            <div 
+                              className={`absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md border shadow-lg backdrop-blur-sm ${
+                                visibility === 'private' 
+                                  ? 'bg-red-900/90 border-red-500/50' 
+                                  : 'bg-green-900/90 border-green-500/50'
+                              }`}
+                              title={visibility === 'private' ? 'Private - Not searchable' : 'Public - Searchable'}
+                            >
+                              {visibility === 'private' ? (
+                                <EyeOff className="h-3 w-3 text-red-400" />
+                              ) : (
+                                <Eye className="h-3 w-3 text-green-400" />
+                              )}
+                              <span className={`text-[10px] font-semibold ${visibility === 'private' ? 'text-red-400' : 'text-green-400'}`}>
+                                {visibility === 'private' ? 'Private' : 'Public'}
+                              </span>
+                            </div>
+                            {/* Segment Badges for PDFs */}
+                            {segmentIds.length > 0 && (
+                              <div className="absolute top-2 right-2 flex items-center gap-1">
+                                {segmentIds.map((id: string, idx: number) => (
+                                  <div 
+                                    key={idx}
+                                    className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                    title={`Assigned to Segment ${id}`}
+                                  >
+                                    <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                         {!isImg && !isVid && !isPdfFile && (
