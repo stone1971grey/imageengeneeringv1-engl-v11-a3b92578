@@ -280,6 +280,9 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
   // Check if asset is a PDF
   const isPdf = fileName.toLowerCase().endsWith('.pdf');
+  
+  // Check if asset is a video
+  const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(fileName.toLowerCase());
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
@@ -303,6 +306,19 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
           <div className="relative w-full h-48 bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
             {isPdf ? (
               <PdfPreview url={asset.url} className="w-full h-full" />
+            ) : isVideo ? (
+              <div className="relative w-full h-full">
+                <video
+                  src={asset.url}
+                  className="w-full h-full object-contain"
+                  controls
+                  preload="metadata"
+                  onLoadedData={(e) => {
+                    const video = e.currentTarget;
+                    video.currentTime = 0.1;
+                  }}
+                />
+              </div>
             ) : (
               <img 
                 src={asset.url} 

@@ -1025,10 +1025,15 @@ export function DataHubDialog({
                               src={fileUrl}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               muted
-                              preload="metadata"
-                              onLoadedData={(e) => {
+                              playsInline
+                              preload="auto"
+                              onLoadedMetadata={(e) => {
                                 const video = e.currentTarget;
-                                video.currentTime = 0.1; // Seek to first frame
+                                // Seek to 0.1s to trigger frame display
+                                video.currentTime = 0.1;
+                              }}
+                              onError={(e) => {
+                                console.warn('Video preview failed to load:', fileUrl);
                               }}
                             />
                             {/* Play icon overlay */}
