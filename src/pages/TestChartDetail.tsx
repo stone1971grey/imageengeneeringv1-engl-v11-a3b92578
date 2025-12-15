@@ -326,12 +326,6 @@ const TestChartDetail = () => {
                     </button>
                   </DialogTrigger>
                   <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-black border-gray-700 mt-16">
-                    <button
-                      onClick={() => setIsZoomOpen(false)}
-                      className="absolute top-6 right-6 z-10 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
-                    >
-                      <X className="w-6 h-6 text-white" />
-                    </button>
                     <img
                       src={allImages[selectedImage] || product.image_url}
                       alt={`${product.title} full size`}
