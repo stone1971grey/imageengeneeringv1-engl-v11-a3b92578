@@ -26,6 +26,7 @@ interface Product {
   measurement_focus: string[];
   format_fov: string[];
   integration_features: string[];
+  display_badges: string[];
   availability: string;
   published: boolean;
 }
@@ -75,6 +76,7 @@ const TestChartsListing = () => {
         measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
         format_fov: Array.isArray((p as any).format_fov) ? (p as any).format_fov : [],
         integration_features: Array.isArray((p as any).integration_features) ? (p as any).integration_features : [],
+        display_badges: Array.isArray((p as any).display_badges) ? (p as any).display_badges : [],
       }));
 
       setProducts(transformedProducts as Product[]);
@@ -184,27 +186,19 @@ const TestChartsListing = () => {
           {/* Teaser */}
           <p className="text-sm text-zinc-400 line-clamp-2">{product.teaser}</p>
 
-          {/* Visible Filter Badges - from measurement_focus, format_fov, applications */}
-          {(() => {
-            const visibleBadges = [
-              ...product.measurement_focus.slice(0, 2),
-              ...product.format_fov.filter((f) => f !== "Standard").slice(0, 1),
-              ...product.applications.slice(0, 1),
-            ].slice(0, 4);
-
-            return visibleBadges.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {visibleBadges.map((badge, idx) => (
-                  <Badge
-                    key={idx}
-                    className="text-xs bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
-                  >
-                    {badge}
-                  </Badge>
-                ))}
-              </div>
-            ) : null;
-          })()}
+          {/* Display Badges - same as detail view */}
+          {product.display_badges && product.display_badges.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {product.display_badges.slice(0, 4).map((badge, idx) => (
+                <Badge
+                  key={idx}
+                  className="text-xs px-2 py-0.5 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                >
+                  {badge}
+                </Badge>
+              ))}
+            </div>
+          )}
 
           {/* Availability */}
           <div className="pt-2 border-t border-zinc-700">
