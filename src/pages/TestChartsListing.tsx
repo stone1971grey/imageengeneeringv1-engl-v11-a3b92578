@@ -201,11 +201,11 @@ const TestChartsListing = () => {
     checked: boolean; 
     onChange: () => void;
   }) => (
-    <label className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors text-muted-foreground text-sm">
+    <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors text-gray-400 text-sm">
       <Checkbox 
         checked={checked} 
         onCheckedChange={onChange}
-        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+        className="data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24] data-[state=checked]:text-black border-gray-500"
       />
       {label}
     </label>
