@@ -103,8 +103,8 @@ const TestChartsListing = () => {
           setPageConfig({
             title: config.title || "Test Charts",
             description: config.description || "",
-            showFilters: config.showFilters !== false,
-            showSearch: config.showSearch !== false,
+            showFilters: config.showFilters === true,
+            showSearch: config.showSearch === true,
             layout: config.layout || "grid"
           });
         }
@@ -350,41 +350,47 @@ const TestChartsListing = () => {
         </div>
       </section>
 
-      {/* Search and Filter Bar */}
-      <section className="py-6 border-b border-gray-600 sticky top-20 bg-[#2f2f2f]/95 backdrop-blur-sm z-40">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-              <Input
-                type="text"
-                placeholder="Search by title or SKU..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[hsl(var(--yellow))] focus-visible:border-[hsl(var(--yellow))]"
-              />
+      {/* Search and Filter Bar - Only show if search or filters are enabled */}
+      {(pageConfig.showSearch || pageConfig.showFilters) && (
+        <section className="py-6 border-b border-gray-600 sticky top-20 bg-[#2f2f2f]/95 backdrop-blur-sm z-40">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center gap-4">
+              {pageConfig.showSearch && (
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
+                  <Input
+                    type="text"
+                    placeholder="Search by title or SKU..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[hsl(var(--yellow))] focus-visible:border-[hsl(var(--yellow))]"
+                  />
+                </div>
+              )}
+              {pageConfig.showFilters && (
+                <Button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
+                >
+                  {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
+                  {showFilters ? "Hide Filter" : "Show Filter"}
+                </Button>
+              )}
+              {hasActiveFilters && (
+                <Button
+                  onClick={clearAllFilters}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
+                >
+                  Clear All
+                </Button>
+              )}
             </div>
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
-            >
-              {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
-              {showFilters ? "Hide Filter" : "Show Filter"}
-            </Button>
-            {hasActiveFilters && (
-              <Button
-                onClick={clearAllFilters}
-                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
-              >
-                Clear All
-              </Button>
-            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Filters Panel - 5 Filter Categories */}
-      {showFilters && (
+      {pageConfig.showFilters && showFilters && (
         <section className="py-6 border-b border-gray-600 bg-[#1f1f1f]">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -469,7 +475,7 @@ const TestChartsListing = () => {
             {filteredProducts.length} test chart{filteredProducts.length !== 1 ? 's' : ''} found
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${pageConfig.layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
