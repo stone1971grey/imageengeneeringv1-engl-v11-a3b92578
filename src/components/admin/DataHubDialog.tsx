@@ -642,6 +642,12 @@ export function DataHubDialog({
     return /\.pdf$/i.test(fileName);
   }, []);
 
+  const getDisplayFileName = useCallback((fileName: string) => {
+    const base = fileName.includes("/") ? (fileName.split("/").pop() || fileName) : fileName;
+    // Strip legacy Lovable timestamp prefixes like "1765793426027-" (keep real filenames intact)
+    return base.replace(/^\d{10,}-/, "");
+  }, []);
+
   // Memoize file filtering to avoid recalculating on every render
   const getFilteredFiles = useCallback((files: StorageFile[] = []) => {
     return files.filter(file => file.name.includes('.'));
@@ -1119,8 +1125,8 @@ export function DataHubDialog({
                         )}
 
                         <div className="p-3 space-y-1.5">
-                          <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
-                            {file.name.includes('/') ? file.name.split('/').pop() : file.name}
+                          <p className="text-xs text-gray-300 truncate font-medium" title={getDisplayFileName(file.name)}>
+                            {getDisplayFileName(file.name)}
                           </p>
                           {/* Segment Assignment Info - support multiple segments */}
                           {segmentIds.length > 0 && (

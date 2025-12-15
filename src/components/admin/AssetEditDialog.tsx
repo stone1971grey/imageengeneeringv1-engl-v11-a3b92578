@@ -262,7 +262,9 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   };
 
   // Extract metadata info
-  const fileName = asset.name.split('/').pop() || asset.name;
+  const rawFileName = asset.name.split('/').pop() || asset.name;
+  // Strip legacy Lovable timestamp prefixes like "1765793426027-" for display
+  const fileName = rawFileName.replace(/^\d{10,}-/, '');
   const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'Unknown';
   const fileSize = asset.metadata?.size 
     ? formatFileSize(asset.metadata.size)
