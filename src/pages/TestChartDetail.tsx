@@ -205,11 +205,11 @@ const TestChartDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Image Gallery */}
               <div className="space-y-4">
-                <div className="aspect-[4/3] bg-gray-900 rounded-lg overflow-hidden max-w-md mx-auto lg:mx-0">
+                <div className="aspect-[4/3] bg-black rounded-lg overflow-hidden w-full max-w-[580px] mx-auto lg:mx-0">
                   <img
                     src={allImages[selectedImage] || product.image_url}
                     alt={`${product.title} main product image`}
-                    className="w-full h-full object-contain p-6"
+                    className="w-full h-full object-contain p-4"
                     loading="eager"
                   />
                 </div>
@@ -225,7 +225,7 @@ const TestChartDetail = () => {
                         }`}
                         aria-label={`View product image ${idx + 1}`}
                       >
-                        <img src={img} alt="" className="w-full h-full object-contain p-1 bg-gray-900" loading="lazy" />
+                        <img src={img} alt="" className="w-full h-full object-contain p-1 bg-black" loading="lazy" />
                       </button>
                     ))}
                   </div>
