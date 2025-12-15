@@ -33,12 +33,12 @@ export const extractImageMetadata = (file: File, url: string): Promise<Omit<Imag
   });
 };
 
-// Helper component for displaying image metadata
+// Helper function for displaying file sizes with smart KB/MB formatting
 export const formatFileSize = (sizeKB: number): string => {
-  if (sizeKB < 1024) {
-    return `${sizeKB} KB`;
+  if (sizeKB >= 1000) {
+    return `${(sizeKB / 1024).toFixed(2)} MB`;
   }
-  return `${(sizeKB / 1024).toFixed(2)} MB`;
+  return `${sizeKB} KB`;
 };
 
 export const formatUploadDate = (isoDate: string): string => {
