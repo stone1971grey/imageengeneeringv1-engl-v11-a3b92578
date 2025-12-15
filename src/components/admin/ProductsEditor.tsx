@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, X, FileText } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
+import { DataHubDialog } from "./DataHubDialog";
 
 interface Product {
   id: string;
@@ -86,6 +87,7 @@ const ProductsEditor = () => {
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [docMediaDialogOpen, setDocMediaDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     slug: "",
@@ -113,6 +115,13 @@ const ProductsEditor = () => {
   const [newSpecValue, setNewSpecValue] = useState("");
   const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
+
+  // Event listener for opening document media selector
+  useEffect(() => {
+    const handleOpenDocSelector = () => setDocMediaDialogOpen(true);
+    window.addEventListener('open-doc-media-selector', handleOpenDocSelector);
+    return () => window.removeEventListener('open-doc-media-selector', handleOpenDocSelector);
+  }, []);
 
   useEffect(() => {
     loadProducts();
@@ -588,11 +597,12 @@ const ProductsEditor = () => {
             </div>
             <div className="flex gap-2">
               {/* Yellow Button - Upload from Computer */}
-              <label className="cursor-pointer flex-1">
+              <div className="flex-1">
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   className="hidden"
+                  id="doc-upload-input"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
@@ -643,44 +653,55 @@ const ProductsEditor = () => {
                 />
                 <Button
                   type="button"
-                  className="w-full bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    (e.currentTarget.previousElementSibling as HTMLInputElement)?.click();
+                  className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
+                  onClick={() => {
+                    const input = document.getElementById('doc-upload-input') as HTMLInputElement | null;
+                    input?.click();
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Upload from Computer
                 </Button>
-              </label>
+              </div>
               
               {/* Blue Button - Select from Media */}
-              <div className="flex-1">
-                <MediaSelector
-                  label=""
-                  currentImageUrl=""
-                  onFileSelect={async () => {}}
-                  onMediaSelect={(url) => {
-                    const fileName = url.split('/').pop() || 'document';
-                    const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
-                    setFormData(prev => ({
-                      ...prev,
-                      documents: [...prev.documents, {
-                        url: url,
-                        title: fileName.replace(/\.[^/.]+$/, ''),
-                        type: fileExt
-                      }]
-                    }));
-                    toast.success("Document selected");
-                  }}
-                  previewSize="small"
-                  buttonOnly
-                  buttonLabel="Select from Media"
-                  buttonVariant="blue"
-                  fullWidth
-                />
-              </div>
+              <Button
+                type="button"
+                style={{ backgroundColor: '#1e3a8a', color: 'white' }}
+                className="flex-1 hover:opacity-90 transition-opacity"
+                onClick={() => {
+                  // Open media dialog for document selection
+                  const event = new CustomEvent('open-doc-media-selector');
+                  window.dispatchEvent(event);
+                }}
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Select from Media
+              </Button>
             </div>
+            
+            {/* Document Media Dialog */}
+            {docMediaDialogOpen && (
+              <DataHubDialog
+                isOpen={docMediaDialogOpen}
+                onClose={() => setDocMediaDialogOpen(false)}
+                selectionMode={true}
+                onSelect={(url) => {
+                  const fileName = url.split('/').pop() || 'document';
+                  const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
+                  setFormData(prev => ({
+                    ...prev,
+                    documents: [...prev.documents, {
+                      url: url,
+                      title: fileName.replace(/\.[^/.]+$/, ''),
+                      type: fileExt
+                    }]
+                  }));
+                  setDocMediaDialogOpen(false);
+                  toast.success("Document selected");
+                }}
+              />
+            )}
           </div>
 
           {/* Category & Subcategory */}
