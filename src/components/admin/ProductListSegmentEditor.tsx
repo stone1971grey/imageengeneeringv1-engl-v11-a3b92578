@@ -521,7 +521,7 @@ export const ProductListSegmentEditor = ({
         <div className="space-y-2">
           <Label>Filter by Category</Label>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-gray-700 z-50">
@@ -536,7 +536,7 @@ export const ProductListSegmentEditor = ({
           <div className="space-y-2">
             <Label>Layout</Label>
             <Select value={layout} onValueChange={(v) => setLayout(v as 'grid' | 'list')}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-gray-900 border-gray-700 z-50">
