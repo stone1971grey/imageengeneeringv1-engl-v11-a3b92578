@@ -637,49 +637,49 @@ const ProductsEditor = () => {
         /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="w-full grid grid-cols-6 bg-[#2a2a2a] p-1 h-auto mb-6">
+            <TabsList className="w-full flex flex-wrap bg-[#2a2a2a] p-1 h-auto mb-6 gap-1">
               <TabsTrigger
                 value="basic"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
-                Basic Info
+                Basic
               </TabsTrigger>
               <TabsTrigger
                 value="media"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
                 Media
               </TabsTrigger>
               <TabsTrigger
                 value="specifications"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
-                Specifications
+                Specs
               </TabsTrigger>
               <TabsTrigger
                 value="chart-sizes"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
-                Chart Sizes
+                Sizes
               </TabsTrigger>
               <TabsTrigger
                 value="features"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
                 Features
               </TabsTrigger>
               <TabsTrigger
                 value="settings"
-                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
                 Settings
               </TabsTrigger>
               {editingProduct && (
                 <TabsTrigger
                   value="translations"
-                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  className="px-3 py-2 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300 flex items-center gap-1"
                 >
-                  <Languages className="h-4 w-4 mr-2" />
+                  <Languages className="h-3 w-3" />
                   Translations
                 </TabsTrigger>
               )}
