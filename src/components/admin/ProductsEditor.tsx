@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
@@ -408,208 +409,141 @@ const ProductsEditor = () => {
       </div>
 
       {isEditing ? (
-        /* Editor Form */
+        /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
-          {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-white">Title *</Label>
-              <Input
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Product title"
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white">Slug</Label>
-              <Input
-                value={formData.slug}
-                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                placeholder="Auto-generated from title"
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
-          </div>
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="w-full grid grid-cols-5 bg-[#2a2a2a] p-1 h-auto mb-6">
+              <TabsTrigger
+                value="basic"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Basic Info
+              </TabsTrigger>
+              <TabsTrigger
+                value="media"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Media
+              </TabsTrigger>
+              <TabsTrigger
+                value="specifications"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Specifications
+              </TabsTrigger>
+              <TabsTrigger
+                value="features"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Features
+              </TabsTrigger>
+              <TabsTrigger
+                value="settings"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Settings
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="space-y-2">
-            <Label className="text-white">Teaser *</Label>
-            <Textarea
-              value={formData.teaser}
-              onChange={(e) => setFormData(prev => ({ ...prev, teaser: e.target.value }))}
-              placeholder="Short description for listings"
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-              rows={2}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-white">Description</Label>
-            <Textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Full product description"
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-              rows={4}
-            />
-          </div>
-
-          {/* Image */}
-          <div className="space-y-2">
-            <MediaSelector
-              label="Main Product Image *"
-              currentImageUrl={formData.image_url}
-              onFileSelect={async (file) => {
-                try {
-                  const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                  const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
-                  const folderPath = `products/${categorySlug}/${productSlug}`;
-                  
-                  // Ensure product folder exists
-                  await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
-                  
-                  const fileExt = file.name.split('.').pop();
-                  const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
-                  const fileName = `${baseName}.${fileExt}`;
-                  const filePath = `${folderPath}/${fileName}`;
-                  
-                  const { error: uploadError } = await supabase.storage
-                    .from('page-images')
-                    .upload(filePath, file);
-                    
-                  if (uploadError) throw uploadError;
-                  
-                  const { data: { publicUrl } } = supabase.storage
-                    .from('page-images')
-                    .getPublicUrl(filePath);
-                  
-                  await supabase.from('file_segment_mappings').insert({
-                    file_path: filePath,
-                    bucket_id: 'page-images',
-                    segment_ids: [],
-                    alt_text: formData.title || file.name
-                  });
-                    
-                  setFormData(prev => ({ ...prev, image_url: publicUrl }));
-                  toast.success("Image uploaded successfully");
-                } catch (error: any) {
-                  console.error("Upload error:", error);
-                  toast.error(error.message || "Failed to upload image");
-                }
-              }}
-              onMediaSelect={(url) => {
-                setFormData(prev => ({ ...prev, image_url: url }));
-              }}
-              previewSize="small"
-            />
-          </div>
-
-          {/* Gallery Images */}
-          <div className="space-y-2">
-            <Label className="text-white">Gallery Images</Label>
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              {formData.gallery_images.map((img, index) => (
-                <div key={index} className="relative">
-                  <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-20 object-cover rounded" />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      gallery_images: prev.gallery_images.filter((_, i) => i !== index)
-                    }))}
-                    className="absolute top-0 right-0 text-red-400 hover:text-red-300 p-1 h-auto"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+            {/* Basic Info Tab */}
+            <TabsContent value="basic" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-white">Title *</Label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Product title"
+                    className="bg-[#2a2a2a] border-gray-600 text-white"
+                  />
                 </div>
-              ))}
-            </div>
-            <MediaSelector
-              label="Add Gallery Image"
-              currentImageUrl=""
-              onFileSelect={async (file) => {
-                try {
-                  const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                  const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
-                  const folderPath = `products/${categorySlug}/${productSlug}`;
-                  
-                  await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
-                  
-                  const fileExt = file.name.split('.').pop();
-                  const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
-                  const shortId = Math.random().toString(36).slice(2, 6);
-                  const fileName = `${baseName}-${shortId}.${fileExt}`;
-                  const filePath = `${folderPath}/${fileName}`;
-                  
-                  const { error: uploadError } = await supabase.storage
-                    .from('page-images')
-                    .upload(filePath, file);
-                    
-                  if (uploadError) throw uploadError;
-                  
-                  const { data: { publicUrl } } = supabase.storage
-                    .from('page-images')
-                    .getPublicUrl(filePath);
-                  
-                  await supabase.from('file_segment_mappings').insert({
-                    file_path: filePath,
-                    bucket_id: 'page-images',
-                    segment_ids: [],
-                    alt_text: `${formData.title} - Gallery`
-                  });
-                    
-                  setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, publicUrl] }));
-                  toast.success("Gallery image added");
-                } catch (error: any) {
-                  console.error("Upload error:", error);
-                  toast.error(error.message || "Failed to upload image");
-                }
-              }}
-              onMediaSelect={(url) => {
-                setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, url] }));
-              }}
-              previewSize="small"
-            />
-          </div>
-
-          {/* Documents/PDFs */}
-          <div className="space-y-2">
-            <Label className="text-white">Documents (PDFs, Datasheets)</Label>
-            <div className="space-y-2 mb-2">
-              {formData.documents.map((doc, index) => (
-                <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
-                  <FileText className="h-4 w-4 text-gray-400" />
-                  <span className="text-white flex-1">{doc.title}</span>
-                  <span className="text-xs text-gray-500">{doc.type}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      documents: prev.documents.filter((_, i) => i !== index)
-                    }))}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-2">
+                  <Label className="text-white">Slug</Label>
+                  <Input
+                    value={formData.slug}
+                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                    placeholder="Auto-generated from title"
+                    className="bg-[#2a2a2a] border-gray-600 text-white"
+                  />
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              {/* Yellow Button - Upload from Computer */}
-              <div className="flex-1">
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="hidden"
-                  id="doc-upload-input"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-white">Teaser *</Label>
+                <Textarea
+                  value={formData.teaser}
+                  onChange={(e) => setFormData(prev => ({ ...prev, teaser: e.target.value }))}
+                  placeholder="Short description for listings"
+                  className="bg-[#2a2a2a] border-gray-600 text-white"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-white">Description</Label>
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Full product description"
+                  className="bg-[#2a2a2a] border-gray-600 text-white"
+                  rows={6}
+                />
+              </div>
+
+              {/* Category & Subcategory */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-white">Category *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value, subcategory: "" }))}
+                  >
+                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white">Subcategory</Label>
+                  <Select
+                    value={formData.subcategory}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, subcategory: value }))}
+                  >
+                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                      <SelectValue placeholder="Select subcategory" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(SUBCATEGORIES[formData.category] || []).map(sub => (
+                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white">SKU</Label>
+                  <Input
+                    value={formData.sku}
+                    onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
+                    placeholder="e.g., TE42-LL"
+                    className="bg-[#2a2a2a] border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Media Tab */}
+            <TabsContent value="media" className="space-y-6">
+              {/* Main Image */}
+              <div className="space-y-2">
+                <MediaSelector
+                  label="Main Product Image *"
+                  currentImageUrl={formData.image_url}
+                  onFileSelect={async (file) => {
                     try {
                       const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
                       const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
@@ -617,7 +551,7 @@ const ProductsEditor = () => {
                       
                       await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
                       
-                      const fileExt = file.name.split('.').pop() || 'pdf';
+                      const fileExt = file.name.split('.').pop();
                       const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
                       const fileName = `${baseName}.${fileExt}`;
                       const filePath = `${folderPath}/${fileName}`;
@@ -631,287 +565,399 @@ const ProductsEditor = () => {
                       const { data: { publicUrl } } = supabase.storage
                         .from('page-images')
                         .getPublicUrl(filePath);
-
+                      
                       await supabase.from('file_segment_mappings').insert({
                         file_path: filePath,
                         bucket_id: 'page-images',
                         segment_ids: [],
-                        alt_text: file.name.replace(/\.[^/.]+$/, '')
+                        alt_text: formData.title || file.name
                       });
+                        
+                      setFormData(prev => ({ ...prev, image_url: publicUrl }));
+                      toast.success("Image uploaded successfully");
+                    } catch (error: any) {
+                      console.error("Upload error:", error);
+                      toast.error(error.message || "Failed to upload image");
+                    }
+                  }}
+                  onMediaSelect={(url) => {
+                    setFormData(prev => ({ ...prev, image_url: url }));
+                  }}
+                  previewSize="small"
+                />
+              </div>
+
+              {/* Gallery Images */}
+              <div className="space-y-2">
+                <Label className="text-white">Gallery Images</Label>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {formData.gallery_images.map((img, index) => (
+                    <div key={index} className="relative">
+                      <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-20 object-cover rounded" />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          gallery_images: prev.gallery_images.filter((_, i) => i !== index)
+                        }))}
+                        className="absolute top-0 right-0 text-red-400 hover:text-red-300 p-1 h-auto"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <MediaSelector
+                  label="Add Gallery Image"
+                  currentImageUrl=""
+                  onFileSelect={async (file) => {
+                    try {
+                      const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                      const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                      const folderPath = `products/${categorySlug}/${productSlug}`;
                       
+                      await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                      
+                      const fileExt = file.name.split('.').pop();
+                      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                      const shortId = Math.random().toString(36).slice(2, 6);
+                      const fileName = `${baseName}-${shortId}.${fileExt}`;
+                      const filePath = `${folderPath}/${fileName}`;
+                      
+                      const { error: uploadError } = await supabase.storage
+                        .from('page-images')
+                        .upload(filePath, file);
+                        
+                      if (uploadError) throw uploadError;
+                      
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('page-images')
+                        .getPublicUrl(filePath);
+                      
+                      await supabase.from('file_segment_mappings').insert({
+                        file_path: filePath,
+                        bucket_id: 'page-images',
+                        segment_ids: [],
+                        alt_text: `${formData.title} - Gallery`
+                      });
+                        
+                      setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, publicUrl] }));
+                      toast.success("Gallery image added");
+                    } catch (error: any) {
+                      console.error("Upload error:", error);
+                      toast.error(error.message || "Failed to upload image");
+                    }
+                  }}
+                  onMediaSelect={(url) => {
+                    setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, url] }));
+                  }}
+                  previewSize="small"
+                />
+              </div>
+
+              {/* Documents/PDFs */}
+              <div className="space-y-2">
+                <Label className="text-white">Documents (PDFs, Datasheets)</Label>
+                <div className="space-y-2 mb-2">
+                  {formData.documents.map((doc, index) => (
+                    <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
+                      <FileText className="h-4 w-4 text-gray-400" />
+                      <span className="text-white flex-1">{doc.title}</span>
+                      <span className="text-xs text-gray-500">{doc.type}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          documents: prev.documents.filter((_, i) => i !== index)
+                        }))}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      className="hidden"
+                      id="doc-upload-input"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        
+                        try {
+                          const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                          const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                          const folderPath = `products/${categorySlug}/${productSlug}`;
+                          
+                          await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                          
+                          const fileExt = file.name.split('.').pop() || 'pdf';
+                          const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                          const fileName = `${baseName}.${fileExt}`;
+                          const filePath = `${folderPath}/${fileName}`;
+                          
+                          const { error: uploadError } = await supabase.storage
+                            .from('page-images')
+                            .upload(filePath, file);
+                            
+                          if (uploadError) throw uploadError;
+                          
+                          const { data: { publicUrl } } = supabase.storage
+                            .from('page-images')
+                            .getPublicUrl(filePath);
+
+                          await supabase.from('file_segment_mappings').insert({
+                            file_path: filePath,
+                            bucket_id: 'page-images',
+                            segment_ids: [],
+                            alt_text: file.name.replace(/\.[^/.]+$/, '')
+                          });
+                          
+                          setFormData(prev => ({
+                            ...prev,
+                            documents: [...prev.documents, {
+                              url: publicUrl,
+                              title: file.name.replace(/\.[^/.]+$/, ''),
+                              type: fileExt.toUpperCase()
+                            }]
+                          }));
+                          toast.success("Document uploaded");
+                          e.target.value = '';
+                        } catch (error: any) {
+                          console.error("Upload error:", error);
+                          toast.error(error.message || "Failed to upload document");
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
+                      onClick={() => {
+                        const input = document.getElementById('doc-upload-input') as HTMLInputElement | null;
+                        input?.click();
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Upload from Computer
+                    </Button>
+                  </div>
+                  
+                  <Button
+                    type="button"
+                    style={{ backgroundColor: '#1e3a8a', color: 'white' }}
+                    className="flex-1 hover:opacity-90 transition-opacity"
+                    onClick={() => {
+                      const event = new CustomEvent('open-doc-media-selector');
+                      window.dispatchEvent(event);
+                    }}
+                  >
+                    <FolderOpen className="h-4 w-4 mr-2" />
+                    Select from Media
+                  </Button>
+                </div>
+                
+                {docMediaDialogOpen && (
+                  <DataHubDialog
+                    isOpen={docMediaDialogOpen}
+                    onClose={() => setDocMediaDialogOpen(false)}
+                    selectionMode={true}
+                    onSelect={(url) => {
+                      const fileName = url.split('/').pop() || 'document';
+                      const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
                       setFormData(prev => ({
                         ...prev,
                         documents: [...prev.documents, {
-                          url: publicUrl,
-                          title: file.name.replace(/\.[^/.]+$/, ''),
-                          type: fileExt.toUpperCase()
+                          url: url,
+                          title: fileName.replace(/\.[^/.]+$/, ''),
+                          type: fileExt
                         }]
                       }));
-                      toast.success("Document uploaded");
-                      e.target.value = '';
-                    } catch (error: any) {
-                      console.error("Upload error:", error);
-                      toast.error(error.message || "Failed to upload document");
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
-                  onClick={() => {
-                    const input = document.getElementById('doc-upload-input') as HTMLInputElement | null;
-                    input?.click();
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Upload from Computer
-                </Button>
+                      setDocMediaDialogOpen(false);
+                      toast.success("Document selected");
+                    }}
+                  />
+                )}
               </div>
-              
-              {/* Blue Button - Select from Media */}
-              <Button
-                type="button"
-                style={{ backgroundColor: '#1e3a8a', color: 'white' }}
-                className="flex-1 hover:opacity-90 transition-opacity"
-                onClick={() => {
-                  // Open media dialog for document selection
-                  const event = new CustomEvent('open-doc-media-selector');
-                  window.dispatchEvent(event);
-                }}
-              >
-                <FolderOpen className="h-4 w-4 mr-2" />
-                Select from Media
-              </Button>
-            </div>
-            
-            {/* Document Media Dialog */}
-            {docMediaDialogOpen && (
-              <DataHubDialog
-                isOpen={docMediaDialogOpen}
-                onClose={() => setDocMediaDialogOpen(false)}
-                selectionMode={true}
-                onSelect={(url) => {
-                  const fileName = url.split('/').pop() || 'document';
-                  const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
-                  setFormData(prev => ({
-                    ...prev,
-                    documents: [...prev.documents, {
-                      url: url,
-                      title: fileName.replace(/\.[^/.]+$/, ''),
-                      type: fileExt
-                    }]
-                  }));
-                  setDocMediaDialogOpen(false);
-                  toast.success("Document selected");
-                }}
-              />
-            )}
-          </div>
+            </TabsContent>
 
-          {/* Category & Subcategory */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="text-white">Category *</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value, subcategory: "" }))}
-              >
-                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            {/* Specifications Tab */}
+            <TabsContent value="specifications" className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-white">Chart Attributes / Specifications</Label>
+                <p className="text-sm text-gray-400 mb-4">Add key-value pairs for technical specifications that will be displayed in the product detail page.</p>
+                <div className="space-y-2">
+                  {Object.entries(formData.specifications).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
+                      <span className="text-gray-400 min-w-[140px] font-medium">{key}:</span>
+                      <span className="text-white flex-1">{value}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeSpecification(key)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white">Subcategory</Label>
-              <Select
-                value={formData.subcategory}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, subcategory: value }))}
-              >
-                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                  <SelectValue placeholder="Select subcategory" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(SUBCATEGORIES[formData.category] || []).map(sub => (
-                    <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                  <div className="flex gap-2 mt-4">
+                    <Input
+                      value={newSpecKey}
+                      onChange={(e) => setNewSpecKey(e.target.value)}
+                      placeholder="Key (e.g., Size)"
+                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                    />
+                    <Input
+                      value={newSpecValue}
+                      onChange={(e) => setNewSpecValue(e.target.value)}
+                      placeholder="Value (e.g., 400 x 400 mm)"
+                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                    />
+                    <Button type="button" onClick={addSpecification} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Features Tab */}
+            <TabsContent value="features" className="space-y-6">
+              {/* Features */}
+              <div className="space-y-2">
+                <Label className="text-white">Features</Label>
+                <p className="text-sm text-gray-400 mb-4">List the key features of this product.</p>
+                <div className="space-y-2">
+                  {formData.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
+                      <span className="text-white flex-1">{feature}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFeature(index)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white">SKU</Label>
-              <Input
-                value={formData.sku}
-                onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
-                placeholder="e.g., TE42-LL"
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
-          </div>
-
-          {/* Specifications */}
-          <div className="space-y-2">
-            <Label className="text-white">Specifications</Label>
-            <div className="space-y-2">
-              {Object.entries(formData.specifications).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
-                  <span className="text-gray-400 min-w-[120px]">{key}:</span>
-                  <span className="text-white flex-1">{value}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeSpecification(key)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-2 mt-4">
+                    <Input
+                      value={newFeature}
+                      onChange={(e) => setNewFeature(e.target.value)}
+                      placeholder="Add a feature"
+                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                    />
+                    <Button type="button" onClick={addFeature} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              ))}
-              <div className="flex gap-2">
-                <Input
-                  value={newSpecKey}
-                  onChange={(e) => setNewSpecKey(e.target.value)}
-                  placeholder="Key (e.g., Size)"
-                  className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                />
-                <Input
-                  value={newSpecValue}
-                  onChange={(e) => setNewSpecValue(e.target.value)}
-                  placeholder="Value (e.g., 400x400mm)"
-                  className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                />
-                <Button type="button" onClick={addSpecification} variant="outline" className="border-gray-600">
-                  <Plus className="h-4 w-4" />
-                </Button>
               </div>
-            </div>
-          </div>
 
-          {/* Features */}
-          <div className="space-y-2">
-            <Label className="text-white">Features</Label>
-            <div className="space-y-2">
-              {formData.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
-                  <span className="text-white flex-1">{feature}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFeature(index)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+              {/* Applications */}
+              <div className="space-y-2">
+                <Label className="text-white">Applications</Label>
+                <p className="text-sm text-gray-400 mb-4">List the application areas for this product.</p>
+                <div className="space-y-2">
+                  {formData.applications.map((app, index) => (
+                    <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
+                      <span className="text-white flex-1">{app}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeApplication(index)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2 mt-4">
+                    <Input
+                      value={newApplication}
+                      onChange={(e) => setNewApplication(e.target.value)}
+                      placeholder="Add an application"
+                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addApplication())}
+                    />
+                    <Button type="button" onClick={addApplication} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              ))}
-              <div className="flex gap-2">
-                <Input
-                  value={newFeature}
-                  onChange={(e) => setNewFeature(e.target.value)}
-                  placeholder="Add a feature"
-                  className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                />
-                <Button type="button" onClick={addFeature} variant="outline" className="border-gray-600">
-                  <Plus className="h-4 w-4" />
-                </Button>
               </div>
-            </div>
-          </div>
+            </TabsContent>
 
-          {/* Applications */}
-          <div className="space-y-2">
-            <Label className="text-white">Applications</Label>
-            <div className="space-y-2">
-              {formData.applications.map((app, index) => (
-                <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
-                  <span className="text-white flex-1">{app}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeApplication(index)}
-                    className="text-red-400 hover:text-red-300"
+            {/* Settings Tab */}
+            <TabsContent value="settings" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-white">Availability</Label>
+                  <Select
+                    value={formData.availability}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, availability: value }))}
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="pre-order">Pre-Order</SelectItem>
+                      <SelectItem value="out-of-stock">Out of Stock</SelectItem>
+                      <SelectItem value="discontinued">Discontinued</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              ))}
-              <div className="flex gap-2">
-                <Input
-                  value={newApplication}
-                  onChange={(e) => setNewApplication(e.target.value)}
-                  placeholder="Add an application"
-                  className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addApplication())}
-                />
-                <Button type="button" onClick={addApplication} variant="outline" className="border-gray-600">
-                  <Plus className="h-4 w-4" />
-                </Button>
+                <div className="space-y-2">
+                  <Label className="text-white">Visibility</Label>
+                  <Select
+                    value={formData.visibility}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, visibility: value }))}
+                  >
+                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="private">Private</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white">Position</Label>
+                  <Input
+                    type="number"
+                    value={formData.position}
+                    onChange={(e) => setFormData(prev => ({ ...prev, position: parseInt(e.target.value) || 999 }))}
+                    className="bg-[#2a2a2a] border-gray-600 text-white"
+                  />
+                </div>
+                <div className="flex items-center gap-3 pt-6">
+                  <Switch
+                    checked={formData.published}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
+                  />
+                  <Label className="text-white">Published</Label>
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
 
-          {/* Settings */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label className="text-white">Availability</Label>
-              <Select
-                value={formData.availability}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, availability: value }))}
-              >
-                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="pre-order">Pre-Order</SelectItem>
-                  <SelectItem value="out-of-stock">Out of Stock</SelectItem>
-                  <SelectItem value="discontinued">Discontinued</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white">Visibility</Label>
-              <Select
-                value={formData.visibility}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, visibility: value }))}
-              >
-                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="public">Public</SelectItem>
-                  <SelectItem value="private">Private</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-white">Position</Label>
-              <Input
-                type="number"
-                value={formData.position}
-                onChange={(e) => setFormData(prev => ({ ...prev, position: parseInt(e.target.value) || 999 }))}
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
-            <div className="flex items-center gap-3 pt-6">
-              <Switch
-                checked={formData.published}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
-              />
-              <Label className="text-white">Published</Label>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          {/* Actions - Always visible */}
+          <div className="flex gap-3 pt-4 border-t border-gray-700">
             <Button
               onClick={handleSave}
               className="flex-1 bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
