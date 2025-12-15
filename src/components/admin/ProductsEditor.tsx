@@ -713,13 +713,13 @@ const ProductsEditor = () => {
                 />
               </div>
 
-              {/* Category & Subcategory */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Category & SKU */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-white">Category *</Label>
                   <Select
                     value={formData.category}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value, subcategory: "" }))}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                   >
                     <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
                       <SelectValue />
@@ -727,22 +727,6 @@ const ProductsEditor = () => {
                     <SelectContent>
                       {CATEGORIES.map(cat => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-white">Subcategory</Label>
-                  <Select
-                    value={formData.subcategory}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, subcategory: value }))}
-                  >
-                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                      <SelectValue placeholder="Select subcategory" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(SUBCATEGORIES[formData.category] || []).map(sub => (
-                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
