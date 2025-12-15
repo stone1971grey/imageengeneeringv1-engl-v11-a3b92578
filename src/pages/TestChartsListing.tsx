@@ -263,7 +263,7 @@ const TestChartsListing = () => {
             {hasActiveFilters && (
               <Button
                 onClick={clearAllFilters}
-                variant="ghost"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Clear All
               </Button>
