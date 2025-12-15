@@ -587,50 +587,95 @@ const ProductsEditor = () => {
               ))}
             </div>
             <div className="flex gap-2">
-              <Input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  
-                  try {
-                    const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                    const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
-                    const folderPath = `products/${categorySlug}/${productSlug}`;
+              {/* Yellow Button - Upload from Computer */}
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
                     
-                    await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
-                    
-                    const fileExt = file.name.split('.').pop() || 'pdf';
-                    const fileName = `doc-${Date.now()}.${fileExt}`;
-                    const filePath = `${folderPath}/${fileName}`;
-                    
-                    const { error: uploadError } = await supabase.storage
-                      .from('page-images')
-                      .upload(filePath, file);
+                    try {
+                      const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                      const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                      const folderPath = `products/${categorySlug}/${productSlug}`;
                       
-                    if (uploadError) throw uploadError;
-                    
-                    const { data: { publicUrl } } = supabase.storage
-                      .from('page-images')
-                      .getPublicUrl(filePath);
-                    
-                    setFormData(prev => ({
-                      ...prev,
-                      documents: [...prev.documents, {
-                        url: publicUrl,
-                        title: file.name.replace(/\.[^/.]+$/, ''),
-                        type: fileExt.toUpperCase()
-                      }]
-                    }));
-                    toast.success("Document uploaded");
-                    e.target.value = '';
-                  } catch (error: any) {
-                    console.error("Upload error:", error);
-                    toast.error(error.message || "Failed to upload document");
-                  }
+                      await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                      
+                      const fileExt = file.name.split('.').pop() || 'pdf';
+                      const fileName = `doc-${Date.now()}.${fileExt}`;
+                      const filePath = `${folderPath}/${fileName}`;
+                      
+                      const { error: uploadError } = await supabase.storage
+                        .from('page-images')
+                        .upload(filePath, file);
+                        
+                      if (uploadError) throw uploadError;
+                      
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('page-images')
+                        .getPublicUrl(filePath);
+
+                      await supabase.from('file_segment_mappings').insert({
+                        file_path: filePath,
+                        bucket_id: 'page-images',
+                        segment_ids: [],
+                        alt_text: file.name.replace(/\.[^/.]+$/, '')
+                      });
+                      
+                      setFormData(prev => ({
+                        ...prev,
+                        documents: [...prev.documents, {
+                          url: publicUrl,
+                          title: file.name.replace(/\.[^/.]+$/, ''),
+                          type: fileExt.toUpperCase()
+                        }]
+                      }));
+                      toast.success("Document uploaded");
+                      e.target.value = '';
+                    } catch (error: any) {
+                      console.error("Upload error:", error);
+                      toast.error(error.message || "Failed to upload document");
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  className="bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    (e.currentTarget.previousElementSibling as HTMLInputElement)?.click();
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Upload from Computer
+                </Button>
+              </label>
+              
+              {/* Blue Button - Select from Media */}
+              <MediaSelector
+                label=""
+                currentImageUrl=""
+                onFileSelect={async () => {}}
+                onMediaSelect={(url) => {
+                  const fileName = url.split('/').pop() || 'document';
+                  const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
+                  setFormData(prev => ({
+                    ...prev,
+                    documents: [...prev.documents, {
+                      url: url,
+                      title: fileName.replace(/\.[^/.]+$/, ''),
+                      type: fileExt
+                    }]
+                  }));
+                  toast.success("Document selected");
                 }}
-                className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                previewSize="small"
+                buttonOnly
+                buttonLabel="Select from Media"
+                buttonVariant="blue"
               />
             </div>
           </div>

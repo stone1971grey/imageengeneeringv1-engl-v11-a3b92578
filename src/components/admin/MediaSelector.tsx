@@ -11,6 +11,12 @@ interface MediaSelectorProps {
   currentImageUrl?: string;
   /** Preview size: 'small' = 200x200px, 'large' = full width */
   previewSize?: 'small' | 'large';
+  /** Show only the blue "Select from Media" button */
+  buttonOnly?: boolean;
+  /** Custom label for the button when buttonOnly is true */
+  buttonLabel?: string;
+  /** Button color variant: 'yellow' or 'blue' */
+  buttonVariant?: 'yellow' | 'blue';
 }
 
 // Helper to detect if URL is a video
@@ -27,7 +33,10 @@ export const MediaSelector = ({
   acceptedFileTypes = "image/*",
   label = "Image",
   currentImageUrl,
-  previewSize = 'large'
+  previewSize = 'large',
+  buttonOnly = false,
+  buttonLabel,
+  buttonVariant = 'blue'
 }: MediaSelectorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const inputId = useId();
@@ -41,6 +50,38 @@ export const MediaSelector = ({
 
   // Determine if current media is a video
   const isVideo = acceptedFileTypes?.includes('video') || isVideoUrl(currentImageUrl || '');
+
+  // buttonOnly mode - just show the media select button
+  if (buttonOnly) {
+    return (
+      <>
+        <Button
+          type="button"
+          style={buttonVariant === 'blue' ? { backgroundColor: '#1e3a8a', color: 'white' } : undefined}
+          className={buttonVariant === 'yellow' 
+            ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
+            : "hover:opacity-90 transition-opacity"
+          }
+          onClick={() => setMediaDialogOpen(true)}
+        >
+          <FolderOpen className="h-4 w-4 mr-2" />
+          {buttonLabel || "Select from Media"}
+        </Button>
+
+        {mediaDialogOpen && (
+          <DataHubDialog
+            isOpen={mediaDialogOpen}
+            onClose={() => setMediaDialogOpen(false)}
+            selectionMode={true}
+            onSelect={(url, metadata) => {
+              onMediaSelect(url, metadata);
+              setMediaDialogOpen(false);
+            }}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="space-y-2">
