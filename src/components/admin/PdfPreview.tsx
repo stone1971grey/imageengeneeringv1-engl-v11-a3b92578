@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Loader2, FileText } from "lucide-react";
+import { useState } from "react";
+import { Loader2, FileText, ExternalLink } from "lucide-react";
 
 interface PdfPreviewProps {
   url: string;
@@ -7,90 +7,32 @@ interface PdfPreviewProps {
 }
 
 export function PdfPreview({ url, className = "" }: PdfPreviewProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const renderPdf = async () => {
-      if (!canvasRef.current || !url) return;
-
-      setLoading(true);
-      setError(false);
-
-      try {
-        // Dynamically import PDF.js
-        const pdfjsLib = await import("pdfjs-dist");
-        
-        // Set worker source
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
-        // Load the PDF document
-        const loadingTask = pdfjsLib.getDocument(url);
-        const pdf = await loadingTask.promise;
-
-        if (cancelled) return;
-
-        // Get the first page
-        const page = await pdf.getPage(1);
-
-        if (cancelled) return;
-
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-
-        if (!context) {
-          setError(true);
-          return;
-        }
-
-        // Calculate scale to fit the container
-        const containerWidth = canvas.parentElement?.clientWidth || 400;
-        const containerHeight = canvas.parentElement?.clientHeight || 192;
-        
-        const viewport = page.getViewport({ scale: 1 });
-        const scaleX = containerWidth / viewport.width;
-        const scaleY = containerHeight / viewport.height;
-        const scale = Math.min(scaleX, scaleY);
-
-        const scaledViewport = page.getViewport({ scale });
-
-        // Set canvas dimensions
-        canvas.width = scaledViewport.width;
-        canvas.height = scaledViewport.height;
-
-        // Render the page
-        await page.render({
-          canvasContext: context,
-          viewport: scaledViewport,
-        }).promise;
-
-        if (!cancelled) {
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("PDF preview error:", err);
-        if (!cancelled) {
-          setError(true);
-          setLoading(false);
-        }
-      }
-    };
-
-    renderPdf();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [url]);
-
-  if (error) {
+  if (!url) {
     return (
       <div className={`flex flex-col items-center justify-center gap-2 bg-gray-800 ${className}`}>
         <FileText className="h-12 w-12 text-gray-500" />
+        <span className="text-xs text-gray-500">No PDF URL</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`flex flex-col items-center justify-center gap-3 bg-gray-800 ${className}`}>
+        <FileText className="h-12 w-12 text-gray-500" />
         <span className="text-xs text-gray-500">PDF preview unavailable</span>
+        <a 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-xs text-[#f9dc24] hover:underline"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Open PDF
+        </a>
       </div>
     );
   }
@@ -98,18 +40,30 @@ export function PdfPreview({ url, className = "" }: PdfPreviewProps) {
   return (
     <div className={`relative flex items-center justify-center bg-gray-800 ${className}`}>
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 z-10">
           <Loader2 className="h-8 w-8 text-gray-400 animate-spin" />
         </div>
       )}
-      <canvas
-        ref={canvasRef}
-        className={`max-w-full max-h-full ${loading ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}
+      <iframe
+        src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+        className="w-full h-full border-0"
+        title="PDF Preview"
+        onLoad={() => setLoading(false)}
+        onError={() => {
+          setLoading(false);
+          setError(true);
+        }}
       />
       {!loading && (
-        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
-          PDF - Page 1
-        </div>
+        <a 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium hover:bg-black/90 flex items-center gap-1"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Open
+        </a>
       )}
     </div>
   );
