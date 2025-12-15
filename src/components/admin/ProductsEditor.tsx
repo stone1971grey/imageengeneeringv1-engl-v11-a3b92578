@@ -958,7 +958,7 @@ const ProductsEditor = () => {
                   </div>
                   <p className="text-sm text-gray-400 truncate">{product.teaser}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">
+                    <span className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] px-2 py-0.5 rounded">
                       {product.category}
                     </span>
                     {product.subcategory && (
