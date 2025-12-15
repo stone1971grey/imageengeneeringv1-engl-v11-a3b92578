@@ -302,12 +302,18 @@ const TestChartDetail = () => {
         <section className="py-12 bg-[#141414]">
           <div className="container mx-auto px-6">
             <Tabs defaultValue="description" className="w-full">
-              <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-3 bg-[#1a1a1a] p-1 h-auto">
+              <TabsList className="w-full max-w-3xl mx-auto grid grid-cols-4 bg-[#1a1a1a] p-1 h-auto">
                 <TabsTrigger
                   value="description"
                   className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
                   Description
+                </TabsTrigger>
+                <TabsTrigger
+                  value="chartsizes"
+                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                >
+                  Chart Sizes
                 </TabsTrigger>
                 <TabsTrigger
                   value="technical"
@@ -345,6 +351,169 @@ const TestChartDetail = () => {
                       </ul>
                     </section>
                   )}
+                </TabsContent>
+
+                <TabsContent value="chartsizes" className="space-y-8">
+                  <div className="prose prose-invert max-w-none">
+                    <h2 className="text-2xl font-bold text-white mb-4">Chart Sizes</h2>
+                    <p className="text-gray-300 leading-relaxed">
+                      The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.
+                    </p>
+                    <p className="text-gray-300 leading-relaxed">
+                      During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.
+                    </p>
+                    <p className="text-gray-300 leading-relaxed">
+                      The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.
+                    </p>
+                    <a href="#" className="text-[#f9dc24] hover:underline font-medium">
+                      Reference data accuracy of our test charts →
+                    </a>
+                  </div>
+
+                  {/* Chart Size Diagram */}
+                  <div className="bg-[#1a1a1a] rounded-lg p-6">
+                    <img 
+                      src="/images/chart-sizes-diagram.png" 
+                      alt="Chart size vs picture size diagram" 
+                      className="w-full max-w-md mx-auto"
+                    />
+                  </div>
+
+                  {/* Reflective Charts Table */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-white">Reflective</h3>
+                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead className="bg-[#222]">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-gray-300 font-medium">Chart size</th>
+                            <th className="px-4 py-3 text-center text-gray-300 font-medium" colSpan={2}>Picture size w × h [mm]</th>
+                            <th className="px-4 py-3 text-left text-gray-300 font-medium">Chart size w × h × d [mm]</th>
+                          </tr>
+                          <tr className="border-b border-gray-800">
+                            <th className="px-4 py-2"></th>
+                            <th className="px-4 py-2 text-center text-gray-400 text-xs">4:3</th>
+                            <th className="px-4 py-2 text-center text-gray-400 text-xs">16:9</th>
+                            <th className="px-4 py-2 text-gray-400 text-xs">(+/- 2 mm)*</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800">
+                          <tr><td className="px-4 py-2 text-white">A1066</td><td className="px-4 py-2 text-center text-gray-300">800 × 600</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-gray-300">1245 × 835 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A1066 (TE42*)</td><td className="px-4 py-2 text-center text-gray-300">900 × 675</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-gray-300">1245 × 835 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A1066</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-center text-gray-300">1066 × 600</td><td className="px-4 py-2 text-gray-300">1400 × 835 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A1066 (TE42*)</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-center text-gray-300">1200 × 675</td><td className="px-4 py-2 text-gray-300">1400 × 835 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A540</td><td className="px-4 py-2 text-center text-gray-300">540 × 405</td><td className="px-4 py-2 text-center text-gray-300">540 × 303.75</td><td className="px-4 py-2 text-gray-300">600 × 500 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A460</td><td className="px-4 py-2 text-center text-gray-300">460 × 345</td><td className="px-4 py-2 text-center text-gray-300">460 × 258.75</td><td className="px-4 py-2 text-gray-300">600 × 500 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A444</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-center text-gray-300">444.4 × 250</td><td className="px-4 py-2 text-gray-300">600 × 500 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A360</td><td className="px-4 py-2 text-center text-gray-300">360 × 270</td><td className="px-4 py-2 text-center text-gray-300">360 × 202.5</td><td className="px-4 py-2 text-gray-300">500 × 400 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">K360</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-center text-gray-300">360 × 202.5</td><td className="px-4 py-2 text-gray-300">390 × 271 × 2.1</td></tr>
+                          <tr><td className="px-4 py-2 text-white">A280</td><td className="px-4 py-2 text-center text-gray-300">280 × 210</td><td className="px-4 py-2 text-center text-gray-300">280 × 157.5</td><td className="px-4 py-2 text-gray-300">365 × 305 × 3.2</td></tr>
+                          <tr><td className="px-4 py-2 text-white">K280</td><td className="px-4 py-2 text-center text-gray-300">280 × 210</td><td className="px-4 py-2 text-center text-gray-300">280 × 157.5</td><td className="px-4 py-2 text-gray-300">334 × 271 × 2.1</td></tr>
+                          <tr><td className="px-4 py-2 text-white">P280</td><td className="px-4 py-2 text-center text-gray-300" colSpan={2}>May vary in size with the chart layout</td><td className="px-4 py-2 text-gray-300">334 × 271 × 2.1</td></tr>
+                          <tr><td className="px-4 py-2 text-white">K180</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-center text-gray-300">180 × 101</td><td className="px-4 py-2 text-gray-300">204 × 164 × 2.1</td></tr>
+                          <tr><td className="px-4 py-2 text-white">K160</td><td className="px-4 py-2 text-center text-gray-300">160 × 120</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-gray-300">204 × 164 × 2.1</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <ul className="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                      <li>A charts (size 280/360/460) are mounted on aluminium plates.</li>
+                      <li>A charts (size 1066) are mounted on aluminum composite panels (aluminum dibond).</li>
+                      <li>K charts mounted on black polystyrene plates are only available in combination with the test chart folders.</li>
+                      <li>P charts are mounted on black polystyrene plates.</li>
+                      <li className="text-gray-500">*Sizes are for all variations of the TE42 chart series, including TE42 V2, TE42-LL, TE42-LL Timing</li>
+                    </ul>
+                    <div className="mt-4">
+                      <img 
+                        src="/images/chart-sizes-reflective.png" 
+                        alt="Reflective chart sizes overview" 
+                        className="w-full max-w-2xl mx-auto rounded-lg"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Transparent Charts Table */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-white">Transparent</h3>
+                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead className="bg-[#222]">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-gray-300 font-medium">Chart size</th>
+                            <th className="px-4 py-3 text-center text-gray-300 font-medium" colSpan={2}>Picture size w × h [mm]</th>
+                            <th className="px-4 py-3 text-left text-gray-300 font-medium">Chart size w × h × d [mm]</th>
+                          </tr>
+                          <tr className="border-b border-gray-800">
+                            <th className="px-4 py-2"></th>
+                            <th className="px-4 py-2 text-center text-gray-400 text-xs">4:3</th>
+                            <th className="px-4 py-2 text-center text-gray-400 text-xs">16:9</th>
+                            <th className="px-4 py-2 text-gray-400 text-xs">(+/- 2 mm)*</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800">
+                          <tr><td className="px-4 py-2 text-white">D280</td><td className="px-4 py-2 text-center text-gray-300">280 × 210</td><td className="px-4 py-2 text-center text-gray-300">280 × 157.5</td><td className="px-4 py-2 text-gray-300">360 × 280 × 4.6</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D240</td><td className="px-4 py-2 text-center text-gray-300">240 × 180</td><td className="px-4 py-2 text-center text-gray-300">240 × 135</td><td className="px-4 py-2 text-gray-300">320 × 290 × 4.6</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D240S</td><td className="px-4 py-2 text-center text-gray-300">240 × 180</td><td className="px-4 py-2 text-center text-gray-300">240 × 135</td><td className="px-4 py-2 text-gray-300">360 × 280 × 4.6</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D205</td><td className="px-4 py-2 text-center text-gray-300">205 × 153</td><td className="px-4 py-2 text-center text-gray-300">205 × 115.3</td><td className="px-4 py-2 text-gray-300">253 × 202 × 3.5</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D120</td><td className="px-4 py-2 text-center text-gray-300">120 × 90</td><td className="px-4 py-2 text-center text-gray-300">120 × 67.5</td><td className="px-4 py-2 text-gray-300">155 × 135 × 4.0</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D60</td><td className="px-4 py-2 text-center text-gray-300">60 × 60</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-gray-300">100 × 100 × 4.5</td></tr>
+                          <tr><td className="px-4 py-2 text-white">D35</td><td className="px-4 py-2 text-center text-gray-300">32 × 24</td><td className="px-4 py-2 text-center text-gray-400">-</td><td className="px-4 py-2 text-gray-300">50 × 50 × 3-4</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <ul className="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                      <li>D60 charts are intended to be used with the Vega light source and are constructed with aluminum, PLA plates, and a magnet mount.</li>
+                      <li>D35 charts are either between glass plates or mounted in slide frames (glassless).</li>
+                      <li className="text-gray-500">There are exceptions regarding mounting and size for special charts.</li>
+                    </ul>
+                    <div className="mt-4">
+                      <img 
+                        src="/images/chart-sizes-transparent.png" 
+                        alt="Transparent chart sizes overview" 
+                        className="w-full max-w-2xl mx-auto rounded-lg"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Illuminator Compatibility Table */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-white">Suitable transparent charts for the following illuminators</h3>
+                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead className="bg-[#222]">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-gray-300 font-medium"></th>
+                            <th className="px-4 py-3 text-center text-gray-300 font-medium">D280 / D240S</th>
+                            <th className="px-4 py-3 text-center text-gray-300 font-medium">D240</th>
+                            <th className="px-4 py-3 text-center text-gray-300 font-medium">D205</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800">
+                          <tr>
+                            <td className="px-4 py-3 text-gray-300">Compatible illuminators</td>
+                            <td className="px-4 py-3 text-center text-gray-300 text-xs">
+                              Spherical transparency illuminator LE6/LE7<br/>
+                              Lightbox illuminator LG3<br/>
+                              Sony Pattern Box
+                            </td>
+                            <td className="px-4 py-3 text-center text-gray-300 text-xs">DNP standard viewer</td>
+                            <td className="px-4 py-3 text-center text-gray-300 text-xs">
+                              Porta Pattern spherical transparency illuminator
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3 text-gray-300">With adapter</td>
+                            <td className="px-4 py-3 text-center text-gray-400">-</td>
+                            <td className="px-4 py-3 text-center text-gray-400">-</td>
+                            <td className="px-4 py-3 text-center text-gray-300 text-xs">
+                              Spherical transparency illuminator LE6/LE7<br/>
+                              Lightbox illuminator LG3
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-sm text-gray-500">*Chart sizes may vary by +/- 2 mm as they are handmade in house.</p>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="technical" className="space-y-6">
