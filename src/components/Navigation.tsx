@@ -1316,7 +1316,7 @@ const Navigation = () => {
                           { code: "zh", label: "ZH", flag: "🇨🇳" },
                           { code: "ja", label: "JA", flag: "🇯🇵" },
                           { code: "ko", label: "KO", flag: "🇰🇷" }
-                        ].map((lang) => (
+                        ].filter(lang => lang.code !== language).map((lang) => (
                           <SelectItem 
                             key={lang.code} 
                             value={lang.code}
@@ -2275,36 +2275,21 @@ const Navigation = () => {
                           </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
-                          <SelectItem 
-                            value="en"
-                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                          >
-                            🇺🇸
-                          </SelectItem>
-                          <SelectItem 
-                            value="de"
-                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                          >
-                            🇩🇪
-                          </SelectItem>
-                          <SelectItem 
-                            value="zh"
-                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                          >
-                            🇨🇳
-                          </SelectItem>
-                          <SelectItem 
-                            value="ja"
-                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                          >
-                            🇯🇵
-                          </SelectItem>
-                          <SelectItem 
-                            value="ko"
-                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                          >
-                            🇰🇷
-                          </SelectItem>
+                          {[
+                            { code: "en", flag: "🇺🇸" },
+                            { code: "de", flag: "🇩🇪" },
+                            { code: "zh", flag: "🇨🇳" },
+                            { code: "ja", flag: "🇯🇵" },
+                            { code: "ko", flag: "🇰🇷" }
+                          ].filter(lang => lang.code !== language).map((lang) => (
+                            <SelectItem 
+                              key={lang.code}
+                              value={lang.code}
+                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                            >
+                              {lang.flag}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       
