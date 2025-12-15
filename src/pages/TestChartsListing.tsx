@@ -254,17 +254,15 @@ const TestChartsListing = () => {
               />
             </div>
             <Button
+              variant="academia"
               onClick={() => setShowFilters(!showFilters)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="transition-colors"
             >
               {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
-              {showFilters ? 'Hide Filter' : 'Show Filter'}
+              {showFilters ? "Hide Filter" : "Show Filter"}
             </Button>
             {hasActiveFilters && (
-              <Button
-                onClick={clearAllFilters}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
+              <Button variant="academia" onClick={clearAllFilters}>
                 Clear All
               </Button>
             )}
@@ -337,9 +335,9 @@ const TestChartsListing = () => {
                 }
               </p>
               {hasActiveFilters && (
-                <Button onClick={clearAllFilters} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  Clear All Filters
-                </Button>
+              <Button variant="academia" onClick={clearAllFilters}>
+                Clear All Filters
+              </Button>
               )}
             </div>
           )}
