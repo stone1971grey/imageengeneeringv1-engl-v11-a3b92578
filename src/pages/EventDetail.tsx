@@ -124,12 +124,31 @@ const EventDetail = () => {
     const fetchEvent = async () => {
       if (!eventSlug) return;
       
-      const { data, error } = await supabase
+      // Map URL language to database language_code format
+      const langCode = lang?.toUpperCase() || 'EN';
+      
+      // First try to get event in the requested language
+      let { data, error } = await supabase
         .from("events")
         .select("*")
         .eq("slug", eventSlug)
+        .eq("language_code", langCode)
         .eq("published", true)
-        .single();
+        .maybeSingle();
+
+      // If not found in requested language, fallback to English
+      if (!data && langCode !== 'EN') {
+        const fallback = await supabase
+          .from("events")
+          .select("*")
+          .eq("slug", eventSlug)
+          .eq("language_code", 'EN')
+          .eq("published", true)
+          .maybeSingle();
+        
+        data = fallback.data;
+        error = fallback.error;
+      }
 
       if (error) {
         console.error("Error fetching event:", error);
@@ -142,7 +161,7 @@ const EventDetail = () => {
     };
 
     fetchEvent();
-  }, [eventSlug]);
+  }, [eventSlug, lang]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
