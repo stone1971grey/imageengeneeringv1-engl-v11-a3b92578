@@ -4411,25 +4411,6 @@ const AdminDashboard = () => {
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-slate-600 to-slate-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
-
-                      {/* Footer - Z */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('footer')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <PanelBottom className="h-7 w-7 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Footer - Z</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Page footer
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-gray-700 to-gray-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
                     </div>
                   </TabsContent>
 
