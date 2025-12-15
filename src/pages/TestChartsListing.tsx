@@ -243,25 +243,27 @@ const TestChartsListing = () => {
         <div className="container mx-auto px-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
               <Input
                 type="text"
                 placeholder="Search by title, SKU or features..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-black/40 text-white placeholder:text-white/50 border-gray-700"
               />
             </div>
             <Button
-              variant="academia"
               onClick={() => setShowFilters(!showFilters)}
-              className="transition-colors"
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
             >
               {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
               {showFilters ? "Hide Filter" : "Show Filter"}
             </Button>
             {hasActiveFilters && (
-              <Button variant="academia" onClick={clearAllFilters}>
+              <Button
+                onClick={clearAllFilters}
+                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
+              >
                 Clear All
               </Button>
             )}
@@ -334,7 +336,10 @@ const TestChartsListing = () => {
                 }
               </p>
               {hasActiveFilters && (
-              <Button variant="academia" onClick={clearAllFilters}>
+              <Button
+                onClick={clearAllFilters}
+                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
+              >
                 Clear All Filters
               </Button>
               )}
