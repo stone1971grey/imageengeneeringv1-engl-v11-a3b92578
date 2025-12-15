@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Loader2, FileText, ExternalLink } from "lucide-react";
 
 interface PdfPreviewProps {
@@ -9,21 +9,48 @@ interface PdfPreviewProps {
 export function PdfPreview({ url, className = "" }: PdfPreviewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
 
-  // Some PDFs return a valid HTTP response but still won't render in an iframe
-  // (e.g., wrong content-type). Add a timeout so we don't keep the spinner forever.
+  // Clear timeout helper
+  const clearFallbackTimeout = () => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  // Fallback timeout in case iframe never fires onLoad (e.g., CORS issues)
   useEffect(() => {
     if (!url) return;
     setLoading(true);
     setError(false);
+    clearFallbackTimeout();
 
-    const t = window.setTimeout(() => {
-      setLoading(false);
-      setError(true);
-    }, 6000);
+    timeoutRef.current = window.setTimeout(() => {
+      // Only set error if still loading (onLoad never fired)
+      setLoading((prev) => {
+        if (prev) {
+          setError(true);
+          return false;
+        }
+        return prev;
+      });
+    }, 8000);
 
-    return () => window.clearTimeout(t);
+    return () => clearFallbackTimeout();
   }, [url]);
+
+  const handleLoad = () => {
+    clearFallbackTimeout();
+    setLoading(false);
+    // Don't set error - successful load
+  };
+
+  const handleError = () => {
+    clearFallbackTimeout();
+    setLoading(false);
+    setError(true);
+  };
 
   if (!url) {
     return (
@@ -64,11 +91,8 @@ export function PdfPreview({ url, className = "" }: PdfPreviewProps) {
         src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
         className="w-full h-full border-0"
         title="PDF Preview"
-        onLoad={() => setLoading(false)}
-        onError={() => {
-          setLoading(false);
-          setError(true);
-        }}
+        onLoad={handleLoad}
+        onError={handleError}
       />
 
       <a
