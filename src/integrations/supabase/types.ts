@@ -648,6 +648,7 @@ export type Database = {
           applications: Json | null
           availability: string | null
           category: string
+          chart_sizes: Json | null
           created_at: string
           description: string | null
           documents: Json | null
@@ -673,6 +674,7 @@ export type Database = {
           applications?: Json | null
           availability?: string | null
           category?: string
+          chart_sizes?: Json | null
           created_at?: string
           description?: string | null
           documents?: Json | null
@@ -698,6 +700,7 @@ export type Database = {
           applications?: Json | null
           availability?: string | null
           category?: string
+          chart_sizes?: Json | null
           created_at?: string
           description?: string | null
           documents?: Json | null

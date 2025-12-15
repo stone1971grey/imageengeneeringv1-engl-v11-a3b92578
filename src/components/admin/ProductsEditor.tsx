@@ -12,6 +12,14 @@ import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen } from "lucide-react
 import { MediaSelector } from "./MediaSelector";
 import { DataHubDialog } from "./DataHubDialog";
 
+interface ChartSize {
+  id: string;
+  sizeId: string;
+  title: string;
+  pictureSize: string;
+  chartSize: string;
+}
+
 interface Product {
   id: string;
   slug: string;
@@ -27,6 +35,7 @@ interface Product {
   specifications: Record<string, string>;
   features: string[];
   applications: string[];
+  chart_sizes: ChartSize[];
   price_info: string | null;
   availability: string;
   language_code: string;
@@ -104,12 +113,21 @@ const ProductsEditor = () => {
     specifications: {} as Record<string, string>,
     features: [] as string[],
     applications: [] as string[],
+    chart_sizes: [] as ChartSize[],
     price_info: "",
     availability: "available",
     language_code: "EN",
     published: true,
     visibility: "public",
     position: 999
+  });
+
+  // Chart size editor state
+  const [newChartSize, setNewChartSize] = useState<Omit<ChartSize, 'id'>>({
+    sizeId: "",
+    title: "",
+    pictureSize: "",
+    chartSize: ""
   });
 
   const [newSpecKey, setNewSpecKey] = useState("");
@@ -144,7 +162,8 @@ const ProductsEditor = () => {
         features: Array.isArray(p.features) ? p.features : [],
         applications: Array.isArray(p.applications) ? p.applications : [],
         gallery_images: Array.isArray(p.gallery_images) ? p.gallery_images : [],
-        documents: Array.isArray(p.documents) ? p.documents : []
+        documents: Array.isArray(p.documents) ? p.documents : [],
+        chart_sizes: Array.isArray((p as any).chart_sizes) ? (p as any).chart_sizes : []
       }));
       
       setProducts(transformedProducts as unknown as Product[]);
@@ -171,6 +190,7 @@ const ProductsEditor = () => {
       specifications: {},
       features: [],
       applications: [],
+      chart_sizes: [],
       price_info: "",
       availability: "available",
       language_code: "EN",
@@ -182,6 +202,7 @@ const ProductsEditor = () => {
     setNewSpecValue("");
     setNewFeature("");
     setNewApplication("");
+    setNewChartSize({ sizeId: "", title: "", pictureSize: "", chartSize: "" });
   };
 
   const handleCreate = () => {
@@ -205,6 +226,7 @@ const ProductsEditor = () => {
       specifications: product.specifications || {},
       features: product.features || [],
       applications: product.applications || [],
+      chart_sizes: product.chart_sizes || [],
       price_info: product.price_info || "",
       availability: product.availability,
       language_code: product.language_code,
@@ -282,6 +304,7 @@ const ProductsEditor = () => {
         specifications: formData.specifications,
         features: formData.features,
         applications: formData.applications,
+        chart_sizes: JSON.parse(JSON.stringify(formData.chart_sizes)),
         price_info: formData.price_info || null,
         availability: formData.availability,
         language_code: formData.language_code,
@@ -387,6 +410,33 @@ const ProductsEditor = () => {
     }));
   };
 
+  // Chart size functions
+  const addChartSize = () => {
+    if (newChartSize.sizeId && newChartSize.title) {
+      setFormData(prev => ({
+        ...prev,
+        chart_sizes: [...prev.chart_sizes, { ...newChartSize, id: crypto.randomUUID() }]
+      }));
+      setNewChartSize({ sizeId: "", title: "", pictureSize: "", chartSize: "" });
+    }
+  };
+
+  const removeChartSize = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: prev.chart_sizes.filter(cs => cs.id !== id)
+    }));
+  };
+
+  const updateChartSize = (id: string, field: keyof Omit<ChartSize, 'id'>, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      chart_sizes: prev.chart_sizes.map(cs => 
+        cs.id === id ? { ...cs, [field]: value } : cs
+      )
+    }));
+  };
+
   if (loading) {
     return <div className="text-white">Loading products...</div>;
   }
@@ -412,7 +462,7 @@ const ProductsEditor = () => {
         /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="w-full grid grid-cols-5 bg-[#2a2a2a] p-1 h-auto mb-6">
+            <TabsList className="w-full grid grid-cols-6 bg-[#2a2a2a] p-1 h-auto mb-6">
               <TabsTrigger
                 value="basic"
                 className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
@@ -430,6 +480,12 @@ const ProductsEditor = () => {
                 className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
               >
                 Specifications
+              </TabsTrigger>
+              <TabsTrigger
+                value="chart-sizes"
+                className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+              >
+                Chart Sizes
               </TabsTrigger>
               <TabsTrigger
                 value="features"
@@ -826,6 +882,116 @@ const ProductsEditor = () => {
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Chart Sizes Tab */}
+            <TabsContent value="chart-sizes" className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-white">Chart Sizes</Label>
+                <p className="text-sm text-gray-400 mb-4">Add available chart sizes with ordering information.</p>
+                
+                {/* Existing Chart Sizes Table */}
+                {formData.chart_sizes.length > 0 && (
+                  <div className="rounded-lg border border-gray-700 overflow-hidden mb-6">
+                    <table className="w-full">
+                      <thead className="bg-[#2a2a2a]">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Size ID</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Title</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Picture Size</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Chart Size</th>
+                          <th className="px-4 py-3 w-12"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-700">
+                        {formData.chart_sizes.map((size) => (
+                          <tr key={size.id} className="bg-[#1a1a1a]">
+                            <td className="px-4 py-3">
+                              <Input
+                                value={size.sizeId}
+                                onChange={(e) => updateChartSize(size.id, 'sizeId', e.target.value)}
+                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Input
+                                value={size.title}
+                                onChange={(e) => updateChartSize(size.id, 'title', e.target.value)}
+                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Input
+                                value={size.pictureSize}
+                                onChange={(e) => updateChartSize(size.id, 'pictureSize', e.target.value)}
+                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Input
+                                value={size.chartSize}
+                                onChange={(e) => updateChartSize(size.id, 'chartSize', e.target.value)}
+                                className="bg-[#2a2a2a] border-gray-600 text-white h-8"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeChartSize(size.id)}
+                                className="text-red-400 hover:text-red-300"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Add New Chart Size */}
+                <div className="bg-[#2a2a2a] p-4 rounded-lg space-y-4">
+                  <Label className="text-white text-sm">Add New Size</Label>
+                  <div className="grid grid-cols-4 gap-3">
+                    <Input
+                      value={newChartSize.sizeId}
+                      onChange={(e) => setNewChartSize(prev => ({ ...prev, sizeId: e.target.value }))}
+                      placeholder="Size ID (e.g., A1066)"
+                      className="bg-[#1a1a1a] border-gray-600 text-white"
+                    />
+                    <Input
+                      value={newChartSize.title}
+                      onChange={(e) => setNewChartSize(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Title (e.g., 4:3)"
+                      className="bg-[#1a1a1a] border-gray-600 text-white"
+                    />
+                    <Input
+                      value={newChartSize.pictureSize}
+                      onChange={(e) => setNewChartSize(prev => ({ ...prev, pictureSize: e.target.value }))}
+                      placeholder="Picture Size (e.g., 900 x 675 mm)"
+                      className="bg-[#1a1a1a] border-gray-600 text-white"
+                    />
+                    <Input
+                      value={newChartSize.chartSize}
+                      onChange={(e) => setNewChartSize(prev => ({ ...prev, chartSize: e.target.value }))}
+                      placeholder="Chart Size (e.g., 1200 x 900 mm)"
+                      className="bg-[#1a1a1a] border-gray-600 text-white"
+                    />
+                  </div>
+                  <Button 
+                    type="button" 
+                    onClick={addChartSize} 
+                    className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                    disabled={!newChartSize.sizeId || !newChartSize.title}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Size
+                  </Button>
                 </div>
               </div>
             </TabsContent>
