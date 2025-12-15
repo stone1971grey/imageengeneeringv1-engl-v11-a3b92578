@@ -251,11 +251,20 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
   if (!asset) return null;
 
+  // Format file size with smart KB/MB display
+  const formatFileSize = (bytes: number): string => {
+    const kb = bytes / 1024;
+    if (kb >= 1000) {
+      return (kb / 1024).toFixed(2) + ' MB';
+    }
+    return kb.toFixed(2) + ' KB';
+  };
+
   // Extract metadata info
   const fileName = asset.name.split('/').pop() || asset.name;
   const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'Unknown';
   const fileSize = asset.metadata?.size 
-    ? (asset.metadata.size / 1024).toFixed(2) + ' KB'
+    ? formatFileSize(asset.metadata.size)
     : 'Unknown';
   const createdDate = new Date(asset.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
