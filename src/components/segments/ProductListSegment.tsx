@@ -64,6 +64,9 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Derive layout and productsPerPage from config (reactive)
+  const layout = config?.layout || 'grid';
   const productsPerPage = config?.maxProducts || 0; // 0 = no limit
   
   // 5 Filter states
@@ -419,7 +422,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
           
           return (
             <>
-              <div className={`grid gap-6 ${config?.layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+              <div className={`grid gap-6 ${layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
                 {displayProducts.map(product => (
                   <Card key={product.id} className="group bg-[#1a1a1a] border-gray-800 hover:border-primary/50 transition-all duration-300 overflow-hidden">
                     <div className="aspect-[4/3] relative overflow-hidden bg-gray-900">
