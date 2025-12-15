@@ -236,28 +236,28 @@ const TestChartDetail = () => {
 
       <main>
         {/* Product Hero - 3 Column Layout */}
-        <section className="pt-24 pb-6">
+        <section className="pt-32 pb-8">
           <div className="container mx-auto px-6">
-            {/* Breadcrumb - dezent oben */}
-            <nav aria-label="Breadcrumb" className="mb-4">
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-6">
               <button
                 onClick={() => navigate(`/${language}/products/test-charts`)}
-                className="flex items-center gap-1.5 text-gray-500 hover:text-[#f9dc24] transition-colors text-xs"
+                className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
               >
-                <ArrowLeft className="w-3 h-3" />
-                Test Charts
+                <ArrowLeft className="w-4 h-4" />
+                Back to Test Charts
               </button>
             </nav>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* LEFT: Title, Description, Badges, Buttons */}
-              <article className="lg:col-span-4 space-y-4">
+              <article className="lg:col-span-4 space-y-5">
                 <header>
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h1 className="text-xl lg:text-2xl font-bold text-white leading-tight">{product.title}</h1>
-                    {product.sku && <span className="text-gray-500 font-mono text-xs whitespace-nowrap">{product.sku}</span>}
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-white leading-tight">{product.title}</h1>
+                    {product.sku && <span className="text-gray-500 font-mono text-sm whitespace-nowrap">{product.sku}</span>}
                   </div>
-                  <p className="text-sm text-gray-400 leading-relaxed">{product.teaser}</p>
+                  <p className="text-base text-gray-300 leading-relaxed">{product.teaser}</p>
                 </header>
 
                 {/* Badges - same as listing */}
@@ -269,11 +269,11 @@ const TestChartDetail = () => {
                   ].slice(0, 4);
 
                   return visibleBadges.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {visibleBadges.map((badge: string, idx: number) => (
                         <Badge
                           key={idx}
-                          className="text-xs bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                          className="text-sm px-3 py-1 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
                         >
                           {badge}
                         </Badge>
@@ -283,21 +283,21 @@ const TestChartDetail = () => {
                 })()}
 
                 {/* Action Buttons */}
-                <div className="space-y-2 pt-2">
-                  <Button size="default" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold">
-                    <FileText className="w-4 h-4 mr-2" />
+                <div className="space-y-3 pt-3">
+                  <Button size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold text-base">
+                    <FileText className="w-5 h-5 mr-2" />
                     Request Quote
                   </Button>
 
                   {downloads.length > 0 && (
                     <Button
                       variant="outline"
-                      size="default"
-                      className="w-full border-gray-600 text-white hover:bg-gray-800 hover:border-gray-500"
+                      size="lg"
+                      className="w-full border-gray-600 text-white hover:bg-gray-800 hover:border-gray-500 text-base"
                       asChild
                     >
                       <a href={downloads[0].url}>
-                        <Download className="w-4 h-4 mr-2" />
+                        <Download className="w-5 h-5 mr-2" />
                         Download Datasheet
                       </a>
                     </Button>
@@ -308,15 +308,15 @@ const TestChartDetail = () => {
               {/* CENTER: Chart Attributes */}
               <div className="lg:col-span-4">
                 {specifications.length > 0 && (
-                  <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800 h-fit">
-                    <div className="bg-[#222] px-3 py-2 border-b border-gray-800">
-                      <h2 className="text-sm font-semibold text-white">Chart Attributes</h2>
+                  <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-700 h-fit">
+                    <div className="bg-[#222] px-5 py-3 border-b border-gray-700">
+                      <h2 className="text-base font-semibold text-white">Chart Attributes</h2>
                     </div>
                     <div className="divide-y divide-gray-800">
                       {specifications.map((row) => (
-                        <div key={row.label} className="flex px-3 py-2 text-xs">
-                          <div className="w-28 text-gray-500 font-medium">{row.label}</div>
-                          <div className="flex-1 text-white whitespace-pre-line">{row.value}</div>
+                        <div key={row.label} className="flex px-5 py-3">
+                          <div className="w-32 text-gray-400 font-medium text-sm">{row.label}</div>
+                          <div className="flex-1 text-white text-sm whitespace-pre-line">{row.value}</div>
                         </div>
                       ))}
                     </div>
@@ -325,28 +325,28 @@ const TestChartDetail = () => {
               </div>
 
               {/* RIGHT: Image Gallery */}
-              <div className="lg:col-span-4 space-y-2">
-                <div className="aspect-square bg-black rounded-lg overflow-hidden">
+              <div className="lg:col-span-4 space-y-3">
+                <div className="aspect-square bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden border border-gray-800">
                   <img
                     src={allImages[selectedImage] || product.image_url}
                     alt={`${product.title} main product image`}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full object-contain p-6"
                     loading="eager"
                   />
                 </div>
 
                 {allImages.length > 1 && (
-                  <div className="flex gap-1.5 justify-center">
+                  <div className="flex gap-2 justify-center">
                     {allImages.map((img, idx) => (
                       <button
                         key={img}
                         onClick={() => setSelectedImage(idx)}
-                        className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
+                        className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors ${
                           selectedImage === idx ? "border-[#f9dc24]" : "border-gray-700 hover:border-gray-500"
                         }`}
                         aria-label={`View product image ${idx + 1}`}
                       >
-                        <img src={img} alt="" className="w-full h-full object-contain p-0.5 bg-black" loading="lazy" />
+                        <img src={img} alt="" className="w-full h-full object-contain p-1 bg-gray-900" loading="lazy" />
                       </button>
                     ))}
                   </div>
