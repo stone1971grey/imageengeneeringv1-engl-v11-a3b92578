@@ -61,6 +61,7 @@ interface Product {
   measurement_focus: string[];
   format_fov: string[];
   integration_features: string[];
+  display_badges: string[];
   chart_sizes: ChartSizesData | null;
   price_info: string | null;
   availability: string;
@@ -144,6 +145,7 @@ const ProductsEditor = () => {
     measurement_focus: [] as string[],
     format_fov: [] as string[],
     integration_features: [] as string[],
+    display_badges: [] as string[],
     chart_sizes: null as ChartSizesData | null,
     price_info: "",
     availability: "available",
@@ -165,6 +167,7 @@ const ProductsEditor = () => {
   const [newSpecValue, setNewSpecValue] = useState("");
   const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
+  const [newBadge, setNewBadge] = useState("");
 
   // Event listener for opening document media selector
   useEffect(() => {
@@ -196,6 +199,7 @@ const ProductsEditor = () => {
         measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
         format_fov: Array.isArray((p as any).format_fov) ? (p as any).format_fov : [],
         integration_features: Array.isArray((p as any).integration_features) ? (p as any).integration_features : [],
+        display_badges: Array.isArray((p as any).display_badges) ? (p as any).display_badges : [],
         gallery_images: Array.isArray(p.gallery_images) ? p.gallery_images : [],
         documents: Array.isArray(p.documents) ? p.documents : [],
         chart_sizes: (p as any).chart_sizes || null
@@ -230,6 +234,7 @@ const ProductsEditor = () => {
       measurement_focus: [],
       format_fov: [],
       integration_features: [],
+      display_badges: [],
       chart_sizes: null,
       price_info: "",
       availability: "available",
@@ -271,6 +276,7 @@ const ProductsEditor = () => {
       measurement_focus: product.measurement_focus || [],
       format_fov: product.format_fov || [],
       integration_features: product.integration_features || [],
+      display_badges: product.display_badges || [],
       chart_sizes: product.chart_sizes || null,
       price_info: product.price_info || "",
       availability: product.availability,
@@ -354,6 +360,7 @@ const ProductsEditor = () => {
         measurement_focus: formData.measurement_focus,
         format_fov: formData.format_fov,
         integration_features: formData.integration_features,
+        display_badges: formData.display_badges,
         chart_sizes: JSON.parse(JSON.stringify(formData.chart_sizes)),
         price_info: formData.price_info || null,
         availability: formData.availability,
@@ -1309,18 +1316,18 @@ const ProductsEditor = () => {
             </TabsContent>
 
             {/* Features & Filters Tab */}
-            <TabsContent value="features" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* LEFT: Filter Criteria (2 columns) */}
-                <div className="lg:col-span-2 space-y-6">
-                  <div className="bg-[#1a1a1a] rounded-lg p-4 border border-gray-700">
-                    <h3 className="text-white font-semibold mb-4">Filter Criteria</h3>
+            <TabsContent value="features" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* LEFT: Filter Criteria */}
+                <div className="space-y-6">
+                  <div className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-700">
+                    <h3 className="text-white text-lg font-semibold mb-6">Filter Criteria</h3>
                     
                     {/* 1. Product Type */}
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-white text-sm">1. Product Type</Label>
-                      <p className="text-xs text-gray-500">What is it fundamentally?</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-3 mb-6">
+                      <Label className="text-white text-base font-medium">1. Product Type</Label>
+                      <p className="text-sm text-gray-400">What is it fundamentally?</p>
+                      <div className="flex flex-wrap gap-2">
                         {PRODUCT_TYPES.map((type) => (
                           <Button
                             key={type}
@@ -1347,10 +1354,10 @@ const ProductsEditor = () => {
                     </div>
 
                     {/* 2. Measurement Focus */}
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-white text-sm">2. Measurement Focus</Label>
-                      <p className="text-xs text-gray-500">What is primarily measured?</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-3 mb-6">
+                      <Label className="text-white text-base font-medium">2. Measurement Focus</Label>
+                      <p className="text-sm text-gray-400">What is primarily measured?</p>
+                      <div className="flex flex-wrap gap-2">
                         {MEASUREMENT_FOCUS.map((focus) => (
                           <Button
                             key={focus}
@@ -1365,7 +1372,7 @@ const ProductsEditor = () => {
                                   : [...prev.measurement_focus, focus]
                               }));
                             }}
-                            className={`text-xs ${formData.measurement_focus.includes(focus) 
+                            className={`text-sm ${formData.measurement_focus.includes(focus) 
                               ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
                               : "border-gray-600 text-gray-300 hover:bg-gray-700"
                             }`}
@@ -1377,10 +1384,10 @@ const ProductsEditor = () => {
                     </div>
 
                     {/* 3. Format / Field of View */}
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-white text-sm">3. Format / Field of View</Label>
-                      <p className="text-xs text-gray-500">Image format and field of view coverage</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-3 mb-6">
+                      <Label className="text-white text-base font-medium">3. Format / Field of View</Label>
+                      <p className="text-sm text-gray-400">Image format and field of view coverage</p>
+                      <div className="flex flex-wrap gap-2">
                         {FORMAT_FOV.map((format) => (
                           <Button
                             key={format}
@@ -1395,7 +1402,7 @@ const ProductsEditor = () => {
                                   : [...prev.format_fov, format]
                               }));
                             }}
-                            className={`text-xs ${formData.format_fov.includes(format) 
+                            className={`text-sm ${formData.format_fov.includes(format) 
                               ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
                               : "border-gray-600 text-gray-300 hover:bg-gray-700"
                             }`}
@@ -1407,10 +1414,10 @@ const ProductsEditor = () => {
                     </div>
 
                     {/* 4. Application */}
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-white text-sm">4. Application</Label>
-                      <p className="text-xs text-gray-500">Where is the product typically used?</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-3 mb-6">
+                      <Label className="text-white text-base font-medium">4. Application</Label>
+                      <p className="text-sm text-gray-400">Where is the product typically used?</p>
+                      <div className="flex flex-wrap gap-2">
                         {APPLICATION_OPTIONS.map((app) => (
                           <Button
                             key={app}
@@ -1425,7 +1432,7 @@ const ProductsEditor = () => {
                                   : [...prev.applications, app]
                               }));
                             }}
-                            className={`text-xs ${formData.applications.includes(app) 
+                            className={`text-sm ${formData.applications.includes(app) 
                               ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
                               : "border-gray-600 text-gray-300 hover:bg-gray-700"
                             }`}
@@ -1437,10 +1444,10 @@ const ProductsEditor = () => {
                     </div>
 
                     {/* 5. Integration / Special Features */}
-                    <div className="space-y-2">
-                      <Label className="text-white text-sm">5. Integration / Special Features</Label>
-                      <p className="text-xs text-gray-500">Special product features (optional)</p>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-3">
+                      <Label className="text-white text-base font-medium">5. Integration / Special Features</Label>
+                      <p className="text-sm text-gray-400">Special product features (optional)</p>
+                      <div className="flex flex-wrap gap-2">
                         {INTEGRATION_FEATURES.map((feature) => (
                           <Button
                             key={feature}
@@ -1455,7 +1462,7 @@ const ProductsEditor = () => {
                                   : [...prev.integration_features, feature]
                               }));
                             }}
-                            className={`text-xs ${formData.integration_features.includes(feature) 
+                            className={`text-sm ${formData.integration_features.includes(feature) 
                               ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
                               : "border-gray-600 text-gray-300 hover:bg-gray-700"
                             }`}
@@ -1468,61 +1475,105 @@ const ProductsEditor = () => {
                   </div>
                 </div>
 
-                {/* RIGHT: Badges Preview */}
-                <div className="space-y-4">
-                  <div className="bg-[#1a1a1a] rounded-lg p-4 border border-gray-700 sticky top-4">
-                    <h3 className="text-white font-semibold mb-2">Display Badges</h3>
-                    <p className="text-xs text-gray-500 mb-4">
-                      Short, prominent labels shown on product cards. Auto-generated from selected filters.
+                {/* RIGHT: Editable Display Badges */}
+                <div className="space-y-6">
+                  <div className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-700">
+                    <h3 className="text-white text-lg font-semibold mb-6">Display Badges</h3>
+                    <p className="text-sm text-gray-400 mb-6">
+                      Short, prominent labels shown on product cards. Add custom badges or use suggestions below.
                     </p>
                     
-                    {/* Preview of current badges */}
-                    <div className="space-y-3">
-                      <div>
-                        <Label className="text-gray-400 text-xs">Preview (max 4)</Label>
-                        <div className="flex flex-wrap gap-1.5 mt-2 min-h-[32px] bg-[#0f0f0f] rounded p-2">
-                          {(() => {
-                            const badges = [
-                              ...formData.measurement_focus.slice(0, 2),
-                              ...formData.format_fov.filter(f => f !== "Standard").slice(0, 1),
-                              ...formData.applications.slice(0, 1),
-                            ].slice(0, 4);
-                            
-                            return badges.length > 0 ? badges.map((badge, idx) => (
-                              <span
-                                key={idx}
-                                className="text-xs px-2 py-0.5 rounded bg-[#f9dc24]/15 text-[#f9dc24] border border-[#f9dc24]/30"
-                              >
-                                {badge}
-                              </span>
-                            )) : (
-                              <span className="text-xs text-gray-600 italic">No badges selected</span>
-                            );
-                          })()}
-                        </div>
+                    {/* Current Badges */}
+                    <div className="space-y-4">
+                      <Label className="text-white text-base font-medium">Current Badges</Label>
+                      <div className="flex flex-wrap gap-2 min-h-[48px] bg-[#0f0f0f] rounded-lg p-4">
+                        {formData.display_badges.length > 0 ? formData.display_badges.map((badge, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded bg-[#f9dc24]/15 text-[#f9dc24] border border-[#f9dc24]/30"
+                          >
+                            {badge}
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                display_badges: prev.display_badges.filter((_, i) => i !== idx)
+                              }))}
+                              className="hover:text-red-400 transition-colors"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </span>
+                        )) : (
+                          <span className="text-sm text-gray-500 italic">No badges added yet</span>
+                        )}
                       </div>
                       
-                      <div className="pt-3 border-t border-gray-700">
-                        <Label className="text-gray-400 text-xs block mb-2">Badge Sources</Label>
-                        <div className="space-y-2 text-xs">
-                          <div className="flex justify-between text-gray-500">
-                            <span>Measurement Focus:</span>
-                            <span className="text-white">{formData.measurement_focus.length} selected</span>
-                          </div>
-                          <div className="flex justify-between text-gray-500">
-                            <span>Format/FOV:</span>
-                            <span className="text-white">{formData.format_fov.filter(f => f !== "Standard").length} visible</span>
-                          </div>
-                          <div className="flex justify-between text-gray-500">
-                            <span>Applications:</span>
-                            <span className="text-white">{formData.applications.length} selected</span>
-                          </div>
-                        </div>
+                      {/* Add Badge Input */}
+                      <div className="flex gap-2">
+                        <Input
+                          value={newBadge}
+                          onChange={(e) => setNewBadge(e.target.value)}
+                          placeholder="Add custom badge..."
+                          className="bg-[#2a2a2a] border-gray-600 text-white"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && newBadge.trim()) {
+                              e.preventDefault();
+                              if (!formData.display_badges.includes(newBadge.trim())) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  display_badges: [...prev.display_badges, newBadge.trim()]
+                                }));
+                              }
+                              setNewBadge("");
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            if (newBadge.trim() && !formData.display_badges.includes(newBadge.trim())) {
+                              setFormData(prev => ({
+                                ...prev,
+                                display_badges: [...prev.display_badges, newBadge.trim()]
+                              }));
+                              setNewBadge("");
+                            }
+                          }}
+                          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
                       </div>
-                      
-                      <p className="text-[10px] text-gray-600 pt-2">
-                        Badge priority: 2× Measurement Focus, 1× Format (excl. Standard), 1× Application
-                      </p>
+                    </div>
+                    
+                    {/* Quick Add Suggestions */}
+                    <div className="mt-6 pt-6 border-t border-gray-700">
+                      <Label className="text-gray-400 text-sm block mb-3">Quick Add from Filters</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {[...formData.measurement_focus, ...formData.format_fov.filter(f => f !== "Standard"), ...formData.applications]
+                          .filter(item => !formData.display_badges.includes(item))
+                          .map((suggestion, idx) => (
+                            <Button
+                              key={idx}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                display_badges: [...prev.display_badges, suggestion]
+                              }))}
+                              className="text-sm border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-[#f9dc24]"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              {suggestion}
+                            </Button>
+                          ))}
+                        {[...formData.measurement_focus, ...formData.format_fov.filter(f => f !== "Standard"), ...formData.applications]
+                          .filter(item => !formData.display_badges.includes(item)).length === 0 && (
+                          <span className="text-sm text-gray-500 italic">All filter options already added</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

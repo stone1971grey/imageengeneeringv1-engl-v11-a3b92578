@@ -34,6 +34,7 @@ interface ProductRow {
   language_code: string;
   measurement_focus: string[];
   format_fov: string[];
+  display_badges: string[];
 }
 
 type ProductDownload = {
@@ -264,27 +265,19 @@ const TestChartDetail = () => {
                   <p className="text-base text-gray-300 leading-relaxed">{product.teaser}</p>
                 </header>
 
-                {/* Badges - same as listing */}
-                {(() => {
-                  const visibleBadges = [
-                    ...(product.measurement_focus || []).slice(0, 2),
-                    ...(product.format_fov || []).filter((f: string) => f !== "Standard").slice(0, 1),
-                    ...(product.applications || []).slice(0, 1),
-                  ].slice(0, 4);
-
-                  return visibleBadges.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {visibleBadges.map((badge: string, idx: number) => (
-                        <Badge
-                          key={idx}
-                          className="text-sm px-3 py-1 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
-                        >
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                  ) : null;
-                })()}
+                {/* Badges from display_badges */}
+                {(product.display_badges && product.display_badges.length > 0) && (
+                  <div className="flex flex-wrap gap-2">
+                    {product.display_badges.map((badge: string, idx: number) => (
+                      <Badge
+                        key={idx}
+                        className="text-sm px-3 py-1 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                      >
+                        {badge}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="space-y-3 pt-3">
