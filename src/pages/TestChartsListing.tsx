@@ -38,12 +38,51 @@ const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
 const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
 const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
 
+interface UiLabels {
+  searchPlaceholder: string;
+  showFilterButton: string;
+  hideFilterButton: string;
+  clearAllButton: string;
+  filterProductTypes: string;
+  filterMeasurementFocus: string;
+  filterFormatFov: string;
+  filterApplications: string;
+  filterIntegrationFeatures: string;
+  inStockLabel: string;
+  preOrderLabel: string;
+  outOfStockLabel: string;
+  discontinuedLabel: string;
+  detailsButton: string;
+  requestQuoteButton: string;
+  noProductsFound: string;
+}
+
+const DEFAULT_UI_LABELS: UiLabels = {
+  searchPlaceholder: "Search products...",
+  showFilterButton: "Show Filter",
+  hideFilterButton: "Hide Filter",
+  clearAllButton: "Clear All",
+  filterProductTypes: "Product Type",
+  filterMeasurementFocus: "Measurement Focus",
+  filterFormatFov: "Format / FOV",
+  filterApplications: "Application",
+  filterIntegrationFeatures: "Integration Features",
+  inStockLabel: "In Stock",
+  preOrderLabel: "Pre-Order",
+  outOfStockLabel: "Out of Stock",
+  discontinuedLabel: "Discontinued",
+  detailsButton: "Details",
+  requestQuoteButton: "Request Quote",
+  noProductsFound: "No products found"
+};
+
 interface PageConfig {
   title: string;
   description: string;
   showFilters: boolean;
   showSearch: boolean;
   layout: "grid" | "list";
+  uiLabels: UiLabels;
 }
 
 const SEGMENT_ID = 503;
@@ -61,7 +100,8 @@ const TestChartsListing = () => {
     description: "Use our filters and search function to find the perfect test chart for your application.",
     showFilters: true,
     showSearch: true,
-    layout: "grid"
+    layout: "grid",
+    uiLabels: DEFAULT_UI_LABELS
   });
 
   // 5 Filter states
@@ -105,7 +145,8 @@ const TestChartsListing = () => {
             description: config.description || "",
             showFilters: config.showFilters === true,
             showSearch: config.showSearch === true,
-            layout: config.layout || "grid"
+            layout: config.layout || "grid",
+            uiLabels: { ...DEFAULT_UI_LABELS, ...(config.uiLabels || {}) }
           });
         }
       } catch (error) {
@@ -440,7 +481,7 @@ const TestChartsListing = () => {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
                   <Input
                     type="text"
-                    placeholder="Search by title or SKU..."
+                    placeholder={pageConfig.uiLabels.searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[hsl(var(--yellow))] focus-visible:border-[hsl(var(--yellow))]"
@@ -453,7 +494,7 @@ const TestChartsListing = () => {
                   className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
                 >
                   {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
-                  {showFilters ? "Hide Filter" : "Show Filter"}
+                  {showFilters ? pageConfig.uiLabels.hideFilterButton : pageConfig.uiLabels.showFilterButton}
                 </Button>
               )}
               {hasActiveFilters && (
@@ -461,7 +502,7 @@ const TestChartsListing = () => {
                   onClick={clearAllFilters}
                   className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
                 >
-                  Clear All
+                  {pageConfig.uiLabels.clearAllButton}
                 </Button>
               )}
             </div>
@@ -475,7 +516,7 @@ const TestChartsListing = () => {
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <div className="space-y-3">
-                <h3 className="font-semibold text-white">Product Type</h3>
+                <h3 className="font-semibold text-white">{pageConfig.uiLabels.filterProductTypes}</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {PRODUCT_TYPES.map((type) => (
                     <FilterCheckbox
@@ -489,7 +530,7 @@ const TestChartsListing = () => {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-semibold text-white">Measurement Focus</h3>
+                <h3 className="font-semibold text-white">{pageConfig.uiLabels.filterMeasurementFocus}</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {MEASUREMENT_FOCUS.map((focus) => (
                     <FilterCheckbox
@@ -503,7 +544,7 @@ const TestChartsListing = () => {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-semibold text-white">Format / Field of View</h3>
+                <h3 className="font-semibold text-white">{pageConfig.uiLabels.filterFormatFov}</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {FORMAT_FOV.map((format) => (
                     <FilterCheckbox
@@ -517,7 +558,7 @@ const TestChartsListing = () => {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-semibold text-white">Application</h3>
+                <h3 className="font-semibold text-white">{pageConfig.uiLabels.filterApplications}</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {APPLICATION_OPTIONS.map((app) => (
                     <FilterCheckbox
@@ -531,7 +572,7 @@ const TestChartsListing = () => {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-semibold text-white">Integration / Special Features</h3>
+                <h3 className="font-semibold text-white">{pageConfig.uiLabels.filterIntegrationFeatures}</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {INTEGRATION_FEATURES.map((feature) => (
                     <FilterCheckbox
