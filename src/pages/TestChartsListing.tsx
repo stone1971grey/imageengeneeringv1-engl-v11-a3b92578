@@ -123,7 +123,7 @@ const TestChartsListing = () => {
   const ProductCard = ({ product }: { product: Product }) => {
     return (
       <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-black text-white border-0">
-        <div className="aspect-[4/3] relative overflow-hidden bg-zinc-900">
+        <div className="aspect-[4/3] relative overflow-hidden bg-black">
           <img
             src={product.image_url}
             alt={product.title}
