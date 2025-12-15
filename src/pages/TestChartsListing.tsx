@@ -186,14 +186,10 @@ const TestChartsListing = () => {
 
           {/* Visible Filter Badges - from measurement_focus, format_fov, applications */}
           {(() => {
-            const preferredApplication = product.applications.includes("Automotive")
-              ? "Automotive"
-              : product.applications[0];
-
             const visibleBadges = [
               ...product.measurement_focus.slice(0, 2),
               ...product.format_fov.filter((f) => f !== "Standard").slice(0, 1),
-              ...(preferredApplication ? [preferredApplication] : []),
+              ...product.applications.slice(0, 1),
             ].slice(0, 4);
 
             return visibleBadges.length > 0 ? (
