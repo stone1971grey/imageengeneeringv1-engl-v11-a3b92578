@@ -226,21 +226,21 @@ const TestChartsListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
       <Navigation />
 
       {/* Header Section */}
       <section className="pt-32 pb-12">
         <div className="container mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Test Charts</h1>
-          <p className="text-muted-foreground max-w-2xl">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Test Charts</h1>
+          <p className="text-gray-400 max-w-2xl">
             Use our filters and search function to find the perfect test chart for your application.
           </p>
         </div>
       </section>
 
       {/* Search and Filter Bar */}
-      <section className="py-6 border-b border-border sticky top-20 bg-background/95 backdrop-blur-sm z-40">
+      <section className="py-6 border-b border-gray-700 sticky top-20 bg-[#1a1a1a]/95 backdrop-blur-sm z-40">
         <div className="container mx-auto px-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
@@ -274,13 +274,13 @@ const TestChartsListing = () => {
 
       {/* Filters Panel */}
       {showFilters && (subcategories.length > 0 || applications.length > 0) && (
-        <section className="py-6 border-b border-border bg-muted/50">
+        <section className="py-6 border-b border-gray-700 bg-[#252525]">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Subcategory Filter */}
               {subcategories.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-foreground">Type</h3>
+                  <h3 className="font-semibold text-white">Type</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {subcategories.map(sub => (
                       <FilterCheckbox
@@ -297,7 +297,7 @@ const TestChartsListing = () => {
               {/* Application Filter */}
               {applications.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-foreground">Application</h3>
+                  <h3 className="font-semibold text-white">Application</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {applications.map(app => (
                       <FilterCheckbox
@@ -318,7 +318,7 @@ const TestChartsListing = () => {
       {/* Results Section */}
       <section className="py-12">
         <div className="container mx-auto px-6">
-          <div className="mb-6 text-muted-foreground">
+          <div className="mb-6 text-gray-400">
             {filteredProducts.length} test chart{filteredProducts.length !== 1 ? 's' : ''} found
           </div>
           
