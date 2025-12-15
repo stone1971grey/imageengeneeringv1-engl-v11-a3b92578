@@ -243,13 +243,13 @@ const TestChartsListing = () => {
         <div className="container mx-auto px-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
               <Input
                 type="text"
                 placeholder="Search by title, SKU or features..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-black/40 text-white placeholder:text-white/50 border-gray-700"
+                className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[#f9dc24] focus-visible:border-[#f9dc24]"
               />
             </div>
             <Button
