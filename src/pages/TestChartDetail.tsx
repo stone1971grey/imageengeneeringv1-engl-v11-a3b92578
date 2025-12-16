@@ -161,11 +161,136 @@ const UI_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+// Badge translations for all supported languages
+const BADGE_TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    "Resolution": "Resolution",
+    "Color": "Color",
+    "Geometry": "Geometry",
+    "Low-Light": "Low-Light",
+    "Dynamic Range": "Dynamic Range",
+    "Noise": "Noise",
+    "Timing": "Timing",
+    "Ultra-Wide": "Ultra-Wide",
+    "Wide": "Wide",
+    "Standard": "Standard",
+    "Multi-Format": "Multi-Format",
+    "Automotive": "Automotive",
+    "Mobile Devices": "Mobile Devices",
+    "Industrial Imaging": "Industrial Imaging",
+    "Video / Broadcast": "Video / Broadcast",
+    "Custom": "Custom",
+    "Standard-Compliant": "Standard-Compliant",
+    "Integrated Illumination": "Integrated Illumination",
+    "Timing Hardware": "Timing Hardware",
+    "ISO Compliant": "ISO Compliant",
+    "Multipurpose": "Multipurpose"
+  },
+  de: {
+    "Resolution": "Auflösung",
+    "Color": "Farbe",
+    "Geometry": "Geometrie",
+    "Low-Light": "Schwachlicht",
+    "Dynamic Range": "Dynamikbereich",
+    "Noise": "Rauschen",
+    "Timing": "Timing",
+    "Ultra-Wide": "Ultra-Weitwinkel",
+    "Wide": "Weitwinkel",
+    "Standard": "Standard",
+    "Multi-Format": "Multi-Format",
+    "Automotive": "Automobil",
+    "Mobile Devices": "Mobilgeräte",
+    "Industrial Imaging": "Industrielle Bildgebung",
+    "Video / Broadcast": "Video / Broadcast",
+    "Custom": "Individuell",
+    "Standard-Compliant": "Standardkonform",
+    "Integrated Illumination": "Integrierte Beleuchtung",
+    "Timing Hardware": "Timing-Hardware",
+    "ISO Compliant": "ISO-konform",
+    "Multipurpose": "Mehrzweck"
+  },
+  ja: {
+    "Resolution": "解像度",
+    "Color": "カラー",
+    "Geometry": "ジオメトリ",
+    "Low-Light": "低照度",
+    "Dynamic Range": "ダイナミックレンジ",
+    "Noise": "ノイズ",
+    "Timing": "タイミング",
+    "Ultra-Wide": "超広角",
+    "Wide": "広角",
+    "Standard": "標準",
+    "Multi-Format": "マルチフォーマット",
+    "Automotive": "自動車",
+    "Mobile Devices": "モバイルデバイス",
+    "Industrial Imaging": "産業用画像処理",
+    "Video / Broadcast": "ビデオ/放送",
+    "Custom": "カスタム",
+    "Standard-Compliant": "規格準拠",
+    "Integrated Illumination": "統合照明",
+    "Timing Hardware": "タイミングハードウェア",
+    "ISO Compliant": "ISO準拠",
+    "Multipurpose": "多目的"
+  },
+  ko: {
+    "Resolution": "해상도",
+    "Color": "컬러",
+    "Geometry": "지오메트리",
+    "Low-Light": "저조도",
+    "Dynamic Range": "다이나믹 레인지",
+    "Noise": "노이즈",
+    "Timing": "타이밍",
+    "Ultra-Wide": "초광각",
+    "Wide": "광각",
+    "Standard": "표준",
+    "Multi-Format": "멀티 포맷",
+    "Automotive": "자동차",
+    "Mobile Devices": "모바일 기기",
+    "Industrial Imaging": "산업용 이미징",
+    "Video / Broadcast": "비디오/방송",
+    "Custom": "맞춤형",
+    "Standard-Compliant": "표준 준수",
+    "Integrated Illumination": "통합 조명",
+    "Timing Hardware": "타이밍 하드웨어",
+    "ISO Compliant": "ISO 준수",
+    "Multipurpose": "다목적"
+  },
+  zh: {
+    "Resolution": "分辨率",
+    "Color": "色彩",
+    "Geometry": "几何",
+    "Low-Light": "低光",
+    "Dynamic Range": "动态范围",
+    "Noise": "噪声",
+    "Timing": "时序",
+    "Ultra-Wide": "超广角",
+    "Wide": "广角",
+    "Standard": "标准",
+    "Multi-Format": "多格式",
+    "Automotive": "汽车",
+    "Mobile Devices": "移动设备",
+    "Industrial Imaging": "工业成像",
+    "Video / Broadcast": "视频/广播",
+    "Custom": "定制",
+    "Standard-Compliant": "符合标准",
+    "Integrated Illumination": "集成照明",
+    "Timing Hardware": "时序硬件",
+    "ISO Compliant": "ISO合规",
+    "Multipurpose": "多用途"
+  }
+};
+
 const TestChartDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { language } = useLanguage();
   const labels = UI_LABELS[language] || UI_LABELS.en;
+
+  // Helper function to translate badges
+  const getBadgeTranslation = (badge: string): string => {
+    const langTranslations = BADGE_TRANSLATIONS[language] || BADGE_TRANSLATIONS.en;
+    return langTranslations[badge] || badge;
+  };
 
   const [product, setProduct] = useState<ProductRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -396,7 +521,7 @@ const TestChartDetail = () => {
                         key={idx}
                         className="text-sm px-3 py-1 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
                       >
-                        {badge}
+                        {getBadgeTranslation(badge)}
                       </Badge>
                     ))}
                   </div>
