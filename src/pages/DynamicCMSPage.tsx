@@ -228,6 +228,9 @@ const DynamicCMSPage = () => {
           } else {
             // Numerische section_keys für Segment-Daten
             const isNumericKey = /^\d+$/.test(item.section_key);
+            // Keys im Format {type}-{id} wie 'downloads-507', 'events-123', 'product-list-456'
+            const typedKeyMatch = item.section_key.match(/^([a-z-]+)-(\d+)$/);
+            
             if (isNumericKey) {
               try {
                 const parsed = JSON.parse(item.content_value || '{}');
@@ -246,6 +249,16 @@ const DynamicCMSPage = () => {
                 }
               } catch (e) {
                 console.error('[DynamicCMSPage] Error parsing numeric section content:', e);
+              }
+            } else if (typedKeyMatch) {
+              // Keys wie 'downloads-507' -> speichere unter der numerischen ID UND dem vollen Key
+              const segmentId = typedKeyMatch[2];
+              try {
+                const parsed = JSON.parse(item.content_value || '{}');
+                segmentDataMap[segmentId] = parsed;
+                segmentDataMap[item.section_key] = parsed;
+              } catch (e) {
+                console.error('[DynamicCMSPage] Error parsing typed section content:', e);
               }
             }
           }
@@ -470,6 +483,10 @@ const DynamicCMSPage = () => {
         // Also try matching just by segmentId number
         if (!segment) {
           segment = pageSegments.find((s) => s.segmentId === numericId);
+        }
+        // Also try matching by id (string or number)
+        if (!segment) {
+          segment = pageSegments.find((s) => String(s.id) === String(numericId));
         }
       }
     }
@@ -1329,8 +1346,12 @@ const DynamicCMSPage = () => {
       {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation und Footer) */}
       {tabOrder
         .filter(segmentId => {
+          // Extract numeric ID from prefixed keys like "downloads-507" -> "507"
+          const numericId = String(segmentId).replace(/^[a-z-]+-/i, '');
           const segment = pageSegments.find(
-            s => String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
+            s => String(s.id) === String(segmentId) || 
+                 String(s.segment_key) === String(segmentId) ||
+                 String(s.id) === numericId
           );
           // Skip meta-navigation (rendered separately above) and footer (rendered separately below)
           return segment?.type !== 'meta-navigation' && segment?.type !== 'footer';

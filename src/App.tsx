@@ -199,6 +199,7 @@ const App = () => (
             {/* Info Hub Routes */}
             <Route path="/:lang/info-hub" element={<DynamicCMSPage />} />
             <Route path="/:lang/info-hub/downloads/:slug" element={<DownloadDetail />} />
+            <Route path="/:lang/info-hub/:slug/*" element={<DynamicCMSPage />} />
             <Route path="/:lang/info-hub/:slug" element={<DynamicCMSPage />} />
 
             {/* Company Routes */}
