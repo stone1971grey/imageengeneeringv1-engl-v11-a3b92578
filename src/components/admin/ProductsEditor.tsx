@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen, Video, Languages } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen, Video, Languages, ArrowLeft } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
 import { DataHubDialog } from "./DataHubDialog";
 import ProductTranslationEditor from "./ProductTranslationEditor";
@@ -634,6 +634,16 @@ const ProductsEditor = () => {
       {isEditing ? (
         /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
+          {/* Back to Overview Button */}
+          <Button
+            onClick={handleCancel}
+            variant="outline"
+            className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a] mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Overview
+          </Button>
+          
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="w-full flex bg-[#2a2a2a] p-1 h-auto mb-6">
               <TabsTrigger
