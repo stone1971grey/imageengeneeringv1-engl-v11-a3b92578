@@ -97,7 +97,11 @@ const SUBCATEGORIES: Record<string, string[]> = {
   "Bundles & Services": ["Training", "Consulting", "Bundles"]
 };
 
-const ProductsEditor = () => {
+interface ProductsEditorProps {
+  onEditingChange?: (isEditing: boolean, onBackToOverview: () => void) => void;
+}
+
+const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
   // Helper function to ensure product folder exists
   const ensureProductFolder = async (categorySlug: string, productSlug: string, productTitle: string) => {
     const productFolderPath = `products/${categorySlug}/${productSlug}`;
@@ -181,6 +185,12 @@ const ProductsEditor = () => {
     window.addEventListener('open-doc-media-selector', handleOpenDocSelector);
     return () => window.removeEventListener('open-doc-media-selector', handleOpenDocSelector);
   }, []);
+
+  // Notify parent about editing state changes
+  useEffect(() => {
+    const isEditing = editingProduct !== null || isCreating;
+    onEditingChange?.(isEditing, handleCancel);
+  }, [editingProduct, isCreating, onEditingChange]);
 
   useEffect(() => {
     loadProducts();
@@ -634,16 +644,6 @@ const ProductsEditor = () => {
       {isEditing ? (
         /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
-          {/* Back to Overview Button */}
-          <Button
-            onClick={handleCancel}
-            variant="outline"
-            className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a] mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Overview
-          </Button>
-          
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="w-full flex bg-[#2a2a2a] p-1 h-auto mb-6">
               <TabsTrigger
