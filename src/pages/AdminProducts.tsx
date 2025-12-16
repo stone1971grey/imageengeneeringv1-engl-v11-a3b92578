@@ -84,7 +84,7 @@ const AdminProducts = () => {
             className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a]"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Overview
+            Back to Dashboard
           </Button>
         </div>
 
