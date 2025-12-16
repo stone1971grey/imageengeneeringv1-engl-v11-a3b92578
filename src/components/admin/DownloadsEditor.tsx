@@ -961,23 +961,34 @@ const DownloadsEditor = () => {
                           <p className="text-sm text-gray-400 line-clamp-2">{download.teaser}</p>
                         </div>
                         <div className="flex gap-1">
+                          {/* Preview - Green */}
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="outline"
+                            onClick={() => window.open(`/en/info-hub/downloads/${download.slug}`, '_blank')}
+                            className="h-8 w-8 p-0 border-green-600 text-green-400 hover:bg-green-600/20"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          {/* Edit - Yellow */}
+                          <Button
+                            size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(download)}
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-white"
+                            className="h-8 w-8 p-0 border-yellow-600 text-yellow-400 hover:bg-yellow-600/20"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
+                          {/* Delete - Red */}
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="outline"
                             onClick={() => {
                               if (confirm("Are you sure you want to delete this download?")) {
                                 deleteMutation.mutate(download.id);
                               }
                             }}
-                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-400"
+                            className="h-8 w-8 p-0 border-red-600 text-red-400 hover:bg-red-600/20"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
