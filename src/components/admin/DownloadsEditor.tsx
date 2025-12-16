@@ -499,7 +499,7 @@ const DownloadsEditor = () => {
                   Content
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
-                  Settings
+                  Media & Settings
                 </TabsTrigger>
               </TabsList>
 
@@ -657,83 +657,6 @@ const DownloadsEditor = () => {
               </TabsContent>
 
               <TabsContent value="content" className="space-y-6 mt-4">
-                {/* PDF/File Upload */}
-                <div className="space-y-3 p-4 bg-[#2a2a2a] rounded-lg border border-gray-600">
-                  <Label className="text-white flex items-center gap-2">
-                    <File className="h-4 w-4 text-[#f9dc24]" />
-                    Download File (PDF/Video)
-                  </Label>
-                  
-                  {/* URL Input */}
-                  <Input
-                    value={formData.download_url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, download_url: e.target.value }))}
-                    placeholder="/downloads/file.pdf or https://..."
-                    className="bg-[#1a1a1a] border-gray-600 text-white"
-                  />
-                  
-                  {/* Upload Buttons */}
-                  <div className="flex gap-2">
-                    {/* Direct Upload from Computer */}
-                    <input
-                      type="file"
-                      accept=".pdf,.mp4,.webm,.mov"
-                      onChange={handleDirectFileUpload}
-                      className="hidden"
-                      id={fileInputId}
-                      disabled={isUploading}
-                    />
-                    <Button
-                      type="button"
-                      className="flex-1 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                      onClick={() => document.getElementById(fileInputId)?.click()}
-                      disabled={isUploading}
-                    >
-                      {isUploading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload from Computer
-                        </>
-                      )}
-                    </Button>
-                    
-                    {/* Browse Media */}
-                    <MediaSelector
-                      onFileSelect={() => {}}
-                      onMediaSelect={handleFileSelect}
-                      buttonOnly
-                      buttonLabel="Browse Media"
-                      acceptedFileTypes=".pdf,.mp4,.webm,.mov"
-                    />
-                  </div>
-                  
-                  {/* Info about folder structure */}
-                  <p className="text-xs text-gray-500">
-                    Files will be uploaded to: <code className="bg-[#1a1a1a] px-1 rounded">downloads/{formData.download_type === 'whitepaper' ? 'whitepapers' : formData.download_type === 'conference' ? 'conference-papers' : 'videos'}/{formData.slug || '[slug]'}/</code>
-                  </p>
-                  
-                  {/* Current file indicator */}
-                  {formData.download_url && (
-                    <div className="flex items-center gap-2 text-sm text-green-400 bg-green-900/20 px-3 py-2 rounded">
-                      <FileText className="h-4 w-4" />
-                      <span className="truncate flex-1">{formData.download_url}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setFormData(prev => ({ ...prev, download_url: '' }))}
-                        className="h-6 w-6 p-0 text-gray-400 hover:text-red-400"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
 
                 {/* Structured Description Editor with Preview */}
                 <div className="grid grid-cols-2 gap-6">
@@ -861,6 +784,81 @@ const DownloadsEditor = () => {
               </TabsContent>
 
               <TabsContent value="settings" className="space-y-4 mt-4">
+                {/* Download File Upload */}
+                <div className="space-y-3 p-4 bg-[#2a2a2a] rounded-lg border border-gray-600">
+                  <Label className="text-white flex items-center gap-2">
+                    <File className="h-4 w-4 text-[#f9dc24]" />
+                    {formData.download_type === 'whitepaper' ? 'PDF File' : 
+                     formData.download_type === 'conference' ? 'Conference Paper (PDF)' : 
+                     'Video File'}
+                  </Label>
+                  
+                  {/* Upload Buttons - 50/50 split */}
+                  <div className="flex gap-2">
+                    {/* Direct Upload from Computer */}
+                    <input
+                      type="file"
+                      accept={formData.download_type === 'video' ? '.mp4,.webm,.mov' : '.pdf'}
+                      onChange={handleDirectFileUpload}
+                      className="hidden"
+                      id={fileInputId}
+                      disabled={isUploading}
+                    />
+                    <Button
+                      type="button"
+                      className="flex-1 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                      onClick={() => document.getElementById(fileInputId)?.click()}
+                      disabled={isUploading}
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload from Computer
+                        </>
+                      )}
+                    </Button>
+                    
+                    {/* Select from Media */}
+                    <div className="flex-1">
+                      <MediaSelector
+                        onFileSelect={() => {}}
+                        onMediaSelect={handleFileSelect}
+                        buttonOnly
+                        buttonLabel="Select from Media"
+                        acceptedFileTypes={formData.download_type === 'video' ? '.mp4,.webm,.mov' : '.pdf'}
+                        fullWidth
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Info about folder structure */}
+                  <p className="text-xs text-gray-500">
+                    Files will be uploaded to: <code className="bg-[#1a1a1a] px-1 rounded">downloads/{formData.download_type === 'whitepaper' ? 'whitepapers' : formData.download_type === 'conference' ? 'conference-papers' : 'videos'}/{formData.slug || '[slug]'}/</code>
+                  </p>
+                  
+                  {/* Current file indicator */}
+                  {formData.download_url && (
+                    <div className="flex items-center gap-2 text-sm text-green-400 bg-green-900/20 px-3 py-2 rounded">
+                      <FileText className="h-4 w-4" />
+                      <span className="truncate flex-1">{formData.download_url}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFormData(prev => ({ ...prev, download_url: '' }))}
+                        className="h-6 w-6 p-0 text-gray-400 hover:text-red-400"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Cover Image */}
                 <div className="space-y-2">
                   <Label className="text-white">Cover Image</Label>
