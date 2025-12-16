@@ -536,17 +536,17 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
               </div>
             </div>
           </div>
+
+          {/* Save Button - inside target language column */}
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || !targetTitle || !targetTeaser}
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black mt-2"
+          >
+            {isSaving ? "Saving..." : `Save ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version`}
+          </Button>
         </div>
       </div>
-
-      {/* Save Button */}
-      <Button
-        onClick={handleSave}
-        disabled={isSaving || !targetTitle || !targetTeaser}
-        className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-      >
-        {isSaving ? "Saving..." : "Save"}
-      </Button>
     </div>
   );
 };
