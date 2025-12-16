@@ -26,13 +26,37 @@ const DownloadDetail = () => {
   const { language } = useLanguage();
 
   const { data: download, isLoading, error } = useQuery({
-    queryKey: ["download-detail", slug],
+    queryKey: ["download-detail", slug, language],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Map frontend language codes to database language codes
+      const langMap: Record<string, string> = {
+        'en': 'EN',
+        'de': 'DE',
+        'ja': 'JA',
+        'ko': 'KO',
+        'zh': 'ZH'
+      };
+      const dbLang = langMap[language] || 'EN';
+      
+      // First try to get the download in the requested language
+      let { data, error } = await supabase
         .from("downloads")
         .select("*")
         .eq("slug", slug)
-        .single();
+        .eq("language_code", dbLang)
+        .maybeSingle();
+      
+      // If not found in requested language, fallback to English
+      if (!data && dbLang !== 'EN') {
+        const fallbackResult = await supabase
+          .from("downloads")
+          .select("*")
+          .eq("slug", slug)
+          .eq("language_code", "EN")
+          .maybeSingle();
+        data = fallbackResult.data;
+        error = fallbackResult.error;
+      }
       
       if (error) throw error;
       return data;
