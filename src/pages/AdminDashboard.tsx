@@ -467,7 +467,7 @@ const AdminDashboard = () => {
     { key: 'scanline', label: 'Scanners', Icon: ScanLine },
     { key: 'monitor', label: 'Display / Monitor', Icon: Monitor },
     { key: 'zap', label: 'Technology', Icon: Zap },
-    { key: 'target', label: 'Products (Siemens star)', Icon: Target },
+    { key: 'target', label: 'Siemens', Icon: Target },
     { key: 'file', label: 'Generic Page', Icon: FileText },
     { key: 'flask', label: 'Test Lab / Overview', Icon: FlaskConical },
     { key: 'check-circle', label: 'Standardized', Icon: CheckCircle },
