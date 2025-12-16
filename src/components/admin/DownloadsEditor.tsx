@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File, FolderOpen, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File, FolderOpen, Loader2, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -851,17 +851,22 @@ const DownloadsEditor = () => {
                   
                   {/* Current file indicator */}
                   {formData.download_url && (
-                    <div className="flex items-center gap-2 text-sm text-green-400 bg-green-900/20 px-3 py-2 rounded">
-                      <FileText className="h-4 w-4" />
-                      <span className="truncate flex-1">{formData.download_url}</span>
+                    <div className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
+                      <FileText className="h-4 w-4 text-gray-400" />
+                      <span className="text-white flex-1 truncate">
+                        {formData.download_url.split('/').pop() || 'File attached'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {formData.download_type === 'video' ? 'VIDEO' : 'PDF'}
+                      </span>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => setFormData(prev => ({ ...prev, download_url: '' }))}
-                        className="h-6 w-6 p-0 text-gray-400 hover:text-red-400"
+                        className="text-red-400 hover:text-red-300"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
                   )}
@@ -971,32 +976,32 @@ const DownloadsEditor = () => {
                         <div className="flex gap-1">
                           {/* Preview - Green */}
                           <Button
+                            variant="ghost"
                             size="sm"
-                            variant="outline"
                             onClick={() => window.open(`/en/info-hub/downloads/${download.slug}`, '_blank')}
-                            className="h-8 w-8 p-0 border-green-600 text-green-400 hover:bg-green-600/20"
+                            className="text-green-400 hover:text-green-300"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           {/* Edit - Yellow */}
                           <Button
+                            variant="ghost"
                             size="sm"
-                            variant="outline"
                             onClick={() => handleEdit(download)}
-                            className="h-8 w-8 p-0 border-yellow-600 text-yellow-400 hover:bg-yellow-600/20"
+                            className="text-[hsl(var(--yellow))] hover:text-[hsl(var(--yellow))]/80"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
                           {/* Delete - Red */}
                           <Button
+                            variant="ghost"
                             size="sm"
-                            variant="outline"
                             onClick={() => {
                               if (confirm("Are you sure you want to delete this download?")) {
                                 deleteMutation.mutate(download.id);
                               }
                             }}
-                            className="h-8 w-8 p-0 border-red-600 text-red-400 hover:bg-red-600/20"
+                            className="text-red-400 hover:text-red-300"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
