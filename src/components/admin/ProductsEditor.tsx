@@ -190,9 +190,11 @@ const ProductsEditor = () => {
 
   const loadProducts = async () => {
     try {
+      // Only load English (master) products - translations are managed via the Translations tab
       const { data, error } = await supabase
         .from("products")
         .select("*")
+        .eq("language_code", "EN")
         .order("position", { ascending: true });
 
       if (error) throw error;
