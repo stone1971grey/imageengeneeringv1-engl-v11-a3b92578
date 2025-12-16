@@ -177,14 +177,18 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
 
   useEffect(() => {
     loadProducts();
-  }, [config?.category]);
+  }, [config?.category, language]);
 
   const loadProducts = async () => {
     try {
+      // Map language code to database format (uppercase)
+      const languageCode = language.toUpperCase();
+      
       let query = supabase
         .from("products")
         .select("*")
         .eq("published", true)
+        .eq("language_code", languageCode)
         .order("position", { ascending: true });
 
       if (config?.category) {
