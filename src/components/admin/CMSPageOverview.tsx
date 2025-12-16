@@ -367,9 +367,10 @@ export const CMSPageOverview = () => {
   const getCtaBadge = (page: CMSPage) => {
     if (!page.cta_group || page.cta_group === 'none') return null;
 
-    // Color scheme: yellow for "Your Solution" CTA, black for "Products" CTA
-    const isYourSolution = page.cta_group === 'your-solution';
-    const badgeClasses = isYourSolution
+    // Color scheme: yellow for navigation CTAs (Your Solution, Info Hub, Training Events, Test Lab), black for Products
+    const yellowCtaGroups = ['your-solution', 'info-hub', 'training-events', 'test-lab'];
+    const isYellowCta = yellowCtaGroups.includes(page.cta_group);
+    const badgeClasses = isYellowCta
       ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
       : 'bg-black text-white border-gray-600';
 
