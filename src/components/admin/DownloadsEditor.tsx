@@ -724,10 +724,11 @@ const DownloadsEditor = () => {
                             <Textarea
                               value={section.content}
                               onChange={(e) => updateSection(section.id, 'content', e.target.value)}
-                              className="bg-[#1a1a1a] border-gray-600 text-white min-h-[100px]"
+                              className="bg-[#1a1a1a] border-gray-600 text-white min-h-[150px] resize-y"
                               placeholder={section.isBulletList 
                                 ? "Enter each item on a new line...\nItem 1\nItem 2\nItem 3" 
                                 : "Enter paragraph text..."}
+                              style={{ maxHeight: 'none' }}
                             />
                             {section.isBulletList && (
                               <p className="text-xs text-gray-500">Each line becomes a bullet point</p>
