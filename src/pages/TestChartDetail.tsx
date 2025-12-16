@@ -22,7 +22,6 @@ interface ProductRow {
   gallery_images: unknown;
   documents: unknown;
   specifications: unknown;
-  features: unknown;
   applications: string[];
   chart_sizes: unknown;
   sku: string | null;

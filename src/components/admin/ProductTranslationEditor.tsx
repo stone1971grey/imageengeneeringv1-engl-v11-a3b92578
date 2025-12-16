@@ -7,8 +7,22 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Languages, CheckCircle, AlertCircle } from "lucide-react";
+import { Languages, CheckCircle, AlertCircle, X } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+
+interface ChartSizeSection {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  rows: any[];
+}
+
+interface ChartSizesData {
+  introText: string;
+  introImageUrl: string;
+  sections: ChartSizeSection[];
+}
 
 interface ProductTranslationEditorProps {
   productSlug: string;
@@ -21,13 +35,11 @@ interface ProductTranslationEditorProps {
     subcategory: string | null;
     sku: string | null;
     specifications: Record<string, string>;
-    features: string[];
     applications: string[];
     published: boolean;
     visibility: string;
     availability: string;
     position: number;
-    // Filter fields - not translated
     product_types: string[];
     measurement_focus: string[];
     format_fov: string[];
@@ -37,7 +49,7 @@ interface ProductTranslationEditorProps {
     documents: { url: string; title: string; type: string }[];
     video_url: string | null;
     price_info: string | null;
-    chart_sizes: any;
+    chart_sizes: ChartSizesData | null;
   };
   onSave: () => void;
 }
@@ -63,7 +75,8 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
   const [targetTitle, setTargetTitle] = useState("");
   const [targetTeaser, setTargetTeaser] = useState("");
   const [targetDescription, setTargetDescription] = useState("");
-  const [targetFeatures, setTargetFeatures] = useState<string[]>([]);
+  const [targetSpecifications, setTargetSpecifications] = useState<Record<string, string>>({});
+  const [targetChartSizes, setTargetChartSizes] = useState<ChartSizesData | null>(null);
 
   // Load translation status for all languages
   useEffect(() => {
@@ -98,7 +111,7 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
     const loadTargetData = async () => {
       const { data } = await supabase
         .from("products")
-        .select("title, teaser, description, features")
+        .select("title, teaser, description, specifications, chart_sizes")
         .eq("slug", productSlug)
         .eq("language_code", selectedLanguage.toUpperCase())
         .maybeSingle();
@@ -107,16 +120,19 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
         setTargetTitle(data.title || "");
         setTargetTeaser(data.teaser || "");
         setTargetDescription(data.description || "");
-        const features = Array.isArray(data.features) 
-          ? (data.features as unknown as string[]).filter(f => typeof f === 'string')
-          : [];
-        setTargetFeatures(features);
+        setTargetSpecifications(
+          typeof data.specifications === 'object' && data.specifications !== null
+            ? (data.specifications as Record<string, string>)
+            : {}
+        );
+        setTargetChartSizes(data.chart_sizes as unknown as ChartSizesData | null);
       } else {
-        // No translation exists yet - start with empty
+        // No translation exists yet - start with empty or copy from English
         setTargetTitle("");
         setTargetTeaser("");
         setTargetDescription("");
-        setTargetFeatures([]);
+        setTargetSpecifications({});
+        setTargetChartSizes(null);
       }
     };
     
@@ -134,10 +150,20 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
         description: englishData.description || "",
       };
       
-      // Add features
-      englishData.features.forEach((feature, index) => {
-        textsToTranslate[`feature_${index}`] = feature;
+      // Add specifications
+      Object.entries(englishData.specifications).forEach(([key, value]) => {
+        textsToTranslate[`spec_key_${key}`] = key;
+        textsToTranslate[`spec_value_${key}`] = value;
       });
+
+      // Add chart sizes texts
+      if (englishData.chart_sizes) {
+        textsToTranslate['chartSizes_introText'] = englishData.chart_sizes.introText || "";
+        englishData.chart_sizes.sections?.forEach((section, idx) => {
+          textsToTranslate[`chartSizes_section_${idx}_title`] = section.title || "";
+          textsToTranslate[`chartSizes_section_${idx}_description`] = section.description || "";
+        });
+      }
 
       const { data, error } = await supabase.functions.invoke("translate-content", {
         body: {
@@ -155,11 +181,28 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
       setTargetTeaser(translated.teaser || englishData.teaser);
       setTargetDescription(translated.description || englishData.description);
       
-      // Build translated features
-      const translatedFeatures = englishData.features.map((_, index) => 
-        translated[`feature_${index}`] || englishData.features[index]
-      );
-      setTargetFeatures(translatedFeatures);
+      // Build translated specifications
+      const translatedSpecs: Record<string, string> = {};
+      Object.keys(englishData.specifications).forEach((key) => {
+        const translatedKey = translated[`spec_key_${key}`] || key;
+        const translatedValue = translated[`spec_value_${key}`] || englishData.specifications[key];
+        translatedSpecs[translatedKey] = translatedValue;
+      });
+      setTargetSpecifications(translatedSpecs);
+
+      // Build translated chart sizes
+      if (englishData.chart_sizes) {
+        const translatedChartSizes: ChartSizesData = {
+          introText: translated['chartSizes_introText'] || englishData.chart_sizes.introText,
+          introImageUrl: englishData.chart_sizes.introImageUrl, // Images not translated
+          sections: englishData.chart_sizes.sections?.map((section, idx) => ({
+            ...section,
+            title: translated[`chartSizes_section_${idx}_title`] || section.title,
+            description: translated[`chartSizes_section_${idx}_description`] || section.description,
+          })) || []
+        };
+        setTargetChartSizes(translatedChartSizes);
+      }
       
       toast.success(`Translation to ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} completed!`);
       
@@ -194,7 +237,8 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
         title: targetTitle,
         teaser: targetTeaser,
         description: targetDescription || null,
-        features: targetFeatures,
+        specifications: targetSpecifications,
+        chart_sizes: targetChartSizes ? JSON.parse(JSON.stringify(targetChartSizes)) : null,
         // Copy non-translatable fields from English
         image_url: englishData.image_url,
         video_url: englishData.video_url,
@@ -203,14 +247,12 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
         category: englishData.category,
         subcategory: englishData.subcategory,
         sku: englishData.sku,
-        specifications: englishData.specifications,
         applications: englishData.applications,
         product_types: englishData.product_types,
         measurement_focus: englishData.measurement_focus,
         format_fov: englishData.format_fov,
         integration_features: englishData.integration_features,
         display_badges: englishData.display_badges,
-        chart_sizes: englishData.chart_sizes,
         price_info: englishData.price_info,
         availability: englishData.availability,
         published: englishData.published,
@@ -251,6 +293,12 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
       setIsSaving(false);
     }
   };
+
+  const specEntries = Object.entries(englishData.specifications);
+  const hasChartSizes = englishData.chart_sizes && (
+    englishData.chart_sizes.introText || 
+    (englishData.chart_sizes.sections && englishData.chart_sizes.sections.length > 0)
+  );
 
   return (
     <div className="space-y-4">
@@ -348,19 +396,42 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
             </div>
           </div>
           
-          {englishData.features.length > 0 && (
+          {/* Specifications (English) */}
+          {specEntries.length > 0 && (
             <div>
-              <Label className="text-gray-400 text-sm">Features</Label>
+              <Label className="text-gray-400 text-sm">Specifications</Label>
               <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                {englishData.features.map((feature, index) => (
-                  <Card key={index} className="p-3 bg-[#2a2a2a] border-gray-700">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
-                        Feature #{index + 1}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-300 text-sm">{feature}</p>
-                  </Card>
+                {specEntries.map(([key, value]) => (
+                  <div key={key} className="p-2 bg-[#2a2a2a] border border-gray-700 rounded-md">
+                    <span className="text-gray-400 text-sm">{key}:</span>
+                    <span className="text-gray-300 text-sm ml-2">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chart Sizes (English) */}
+          {hasChartSizes && (
+            <div>
+              <Label className="text-gray-400 text-sm">Chart Sizes</Label>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                {englishData.chart_sizes?.introText && (
+                  <div className="p-2 bg-[#2a2a2a] border border-gray-700 rounded-md">
+                    <span className="text-gray-400 text-xs block">Intro Text:</span>
+                    <span className="text-gray-300 text-sm">{englishData.chart_sizes.introText}</span>
+                  </div>
+                )}
+                {englishData.chart_sizes?.sections?.map((section, idx) => (
+                  <div key={section.id || idx} className="p-2 bg-[#2a2a2a] border border-gray-700 rounded-md">
+                    <Badge variant="outline" className="text-xs text-gray-400 border-gray-600 mb-1">
+                      Section {idx + 1}
+                    </Badge>
+                    <div className="text-gray-300 text-sm font-medium">{section.title}</div>
+                    {section.description && (
+                      <div className="text-gray-400 text-xs mt-1">{section.description}</div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -407,28 +478,114 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
             />
           </div>
           
-          {englishData.features.length > 0 && (
+          {/* Specifications (Target) */}
+          {specEntries.length > 0 && (
             <div>
-              <Label className="text-gray-300 text-sm">Features</Label>
+              <Label className="text-gray-300 text-sm">Specifications</Label>
               <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                {englishData.features.map((_, index) => (
-                  <Card key={index} className="p-3 bg-[#3a3a3a] border-gray-600">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-xs text-blue-300 border-blue-600">
-                        Feature #{index + 1}
-                      </Badge>
+                {specEntries.map(([engKey, engValue]) => {
+                  // Find corresponding translated key
+                  const targetKeys = Object.keys(targetSpecifications);
+                  const targetKeyIdx = Object.keys(englishData.specifications).indexOf(engKey);
+                  const currentTargetKey = targetKeys[targetKeyIdx] || engKey;
+                  const currentTargetValue = targetSpecifications[currentTargetKey] || "";
+                  
+                  return (
+                    <div key={engKey} className="p-2 bg-[#3a3a3a] border border-gray-600 rounded-md space-y-1">
+                      <div className="flex gap-2">
+                        <Input
+                          value={currentTargetKey}
+                          onChange={(e) => {
+                            const newSpecs = { ...targetSpecifications };
+                            delete newSpecs[currentTargetKey];
+                            newSpecs[e.target.value] = currentTargetValue;
+                            setTargetSpecifications(newSpecs);
+                          }}
+                          placeholder={`Key: ${engKey}`}
+                          className="bg-[#2a2a2a] border-gray-700 text-white text-sm flex-1"
+                        />
+                        <Input
+                          value={currentTargetValue}
+                          onChange={(e) => {
+                            setTargetSpecifications(prev => ({
+                              ...prev,
+                              [currentTargetKey]: e.target.value
+                            }));
+                          }}
+                          placeholder={`Value: ${engValue}`}
+                          className="bg-[#2a2a2a] border-gray-700 text-white text-sm flex-1"
+                        />
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Chart Sizes (Target) */}
+          {hasChartSizes && (
+            <div>
+              <Label className="text-gray-300 text-sm">Chart Sizes</Label>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                {englishData.chart_sizes?.introText && (
+                  <div className="p-2 bg-[#3a3a3a] border border-gray-600 rounded-md">
+                    <span className="text-gray-400 text-xs block mb-1">Intro Text:</span>
+                    <Textarea
+                      value={targetChartSizes?.introText || ""}
+                      onChange={(e) => setTargetChartSizes(prev => ({
+                        ...prev!,
+                        introText: e.target.value,
+                        introImageUrl: prev?.introImageUrl || englishData.chart_sizes?.introImageUrl || "",
+                        sections: prev?.sections || englishData.chart_sizes?.sections || []
+                      }))}
+                      placeholder={englishData.chart_sizes.introText}
+                      className="bg-[#2a2a2a] border-gray-700 text-white text-sm"
+                      rows={2}
+                    />
+                  </div>
+                )}
+                {englishData.chart_sizes?.sections?.map((section, idx) => (
+                  <div key={section.id || idx} className="p-2 bg-[#3a3a3a] border border-gray-600 rounded-md space-y-2">
+                    <Badge variant="outline" className="text-xs text-blue-300 border-blue-600">
+                      Section {idx + 1}
+                    </Badge>
                     <Input
-                      value={targetFeatures[index] || ""}
+                      value={targetChartSizes?.sections?.[idx]?.title || ""}
                       onChange={(e) => {
-                        const newFeatures = [...targetFeatures];
-                        newFeatures[index] = e.target.value;
-                        setTargetFeatures(newFeatures);
+                        setTargetChartSizes(prev => {
+                          const sections = [...(prev?.sections || englishData.chart_sizes?.sections || [])];
+                          sections[idx] = { ...sections[idx], title: e.target.value };
+                          return {
+                            ...prev!,
+                            introText: prev?.introText || englishData.chart_sizes?.introText || "",
+                            introImageUrl: prev?.introImageUrl || englishData.chart_sizes?.introImageUrl || "",
+                            sections
+                          };
+                        });
                       }}
-                      placeholder="Translated feature..."
+                      placeholder={section.title}
                       className="bg-[#2a2a2a] border-gray-700 text-white text-sm"
                     />
-                  </Card>
+                    <Textarea
+                      value={targetChartSizes?.sections?.[idx]?.description || ""}
+                      onChange={(e) => {
+                        setTargetChartSizes(prev => {
+                          const sections = [...(prev?.sections || englishData.chart_sizes?.sections || [])];
+                          sections[idx] = { ...sections[idx], description: e.target.value };
+                          return {
+                            ...prev!,
+                            introText: prev?.introText || englishData.chart_sizes?.introText || "",
+                            introImageUrl: prev?.introImageUrl || englishData.chart_sizes?.introImageUrl || "",
+                            sections
+                          };
+                        });
+                      }}
+                      placeholder={section.description}
+                      className="bg-[#2a2a2a] border-gray-700 text-white text-sm"
+                      rows={2}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
