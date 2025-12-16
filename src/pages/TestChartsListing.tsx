@@ -169,15 +169,19 @@ const TestChartsListing = () => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [language]);
 
   const loadProducts = async () => {
     try {
+      // Map language code to database format (uppercase)
+      const languageCode = language.toUpperCase();
+      
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .eq("category", "Test Charts")
         .eq("published", true)
+        .eq("language_code", languageCode)
         .order("position", { ascending: true });
 
       if (error) throw error;
