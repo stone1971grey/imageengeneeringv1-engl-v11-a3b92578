@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File, FolderOpen, Loader2, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File, FolderOpen, Loader2, X, GraduationCap } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -22,7 +22,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaSelector } from "./MediaSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
-
+import DownloadTranslationEditor from "./DownloadTranslationEditor";
 interface Download {
   id: string;
   slug: string;
@@ -53,12 +53,21 @@ interface DescriptionSection {
 
 const DOWNLOAD_TYPES = [
   { value: "whitepaper", label: "White Paper", color: "bg-blue-500", icon: BookOpen },
-  { value: "thesis", label: "Diploma Thesis", color: "bg-indigo-500", icon: BookOpen },
+  { value: "thesis", label: "Diploma Thesis", color: "bg-teal-600", icon: GraduationCap },
   { value: "conference", label: "Conference Paper", color: "bg-purple-500", icon: Presentation },
   { value: "technote", label: "Tech Note", color: "bg-amber-500", icon: FileText },
   { value: "datatools", label: "Data & Tools", color: "bg-cyan-500", icon: FileText },
   { value: "video", label: "Video", color: "bg-emerald-500", icon: Video },
 ] as const;
+
+// Language badges for translations
+const LANGUAGE_FLAGS: Record<string, string> = {
+  EN: "🇺🇸",
+  DE: "🇩🇪",
+  JA: "🇯🇵",
+  KO: "🇰🇷",
+  ZH: "🇨🇳",
+};
 
 const DOWNLOAD_CATEGORIES = [
   "Standards & Compliance",
@@ -200,6 +209,28 @@ const DownloadsEditor = () => {
         .order("publish_date", { ascending: false });
       if (error) throw error;
       return data as Download[];
+    },
+  });
+
+  // Fetch available translations for each download
+  const { data: translations } = useQuery({
+    queryKey: ["downloads-translations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("downloads")
+        .select("slug, language_code")
+        .neq("language_code", "EN");
+      if (error) throw error;
+      
+      // Group by slug
+      const translationMap: Record<string, string[]> = {};
+      data?.forEach((item: { slug: string; language_code: string }) => {
+        if (!translationMap[item.slug]) {
+          translationMap[item.slug] = [];
+        }
+        translationMap[item.slug].push(item.language_code);
+      });
+      return translationMap;
     },
   });
 
@@ -512,7 +543,7 @@ const DownloadsEditor = () => {
             </DialogHeader>
 
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-[#2a2a2a] p-1 h-auto">
+              <TabsList className="grid w-full grid-cols-4 bg-[#2a2a2a] p-1 h-auto">
                 <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
                   Basic Info
                 </TabsTrigger>
@@ -521,6 +552,13 @@ const DownloadsEditor = () => {
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
                   Media & Settings
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="translations" 
+                  disabled={!editingDownload}
+                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Translations
                 </TabsTrigger>
               </TabsList>
 
@@ -909,6 +947,33 @@ const DownloadsEditor = () => {
                   </div>
                 </div>
               </TabsContent>
+
+              {/* Translations Tab */}
+              <TabsContent value="translations" className="mt-4">
+                {editingDownload && (
+                  <DownloadTranslationEditor
+                    downloadSlug={editingDownload.slug}
+                    englishData={{
+                      title: formData.title,
+                      teaser: formData.teaser,
+                      description: formData.description,
+                      download_type: formData.download_type,
+                      category: formData.category || null,
+                      pages: formData.pages,
+                      duration: formData.duration || null,
+                      publish_date: formData.publish_date,
+                      download_url: formData.download_url || null,
+                      image_url: formData.image_url || null,
+                      published: formData.published,
+                      visibility: formData.visibility,
+                      position: editingDownload.position,
+                    }}
+                    onSave={() => {
+                      queryClient.invalidateQueries({ queryKey: ["downloads-translations"] });
+                    }}
+                  />
+                )}
+              </TabsContent>
             </Tabs>
 
             <div className="flex justify-end gap-3 mt-6">
@@ -1056,6 +1121,20 @@ const DownloadsEditor = () => {
                             <FileText className="h-3 w-3 mr-1" />
                             File attached
                           </Badge>
+                        )}
+                        {/* Language badges */}
+                        {translations && translations[download.slug] && translations[download.slug].length > 0 && (
+                          <div className="flex items-center gap-1 ml-2">
+                            {translations[download.slug].map((langCode) => (
+                              <span 
+                                key={langCode} 
+                                className="text-sm" 
+                                title={langCode}
+                              >
+                                {LANGUAGE_FLAGS[langCode] || langCode}
+                              </span>
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>
