@@ -1702,6 +1702,15 @@ const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
                         Draft
                       </span>
                     )}
+                    {product.visibility === 'public' ? (
+                      <span className="px-2 py-0.5 text-xs bg-green-600/30 text-green-400 border border-green-600/50 rounded">
+                        Public
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 text-xs bg-red-600/30 text-red-400 border border-red-600/50 rounded">
+                        Private
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 truncate">{product.teaser}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
