@@ -560,7 +560,7 @@ const TestChartDetail = () => {
                       </p>
                     ))}
                     <a 
-                      href="https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/products/test-charts/IE_reference_data_accuracy.pdf" 
+                      href="https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/products/test-charts/a21c71c0-29ac-470d-94ba-38b59166da5f" 
                       download="IE_Reference_Data_Accuracy.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
