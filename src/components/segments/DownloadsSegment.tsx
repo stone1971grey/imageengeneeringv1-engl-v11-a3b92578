@@ -43,6 +43,7 @@ interface Download {
   publish_date: string;
   download_url: string | null;
   image_url: string | null;
+  visibility: "public" | "private";
 }
 
 interface DescriptionSection {
@@ -597,123 +598,151 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                       )}
                                     </div>
 
-                                    {/* Right: Form */}
+                                    {/* Right: Form or Direct Download */}
                                     <div className="lg:w-1/2">
-                                      <div className="bg-card border border-border rounded-lg p-6">
-                                        <h3 className="text-xl font-semibold mb-4 text-foreground">Request Download</h3>
-                                        <p className="text-muted-foreground mb-6 text-sm">
-                                          Please fill out the form below to receive access to this resource.
-                                        </p>
-
-                                        <Form {...form}>
-                                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                              <FormField
-                                                control={form.control}
-                                                name="firstName"
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel className="text-foreground text-sm">First Name *</FormLabel>
-                                                    <FormControl>
-                                                      <Input {...field} className="bg-background border-border" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
-                                              />
-                                              <FormField
-                                                control={form.control}
-                                                name="lastName"
-                                                render={({ field }) => (
-                                                  <FormItem>
-                                                    <FormLabel className="text-foreground text-sm">Last Name *</FormLabel>
-                                                    <FormControl>
-                                                      <Input {...field} className="bg-background border-border" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                  </FormItem>
-                                                )}
-                                              />
-                                            </div>
-
-                                            <FormField
-                                              control={form.control}
-                                              name="email"
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel className="text-foreground text-sm">Email *</FormLabel>
-                                                  <FormControl>
-                                                    <Input {...field} type="email" className="bg-background border-border" />
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
-
-                                            <FormField
-                                              control={form.control}
-                                              name="company"
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel className="text-foreground text-sm">Company *</FormLabel>
-                                                  <FormControl>
-                                                    <Input {...field} className="bg-background border-border" />
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
-
-                                            <FormField
-                                              control={form.control}
-                                              name="position"
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormLabel className="text-foreground text-sm">Position *</FormLabel>
-                                                  <FormControl>
-                                                    <Input {...field} className="bg-background border-border" />
-                                                  </FormControl>
-                                                  <FormMessage />
-                                                </FormItem>
-                                              )}
-                                            />
-
-                                            <FormField
-                                              control={form.control}
-                                              name="consent"
-                                              render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
-                                                  <FormControl>
-                                                    <Checkbox
-                                                      checked={field.value}
-                                                      onCheckedChange={field.onChange}
-                                                      className="border-border data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
-                                                    />
-                                                  </FormControl>
-                                                  <div className="space-y-1 leading-none">
-                                                    <FormLabel className="text-sm text-muted-foreground font-normal">
-                                                      I agree to receive information about products and services *
-                                                    </FormLabel>
-                                                    <FormMessage />
-                                                  </div>
-                                                </FormItem>
-                                              )}
-                                            />
-
-                                            <Button 
-                                              type="submit" 
-                                              className={`w-full mt-4 transition-all ${
-                                                form.formState.isValid 
-                                                  ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
-                                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
-                                              }`}
-                                              disabled={!form.formState.isValid || isSubmitting}
+                                      {selectedItem.visibility === 'public' ? (
+                                        // Public: Direct Download Button
+                                        <div className="bg-card border border-border rounded-lg p-6">
+                                          <h3 className="text-xl font-semibold mb-4 text-foreground">Download Available</h3>
+                                          <p className="text-muted-foreground mb-6 text-sm">
+                                            This resource is freely available. Click the button below to download.
+                                          </p>
+                                          
+                                          {selectedItem.download_url ? (
+                                            <a 
+                                              href={selectedItem.download_url} 
+                                              target="_blank" 
+                                              rel="noopener noreferrer"
+                                              className="block"
                                             >
-                                              {isSubmitting ? "Processing..." : "Request Download"}
-                                            </Button>
-                                          </form>
-                                        </Form>
-                                      </div>
+                                              <Button className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
+                                                Download Now
+                                              </Button>
+                                            </a>
+                                          ) : (
+                                            <p className="text-muted-foreground text-sm italic">
+                                              Download link not yet available. Please check back later.
+                                            </p>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        // Private: Registration Form
+                                        <div className="bg-card border border-border rounded-lg p-6">
+                                          <h3 className="text-xl font-semibold mb-4 text-foreground">Request Download</h3>
+                                          <p className="text-muted-foreground mb-6 text-sm">
+                                            Please fill out the form below to receive access to this resource.
+                                          </p>
+
+                                          <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                              <div className="grid grid-cols-2 gap-4">
+                                                <FormField
+                                                  control={form.control}
+                                                  name="firstName"
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel className="text-foreground text-sm">First Name *</FormLabel>
+                                                      <FormControl>
+                                                        <Input {...field} className="bg-background border-border" />
+                                                      </FormControl>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
+                                                <FormField
+                                                  control={form.control}
+                                                  name="lastName"
+                                                  render={({ field }) => (
+                                                    <FormItem>
+                                                      <FormLabel className="text-foreground text-sm">Last Name *</FormLabel>
+                                                      <FormControl>
+                                                        <Input {...field} className="bg-background border-border" />
+                                                      </FormControl>
+                                                      <FormMessage />
+                                                    </FormItem>
+                                                  )}
+                                                />
+                                              </div>
+
+                                              <FormField
+                                                control={form.control}
+                                                name="email"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel className="text-foreground text-sm">Email *</FormLabel>
+                                                    <FormControl>
+                                                      <Input {...field} type="email" className="bg-background border-border" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <FormField
+                                                control={form.control}
+                                                name="company"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel className="text-foreground text-sm">Company *</FormLabel>
+                                                    <FormControl>
+                                                      <Input {...field} className="bg-background border-border" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <FormField
+                                                control={form.control}
+                                                name="position"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel className="text-foreground text-sm">Position *</FormLabel>
+                                                    <FormControl>
+                                                      <Input {...field} className="bg-background border-border" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <FormField
+                                                control={form.control}
+                                                name="consent"
+                                                render={({ field }) => (
+                                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
+                                                    <FormControl>
+                                                      <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                        className="border-border data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+                                                      />
+                                                    </FormControl>
+                                                    <div className="space-y-1 leading-none">
+                                                      <FormLabel className="text-sm text-muted-foreground font-normal">
+                                                        I agree to receive information about products and services *
+                                                      </FormLabel>
+                                                      <FormMessage />
+                                                    </div>
+                                                  </FormItem>
+                                                )}
+                                              />
+
+                                              <Button 
+                                                type="submit" 
+                                                className={`w-full mt-4 transition-all ${
+                                                  form.formState.isValid 
+                                                    ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
+                                                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                                }`}
+                                                disabled={!form.formState.isValid || isSubmitting}
+                                              >
+                                                {isSubmitting ? "Processing..." : "Request Download"}
+                                              </Button>
+                                            </form>
+                                          </Form>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </CardHeader>
