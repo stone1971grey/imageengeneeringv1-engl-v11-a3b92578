@@ -1132,27 +1132,51 @@ const Navigation = () => {
                     <div className="space-y-3 flex-1">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.publications}</h4>
                       <Link to={`/${language}/info-hub/conference-papers`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/conference-papers'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
                         <span>{t.nav.conferencePapers}</span>
                       </Link>
                       <Link to={`/${language}/info-hub/white-papers-and-thesis`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>{t.nav.whitePapersTheses}</span>
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/white-papers-and-thesis'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.whitePapers}</span>
                       </Link>
                       <Link to={`/${language}/info-hub/diploma-theses`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Diploma Theses</span>
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/diploma-theses'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.diplomaTheses}</span>
                       </Link>
                       <Link to={`/${language}/info-hub/tech-notes`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/tech-notes'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
                         <span>Tech Notes</span>
                       </Link>
                       <Link to={`/${language}/info-hub/data-tools`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/data-tools'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
                         <span>Data & Tools</span>
                       </Link>
                       <Link to={`/${language}/info-hub/video-archive`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/video-archive'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
                         <span>{t.nav.videoArchive}</span>
                       </Link>
                     </div>
@@ -2160,7 +2184,7 @@ const Navigation = () => {
                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
                             })()}
-                            <span>{t.nav.whitePapersTheses}</span>
+                            <span>{t.nav.whitePapers}</span>
                           </Link>
                           <Link to={`/${language}/info-hub/diploma-theses`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             {(() => {
@@ -2168,7 +2192,7 @@ const Navigation = () => {
                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
                             })()}
-                            <span>Diploma Theses</span>
+                            <span>{t.nav.diplomaTheses}</span>
                           </Link>
                           <Link to={`/${language}/info-hub/tech-notes`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             {(() => {
