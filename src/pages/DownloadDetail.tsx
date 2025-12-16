@@ -16,7 +16,7 @@ interface DescriptionSection {
 }
 
 const DOWNLOAD_TYPES = {
-  whitepaper: { label: "White Paper", color: "bg-blue-600", icon: BookOpen },
+  whitepaper: { label: "White Paper", color: "bg-[#f9dc24] text-black", icon: BookOpen },
   conference: { label: "Conference Paper", color: "bg-purple-600", icon: Presentation },
   video: { label: "Video", color: "bg-red-600", icon: Video },
 };
@@ -119,7 +119,7 @@ const DownloadDetail = () => {
           </div>
 
           {/* Type Badge */}
-          <Badge className={`${typeInfo.color} text-white mb-4`}>
+          <Badge className={`${typeInfo.color} mb-4`}>
             <TypeIcon className="w-3 h-3 mr-1" />
             {typeInfo.label}
           </Badge>
@@ -160,67 +160,72 @@ const DownloadDetail = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - 2/3 + 1/3 Layout */}
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl">
-          {/* Teaser */}
-          <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-            {download.teaser}
-          </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Left Column - 2/3: Content */}
+          <div className="lg:col-span-2">
+            {/* Teaser */}
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+              {download.teaser}
+            </p>
 
-          {/* Description Sections */}
-          {descriptionSections.length > 0 && (
-            <div className="prose prose-lg max-w-none mb-12">
-              {descriptionSections.map((section) => (
-                <div key={section.id} className="mb-8">
-                  {section.heading && (
-                    <h2 className="text-2xl font-semibold text-foreground mb-4">
-                      {section.heading}
-                    </h2>
-                  )}
-                  {section.content && (
-                    section.isBulletList ? (
-                      <div className="space-y-2 ml-4">
-                        {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
-                          <div key={i} className="flex items-start gap-3 text-muted-foreground">
-                            <span className="text-[#f9dc24] mt-1">•</span>
-                            <span>{line.trim()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground leading-relaxed">
-                        {section.content}
-                      </p>
-                    )
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+            {/* Description Sections */}
+            {descriptionSections.length > 0 && (
+              <div className="prose prose-lg max-w-none">
+                {descriptionSections.map((section) => (
+                  <div key={section.id} className="mb-8">
+                    {section.heading && (
+                      <h2 className="text-2xl font-semibold text-foreground mb-4">
+                        {section.heading}
+                      </h2>
+                    )}
+                    {section.content && (
+                      section.isBulletList ? (
+                        <div className="space-y-2 ml-4">
+                          {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
+                            <div key={i} className="flex items-start gap-3 text-muted-foreground">
+                              <span className="text-[#f9dc24] mt-1">•</span>
+                              <span>{line.trim()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground leading-relaxed">
+                          {section.content}
+                        </p>
+                      )
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Download Button */}
-          {download.download_url && (
-            <div className="bg-muted/50 rounded-xl p-8 text-center">
-              <h3 className="text-xl font-semibold text-foreground mb-4">
-                Ready to Download?
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                Click below to download the {typeInfo.label.toLowerCase()}.
-              </p>
-              <a 
-                href={download.download_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                download
-              >
-                <Button size="lg" className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
-                  <Download className="w-5 h-5 mr-2" />
-                  Download {download.download_type === 'video' ? 'Video' : 'PDF'}
-                </Button>
-              </a>
-            </div>
-          )}
+          {/* Right Column - 1/3: Download Button */}
+          <div className="lg:col-span-1">
+            {download.download_url && (
+              <div className="bg-muted/50 rounded-xl p-8 text-center sticky top-32">
+                <h3 className="text-xl font-semibold text-foreground mb-4">
+                  Ready to Download?
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Click below to download the {typeInfo.label.toLowerCase()}.
+                </p>
+                <a 
+                  href={download.download_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  download
+                >
+                  <Button size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
+                    <Download className="w-5 h-5 mr-2" />
+                    Download {download.download_type === 'video' ? 'Video' : 'PDF'}
+                  </Button>
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
