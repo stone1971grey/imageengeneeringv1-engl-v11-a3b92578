@@ -28,6 +28,8 @@ const DownloadDetail = () => {
   const { data: download, isLoading, error } = useQuery({
     queryKey: ["download-detail", slug, language],
     queryFn: async () => {
+      console.log("[DownloadDetail] Query params:", { slug, language });
+      
       // Map frontend language codes to database language codes
       const langMap: Record<string, string> = {
         'en': 'EN',
@@ -37,6 +39,7 @@ const DownloadDetail = () => {
         'zh': 'ZH'
       };
       const dbLang = langMap[language] || 'EN';
+      console.log("[DownloadDetail] Using DB language:", dbLang);
       
       // First try to get the download in the requested language
       let { data, error } = await supabase
@@ -46,8 +49,11 @@ const DownloadDetail = () => {
         .eq("language_code", dbLang)
         .maybeSingle();
       
+      console.log("[DownloadDetail] First query result:", { data, error, slug, dbLang });
+      
       // If not found in requested language, fallback to English
       if (!data && dbLang !== 'EN') {
+        console.log("[DownloadDetail] Falling back to English...");
         const fallbackResult = await supabase
           .from("downloads")
           .select("*")
@@ -56,13 +62,19 @@ const DownloadDetail = () => {
           .maybeSingle();
         data = fallbackResult.data;
         error = fallbackResult.error;
+        console.log("[DownloadDetail] Fallback result:", { data, error });
       }
       
-      if (error) throw error;
+      if (error) {
+        console.error("[DownloadDetail] Query error:", error);
+        throw error;
+      }
       return data;
     },
     enabled: !!slug,
   });
+  
+  console.log("[DownloadDetail] Component state:", { slug, language, download, isLoading, error });
 
   // Parse description sections
   const descriptionSections: DescriptionSection[] = (() => {
