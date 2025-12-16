@@ -162,9 +162,11 @@ export function DataHubDialog({
         const { data: files, error: filesError } = await supabase.storage
           .from("page-images")
           .list(folder.storage_path, {
-            limit: 100,
+            limit: 200,
             sortBy: { column: "created_at", order: "desc" },
           });
+
+        console.log(`[DataHub] Loading files from ${folder.storage_path}:`, files?.length || 0, 'items', filesError ? `Error: ${filesError.message}` : '');
 
         if (!filesError && files) {
           // Filter out ALL subdirectories (they're not real assets)
@@ -172,6 +174,7 @@ export function DataHubDialog({
             // Skip all directories (items without file extensions)
             // Real files must have a dot in their name (e.g., .jpg, .png, .pdf)
             if (!item.name.includes('.')) {
+              console.log(`[DataHub] Skipping non-file: ${item.name}`);
               return false;
             }
             return true;
@@ -229,6 +232,7 @@ export function DataHubDialog({
             }
           }
 
+          console.log(`[DataHub] Found ${actualFiles.length} actual files in ${folder.storage_path}`);
           folder.files = actualFiles;
         }
       }
