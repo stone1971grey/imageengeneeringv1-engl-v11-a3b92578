@@ -105,10 +105,21 @@ const DownloadsEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDownload, setEditingDownload] = useState<Download | null>(null);
   const [selectedDownloads, setSelectedDownloads] = useState<Set<string>>(new Set());
-  const [filterType, setFilterType] = useState<string>("all");
+  const [filterType, setFilterType] = useState<string>(() => {
+    // Restore filter from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('downloads-filter-type') || 'all';
+    }
+    return 'all';
+  });
   const [descriptionSections, setDescriptionSections] = useState<DescriptionSection[]>([
     { id: '1', heading: '', content: '', isBulletList: false }
   ]);
+
+  // Persist filter type to localStorage
+  useEffect(() => {
+    localStorage.setItem('downloads-filter-type', filterType);
+  }, [filterType]);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
