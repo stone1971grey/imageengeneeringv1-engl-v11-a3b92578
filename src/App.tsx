@@ -49,6 +49,7 @@ import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
 import ImageDownload from "./pages/ImageDownload";
 import EventImageDownload from "./pages/EventImageDownload";
+import HeroImageDownload from "./pages/HeroImageDownload";
 import LogoDownload from "./pages/LogoDownload";
 import LogoTest from "./pages/LogoTest";
 import Auth from "./pages/Auth";
@@ -241,6 +242,7 @@ const App = () => (
             <Route path="/:lang/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
             <Route path="/:lang/image-download" element={<ImageDownload />} />
             <Route path="/:lang/event-image-download" element={<EventImageDownload />} />
+            <Route path="/:lang/hero-image-download" element={<HeroImageDownload />} />
             <Route path="/:lang/logo-download" element={<LogoDownload />} />
             <Route path="/:lang/logo-test" element={<LogoTest />} />
             <Route path="/:lang/auth" element={<Auth />} />
