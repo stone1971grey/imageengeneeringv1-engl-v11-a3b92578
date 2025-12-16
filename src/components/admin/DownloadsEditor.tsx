@@ -379,11 +379,12 @@ const DownloadsEditor = () => {
     setIsUploading(true);
 
     try {
-      // Create folder path: downloads/{type}/{slug}/filename
-      const typeFolder = formData.download_type === 'whitepaper' ? 'whitepapers' 
+      // Create folder path: info-hub/{type-folder}/filename
+      // Maps to Media Management structure: Info Hub → White Papers / Conference Papers / Video Archive
+      const typeFolder = formData.download_type === 'whitepaper' ? 'white-papers' 
         : formData.download_type === 'conference' ? 'conference-papers'
-        : 'videos';
-      const folderPath = `downloads/${typeFolder}/${formData.slug}`;
+        : 'video-archive';
+      const folderPath = `info-hub/${typeFolder}`;
       const filePath = `${folderPath}/${file.name}`;
 
       // Upload to Supabase Storage
