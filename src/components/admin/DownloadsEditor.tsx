@@ -1123,19 +1123,31 @@ const DownloadsEditor = () => {
                           </Badge>
                         )}
                         {/* Language badges */}
-                        {translations && translations[download.slug] && translations[download.slug].length > 0 && (
-                          <div className="flex items-center gap-1 ml-2">
-                            {translations[download.slug].map((langCode) => (
-                              <span 
-                                key={langCode} 
-                                className="text-sm" 
-                                title={langCode}
-                              >
-                                {LANGUAGE_FLAGS[langCode] || langCode}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1 mt-2">
+                          <span className="text-xs px-1.5 py-0.5 bg-green-600/30 text-green-400 border border-green-600/50 rounded" title="English (Master)">
+                            🇺🇸 EN
+                          </span>
+                          {translations && translations[download.slug]?.includes("DE") && (
+                            <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="German">
+                              🇩🇪 DE
+                            </span>
+                          )}
+                          {translations && translations[download.slug]?.includes("JA") && (
+                            <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Japanese">
+                              🇯🇵 JA
+                            </span>
+                          )}
+                          {translations && translations[download.slug]?.includes("KO") && (
+                            <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Korean">
+                              🇰🇷 KO
+                            </span>
+                          )}
+                          {translations && translations[download.slug]?.includes("ZH") && (
+                            <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Chinese">
+                              🇨🇳 ZH
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
