@@ -559,7 +559,14 @@ const TestChartDetail = () => {
                         {paragraph}
                       </p>
                     ))}
-                    <a href="#" className="text-[#f9dc24] hover:underline font-medium">
+                    <a 
+                      href="/downloads/E_reference_data_accuracy.pdf" 
+                      download="Reference_Data_Accuracy.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#f9dc24] hover:underline font-medium inline-flex items-center gap-1"
+                    >
+                      <Download className="w-4 h-4" />
                       {labels.referenceDataLink}
                     </a>
                   </div>
