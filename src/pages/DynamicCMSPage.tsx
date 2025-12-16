@@ -427,8 +427,57 @@ const DynamicCMSPage = () => {
             return seg;
           })
         : loadedSegments;
+      // CRITICAL FIX: Ensure segments from tab_order exist in pageSegments
+      // If a segment is in tab_order but not in enhancedSegments, create it from segment_registry
+      let finalSegments = [...enhancedSegments];
+      
+      if (segmentData && loadedTabOrder.length > 0) {
+        loadedTabOrder.forEach((tabId: string) => {
+          // Check if this tab_order entry exists in enhancedSegments
+          const exists = finalSegments.some(seg => 
+            String(seg.id) === String(tabId) || 
+            String(seg.segment_key) === String(tabId)
+          );
+          
+          if (!exists) {
+            // Find matching segment in segment_registry
+            const registryEntry = segmentData.find((reg: any) => 
+              reg.segment_key === tabId || 
+              String(reg.segment_id) === String(tabId).replace(/^[a-z-]+-/i, '')
+            );
+            
+            if (registryEntry) {
+              // Create segment from registry
+              const segmentDataForKey = data?.find((d: any) => d.section_key === tabId);
+              let parsedData = {};
+              if (segmentDataForKey) {
+                try {
+                  parsedData = JSON.parse(segmentDataForKey.content_value || '{}');
+                } catch (e) {
+                  console.warn('[DynamicCMSPage] Could not parse segment data for', tabId);
+                }
+              }
+              
+              console.log('[DynamicCMSPage] Creating missing segment from registry:', {
+                tabId,
+                registryEntry,
+                parsedData
+              });
+              
+              finalSegments.push({
+                id: registryEntry.segment_key,
+                segment_key: registryEntry.segment_key,
+                type: registryEntry.segment_type,
+                segmentId: registryEntry.segment_id,
+                position: registryEntry.position,
+                data: parsedData
+              });
+            }
+          }
+        });
+      }
 
-      setPageSegments(enhancedSegments);
+      setPageSegments(finalSegments);
       setTabOrder(loadedTabOrder);
 
       console.log('[DynamicCMSPage] Loaded content', {
