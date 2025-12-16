@@ -593,14 +593,17 @@ const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductT
         </div>
       </div>
 
-      {/* Save Button */}
-      <Button
-        onClick={handleSave}
-        disabled={isSaving || !targetTitle || !targetTeaser}
-        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3"
-      >
-        {isSaving ? "Saving..." : `Save ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version`}
-      </Button>
+      {/* Save Button - aligned with right column */}
+      <div className="grid grid-cols-2 gap-6">
+        <div></div>
+        <Button
+          onClick={handleSave}
+          disabled={isSaving || !targetTitle || !targetTeaser}
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3"
+        >
+          {isSaving ? "Saving..." : `Save ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version`}
+        </Button>
+      </div>
     </div>
   );
 };
