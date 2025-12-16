@@ -1049,8 +1049,8 @@ const DownloadsEditor = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h3 className="font-medium text-white truncate">{download.title}</h3>
-                          <p className="text-sm text-gray-400 line-clamp-2">{download.teaser}</p>
+                          <h3 className="text-lg font-semibold text-white line-clamp-2">{download.title}</h3>
+                          <p className="text-sm text-gray-400 line-clamp-2 mt-1">{download.teaser}</p>
                         </div>
                         <div className="flex gap-1">
                           {/* Preview - Green */}
