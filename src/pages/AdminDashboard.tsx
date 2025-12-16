@@ -4067,7 +4067,7 @@ const AdminDashboard = () => {
               </Button>
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--accent-purple))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-purple))]/90 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-[hsl(180_60%_45%)] text-white hover:bg-[hsl(180_60%_40%)] shadow-soft hover:shadow-lg"
                 onClick={() => navigate(`/${language}/admin-dashboard/downloads`)}
               >
                 <Download className="h-4 w-4" />
