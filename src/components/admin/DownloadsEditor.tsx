@@ -224,8 +224,7 @@ const DownloadsEditor = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["downloads"] });
       toast.success("Download created successfully");
-      setIsDialogOpen(false);
-      resetForm();
+      // Stay in dialog after save
     },
     onError: (error: any) => {
       toast.error("Failed to create download: " + error.message);
@@ -258,9 +257,7 @@ const DownloadsEditor = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["downloads"] });
       toast.success("Download updated successfully");
-      setIsDialogOpen(false);
-      setEditingDownload(null);
-      resetForm();
+      // Stay in dialog after save
     },
     onError: (error: any) => {
       toast.error("Failed to update download: " + error.message);
