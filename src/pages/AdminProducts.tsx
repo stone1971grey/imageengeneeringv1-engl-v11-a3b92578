@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
 const AdminProducts = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isEditingProduct, setIsEditingProduct] = useState(false);
+  const [backToOverviewHandler, setBackToOverviewHandler] = useState<(() => void) | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +58,19 @@ const AdminProducts = () => {
     }
   };
 
+  const handleEditingChange = useCallback((isEditing: boolean, onBackToOverview: () => void) => {
+    setIsEditingProduct(isEditing);
+    setBackToOverviewHandler(() => onBackToOverview);
+  }, []);
+
+  const handleBackClick = () => {
+    if (isEditingProduct && backToOverviewHandler) {
+      backToOverviewHandler();
+    } else {
+      handleBackToDashboard();
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
@@ -79,16 +94,16 @@ const AdminProducts = () => {
             <p className="text-gray-400 mt-2">Create and manage products, test charts, and equipment</p>
           </div>
           <Button
-            onClick={handleBackToDashboard}
+            onClick={handleBackClick}
             variant="outline"
             className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a]"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+            {isEditingProduct ? "Back to Overview" : "Back to Dashboard"}
           </Button>
         </div>
 
-        <ProductsEditor />
+        <ProductsEditor onEditingChange={handleEditingChange} />
       </div>
     </div>
   );
