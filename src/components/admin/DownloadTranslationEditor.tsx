@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Languages, CheckCircle, AlertCircle } from "lucide-react";
+import { Languages, CheckCircle, AlertCircle, Upload, FileText, X } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 
 interface DescriptionSection {
@@ -62,12 +62,15 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
   const [selectedLanguage, setSelectedLanguage] = useState("de");
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [translationStatus, setTranslationStatus] = useState<TranslationStatus>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Target language form data
   const [targetTitle, setTargetTitle] = useState("");
   const [targetTeaser, setTargetTeaser] = useState("");
   const [targetDescription, setTargetDescription] = useState("");
+  const [targetDownloadUrl, setTargetDownloadUrl] = useState<string | null>(null);
 
   // Load translation status for all languages
   useEffect(() => {
@@ -102,7 +105,7 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
     const loadTargetData = async () => {
       const { data } = await supabase
         .from("downloads")
-        .select("title, teaser, description")
+        .select("title, teaser, description, download_url")
         .eq("slug", downloadSlug)
         .eq("language_code", selectedLanguage.toUpperCase())
         .maybeSingle();
@@ -111,15 +114,63 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
         setTargetTitle(data.title || "");
         setTargetTeaser(data.teaser || "");
         setTargetDescription(data.description || "");
+        setTargetDownloadUrl(data.download_url);
       } else {
         setTargetTitle("");
         setTargetTeaser("");
         setTargetDescription("");
+        setTargetDownloadUrl(null);
       }
     };
     
     loadTargetData();
   }, [downloadSlug, selectedLanguage]);
+
+  // Handle PDF upload for target language
+  const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error("Please select a PDF file");
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const langCode = selectedLanguage.toLowerCase();
+      const fileName = `${downloadSlug}_${langCode}_${Date.now()}.pdf`;
+      const filePath = `info-hub/${englishData.category?.toLowerCase().replace(/\s+/g, '-') || 'general'}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      setTargetDownloadUrl(publicUrl);
+      toast.success(`PDF for ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} uploaded!`);
+      
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload PDF");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemovePdf = () => {
+    setTargetDownloadUrl(null);
+    toast.info("Language-specific PDF removed. Will use English version.");
+  };
 
   const handleAutoTranslate = async () => {
     setIsTranslating(true);
@@ -199,7 +250,8 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
         pages: englishData.pages,
         duration: englishData.duration,
         publish_date: englishData.publish_date,
-        download_url: englishData.download_url,
+        // Use language-specific PDF if available, otherwise fallback to English
+        download_url: targetDownloadUrl || englishData.download_url,
         image_url: englishData.image_url,
         published: englishData.published,
         visibility: englishData.visibility,
@@ -331,7 +383,7 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
           
           <div>
             <Label className="text-gray-400 text-sm">Description</Label>
-            <div className="p-3 bg-[#2a2a2a] border border-gray-700 rounded-md text-gray-300 min-h-[120px] max-h-[300px] overflow-y-auto">
+            <div className="p-3 bg-[#2a2a2a] border border-gray-700 rounded-md text-gray-300 min-h-[100px] max-h-[200px] overflow-y-auto">
               {englishSections.length > 0 ? (
                 <div className="space-y-3">
                   {englishSections.map((section, idx) => (
@@ -347,6 +399,28 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
                 </div>
               ) : (
                 <span className="text-gray-500 italic">No description</span>
+              )}
+            </div>
+          </div>
+
+          {/* English PDF (Read-only) */}
+          <div>
+            <Label className="text-gray-400 text-sm">PDF File</Label>
+            <div className="p-3 bg-[#2a2a2a] border border-gray-700 rounded-md text-gray-300">
+              {englishData.download_url ? (
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-red-400" />
+                  <a 
+                    href={englishData.download_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline text-sm truncate"
+                  >
+                    {englishData.download_url.split('/').pop()}
+                  </a>
+                </div>
+              ) : (
+                <span className="text-gray-500 italic">No PDF uploaded</span>
               )}
             </div>
           </div>
@@ -384,7 +458,7 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
           
           <div>
             <Label className="text-gray-300 text-sm">Description</Label>
-            <div className="p-3 bg-[#1a1a1a] border border-gray-600 rounded-md text-gray-300 min-h-[120px] max-h-[300px] overflow-y-auto">
+            <div className="p-3 bg-[#1a1a1a] border border-gray-600 rounded-md text-gray-300 min-h-[100px] max-h-[200px] overflow-y-auto">
               {targetSections.length > 0 ? (
                 <div className="space-y-3">
                   {targetSections.map((section, idx) => (
@@ -401,6 +475,65 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
               ) : (
                 <span className="text-gray-500 italic">Use auto-translate to populate content</span>
               )}
+            </div>
+          </div>
+
+          {/* Target Language PDF Upload */}
+          <div>
+            <Label className="text-gray-300 text-sm">
+              PDF File ({LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version)
+            </Label>
+            <div className="p-3 bg-[#1a1a1a] border border-gray-600 rounded-md space-y-2">
+              {targetDownloadUrl && targetDownloadUrl !== englishData.download_url ? (
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <FileText className="w-4 h-4 text-red-400 flex-shrink-0" />
+                    <a 
+                      href={targetDownloadUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:underline text-sm truncate"
+                    >
+                      {targetDownloadUrl.split('/').pop()}
+                    </a>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemovePdf}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20 flex-shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm italic">
+                  {englishData.download_url ? "Using English PDF (default)" : "No PDF available"}
+                </div>
+              )}
+              
+              <div className="pt-2 border-t border-gray-700">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf"
+                  onChange={handlePdfUpload}
+                  className="hidden"
+                  id="pdf-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {isUploading ? "Uploading..." : `Upload ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} PDF`}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
