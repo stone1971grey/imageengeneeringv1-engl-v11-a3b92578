@@ -134,6 +134,7 @@ const ProductsEditor = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [docMediaDialogOpen, setDocMediaDialogOpen] = useState(false);
+  const [productTranslations, setProductTranslations] = useState<Record<string, string[]>>({});
 
   const [formData, setFormData] = useState({
     slug: "",
@@ -216,6 +217,26 @@ const ProductsEditor = () => {
       }));
       
       setProducts(transformedProducts as unknown as Product[]);
+      
+      // Load translation status for all products
+      if (transformedProducts.length > 0) {
+        const slugs = transformedProducts.map(p => p.slug);
+        const { data: translations } = await supabase
+          .from("products")
+          .select("slug, language_code")
+          .in("slug", slugs)
+          .neq("language_code", "EN");
+        
+        // Group translations by slug
+        const translationMap: Record<string, string[]> = {};
+        (translations || []).forEach(t => {
+          if (!translationMap[t.slug]) {
+            translationMap[t.slug] = [];
+          }
+          translationMap[t.slug].push(t.language_code);
+        });
+        setProductTranslations(translationMap);
+      }
     } catch (error) {
       console.error("Error loading products:", error);
       toast.error("Failed to load products");
@@ -1711,7 +1732,33 @@ const ProductsEditor = () => {
                     {product.sku && (
                       <span className="text-xs text-gray-500">SKU: {product.sku}</span>
                     )}
-                  </div>
+                    </div>
+                    {/* Language Version Badges */}
+                    <div className="flex items-center gap-1 mt-2">
+                      <span className="text-xs px-1.5 py-0.5 bg-green-600/30 text-green-400 border border-green-600/50 rounded" title="English (Master)">
+                        🇺🇸 EN
+                      </span>
+                      {productTranslations[product.slug]?.includes("DE") && (
+                        <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="German">
+                          🇩🇪 DE
+                        </span>
+                      )}
+                      {productTranslations[product.slug]?.includes("JA") && (
+                        <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Japanese">
+                          🇯🇵 JA
+                        </span>
+                      )}
+                      {productTranslations[product.slug]?.includes("KO") && (
+                        <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Korean">
+                          🇰🇷 KO
+                        </span>
+                      )}
+                      {productTranslations[product.slug]?.includes("ZH") && (
+                        <span className="text-xs px-1.5 py-0.5 bg-blue-600/30 text-blue-400 border border-blue-600/50 rounded" title="Chinese">
+                          🇨🇳 ZH
+                        </span>
+                      )}
+                    </div>
                   {/* Display Badges - same as frontend detail view */}
                   {product.display_badges && product.display_badges.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
