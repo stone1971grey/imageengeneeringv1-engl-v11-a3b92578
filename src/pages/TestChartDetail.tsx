@@ -59,7 +59,7 @@ const UI_LABELS: Record<string, Record<string, string>> = {
     chartSizesIntroDefault: "The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.",
     chartSizesIntroDefault2: "During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.",
     chartSizesIntroDefault3: "The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.",
-    referenceDataLink: "Reference data accuracy of our test charts →",
+    referenceDataLink: "Reference data accuracy of our test charts",
     reflectiveTitle: "Reflective Test Charts",
     transparentTitle: "Transparent Test Charts",
     availableDownloads: "Available Downloads",
@@ -82,7 +82,7 @@ const UI_LABELS: Record<string, Record<string, string>> = {
     chartSizesIntroDefault: "Die Test-Charts sind in den unten aufgeführten Größen erhältlich. Bitte beachten Sie, dass einige Charts aus technischen Gründen nicht in allen Größen hergestellt werden können. Für weitere Informationen stehen wir Ihnen gerne zur Verfügung.",
     chartSizesIntroDefault2: "Während der Produktion werden bestimmte Bereiche der Test-Charts gemessen, um den Produktionsprozess zu qualifizieren oder individuelle Referenzdaten zu erstellen. Gemessene Bereiche können Farb- oder Grautöne sein.",
     chartSizesIntroDefault3: "Die Messgeräte werden regelmäßig kalibriert und vor dem Einsatz geprüft. Weitere Informationen finden Sie in unserem Referenzdaten-Genauigkeitsblatt.",
-    referenceDataLink: "Referenzdaten-Genauigkeit unserer Test-Charts →",
+    referenceDataLink: "Referenzdaten-Genauigkeit unserer Test-Charts",
     reflectiveTitle: "Reflektierende Test-Charts",
     transparentTitle: "Transparente Test-Charts",
     availableDownloads: "Verfügbare Downloads",
@@ -105,7 +105,7 @@ const UI_LABELS: Record<string, Record<string, string>> = {
     chartSizesIntroDefault: "テストチャートは以下のサイズでご利用いただけます。技術的な理由により、一部のチャートはすべてのサイズで製造できない場合があります。詳細についてはお気軽にお問い合わせください。",
     chartSizesIntroDefault2: "製造中、テストチャートの特定の領域を測定して製造プロセスを検証したり、個別の参照データを作成したりします。測定される領域は、カラーまたはグレートーンです。",
     chartSizesIntroDefault3: "測定機器は定期的に校正され、使用前に検証されます。詳細については、参照データ精度シートをご覧ください。",
-    referenceDataLink: "テストチャートの参照データ精度 →",
+    referenceDataLink: "テストチャートの参照データ精度",
     reflectiveTitle: "反射型テストチャート",
     transparentTitle: "透過型テストチャート",
     availableDownloads: "利用可能なダウンロード",
@@ -128,7 +128,7 @@ const UI_LABELS: Record<string, Record<string, string>> = {
     chartSizesIntroDefault: "테스트 차트는 아래 나열된 크기로 제공됩니다. 기술적인 이유로 일부 차트는 모든 크기로 제조할 수 없습니다. 추가 정보가 필요하시면 문의해 주세요.",
     chartSizesIntroDefault2: "생산 중 테스트 차트의 특정 영역을 측정하여 생산 공정을 검증하거나 개별 참조 데이터를 생성합니다. 측정되는 영역은 색상 또는 그레이 톤입니다.",
     chartSizesIntroDefault3: "측정 장치는 정기적으로 교정되고 사용 전에 검증됩니다. 자세한 내용은 참조 데이터 정확도 시트를 참조하세요.",
-    referenceDataLink: "테스트 차트 참조 데이터 정확도 →",
+    referenceDataLink: "테스트 차트 참조 데이터 정확도",
     reflectiveTitle: "반사형 테스트 차트",
     transparentTitle: "투과형 테스트 차트",
     availableDownloads: "다운로드 가능",
@@ -151,7 +151,7 @@ const UI_LABELS: Record<string, Record<string, string>> = {
     chartSizesIntroDefault: "测试图提供以下尺寸。请注意，由于技术原因，某些图表无法制造所有尺寸。如需更多信息，请随时联系我们。",
     chartSizesIntroDefault2: "在生产过程中，测量测试图的特定区域以验证生产过程或创建随测试图附带的个别参考数据。测量区域可以是彩色或灰色调。",
     chartSizesIntroDefault3: "测量设备定期校准并在使用前进行验证。您可以在我们的参考数据准确性表中找到更多信息。",
-    referenceDataLink: "测试图参考数据准确性 →",
+    referenceDataLink: "测试图参考数据准确性",
     reflectiveTitle: "反射式测试图",
     transparentTitle: "透射式测试图",
     availableDownloads: "可用下载",
@@ -564,7 +564,7 @@ const TestChartDetail = () => {
                       download="IE_Reference_Data_Accuracy.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#f9dc24] hover:underline font-medium inline-flex items-center gap-1"
+                      className="mt-6 text-[#f9dc24] hover:underline font-medium inline-flex items-center gap-2"
                     >
                       <Download className="w-4 h-4" />
                       {labels.referenceDataLink}
