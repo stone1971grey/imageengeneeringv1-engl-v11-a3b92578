@@ -29,7 +29,7 @@ interface Download {
   title: string;
   teaser: string;
   description: string | null;
-  download_type: "whitepaper" | "conference" | "video";
+  download_type: "whitepaper" | "conference" | "video" | "thesis" | "technote" | "datatools";
   category: string | null;
   pages: number | null;
   duration: string | null;
@@ -53,7 +53,10 @@ interface DescriptionSection {
 
 const DOWNLOAD_TYPES = [
   { value: "whitepaper", label: "White Paper", color: "bg-blue-500", icon: BookOpen },
+  { value: "thesis", label: "Diploma Thesis", color: "bg-indigo-500", icon: BookOpen },
   { value: "conference", label: "Conference Paper", color: "bg-purple-500", icon: Presentation },
+  { value: "technote", label: "Tech Note", color: "bg-amber-500", icon: FileText },
+  { value: "datatools", label: "Data & Tools", color: "bg-cyan-500", icon: FileText },
   { value: "video", label: "Video", color: "bg-emerald-500", icon: Video },
 ] as const;
 
@@ -128,7 +131,7 @@ const DownloadsEditor = () => {
     slug: "",
     teaser: "",
     description: "",
-    download_type: "whitepaper" as "whitepaper" | "conference" | "video",
+    download_type: "whitepaper" as "whitepaper" | "conference" | "video" | "thesis" | "technote" | "datatools",
     category: "",
     pages: null as number | null,
     duration: "",
@@ -380,10 +383,16 @@ const DownloadsEditor = () => {
 
     try {
       // Create folder path: info-hub/{type-folder}/filename
-      // Maps to Media Management structure: Info Hub → White Papers / Conference Papers / Video Archive
-      const typeFolder = formData.download_type === 'whitepaper' ? 'white-papers' 
-        : formData.download_type === 'conference' ? 'conference-papers'
-        : 'video-archive';
+      // Maps to Media Management structure: Info Hub → subfolders by type
+      const typeFolderMap: Record<string, string> = {
+        'whitepaper': 'white-papers',
+        'thesis': 'diploma-theses',
+        'conference': 'conference-papers',
+        'technote': 'tech-notes',
+        'datatools': 'data-tools',
+        'video': 'video-archive'
+      };
+      const typeFolder = typeFolderMap[formData.download_type] || 'white-papers';
       const folderPath = `info-hub/${typeFolder}`;
       const filePath = `${folderPath}/${file.name}`;
 
