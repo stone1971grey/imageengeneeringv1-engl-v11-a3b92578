@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, Search } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -5359,6 +5359,96 @@ const AdminDashboard = () => {
                     </div>
                   </TabsContent>
                 </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* Available Content Editors */}
+            <Card className="border-gray-200 shadow-lg">
+              <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#f5743a] to-orange-400 flex items-center justify-center">
+                    <Settings className="h-6 w-6 text-white" />
+                  </div>
+                  Available Content Editors
+                </CardTitle>
+                <CardDescription className="text-base text-gray-600 mt-2">
+                  Manage your content with these powerful editing tools
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                  {/* Manage News */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-sky-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-sky-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center shadow-lg shadow-sky-200 group-hover:scale-110 transition-transform">
+                        <Newspaper className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">Manage News</h4>
+                      <p className="text-xs text-gray-500">Create & edit articles</p>
+                    </div>
+                  </div>
+
+                  {/* Manage Events */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg shadow-green-200 group-hover:scale-110 transition-transform">
+                        <Calendar className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">Manage Events</h4>
+                      <p className="text-xs text-gray-500">Schedule & organize</p>
+                    </div>
+                  </div>
+
+                  {/* Manage Products */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-200 group-hover:scale-110 transition-transform">
+                        <Target className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">Manage Products</h4>
+                      <p className="text-xs text-gray-500">Product catalog</p>
+                    </div>
+                  </div>
+
+                  {/* Manage Downloads */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-200 group-hover:scale-110 transition-transform">
+                        <Download className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">Manage Downloads</h4>
+                      <p className="text-xs text-gray-500">Resources & files</p>
+                    </div>
+                  </div>
+
+                  {/* SEO Settings */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg shadow-purple-200 group-hover:scale-110 transition-transform">
+                        <Search className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">SEO Settings</h4>
+                      <p className="text-xs text-gray-500">Meta & optimization</p>
+                    </div>
+                  </div>
+
+                  {/* Translation Glossary */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
+                        <Book className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">Translation Glossary</h4>
+                      <p className="text-xs text-gray-500">Terminology database</p>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
