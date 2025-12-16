@@ -15,11 +15,12 @@ interface DownloadsSegmentEditorProps {
 }
 
 const DOWNLOAD_TYPES = [
-  { value: "white-paper", label: "White Papers" },
-  { value: "conference-paper", label: "Conference Papers" },
+  { value: "whitepaper", label: "White Papers" },
+  { value: "thesis", label: "Diploma Theses" },
+  { value: "conference", label: "Conference Papers" },
+  { value: "technote", label: "Tech Notes" },
+  { value: "datatools", label: "Data & Tools" },
   { value: "video", label: "Videos" },
-  { value: "brochure", label: "Brochures" },
-  { value: "datasheet", label: "Datasheets" },
 ];
 
 export const DownloadsSegmentEditor = ({

@@ -846,6 +846,7 @@ const DynamicCMSPage = () => {
           <DownloadsSegment
             key={segmentId}
             segmentId={segmentDbId || parseInt(String(segment.id).replace(/\D/g, '')) || 0}
+            pageSlug={pageSlug}
             config={{
               title: segment.data?.title,
               description: segment.data?.description,
