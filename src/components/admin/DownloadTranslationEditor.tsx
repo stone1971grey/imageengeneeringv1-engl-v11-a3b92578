@@ -531,24 +531,24 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
                   id="pdf-upload"
                 />
                 <div className="flex gap-2">
-                  {/* Blue - Upload from Computer */}
+                  {/* Yellow - Upload from Computer */}
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     {isUploading ? "Uploading..." : "Upload PDF"}
                   </Button>
                   
-                  {/* Yellow - Select from Media Management */}
+                  {/* Blue - Select from Media Management */}
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => setShowMediaSelector(true)}
-                    className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <FolderOpen className="w-4 h-4 mr-2" />
                     Media Management
