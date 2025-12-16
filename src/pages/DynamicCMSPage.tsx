@@ -20,6 +20,7 @@ import Debug from "@/components/segments/Debug";
 import ActionHero from "@/components/segments/ActionHero";
 import EventsSegment from "@/components/segments/EventsSegment";
 import ProductListSegment from "@/components/segments/ProductListSegment";
+import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -771,6 +772,20 @@ const DynamicCMSPage = () => {
               layout: segment.data?.layout
             }}
             language={currentUrlLanguage}
+          />
+        );
+
+      case "downloads":
+        return (
+          <DownloadsSegment
+            key={segmentId}
+            segmentId={segmentDbId || parseInt(String(segment.id).replace(/\D/g, '')) || 0}
+            config={{
+              title: segment.data?.title,
+              description: segment.data?.description,
+              filterType: segment.data?.filterType || 'all',
+              showForm: segment.data?.showForm !== false
+            }}
           />
         );
 
