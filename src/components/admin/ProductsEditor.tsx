@@ -1719,7 +1719,7 @@ const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-white truncate">
+                    <h3 className="text-lg font-semibold text-white line-clamp-2">
                       {product.title}
                     </h3>
                     {!product.published && (
@@ -1737,7 +1737,7 @@ const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-400 truncate">{product.teaser}</p>
+                  <p className="text-sm text-gray-400 line-clamp-2 mt-1">{product.teaser}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] px-2 py-0.5 rounded">
                       {product.category}
