@@ -77,6 +77,7 @@ import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor
 import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
 import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
 import { ProductListSegmentEditor } from '@/components/admin/ProductListSegmentEditor';
+import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEditor';
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
 
 // Type definitions for CMS content structures
@@ -3066,6 +3067,14 @@ const AdminDashboard = () => {
           maxProducts: undefined,
           layout: 'grid'
         };
+      case 'downloads':
+        return {
+          title: 'Downloads',
+          description: 'Access our documents, whitepapers and videos',
+          selectedTypes: [],
+          maxItems: 12,
+          showCategories: true
+        };
       default:
         return {};
     }
@@ -4499,6 +4508,25 @@ const AdminDashboard = () => {
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
+
+                      {/* Downloads - T */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('downloads')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Download className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Downloads - T</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Download center with forms
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-600 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -5468,6 +5496,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
                       if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
                       if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
+                      if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
                       
                       return (
                         <SortableTab key={tabId} id={tabId} value={tabId}>
@@ -6649,6 +6678,7 @@ const AdminDashboard = () => {
             else if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
             else if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
             else if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
+            else if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
             else if (segment.type === 'feature-overview') label = `Features - K-${displayNumber}`;
             else if (segment.type === 'table') label = `Table - L-${displayNumber}`;
             else if (segment.type === 'faq') label = `FAQ - O-${displayNumber}`;
@@ -6759,6 +6789,7 @@ const AdminDashboard = () => {
                       if (segType === 'action-hero') return `Action Hero - Q-${displayNumber}`;
                       if (segType === 'events') return `Events List - R-${displayNumber}`;
                       if (segType === 'product-list') return `Product List - S-${displayNumber}`;
+                      if (segType === 'downloads') return `Downloads - T-${displayNumber}`;
                       return segType;
                     };
 
@@ -7010,6 +7041,15 @@ const AdminDashboard = () => {
 
                   {segment.type === 'product-list' && (
                     <ProductListSegmentEditor
+                      segmentId={segment.id}
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      language={editorLanguage}
+                      onSave={() => loadContent()}
+                    />
+                  )}
+
+                  {segment.type === 'downloads' && (
+                    <DownloadsSegmentEditor
                       segmentId={segment.id}
                       pageSlug={resolvedPageSlug || selectedPage}
                       language={editorLanguage}
