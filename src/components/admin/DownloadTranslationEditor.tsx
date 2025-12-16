@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Languages, CheckCircle, AlertCircle, Upload, FileText, X } from "lucide-react";
+import { Languages, CheckCircle, AlertCircle, Upload, FileText, X, FolderOpen } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { DataHubDialog } from "./DataHubDialog";
 
 interface DescriptionSection {
   id: string;
@@ -63,6 +64,7 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showMediaSelector, setShowMediaSelector] = useState(false);
   const [translationStatus, setTranslationStatus] = useState<TranslationStatus>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -170,6 +172,12 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
   const handleRemovePdf = () => {
     setTargetDownloadUrl(null);
     toast.info("Language-specific PDF removed. Will use English version.");
+  };
+
+  const handleMediaSelect = (url: string) => {
+    setTargetDownloadUrl(url);
+    setShowMediaSelector(false);
+    toast.success(`PDF from Media Management selected for ${LANGUAGES.find(l => l.code === selectedLanguage)?.name}!`);
   };
 
   const handleAutoTranslate = async () => {
@@ -513,7 +521,7 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
                 </div>
               )}
               
-              <div className="pt-2 border-t border-gray-700">
+              <div className="pt-2 border-t border-gray-700 space-y-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -522,17 +530,30 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
                   className="hidden"
                   id="pdf-upload"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  {isUploading ? "Uploading..." : `Upload ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} PDF`}
-                </Button>
+                <div className="flex gap-2">
+                  {/* Blue - Upload from Computer */}
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {isUploading ? "Uploading..." : "Upload PDF"}
+                  </Button>
+                  
+                  {/* Yellow - Select from Media Management */}
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setShowMediaSelector(true)}
+                    className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                  >
+                    <FolderOpen className="w-4 h-4 mr-2" />
+                    Media Management
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -547,6 +568,14 @@ const DownloadTranslationEditor = ({ downloadSlug, englishData, onSave }: Downlo
           </Button>
         </div>
       </div>
+
+      {/* Media Selector Dialog */}
+      <DataHubDialog
+        isOpen={showMediaSelector}
+        onClose={() => setShowMediaSelector(false)}
+        selectionMode={true}
+        onSelect={handleMediaSelect}
+      />
     </div>
   );
 };
