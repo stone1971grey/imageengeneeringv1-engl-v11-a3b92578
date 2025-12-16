@@ -60,7 +60,127 @@ interface UiLabels {
   clearAllFiltersButton: string;
   resultsCount: string;
   resultsCountSingular: string;
+  badgeTranslations?: Record<string, string>;
 }
+
+// Default badge translations for all supported languages
+const DEFAULT_BADGE_TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    "Resolution": "Resolution",
+    "Color": "Color",
+    "Geometry": "Geometry",
+    "Low-Light": "Low-Light",
+    "Dynamic Range": "Dynamic Range",
+    "Noise": "Noise",
+    "Timing": "Timing",
+    "Ultra-Wide": "Ultra-Wide",
+    "Wide": "Wide",
+    "Standard": "Standard",
+    "Multi-Format": "Multi-Format",
+    "Automotive": "Automotive",
+    "Mobile Devices": "Mobile Devices",
+    "Industrial Imaging": "Industrial Imaging",
+    "Video / Broadcast": "Video / Broadcast",
+    "Custom": "Custom",
+    "Standard-Compliant": "Standard-Compliant",
+    "Integrated Illumination": "Integrated Illumination",
+    "Timing Hardware": "Timing Hardware",
+    "ISO Compliant": "ISO Compliant",
+    "Multipurpose": "Multipurpose"
+  },
+  de: {
+    "Resolution": "Auflösung",
+    "Color": "Farbe",
+    "Geometry": "Geometrie",
+    "Low-Light": "Schwachlicht",
+    "Dynamic Range": "Dynamikbereich",
+    "Noise": "Rauschen",
+    "Timing": "Timing",
+    "Ultra-Wide": "Ultra-Weitwinkel",
+    "Wide": "Weitwinkel",
+    "Standard": "Standard",
+    "Multi-Format": "Multi-Format",
+    "Automotive": "Automobil",
+    "Mobile Devices": "Mobilgeräte",
+    "Industrial Imaging": "Industrielle Bildgebung",
+    "Video / Broadcast": "Video / Broadcast",
+    "Custom": "Individuell",
+    "Standard-Compliant": "Standardkonform",
+    "Integrated Illumination": "Integrierte Beleuchtung",
+    "Timing Hardware": "Timing-Hardware",
+    "ISO Compliant": "ISO-konform",
+    "Multipurpose": "Mehrzweck"
+  },
+  ja: {
+    "Resolution": "解像度",
+    "Color": "カラー",
+    "Geometry": "ジオメトリ",
+    "Low-Light": "低照度",
+    "Dynamic Range": "ダイナミックレンジ",
+    "Noise": "ノイズ",
+    "Timing": "タイミング",
+    "Ultra-Wide": "超広角",
+    "Wide": "広角",
+    "Standard": "標準",
+    "Multi-Format": "マルチフォーマット",
+    "Automotive": "自動車",
+    "Mobile Devices": "モバイルデバイス",
+    "Industrial Imaging": "産業用画像処理",
+    "Video / Broadcast": "ビデオ/放送",
+    "Custom": "カスタム",
+    "Standard-Compliant": "規格準拠",
+    "Integrated Illumination": "統合照明",
+    "Timing Hardware": "タイミングハードウェア",
+    "ISO Compliant": "ISO準拠",
+    "Multipurpose": "多目的"
+  },
+  ko: {
+    "Resolution": "해상도",
+    "Color": "컬러",
+    "Geometry": "지오메트리",
+    "Low-Light": "저조도",
+    "Dynamic Range": "다이나믹 레인지",
+    "Noise": "노이즈",
+    "Timing": "타이밍",
+    "Ultra-Wide": "초광각",
+    "Wide": "광각",
+    "Standard": "표준",
+    "Multi-Format": "멀티 포맷",
+    "Automotive": "자동차",
+    "Mobile Devices": "모바일 기기",
+    "Industrial Imaging": "산업용 이미징",
+    "Video / Broadcast": "비디오/방송",
+    "Custom": "맞춤형",
+    "Standard-Compliant": "표준 준수",
+    "Integrated Illumination": "통합 조명",
+    "Timing Hardware": "타이밍 하드웨어",
+    "ISO Compliant": "ISO 준수",
+    "Multipurpose": "다목적"
+  },
+  zh: {
+    "Resolution": "分辨率",
+    "Color": "色彩",
+    "Geometry": "几何",
+    "Low-Light": "低光",
+    "Dynamic Range": "动态范围",
+    "Noise": "噪声",
+    "Timing": "时序",
+    "Ultra-Wide": "超广角",
+    "Wide": "广角",
+    "Standard": "标准",
+    "Multi-Format": "多格式",
+    "Automotive": "汽车",
+    "Mobile Devices": "移动设备",
+    "Industrial Imaging": "工业成像",
+    "Video / Broadcast": "视频/广播",
+    "Custom": "定制",
+    "Standard-Compliant": "符合标准",
+    "Integrated Illumination": "集成照明",
+    "Timing Hardware": "时序硬件",
+    "ISO Compliant": "ISO合规",
+    "Multipurpose": "多用途"
+  }
+};
 
 const DEFAULT_UI_LABELS: UiLabels = {
   searchPlaceholder: "Search products...",
@@ -282,6 +402,26 @@ const TestChartsListing = () => {
     navigate(`/${language}/products/test-charts/${product.slug}`);
   };
 
+  // Helper function to translate badges
+  const getBadgeTranslation = (badge: string): string => {
+    const customTranslations = pageConfig.uiLabels.badgeTranslations;
+    if (customTranslations && customTranslations[badge]) {
+      return customTranslations[badge];
+    }
+    const langTranslations = DEFAULT_BADGE_TRANSLATIONS[language] || DEFAULT_BADGE_TRANSLATIONS.en;
+    return langTranslations[badge] || badge;
+  };
+
+  // Helper function to get availability label
+  const getAvailabilityLabel = (availability: string): string => {
+    switch (availability) {
+      case 'available': return pageConfig.uiLabels.inStockLabel;
+      case 'pre-order': return pageConfig.uiLabels.preOrderLabel;
+      case 'out-of-stock': return pageConfig.uiLabels.outOfStockLabel;
+      default: return pageConfig.uiLabels.discontinuedLabel;
+    }
+  };
+
   const ProductCard = ({ product, isListView = false }: { product: Product; isListView?: boolean }) => {
     if (isListView) {
       // List layout: horizontal card with max-height 300px image
@@ -319,7 +459,7 @@ const TestChartsListing = () => {
                         key={idx}
                         className="text-xs px-2 py-0.5 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
                       >
-                        {badge}
+                        {getBadgeTranslation(badge)}
                       </Badge>
                     ))}
                   </div>
@@ -334,9 +474,7 @@ const TestChartsListing = () => {
                         ? 'text-primary'
                         : 'text-zinc-500'
                   }`}>
-                    {product.availability === 'available' ? 'In Stock' : 
-                     product.availability === 'pre-order' ? 'Pre-Order' :
-                     product.availability === 'out-of-stock' ? 'Out of Stock' : 'Discontinued'}
+                    {getAvailabilityLabel(product.availability)}
                   </span>
                 </div>
               </div>
@@ -348,12 +486,12 @@ const TestChartsListing = () => {
                   className="bg-black hover:bg-black/80 text-white font-medium"
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  Details
+                  {pageConfig.uiLabels.detailsButton}
                 </Button>
                 <Button 
                   className="bg-[hsl(var(--yellow))] hover:bg-[hsl(var(--yellow))]/90 text-black font-medium"
                 >
-                  Request Quote
+                  {pageConfig.uiLabels.requestQuoteButton}
                 </Button>
               </div>
             </CardContent>
@@ -392,7 +530,7 @@ const TestChartsListing = () => {
                   key={idx}
                   className="text-xs px-2 py-0.5 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
                 >
-                  {badge}
+                  {getBadgeTranslation(badge)}
                 </Badge>
               ))}
             </div>
@@ -407,9 +545,7 @@ const TestChartsListing = () => {
                   ? 'text-primary'
                   : 'text-zinc-500'
             }`}>
-              {product.availability === 'available' ? 'In Stock' : 
-               product.availability === 'pre-order' ? 'Pre-Order' :
-               product.availability === 'out-of-stock' ? 'Out of Stock' : 'Discontinued'}
+              {getAvailabilityLabel(product.availability)}
             </span>
           </div>
 
@@ -420,12 +556,12 @@ const TestChartsListing = () => {
               className="flex-1 bg-black hover:bg-black/80 text-white font-medium"
             >
               <FileText className="w-4 h-4 mr-2" />
-              Details
+              {pageConfig.uiLabels.detailsButton}
             </Button>
             <Button 
               className="flex-1 bg-[hsl(var(--yellow))] hover:bg-[hsl(var(--yellow))]/90 text-black font-medium"
             >
-              Request Quote
+              {pageConfig.uiLabels.requestQuoteButton}
             </Button>
           </div>
         </CardContent>
