@@ -64,12 +64,16 @@ const TestChartDetail = () => {
       setLoading(true);
       setSelectedImage(0);
 
+      // Map language code to database format (uppercase)
+      const languageCode = language.toUpperCase();
+      
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .eq("category", "Test Charts")
         .eq("published", true)
         .eq("slug", slug)
+        .eq("language_code", languageCode)
         .maybeSingle();
 
       if (error) {
@@ -83,7 +87,7 @@ const TestChartDetail = () => {
     };
 
     void load();
-  }, [slug]);
+  }, [slug, language]);
 
   const allImages = useMemo(() => {
     if (!product) return [];
