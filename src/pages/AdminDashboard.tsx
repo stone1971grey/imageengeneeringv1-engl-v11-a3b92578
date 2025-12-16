@@ -5377,11 +5377,11 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                  {/* Manage News */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-sky-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-sky-400"></div>
+                  {/* Manage News - Primary Orange */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(var(--primary))] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--primary))]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center shadow-lg shadow-sky-200 group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(var(--primary))] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <Newspaper className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">Manage News</h4>
@@ -5389,11 +5389,11 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Manage Events */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-400"></div>
+                  {/* Manage Events - Events Button Blue */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(var(--events-button))] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--events-button))]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg shadow-green-200 group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(var(--events-button))] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <Calendar className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">Manage Events</h4>
@@ -5401,11 +5401,11 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Manage Products */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400"></div>
+                  {/* Manage Products - Accent Blue/Teal */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(var(--accent-blue))] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--accent-blue))]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-200 group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(var(--accent-blue))] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <Target className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">Manage Products</h4>
@@ -5413,11 +5413,11 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Manage Downloads */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400"></div>
+                  {/* Manage Downloads - Teal */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(180_60%_45%)] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(180_60%_45%)]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-200 group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(180_60%_45%)] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <Download className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">Manage Downloads</h4>
@@ -5425,23 +5425,23 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* SEO Settings */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+                  {/* SEO Settings - SEO Button Orange */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(var(--seo-button))] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--seo-button))]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg shadow-purple-200 group-hover:scale-110 transition-transform">
-                        <Search className="h-6 w-6 text-white" />
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(var(--seo-button))] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <Eye className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">SEO Settings</h4>
                       <p className="text-xs text-gray-500">Meta & optimization</p>
                     </div>
                   </div>
 
-                  {/* Translation Glossary */}
-                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400"></div>
+                  {/* Translation Glossary - Accent Violet */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[hsl(var(--accent-violet))] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-[hsl(var(--accent-violet))]"></div>
                     <div className="p-5 space-y-3 text-center">
-                      <div className="h-12 w-12 mx-auto rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-[hsl(var(--accent-violet))] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <Book className="h-6 w-6 text-white" />
                       </div>
                       <h4 className="text-sm font-bold text-gray-900">Translation Glossary</h4>
