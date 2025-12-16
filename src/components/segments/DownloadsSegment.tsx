@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FileText, Video, X, BookOpen, Presentation, ChevronDown, ChevronUp } from "lucide-react";
+import { FileText, Video, X, BookOpen, Presentation, ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { storeMauticEmail } from "@/lib/mauticTracking";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -69,7 +69,7 @@ type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
 const TYPE_INFO = {
   whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen, groupTitle: "White Papers" },
-  thesis: { label: "Diploma Thesis", color: "bg-indigo-500", icon: BookOpen, groupTitle: "Diploma Theses" },
+  thesis: { label: "Diploma Thesis", color: "bg-teal-600", icon: GraduationCap, groupTitle: "Diploma Theses" },
   conference: { label: "Conference Paper", color: "bg-purple-500", icon: Presentation, groupTitle: "Conference Papers" },
   video: { label: "Video", color: "bg-emerald-500", icon: Video, groupTitle: "Video Archive" },
   technote: { label: "Tech Note", color: "bg-amber-500", icon: FileText, groupTitle: "Tech Notes" },
