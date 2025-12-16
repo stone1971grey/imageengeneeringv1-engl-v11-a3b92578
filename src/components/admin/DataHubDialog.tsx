@@ -376,6 +376,9 @@ export function DataHubDialog({
 
     let successCount = 0;
     let failCount = 0;
+    const uploadedPaths: string[] = [];
+
+    console.log(`[DataHub Upload] Starting upload of ${files.length} file(s) to folder: ${folder.name} (path: ${folder.storage_path})`);
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -396,10 +399,14 @@ export function DataHubDialog({
           let fileName = sanitizedName;
           let filePath = `${folder.storage_path}/${fileName}`;
 
+          console.log(`[DataHub Upload] Uploading file: ${file.name} -> ${filePath}`);
+
           // Check if file already exists, add short suffix if needed
-          const { data: existingFiles } = await supabase.storage
+          const { data: existingFiles, error: listError } = await supabase.storage
             .from("page-images")
             .list(folder.storage_path, { search: sanitizedName });
+
+          console.log(`[DataHub Upload] Existing files check for ${folder.storage_path}:`, existingFiles?.length || 0, 'found', listError ? `Error: ${listError.message}` : '');
 
           if (existingFiles && existingFiles.some((f) => f.name === sanitizedName)) {
             const ext = sanitizedName.split('.').pop();
@@ -407,9 +414,10 @@ export function DataHubDialog({
             const shortId = Math.random().toString(36).slice(2, 6);
             fileName = `${baseName}-${shortId}.${ext}`;
             filePath = `${folder.storage_path}/${fileName}`;
+            console.log(`[DataHub Upload] File exists, using new path: ${filePath}`);
           }
 
-          const { error: uploadError } = await supabase.storage
+          const { data: uploadData, error: uploadError } = await supabase.storage
             .from("page-images")
             .upload(filePath, file, {
               contentType: file.type || undefined,
@@ -417,13 +425,16 @@ export function DataHubDialog({
             });
 
           if (uploadError) {
-            console.error(`Upload error for ${file.name}:`, uploadError);
+            console.error(`[DataHub Upload] Upload error for ${file.name}:`, uploadError);
+            toast.error(`Upload failed for ${file.name}: ${uploadError.message}`);
             failCount++;
           } else {
+            console.log(`[DataHub Upload] Successfully uploaded: ${filePath}`, uploadData);
+            uploadedPaths.push(filePath);
             successCount++;
           }
-        } catch (err) {
-          console.error(`Upload error for ${file.name}:`, err);
+        } catch (err: any) {
+          console.error(`[DataHub Upload] Upload error for ${file.name}:`, err);
           failCount++;
         }
       }
@@ -436,9 +447,21 @@ export function DataHubDialog({
         toast.error(`Upload failed for all ${failCount} file(s)`);
       }
 
+      // Small delay to ensure storage is synced before reloading
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log(`[DataHub Upload] Reloading folders after upload...`);
       await loadFolders();
+      
+      // Verify uploaded files are visible
+      if (uploadedPaths.length > 0) {
+        const { data: verifyFiles } = await supabase.storage
+          .from("page-images")
+          .list(folder.storage_path, { limit: 50 });
+        console.log(`[DataHub Upload] Verification - files in ${folder.storage_path}:`, verifyFiles?.map(f => f.name) || []);
+      }
     } catch (error: any) {
-      console.error("Upload error:", error);
+      console.error("[DataHub Upload] Upload error:", error);
       toast.error(`Upload failed: ${error.message}`);
     } finally {
       setUploading(false);
