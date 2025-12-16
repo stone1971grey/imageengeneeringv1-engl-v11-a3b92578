@@ -4957,7 +4957,7 @@ const AdminDashboard = () => {
               {/* Version Badge - Top Right */}
               <div className="absolute top-6 right-6 z-10">
                 <span className="px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#f9dc24] via-yellow-300 to-[#f9dc24] text-gray-900 rounded-lg shadow-lg shadow-yellow-400/30 border border-yellow-400/50">
-                  Version 0.8
+                  Version 0.8.5
                 </span>
               </div>
               <CardContent className="p-12">
@@ -5009,6 +5009,10 @@ const AdminDashboard = () => {
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Calendar className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Event Management</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Target className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Product Management</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Settings className="h-5 w-5 text-[#f9dc24]" />
@@ -5286,6 +5290,18 @@ const AdminDashboard = () => {
                           </div>
                           <h4 className="text-sm font-bold text-gray-900">Events</h4>
                           <p className="text-xs text-gray-500">Event listings</p>
+                        </div>
+                      </div>
+
+                      {/* S - Product List */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-orange-500 text-white text-xs font-black rounded">S</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow">
+                            <Target className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Product List</h4>
+                          <p className="text-xs text-gray-500">Filterable products</p>
                         </div>
                       </div>
                     </div>
