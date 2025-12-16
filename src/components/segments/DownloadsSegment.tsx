@@ -67,17 +67,243 @@ const downloadFormSchema = z.object({
 
 type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
+// Multilingual UI labels
+const UI_LABELS: Record<string, {
+  types: Record<string, { label: string; groupTitle: string }>;
+  pages: string;
+  item: string;
+  items: string;
+  available: string;
+  all: string;
+  learnMore: string;
+  closeDetails: string;
+  noDownloads: string;
+  downloadAvailable: string;
+  downloadAvailableDesc: string;
+  downloadNow: string;
+  downloadNotAvailable: string;
+  requestDownload: string;
+  requestDownloadDesc: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  position: string;
+  consent: string;
+  processing: string;
+  categories: Record<string, string>;
+}> = {
+  en: {
+    types: {
+      whitepaper: { label: "White Paper", groupTitle: "White Papers" },
+      thesis: { label: "Diploma Thesis", groupTitle: "Diploma Theses" },
+      conference: { label: "Conference Paper", groupTitle: "Conference Papers" },
+      video: { label: "Video", groupTitle: "Video Archive" },
+      technote: { label: "Tech Note", groupTitle: "Tech Notes" },
+      datatools: { label: "Data & Tools", groupTitle: "Data & Tools" },
+    },
+    pages: "Pages",
+    item: "item",
+    items: "items",
+    available: "available",
+    all: "All",
+    learnMore: "Learn More",
+    closeDetails: "Close Details",
+    noDownloads: "No downloads available at the moment. Check back soon!",
+    downloadAvailable: "Download Available",
+    downloadAvailableDesc: "This resource is freely available. Click the button below to download.",
+    downloadNow: "Download Now",
+    downloadNotAvailable: "Download link not yet available. Please check back later.",
+    requestDownload: "Request Download",
+    requestDownloadDesc: "Please fill out the form below to receive access to this resource.",
+    firstName: "First Name",
+    lastName: "Last Name",
+    email: "Email",
+    company: "Company",
+    position: "Position",
+    consent: "I agree to receive information about products and services",
+    processing: "Processing...",
+    categories: {
+      "Testing Methodology": "Testing Methodology",
+      "Image Quality": "Image Quality",
+      "Automotive": "Automotive",
+      "Standards": "Standards",
+    },
+  },
+  de: {
+    types: {
+      whitepaper: { label: "Whitepaper", groupTitle: "Whitepapers" },
+      thesis: { label: "Diplomarbeit", groupTitle: "Diplomarbeiten" },
+      conference: { label: "Konferenzbeitrag", groupTitle: "Konferenzbeiträge" },
+      video: { label: "Video", groupTitle: "Videoarchiv" },
+      technote: { label: "Technische Notiz", groupTitle: "Technische Notizen" },
+      datatools: { label: "Daten & Tools", groupTitle: "Daten & Tools" },
+    },
+    pages: "Seiten",
+    item: "Eintrag",
+    items: "Einträge",
+    available: "verfügbar",
+    all: "Alle",
+    learnMore: "Mehr erfahren",
+    closeDetails: "Details schließen",
+    noDownloads: "Derzeit sind keine Downloads verfügbar. Schauen Sie bald wieder vorbei!",
+    downloadAvailable: "Download verfügbar",
+    downloadAvailableDesc: "Diese Ressource ist frei verfügbar. Klicken Sie auf die Schaltfläche unten, um sie herunterzuladen.",
+    downloadNow: "Jetzt herunterladen",
+    downloadNotAvailable: "Download-Link noch nicht verfügbar. Bitte schauen Sie später wieder vorbei.",
+    requestDownload: "Download anfordern",
+    requestDownloadDesc: "Bitte füllen Sie das folgende Formular aus, um Zugang zu dieser Ressource zu erhalten.",
+    firstName: "Vorname",
+    lastName: "Nachname",
+    email: "E-Mail",
+    company: "Unternehmen",
+    position: "Position",
+    consent: "Ich stimme zu, Informationen über Produkte und Dienstleistungen zu erhalten",
+    processing: "Wird verarbeitet...",
+    categories: {
+      "Testing Methodology": "Testmethodik",
+      "Image Quality": "Bildqualität",
+      "Automotive": "Automotive",
+      "Standards": "Standards",
+    },
+  },
+  ja: {
+    types: {
+      whitepaper: { label: "ホワイトペーパー", groupTitle: "ホワイトペーパー" },
+      thesis: { label: "学位論文", groupTitle: "学位論文" },
+      conference: { label: "学会論文", groupTitle: "学会論文" },
+      video: { label: "動画", groupTitle: "動画アーカイブ" },
+      technote: { label: "技術ノート", groupTitle: "技術ノート" },
+      datatools: { label: "データ＆ツール", groupTitle: "データ＆ツール" },
+    },
+    pages: "ページ",
+    item: "件",
+    items: "件",
+    available: "利用可能",
+    all: "すべて",
+    learnMore: "詳細を見る",
+    closeDetails: "詳細を閉じる",
+    noDownloads: "現在ダウンロード可能なファイルはありません。後日ご確認ください。",
+    downloadAvailable: "ダウンロード可能",
+    downloadAvailableDesc: "このリソースは無料でご利用いただけます。下のボタンをクリックしてダウンロードしてください。",
+    downloadNow: "今すぐダウンロード",
+    downloadNotAvailable: "ダウンロードリンクはまだ利用できません。後日ご確認ください。",
+    requestDownload: "ダウンロードをリクエスト",
+    requestDownloadDesc: "このリソースにアクセスするには、以下のフォームにご記入ください。",
+    firstName: "名",
+    lastName: "姓",
+    email: "メールアドレス",
+    company: "会社名",
+    position: "役職",
+    consent: "製品・サービスに関する情報を受け取ることに同意します",
+    processing: "処理中...",
+    categories: {
+      "Testing Methodology": "テスト方法論",
+      "Image Quality": "画質",
+      "Automotive": "自動車",
+      "Standards": "規格",
+    },
+  },
+  ko: {
+    types: {
+      whitepaper: { label: "백서", groupTitle: "백서" },
+      thesis: { label: "학위 논문", groupTitle: "학위 논문" },
+      conference: { label: "학회 논문", groupTitle: "학회 논문" },
+      video: { label: "동영상", groupTitle: "동영상 아카이브" },
+      technote: { label: "기술 노트", groupTitle: "기술 노트" },
+      datatools: { label: "데이터 및 도구", groupTitle: "데이터 및 도구" },
+    },
+    pages: "페이지",
+    item: "항목",
+    items: "항목",
+    available: "이용 가능",
+    all: "전체",
+    learnMore: "자세히 보기",
+    closeDetails: "세부 정보 닫기",
+    noDownloads: "현재 다운로드 가능한 파일이 없습니다. 나중에 다시 확인해 주세요.",
+    downloadAvailable: "다운로드 가능",
+    downloadAvailableDesc: "이 리소스는 무료로 이용 가능합니다. 아래 버튼을 클릭하여 다운로드하세요.",
+    downloadNow: "지금 다운로드",
+    downloadNotAvailable: "다운로드 링크가 아직 준비되지 않았습니다. 나중에 다시 확인해 주세요.",
+    requestDownload: "다운로드 요청",
+    requestDownloadDesc: "이 리소스에 접근하려면 아래 양식을 작성해 주세요.",
+    firstName: "이름",
+    lastName: "성",
+    email: "이메일",
+    company: "회사",
+    position: "직책",
+    consent: "제품 및 서비스에 대한 정보를 수신하는 데 동의합니다",
+    processing: "처리 중...",
+    categories: {
+      "Testing Methodology": "테스트 방법론",
+      "Image Quality": "이미지 품질",
+      "Automotive": "자동차",
+      "Standards": "표준",
+    },
+  },
+  zh: {
+    types: {
+      whitepaper: { label: "白皮书", groupTitle: "白皮书" },
+      thesis: { label: "学位论文", groupTitle: "学位论文" },
+      conference: { label: "会议论文", groupTitle: "会议论文" },
+      video: { label: "视频", groupTitle: "视频档案" },
+      technote: { label: "技术说明", groupTitle: "技术说明" },
+      datatools: { label: "数据与工具", groupTitle: "数据与工具" },
+    },
+    pages: "页",
+    item: "项",
+    items: "项",
+    available: "可用",
+    all: "全部",
+    learnMore: "了解更多",
+    closeDetails: "关闭详情",
+    noDownloads: "目前没有可下载的文件。请稍后再来查看！",
+    downloadAvailable: "可供下载",
+    downloadAvailableDesc: "此资源可免费获取。点击下方按钮进行下载。",
+    downloadNow: "立即下载",
+    downloadNotAvailable: "下载链接尚未可用。请稍后再查看。",
+    requestDownload: "请求下载",
+    requestDownloadDesc: "请填写以下表格以获取此资源的访问权限。",
+    firstName: "名",
+    lastName: "姓",
+    email: "电子邮件",
+    company: "公司",
+    position: "职位",
+    consent: "我同意接收有关产品和服务的信息",
+    processing: "处理中...",
+    categories: {
+      "Testing Methodology": "测试方法",
+      "Image Quality": "图像质量",
+      "Automotive": "汽车",
+      "Standards": "标准",
+    },
+  },
+};
+
 const TYPE_INFO = {
-  whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen, groupTitle: "White Papers" },
-  thesis: { label: "Diploma Thesis", color: "bg-teal-600", icon: GraduationCap, groupTitle: "Diploma Theses" },
-  conference: { label: "Conference Paper", color: "bg-purple-500", icon: Presentation, groupTitle: "Conference Papers" },
-  video: { label: "Video", color: "bg-emerald-500", icon: Video, groupTitle: "Video Archive" },
-  technote: { label: "Tech Note", color: "bg-amber-500", icon: FileText, groupTitle: "Tech Notes" },
-  datatools: { label: "Data & Tools", color: "bg-cyan-500", icon: FileText, groupTitle: "Data & Tools" },
+  whitepaper: { color: "bg-blue-500", icon: BookOpen },
+  thesis: { color: "bg-teal-600", icon: GraduationCap },
+  conference: { color: "bg-purple-500", icon: Presentation },
+  video: { color: "bg-emerald-500", icon: Video },
+  technote: { color: "bg-amber-500", icon: FileText },
+  datatools: { color: "bg-cyan-500", icon: FileText },
 } as const;
 
 // Order for displaying groups
 const GROUP_ORDER: Array<keyof typeof TYPE_INFO> = ['whitepaper', 'thesis', 'conference', 'technote', 'datatools', 'video'];
+
+// Helper to get localized date
+const getLocalizedDate = (dateStr: string, lang: string): string => {
+  const date = new Date(dateStr);
+  const localeMap: Record<string, string> = {
+    en: 'en-US',
+    de: 'de-DE',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    zh: 'zh-CN',
+  };
+  return date.toLocaleDateString(localeMap[lang] || 'en-US', { month: 'long', year: 'numeric' });
+};
 
 // Helper to normalize unicode characters
 const normalizeText = (text: string): string => {
@@ -396,8 +622,18 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
 
   const selectedItem = filteredDownloads.find(d => d.id === expandedItemId);
 
+  // Get localized labels
+  const labels = UI_LABELS[language] || UI_LABELS.en;
+  
+  // Helper to translate category
+  const translateCategory = (category: string | null, downloadType: string) => {
+    if (!category) return labels.types[downloadType]?.label || category;
+    return labels.categories[category] || category;
+  };
+
   const DownloadCard = ({ item }: { item: Download }) => {
     const typeInfo = TYPE_INFO[item.download_type];
+    const typeLabels = labels.types[item.download_type];
     const TypeIcon = typeInfo.icon;
     const isExpanded = expandedItemId === item.id;
 
@@ -411,7 +647,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
         <CardHeader className="space-y-3">
           <div className="flex items-center justify-between">
             <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
-              {item.category || typeInfo.label}
+              {translateCategory(item.category, item.download_type)}
             </Badge>
           </div>
           <CardTitle className="text-xl leading-relaxed flex items-start gap-3 text-foreground">
@@ -419,10 +655,10 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
             <span>{normalizeText(item.title)}</span>
           </CardTitle>
           <div className="flex gap-4 text-sm text-muted-foreground">
-            {item.pages && <span>{item.pages} Pages</span>}
+            {item.pages && <span>{item.pages} {labels.pages}</span>}
             {item.duration && <span>{item.duration}</span>}
             {(item.pages || item.duration) && <span>•</span>}
-            <span>{new Date(item.publish_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+            <span>{getLocalizedDate(item.publish_date, language)}</span>
           </div>
         </CardHeader>
         <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -436,12 +672,12 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
           >
             {isExpanded ? (
               <>
-                Close Details
+                {labels.closeDetails}
                 <ChevronUp className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
-                Learn More
+                {labels.learnMore}
                 <ChevronDown className="ml-2 h-4 w-4" />
               </>
             )}
@@ -489,10 +725,11 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                 : "border-border text-foreground hover:bg-muted"
               }
             >
-              All ({downloads.length})
+              {labels.all} ({downloads.length})
             </Button>
             {GROUP_ORDER.filter(type => availableTypes.includes(type)).map(type => {
               const typeInfo = TYPE_INFO[type];
+              const typeLabels = labels.types[type];
               const count = downloads.filter(d => d.download_type === type).length;
               const TypeIcon = typeInfo.icon;
               return (
@@ -506,7 +743,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                   }
                 >
                   <TypeIcon className="h-4 w-4 mr-2" />
-                  {typeInfo.groupTitle} ({count})
+                  {typeLabels?.groupTitle || type} ({count})
                 </Button>
               );
             })}
@@ -517,7 +754,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
         {downloads.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <p>No downloads available at the moment. Check back soon!</p>
+            <p>{labels.noDownloads}</p>
           </div>
         ) : (
           <div className="space-y-16">
@@ -530,6 +767,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                 if (!groupItems || groupItems.length === 0) return null;
                 
                 const typeInfo = TYPE_INFO[groupType];
+                const typeLabels = labels.types[groupType];
                 const GroupIcon = typeInfo.icon;
                 const rows = getDownloadRows(groupItems);
                 
@@ -541,8 +779,8 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                         <GroupIcon className="h-8 w-8 text-[#f9dc24]" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-foreground">{typeInfo.groupTitle}</h2>
-                        <p className="text-muted-foreground text-sm">{groupItems.length} {groupItems.length === 1 ? 'item' : 'items'} available</p>
+                        <h2 className="text-2xl font-bold text-foreground">{typeLabels?.groupTitle || groupType}</h2>
+                        <p className="text-muted-foreground text-sm">{groupItems.length} {groupItems.length === 1 ? labels.item : labels.items} {labels.available}</p>
                       </div>
                     </div>
                     
@@ -567,7 +805,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                 <CardHeader className="pb-4">
                                   <div className="flex items-center justify-between mb-4">
                                     <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
-                                      {selectedItem.category || TYPE_INFO[selectedItem.download_type].label}
+                                      {translateCategory(selectedItem.category, selectedItem.download_type)}
                                     </Badge>
                                     <Button 
                                       variant="ghost" 
@@ -585,10 +823,10 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                       <h2 className="text-2xl font-bold mb-4 text-foreground">{normalizeText(selectedItem.title)}</h2>
                                       
                                       <div className="flex gap-4 text-sm text-muted-foreground mb-6">
-                                        {selectedItem.pages && <span>{selectedItem.pages} Pages</span>}
+                                        {selectedItem.pages && <span>{selectedItem.pages} {labels.pages}</span>}
                                         {selectedItem.duration && <span>{selectedItem.duration}</span>}
                                         {(selectedItem.pages || selectedItem.duration) && <span>•</span>}
-                                        <span>{new Date(selectedItem.publish_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                                        <span>{getLocalizedDate(selectedItem.publish_date, language)}</span>
                                       </div>
 
                                       {selectedItem.description && (
@@ -603,9 +841,9 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                       {selectedItem.visibility === 'public' ? (
                                         // Public: Direct Download Button
                                         <div className="bg-card border border-border rounded-lg p-6">
-                                          <h3 className="text-xl font-semibold mb-4 text-foreground">Download Available</h3>
+                                          <h3 className="text-xl font-semibold mb-4 text-foreground">{labels.downloadAvailable}</h3>
                                           <p className="text-muted-foreground mb-6 text-sm">
-                                            This resource is freely available. Click the button below to download.
+                                            {labels.downloadAvailableDesc}
                                           </p>
                                           
                                           {selectedItem.download_url ? (
@@ -616,21 +854,21 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                               className="block"
                                             >
                                               <Button className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
-                                                Download Now
+                                                {labels.downloadNow}
                                               </Button>
                                             </a>
                                           ) : (
                                             <p className="text-muted-foreground text-sm italic">
-                                              Download link not yet available. Please check back later.
+                                              {labels.downloadNotAvailable}
                                             </p>
                                           )}
                                         </div>
                                       ) : (
                                         // Private: Registration Form
                                         <div className="bg-card border border-border rounded-lg p-6">
-                                          <h3 className="text-xl font-semibold mb-4 text-foreground">Request Download</h3>
+                                          <h3 className="text-xl font-semibold mb-4 text-foreground">{labels.requestDownload}</h3>
                                           <p className="text-muted-foreground mb-6 text-sm">
-                                            Please fill out the form below to receive access to this resource.
+                                            {labels.requestDownloadDesc}
                                           </p>
 
                                           <Form {...form}>
@@ -641,7 +879,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                   name="firstName"
                                                   render={({ field }) => (
                                                     <FormItem>
-                                                      <FormLabel className="text-foreground text-sm">First Name *</FormLabel>
+                                                      <FormLabel className="text-foreground text-sm">{labels.firstName} *</FormLabel>
                                                       <FormControl>
                                                         <Input {...field} className="bg-background border-border" />
                                                       </FormControl>
@@ -654,7 +892,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                   name="lastName"
                                                   render={({ field }) => (
                                                     <FormItem>
-                                                      <FormLabel className="text-foreground text-sm">Last Name *</FormLabel>
+                                                      <FormLabel className="text-foreground text-sm">{labels.lastName} *</FormLabel>
                                                       <FormControl>
                                                         <Input {...field} className="bg-background border-border" />
                                                       </FormControl>
@@ -669,7 +907,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                 name="email"
                                                 render={({ field }) => (
                                                   <FormItem>
-                                                    <FormLabel className="text-foreground text-sm">Email *</FormLabel>
+                                                    <FormLabel className="text-foreground text-sm">{labels.email} *</FormLabel>
                                                     <FormControl>
                                                       <Input {...field} type="email" className="bg-background border-border" />
                                                     </FormControl>
@@ -683,7 +921,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                 name="company"
                                                 render={({ field }) => (
                                                   <FormItem>
-                                                    <FormLabel className="text-foreground text-sm">Company *</FormLabel>
+                                                    <FormLabel className="text-foreground text-sm">{labels.company} *</FormLabel>
                                                     <FormControl>
                                                       <Input {...field} className="bg-background border-border" />
                                                     </FormControl>
@@ -697,7 +935,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                 name="position"
                                                 render={({ field }) => (
                                                   <FormItem>
-                                                    <FormLabel className="text-foreground text-sm">Position *</FormLabel>
+                                                    <FormLabel className="text-foreground text-sm">{labels.position} *</FormLabel>
                                                     <FormControl>
                                                       <Input {...field} className="bg-background border-border" />
                                                     </FormControl>
@@ -720,7 +958,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                     </FormControl>
                                                     <div className="space-y-1 leading-none">
                                                       <FormLabel className="text-sm text-muted-foreground font-normal">
-                                                        I agree to receive information about products and services *
+                                                        {labels.consent} *
                                                       </FormLabel>
                                                       <FormMessage />
                                                     </div>
@@ -737,7 +975,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
                                                 }`}
                                                 disabled={!form.formState.isValid || isSubmitting}
                                               >
-                                                {isSubmitting ? "Processing..." : "Request Download"}
+                                                {isSubmitting ? labels.processing : labels.requestDownload}
                                               </Button>
                                             </form>
                                           </Form>
