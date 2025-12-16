@@ -43,10 +43,130 @@ type ProductDownload = {
   type: string;
 };
 
+// UI translations for product detail page
+const UI_LABELS: Record<string, Record<string, string>> = {
+  en: {
+    backToTestCharts: "Back to Test Charts",
+    requestQuote: "Request Quote",
+    downloadDatasheet: "Download Datasheet",
+    chartAttributes: "Chart Attributes",
+    tabDescription: "Description",
+    tabChartSizes: "Chart Sizes",
+    tabProductVideo: "Product Video",
+    tabDownloads: "Downloads",
+    productDescription: "Product Description",
+    applicationAreas: "Application Areas",
+    chartSizesTitle: "Chart Sizes",
+    chartSizesIntroDefault: "The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.",
+    chartSizesIntroDefault2: "During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.",
+    chartSizesIntroDefault3: "The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.",
+    referenceDataLink: "Reference data accuracy of our test charts →",
+    reflectiveTitle: "Reflective Test Charts",
+    transparentTitle: "Transparent Test Charts",
+    availableDownloads: "Available Downloads",
+    noDownloads: "No downloads available for this product.",
+    productNotFound: "Product Not Found",
+    productNotFoundMessage: "The requested product could not be found.",
+  },
+  de: {
+    backToTestCharts: "Zurück zu Test Charts",
+    requestQuote: "Angebot anfordern",
+    downloadDatasheet: "Datenblatt herunterladen",
+    chartAttributes: "Chart-Eigenschaften",
+    tabDescription: "Beschreibung",
+    tabChartSizes: "Chartgrößen",
+    tabProductVideo: "Produktvideo",
+    tabDownloads: "Downloads",
+    productDescription: "Produktbeschreibung",
+    applicationAreas: "Anwendungsbereiche",
+    chartSizesTitle: "Chartgrößen",
+    chartSizesIntroDefault: "Die Test-Charts sind in den unten aufgeführten Größen erhältlich. Bitte beachten Sie, dass einige Charts aus technischen Gründen nicht in allen Größen hergestellt werden können. Für weitere Informationen stehen wir Ihnen gerne zur Verfügung.",
+    chartSizesIntroDefault2: "Während der Produktion werden bestimmte Bereiche der Test-Charts gemessen, um den Produktionsprozess zu qualifizieren oder individuelle Referenzdaten zu erstellen. Gemessene Bereiche können Farb- oder Grautöne sein.",
+    chartSizesIntroDefault3: "Die Messgeräte werden regelmäßig kalibriert und vor dem Einsatz geprüft. Weitere Informationen finden Sie in unserem Referenzdaten-Genauigkeitsblatt.",
+    referenceDataLink: "Referenzdaten-Genauigkeit unserer Test-Charts →",
+    reflectiveTitle: "Reflektierende Test-Charts",
+    transparentTitle: "Transparente Test-Charts",
+    availableDownloads: "Verfügbare Downloads",
+    noDownloads: "Keine Downloads für dieses Produkt verfügbar.",
+    productNotFound: "Produkt nicht gefunden",
+    productNotFoundMessage: "Das angeforderte Produkt konnte nicht gefunden werden.",
+  },
+  ja: {
+    backToTestCharts: "テストチャートに戻る",
+    requestQuote: "見積もりを依頼",
+    downloadDatasheet: "データシートをダウンロード",
+    chartAttributes: "チャート属性",
+    tabDescription: "説明",
+    tabChartSizes: "チャートサイズ",
+    tabProductVideo: "製品ビデオ",
+    tabDownloads: "ダウンロード",
+    productDescription: "製品説明",
+    applicationAreas: "応用分野",
+    chartSizesTitle: "チャートサイズ",
+    chartSizesIntroDefault: "テストチャートは以下のサイズでご利用いただけます。技術的な理由により、一部のチャートはすべてのサイズで製造できない場合があります。詳細についてはお気軽にお問い合わせください。",
+    chartSizesIntroDefault2: "製造中、テストチャートの特定の領域を測定して製造プロセスを検証したり、個別の参照データを作成したりします。測定される領域は、カラーまたはグレートーンです。",
+    chartSizesIntroDefault3: "測定機器は定期的に校正され、使用前に検証されます。詳細については、参照データ精度シートをご覧ください。",
+    referenceDataLink: "テストチャートの参照データ精度 →",
+    reflectiveTitle: "反射型テストチャート",
+    transparentTitle: "透過型テストチャート",
+    availableDownloads: "利用可能なダウンロード",
+    noDownloads: "この製品にはダウンロードがありません。",
+    productNotFound: "製品が見つかりません",
+    productNotFoundMessage: "リクエストされた製品が見つかりませんでした。",
+  },
+  ko: {
+    backToTestCharts: "테스트 차트로 돌아가기",
+    requestQuote: "견적 요청",
+    downloadDatasheet: "데이터시트 다운로드",
+    chartAttributes: "차트 속성",
+    tabDescription: "설명",
+    tabChartSizes: "차트 크기",
+    tabProductVideo: "제품 비디오",
+    tabDownloads: "다운로드",
+    productDescription: "제품 설명",
+    applicationAreas: "응용 분야",
+    chartSizesTitle: "차트 크기",
+    chartSizesIntroDefault: "테스트 차트는 아래 나열된 크기로 제공됩니다. 기술적인 이유로 일부 차트는 모든 크기로 제조할 수 없습니다. 추가 정보가 필요하시면 문의해 주세요.",
+    chartSizesIntroDefault2: "생산 중 테스트 차트의 특정 영역을 측정하여 생산 공정을 검증하거나 개별 참조 데이터를 생성합니다. 측정되는 영역은 색상 또는 그레이 톤입니다.",
+    chartSizesIntroDefault3: "측정 장치는 정기적으로 교정되고 사용 전에 검증됩니다. 자세한 내용은 참조 데이터 정확도 시트를 참조하세요.",
+    referenceDataLink: "테스트 차트 참조 데이터 정확도 →",
+    reflectiveTitle: "반사형 테스트 차트",
+    transparentTitle: "투과형 테스트 차트",
+    availableDownloads: "다운로드 가능",
+    noDownloads: "이 제품에 대한 다운로드가 없습니다.",
+    productNotFound: "제품을 찾을 수 없음",
+    productNotFoundMessage: "요청한 제품을 찾을 수 없습니다.",
+  },
+  zh: {
+    backToTestCharts: "返回测试图",
+    requestQuote: "请求报价",
+    downloadDatasheet: "下载数据表",
+    chartAttributes: "图表属性",
+    tabDescription: "描述",
+    tabChartSizes: "图表尺寸",
+    tabProductVideo: "产品视频",
+    tabDownloads: "下载",
+    productDescription: "产品描述",
+    applicationAreas: "应用领域",
+    chartSizesTitle: "图表尺寸",
+    chartSizesIntroDefault: "测试图提供以下尺寸。请注意，由于技术原因，某些图表无法制造所有尺寸。如需更多信息，请随时联系我们。",
+    chartSizesIntroDefault2: "在生产过程中，测量测试图的特定区域以验证生产过程或创建随测试图附带的个别参考数据。测量区域可以是彩色或灰色调。",
+    chartSizesIntroDefault3: "测量设备定期校准并在使用前进行验证。您可以在我们的参考数据准确性表中找到更多信息。",
+    referenceDataLink: "测试图参考数据准确性 →",
+    reflectiveTitle: "反射式测试图",
+    transparentTitle: "透射式测试图",
+    availableDownloads: "可用下载",
+    noDownloads: "此产品没有可用下载。",
+    productNotFound: "未找到产品",
+    productNotFoundMessage: "找不到请求的产品。",
+  },
+};
+
 const TestChartDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const labels = UI_LABELS[language] || UI_LABELS.en;
 
   const [product, setProduct] = useState<ProductRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -254,7 +374,7 @@ const TestChartDetail = () => {
                 className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a]"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Test Charts
+                {labels.backToTestCharts}
               </Button>
             </div>
 
@@ -287,7 +407,7 @@ const TestChartDetail = () => {
                 <div className="space-y-3 pt-3">
                   <Button size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold text-base">
                     <FileText className="w-5 h-5 mr-2" />
-                    Request Quote
+                    {labels.requestQuote}
                   </Button>
 
                   {downloads.length > 0 && (
@@ -299,7 +419,7 @@ const TestChartDetail = () => {
                     >
                       <a href={downloads[0].url}>
                         <Download className="w-5 h-5 mr-2" />
-                        Download Datasheet
+                        {labels.downloadDatasheet}
                       </a>
                     </Button>
                   )}
@@ -354,7 +474,7 @@ const TestChartDetail = () => {
                 {specifications.length > 0 && (
                   <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-700 h-fit">
                     <div className="bg-[#222] px-5 py-3 border-b border-gray-700">
-                      <h2 className="text-base font-semibold text-white">Chart Attributes</h2>
+                      <h2 className="text-base font-semibold text-white">{labels.chartAttributes}</h2>
                     </div>
                     <div className="divide-y divide-gray-800">
                       {specifications.map((row) => (
@@ -380,33 +500,33 @@ const TestChartDetail = () => {
                   value="description"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
-                  Description
+                  {labels.tabDescription}
                 </TabsTrigger>
                 <TabsTrigger
                   value="chartsizes"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
-                  Chart Sizes
+                  {labels.tabChartSizes}
                 </TabsTrigger>
                 {product.video_url && (
                   <TabsTrigger
                     value="video"
                     className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                   >
-                    Product Video
+                    {labels.tabProductVideo}
                   </TabsTrigger>
                 )}
                 <TabsTrigger
                   value="downloads"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
-                  Downloads
+                  {labels.tabDownloads}
                 </TabsTrigger>
               </TabsList>
 
               <div className="mt-6 max-w-4xl mx-auto">
                 <TabsContent value="description" className="space-y-4">
-                  <h2 className="text-2xl font-bold text-white">Product Description</h2>
+                  <h2 className="text-2xl font-bold text-white">{labels.productDescription}</h2>
                   <div className="prose prose-invert max-w-none">
                     <p className="text-gray-300 leading-relaxed whitespace-pre-line">
                       {product.description || ""}
@@ -415,7 +535,7 @@ const TestChartDetail = () => {
 
                   {applicationAreas.length > 0 && (
                     <section className="pt-8">
-                      <h3 className="text-lg font-semibold text-white mb-4">Application Areas</h3>
+                      <h3 className="text-lg font-semibold text-white mb-4">{labels.applicationAreas}</h3>
                       <ul className="space-y-2">
                         {applicationAreas.map((app) => (
                           <li key={app} className="flex items-center gap-2 text-gray-300">
@@ -430,18 +550,18 @@ const TestChartDetail = () => {
 
                 <TabsContent value="chartsizes" className="space-y-8">
                   <div className="prose prose-invert max-w-none">
-                    <h2 className="text-2xl font-bold text-white mb-4">Chart Sizes</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">{labels.chartSizesTitle}</h2>
                     {(chartSizes?.introText ? chartSizes.introText.split(/\n\n+/) : [
-                      "The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.",
-                      "During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.",
-                      "The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.",
+                      labels.chartSizesIntroDefault,
+                      labels.chartSizesIntroDefault2,
+                      labels.chartSizesIntroDefault3,
                     ]).map((paragraph, idx) => (
                       <p key={idx} className="text-gray-300 leading-relaxed">
                         {paragraph}
                       </p>
                     ))}
                     <a href="#" className="text-[#f9dc24] hover:underline font-medium">
-                      Reference data accuracy of our test charts →
+                      {labels.referenceDataLink}
                     </a>
                   </div>
 
@@ -457,7 +577,7 @@ const TestChartDetail = () => {
 
                   {/* Reflective Charts Table */}
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white">Reflective</h3>
+                    <h3 className="text-xl font-bold text-white">{labels.reflectiveTitle}</h3>
                     <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
                         <thead className="bg-[#222]">
@@ -510,7 +630,7 @@ const TestChartDetail = () => {
 
                   {/* Transparent Charts Table */}
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white">Transparent</h3>
+                    <h3 className="text-xl font-bold text-white">{labels.transparentTitle}</h3>
                     <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
                         <thead className="bg-[#222]">
@@ -595,7 +715,7 @@ const TestChartDetail = () => {
                 </TabsContent>
 
                 <TabsContent value="video" className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white">Product Video</h2>
+                  <h2 className="text-2xl font-bold text-white">{labels.tabProductVideo}</h2>
                   {product.video_url ? (
                     <div className="bg-[#1a1a1a] rounded-lg overflow-hidden p-4">
                       <div className="relative bg-black rounded-lg overflow-hidden max-w-4xl mx-auto" style={{ aspectRatio: '16/9' }}>
@@ -648,7 +768,7 @@ const TestChartDetail = () => {
                 </TabsContent>
 
                 <TabsContent value="downloads" className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white">Downloads & Resources</h2>
+                  <h2 className="text-2xl font-bold text-white">{labels.availableDownloads}</h2>
                   {downloads.length > 0 ? (
                     <div className="space-y-3">
                       {downloads.map((d) => (
@@ -668,7 +788,7 @@ const TestChartDetail = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-300">No downloads available yet.</p>
+                    <p className="text-gray-300">{labels.noDownloads}</p>
                   )}
                 </TabsContent>
               </div>
