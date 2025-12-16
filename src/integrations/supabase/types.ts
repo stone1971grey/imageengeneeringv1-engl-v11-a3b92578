@@ -149,6 +149,69 @@ export type Database = {
         }
         Relationships: []
       }
+      downloads: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          download_type: string
+          download_url: string | null
+          duration: string | null
+          id: string
+          image_url: string | null
+          language_code: string
+          pages: number | null
+          position: number | null
+          publish_date: string
+          published: boolean | null
+          slug: string
+          teaser: string
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_type: string
+          download_url?: string | null
+          duration?: string | null
+          id?: string
+          image_url?: string | null
+          language_code?: string
+          pages?: number | null
+          position?: number | null
+          publish_date?: string
+          published?: boolean | null
+          slug: string
+          teaser: string
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          download_type?: string
+          download_url?: string | null
+          duration?: string | null
+          id?: string
+          image_url?: string | null
+          language_code?: string
+          pages?: number | null
+          position?: number | null
+          publish_date?: string
+          published?: boolean | null
+          slug?: string
+          teaser?: string
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       editor_page_access: {
         Row: {
           created_at: string | null
