@@ -739,7 +739,7 @@ const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
               </div>
 
               {/* Category & SKU */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label className="text-white">Category *</Label>
                   <Select
@@ -764,6 +764,31 @@ const ProductsEditor = ({ onEditingChange }: ProductsEditorProps) => {
                     placeholder="e.g., TE42-LL"
                     className="bg-[#2a2a2a] border-gray-600 text-white"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white">Visibility</Label>
+                  <Select
+                    value={formData.visibility}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, visibility: value }))}
+                  >
+                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                          Public
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="private">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                          Private
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </TabsContent>
