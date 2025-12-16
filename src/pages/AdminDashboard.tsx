@@ -5055,9 +5055,9 @@ const AdminDashboard = () => {
                   {/* Tab 1: Page Heroes */}
                   <TabsContent value="page-heroes" className="mt-0">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                      {/* A - Product Hero */}
+                      {/* F - Product Hero */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#f9dc24] text-gray-900 text-xs font-black rounded">A</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#f9dc24] text-gray-900 text-xs font-black rounded">F</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow">
                             <Eye className="h-5 w-5 text-gray-900" />
@@ -5079,9 +5079,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* M - Product Hero Gallery */}
+                      {/* G - Product Gallery */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-pink-500 text-white text-xs font-black rounded">M</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-pink-500 text-white text-xs font-black rounded">G</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow">
                             <Images className="h-5 w-5 text-white" />
@@ -5091,9 +5091,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* O - Full Hero */}
+                      {/* A - Full Hero */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-rose-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-rose-500 text-white text-xs font-black rounded">O</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-rose-500 text-white text-xs font-black rounded">A</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow">
                             <Monitor className="h-5 w-5 text-white" />
@@ -5132,9 +5132,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* C - Tiles */}
+                      {/* H - Tiles */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded">C</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded">H</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow">
                             <LayoutGrid className="h-5 w-5 text-white" />
@@ -5144,9 +5144,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* F - Banner */}
+                      {/* J - Banner */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 text-white text-xs font-black rounded">F</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 text-white text-xs font-black rounded">J</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow">
                             <ImageIcon className="h-5 w-5 text-white" />
@@ -5156,9 +5156,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* G - Image & Text */}
+                      {/* I - Image & Text */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-lime-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-lime-500 text-white text-xs font-black rounded">G</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-lime-500 text-white text-xs font-black rounded">I</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-lime-500 to-lime-400 flex items-center justify-center shadow">
                             <SplitSquareVertical className="h-5 w-5 text-white" />
@@ -5168,9 +5168,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* H - Video */}
+                      {/* M - Video */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-cyan-500 text-white text-xs font-black rounded">H</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-cyan-500 text-white text-xs font-black rounded">M</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow">
                             <PlayCircle className="h-5 w-5 text-white" />
@@ -5180,9 +5180,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* I - Feature Overview */}
+                      {/* K - Feature Overview */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-indigo-500 text-white text-xs font-black rounded">I</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-indigo-500 text-white text-xs font-black rounded">K</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow">
                             <ListChecks className="h-5 w-5 text-white" />
@@ -5192,9 +5192,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* J - Table */}
+                      {/* L - Table */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-emerald-500 text-white text-xs font-black rounded">J</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-emerald-500 text-white text-xs font-black rounded">L</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center shadow">
                             <Table2 className="h-5 w-5 text-white" />
@@ -5204,9 +5204,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* K - FAQ */}
+                      {/* O - FAQ */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded">K</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded">O</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow">
                             <HelpCircle className="h-5 w-5 text-white" />
@@ -5216,9 +5216,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* L - Specification */}
+                      {/* N - Specification */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-amber-500 text-white text-xs font-black rounded">L</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-amber-500 text-white text-xs font-black rounded">N</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow">
                             <FileText className="h-5 w-5 text-white" />
@@ -5228,9 +5228,9 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
-                      {/* N - Industries */}
+                      {/* C - Industries */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">N</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">C</div>
                         <div className="p-4 space-y-2">
                           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow">
                             <Building2 className="h-5 w-5 text-white" />
@@ -5294,10 +5294,10 @@ const AdminDashboard = () => {
                       </div>
 
                       {/* S - Product List */}
-                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-orange-500 text-white text-xs font-black rounded">S</div>
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-cyan-500 text-white text-xs font-black rounded">S</div>
                         <div className="p-4 space-y-2">
-                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow">
                             <Target className="h-5 w-5 text-white" />
                           </div>
                           <h4 className="text-sm font-bold text-gray-900">Product List</h4>
