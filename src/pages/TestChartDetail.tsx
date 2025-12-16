@@ -560,7 +560,7 @@ const TestChartDetail = () => {
                       </p>
                     ))}
                     <a 
-                      href="/downloads/E_reference_data_accuracy.pdf" 
+                      href="https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/products/test-charts/reference-data-accuracy.pdf" 
                       download="Reference_Data_Accuracy.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
