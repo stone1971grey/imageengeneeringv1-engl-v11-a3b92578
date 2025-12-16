@@ -319,10 +319,16 @@ const DownloadsEditor = () => {
       return;
     }
 
+    // Ensure description is computed from current descriptionSections state
+    const finalFormData = {
+      ...formData,
+      description: sectionsToJson(descriptionSections)
+    };
+
     if (editingDownload) {
-      updateMutation.mutate({ ...formData, id: editingDownload.id });
+      updateMutation.mutate({ ...finalFormData, id: editingDownload.id });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(finalFormData);
     }
   };
 
@@ -829,11 +835,14 @@ const DownloadsEditor = () => {
                                 )}
                                 {section.content && (
                                   section.isBulletList ? (
-                                    <ul className="my-3 ml-6 list-disc space-y-1">
+                                    <div className="my-3 ml-4 space-y-1.5">
                                       {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
-                                        <li key={i} className="pl-1 text-gray-700">{line.trim()}</li>
+                                        <div key={i} className="flex items-start gap-2 text-gray-700">
+                                          <span className="text-[#f9dc24] mt-0.5">•</span>
+                                          <span>{line.trim()}</span>
+                                        </div>
                                       ))}
-                                    </ul>
+                                    </div>
                                   ) : (
                                     <p className="mb-3 leading-relaxed text-gray-700">{section.content}</p>
                                   )
@@ -858,7 +867,6 @@ const DownloadsEditor = () => {
                   <MediaSelector
                     onFileSelect={() => {}}
                     onMediaSelect={handleImageSelect}
-                    label="Cover Image"
                     currentImageUrl={formData.image_url}
                     previewSize="large"
                   />
