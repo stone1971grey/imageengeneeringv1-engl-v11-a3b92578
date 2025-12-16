@@ -1139,9 +1139,9 @@ const Navigation = () => {
                         })()}
                         <span>{t.nav.conferencePapers}</span>
                       </Link>
-                      <Link to={`/${language}/info-hub/white-papers-and-thesis`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                      <Link to={`/${language}/info-hub/white-papers`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                         {(() => {
-                          const key = pageDesignIcons['info-hub/white-papers-and-thesis'];
+                          const key = pageDesignIcons['info-hub/white-papers'];
                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
                         })()}
@@ -2178,9 +2178,9 @@ const Navigation = () => {
                             })()}
                             <span>{t.nav.conferencePapers}</span>
                           </Link>
-                          <Link to={`/${language}/info-hub/white-papers-and-thesis`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                          <Link to={`/${language}/info-hub/white-papers`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             {(() => {
-                              const key = pageDesignIcons['info-hub/white-papers-and-thesis'];
+                              const key = pageDesignIcons['info-hub/white-papers'];
                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
                             })()}
