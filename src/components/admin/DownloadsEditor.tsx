@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File, FolderOpen, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -125,6 +125,8 @@ const DownloadsEditor = () => {
     published: true,
     visibility: "public" as "public" | "private",
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputId = useId();
 
   const queryClient = useQueryClient();
   
@@ -337,6 +339,61 @@ const DownloadsEditor = () => {
 
   const handleFileSelect = (url: string) => {
     setFormData(prev => ({ ...prev, download_url: url }));
+  };
+
+  // Direct file upload handler with automatic folder creation
+  const handleDirectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['application/pdf', 'video/mp4', 'video/webm', 'video/quicktime'];
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|mp4|webm|mov)$/i)) {
+      toast.error("Please upload a PDF or video file");
+      return;
+    }
+
+    // Need slug for folder path
+    if (!formData.slug) {
+      toast.error("Please enter a title first to generate the folder path");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // Create folder path: downloads/{type}/{slug}/filename
+      const typeFolder = formData.download_type === 'whitepaper' ? 'whitepapers' 
+        : formData.download_type === 'conference' ? 'conference-papers'
+        : 'videos';
+      const folderPath = `downloads/${typeFolder}/${formData.slug}`;
+      const filePath = `${folderPath}/${file.name}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, download_url: urlData.publicUrl }));
+      toast.success(`File uploaded to ${folderPath}/`);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Upload failed: " + error.message);
+    } finally {
+      setIsUploading(false);
+      // Reset input
+      e.target.value = '';
+    }
   };
 
   // Section editor functions
@@ -600,25 +657,74 @@ const DownloadsEditor = () => {
                     <File className="h-4 w-4 text-[#f9dc24]" />
                     Download File (PDF/Video)
                   </Label>
+                  
+                  {/* URL Input */}
+                  <Input
+                    value={formData.download_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, download_url: e.target.value }))}
+                    placeholder="/downloads/file.pdf or https://..."
+                    className="bg-[#1a1a1a] border-gray-600 text-white"
+                  />
+                  
+                  {/* Upload Buttons */}
                   <div className="flex gap-2">
-                    <Input
-                      value={formData.download_url}
-                      onChange={(e) => setFormData(prev => ({ ...prev, download_url: e.target.value }))}
-                      placeholder="/downloads/file.pdf or https://..."
-                      className="bg-[#1a1a1a] border-gray-600 text-white flex-1"
+                    {/* Direct Upload from Computer */}
+                    <input
+                      type="file"
+                      accept=".pdf,.mp4,.webm,.mov"
+                      onChange={handleDirectFileUpload}
+                      className="hidden"
+                      id={fileInputId}
+                      disabled={isUploading}
                     />
+                    <Button
+                      type="button"
+                      className="flex-1 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                      onClick={() => document.getElementById(fileInputId)?.click()}
+                      disabled={isUploading}
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload from Computer
+                        </>
+                      )}
+                    </Button>
+                    
+                    {/* Browse Media */}
                     <MediaSelector
                       onFileSelect={() => {}}
                       onMediaSelect={handleFileSelect}
                       buttonOnly
-                      buttonLabel="Browse Files"
+                      buttonLabel="Browse Media"
                       acceptedFileTypes=".pdf,.mp4,.webm,.mov"
                     />
                   </div>
+                  
+                  {/* Info about folder structure */}
+                  <p className="text-xs text-gray-500">
+                    Files will be uploaded to: <code className="bg-[#1a1a1a] px-1 rounded">downloads/{formData.download_type === 'whitepaper' ? 'whitepapers' : formData.download_type === 'conference' ? 'conference-papers' : 'videos'}/{formData.slug || '[slug]'}/</code>
+                  </p>
+                  
+                  {/* Current file indicator */}
                   {formData.download_url && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <div className="flex items-center gap-2 text-sm text-green-400 bg-green-900/20 px-3 py-2 rounded">
                       <FileText className="h-4 w-4" />
-                      <span className="truncate">{formData.download_url}</span>
+                      <span className="truncate flex-1">{formData.download_url}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFormData(prev => ({ ...prev, download_url: '' }))}
+                        className="h-6 w-6 p-0 text-gray-400 hover:text-red-400"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
                   )}
                 </div>
