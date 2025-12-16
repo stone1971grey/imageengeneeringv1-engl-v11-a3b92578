@@ -64,7 +64,6 @@ interface Product {
   subcategory: string | null;
   sku: string | null;
   specifications: Record<string, string>;
-  features: string[];
   applications: string[];
   product_types: string[];
   measurement_focus: string[];
@@ -149,7 +148,6 @@ const ProductsEditor = () => {
     subcategory: "",
     sku: "",
     specifications: {} as Record<string, string>,
-    features: [] as string[],
     applications: [] as string[],
     product_types: [] as string[],
     measurement_focus: [] as string[],
@@ -175,7 +173,6 @@ const ProductsEditor = () => {
 
   const [newSpecKey, setNewSpecKey] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
-  const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
 
   // Event listener for opening document media selector
@@ -204,7 +201,6 @@ const ProductsEditor = () => {
       const transformedProducts = (data || []).map(p => ({
         ...p,
         specifications: typeof p.specifications === 'object' && p.specifications !== null ? p.specifications : {},
-        features: Array.isArray(p.features) ? p.features : [],
         applications: Array.isArray(p.applications) ? p.applications : [],
         product_types: Array.isArray((p as any).product_types) ? (p as any).product_types : [],
         measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
@@ -259,7 +255,6 @@ const ProductsEditor = () => {
       subcategory: "",
       sku: "",
       specifications: {},
-      features: [],
       applications: [],
       product_types: [],
       measurement_focus: [],
@@ -276,7 +271,6 @@ const ProductsEditor = () => {
     });
     setNewSpecKey("");
     setNewSpecValue("");
-    setNewFeature("");
     setNewApplication("");
     setNewChartSizeRow({ sizeId: "", aspectRatio43: "", aspectRatio169: "", chartSize: "" });
   };
@@ -301,7 +295,6 @@ const ProductsEditor = () => {
       subcategory: product.subcategory || "",
       sku: product.sku || "",
       specifications: product.specifications || {},
-      features: product.features || [],
       applications: product.applications || [],
       product_types: product.product_types || [],
       measurement_focus: product.measurement_focus || [],
@@ -385,7 +378,6 @@ const ProductsEditor = () => {
         subcategory: formData.subcategory || null,
         sku: formData.sku || null,
         specifications: formData.specifications,
-        features: formData.features,
         applications: formData.applications,
         product_types: formData.product_types,
         measurement_focus: formData.measurement_focus,
@@ -479,23 +471,6 @@ const ProductsEditor = () => {
       delete specs[key];
       return { ...prev, specifications: specs };
     });
-  };
-
-  const addFeature = () => {
-    if (newFeature) {
-      setFormData(prev => ({
-        ...prev,
-        features: [...prev.features, newFeature]
-      }));
-      setNewFeature("");
-    }
-  };
-
-  const removeFeature = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index)
-    }));
   };
 
   const addApplication = () => {
@@ -1651,7 +1626,6 @@ const ProductsEditor = () => {
                     subcategory: formData.subcategory || null,
                     sku: formData.sku || null,
                     specifications: formData.specifications,
-                    features: formData.features,
                     applications: formData.applications,
                     product_types: formData.product_types,
                     measurement_focus: formData.measurement_focus,
