@@ -3942,7 +3942,7 @@ const AdminDashboard = () => {
                           <span className="text-gray-400 text-lg whitespace-nowrap flex-shrink-0">|</span>
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold flex-shrink-0 ${
-                              pageInfo.ctaGroup === 'your-solution'
+                              ['your-solution', 'info-hub', 'training-events', 'test-lab', 'products'].includes(pageInfo.ctaGroup)
                                 ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
                                 : 'bg-black text-white border-gray-600'
                             }`}
