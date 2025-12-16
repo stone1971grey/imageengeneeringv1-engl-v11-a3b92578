@@ -63,10 +63,13 @@ const downloadFormSchema = z.object({
 type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
 const TYPE_INFO = {
-  whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen },
-  conference: { label: "Conference Paper", color: "bg-purple-500", icon: Presentation },
-  video: { label: "Video", color: "bg-emerald-500", icon: Video },
+  whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen, groupTitle: "White Papers & Theses" },
+  conference: { label: "Conference Paper", color: "bg-purple-500", icon: Presentation, groupTitle: "Conference Papers" },
+  video: { label: "Video", color: "bg-emerald-500", icon: Video, groupTitle: "Video Archive" },
 } as const;
+
+// Order for displaying groups
+const GROUP_ORDER: Array<keyof typeof TYPE_INFO> = ['whitepaper', 'conference', 'video'];
 
 // Helper to normalize unicode characters
 const normalizeText = (text: string): string => {
@@ -283,20 +286,43 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
     }
   };
 
-  // Group downloads in rows of 3
-  const getDownloadRows = () => {
+  // Group downloads by type
+  const getGroupedDownloads = () => {
+    const groups: Record<string, Download[]> = {};
+    
+    downloads.forEach(download => {
+      const type = download.download_type;
+      if (!groups[type]) {
+        groups[type] = [];
+      }
+      groups[type].push(download);
+    });
+    
+    return groups;
+  };
+
+  // Group downloads in rows of 3 within each category
+  const getDownloadRows = (items: Download[]) => {
     const rows: Download[][] = [];
-    for (let i = 0; i < downloads.length; i += 3) {
-      rows.push(downloads.slice(i, i + 3));
+    for (let i = 0; i < items.length; i += 3) {
+      rows.push(items.slice(i, i + 3));
     }
     return rows;
   };
 
-  // Find which row contains the selected item
-  const getSelectedItemRowIndex = () => {
-    if (!expandedItemId) return -1;
-    const index = downloads.findIndex(d => d.id === expandedItemId);
-    return Math.floor(index / 3);
+  // Find which group and row contains the selected item
+  const getSelectedItemInfo = () => {
+    if (!expandedItemId) return { groupType: null, rowIndex: -1 };
+    const item = downloads.find(d => d.id === expandedItemId);
+    if (!item) return { groupType: null, rowIndex: -1 };
+    
+    const groupType = item.download_type;
+    const groupedDownloads = getGroupedDownloads();
+    const groupItems = groupedDownloads[groupType] || [];
+    const indexInGroup = groupItems.findIndex(d => d.id === expandedItemId);
+    const rowIndex = Math.floor(indexInGroup / 3);
+    
+    return { groupType, rowIndex };
   };
 
   const selectedItem = downloads.find(d => d.id === expandedItemId);
@@ -390,182 +416,214 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
             <p>No downloads available at the moment. Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {getDownloadRows().map((row, rowIndex) => (
-              <div key={rowIndex}>
-                {/* Download Cards Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                  {row.map((item) => (
-                    <DownloadCard key={item.id} item={item} />
-                  ))}
-                </div>
+          <div className="space-y-16">
+            {(() => {
+              const groupedDownloads = getGroupedDownloads();
+              const selectedInfo = getSelectedItemInfo();
+              
+              return GROUP_ORDER.map((groupType) => {
+                const groupItems = groupedDownloads[groupType];
+                if (!groupItems || groupItems.length === 0) return null;
                 
-                {/* Detail View - appears under the row containing the selected item */}
-                {selectedItem && showForm && getSelectedItemRowIndex() === rowIndex && (
-                  <div 
-                    id={`download-detail-${selectedItem.id}`}
-                    className="mb-6 max-w-4xl mx-auto animate-fade-in scroll-mt-24"
-                  >
-                    <Card className="animate-scale-in border-2 border-[#f9dc24]/30">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between mb-4">
-                          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
-                            {selectedItem.category || TYPE_INFO[selectedItem.download_type].label}
-                          </Badge>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleExpandItem(selectedItem.id)} 
-                            className="hover:bg-[#f9dc24] hover:text-black transition-colors"
-                          >
-                            <X className="h-5 w-5" />
-                          </Button>
-                        </div>
-                        
-                        <div className="flex flex-col lg:flex-row gap-8">
-                          {/* Left: Content */}
-                          <div className="lg:w-1/2">
-                            <h2 className="text-2xl font-bold mb-4 text-foreground">{normalizeText(selectedItem.title)}</h2>
-                            
-                            <div className="flex gap-4 text-sm text-muted-foreground mb-6">
-                              {selectedItem.pages && <span>{selectedItem.pages} Pages</span>}
-                              {selectedItem.duration && <span>{selectedItem.duration}</span>}
-                              {(selectedItem.pages || selectedItem.duration) && <span>•</span>}
-                              <span>{new Date(selectedItem.publish_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-                            </div>
-
-                            {selectedItem.description && (
-                              <div className="prose prose-invert max-w-none">
-                                <DownloadDescription description={selectedItem.description} />
-                              </div>
-                            )}
+                const typeInfo = TYPE_INFO[groupType];
+                const GroupIcon = typeInfo.icon;
+                const rows = getDownloadRows(groupItems);
+                
+                return (
+                  <div key={groupType} className="space-y-6">
+                    {/* Group Header */}
+                    <div className="flex items-center gap-4 border-b border-border pb-4">
+                      <div className="p-3 rounded-lg bg-[#f9dc24]/10">
+                        <GroupIcon className="h-8 w-8 text-[#f9dc24]" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-foreground">{typeInfo.groupTitle}</h2>
+                        <p className="text-muted-foreground text-sm">{groupItems.length} {groupItems.length === 1 ? 'item' : 'items'} available</p>
+                      </div>
+                    </div>
+                    
+                    {/* Group Content */}
+                    <div className="space-y-6">
+                      {rows.map((row, rowIndex) => (
+                        <div key={rowIndex}>
+                          {/* Download Cards Row */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                            {row.map((item) => (
+                              <DownloadCard key={item.id} item={item} />
+                            ))}
                           </div>
-
-                          {/* Right: Form */}
-                          <div className="lg:w-1/2">
-                            <div className="bg-card border border-border rounded-lg p-6">
-                              <h3 className="text-xl font-semibold mb-4 text-foreground">Request Download</h3>
-                              <p className="text-muted-foreground mb-6 text-sm">
-                                Please fill out the form below to receive access to this resource.
-                              </p>
-
-                              <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <FormField
-                                      control={form.control}
-                                      name="firstName"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel className="text-foreground text-sm">First Name *</FormLabel>
-                                          <FormControl>
-                                            <Input {...field} className="bg-background border-border" />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                    <FormField
-                                      control={form.control}
-                                      name="lastName"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel className="text-foreground text-sm">Last Name *</FormLabel>
-                                          <FormControl>
-                                            <Input {...field} className="bg-background border-border" />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
+                          
+                          {/* Detail View - appears under the row containing the selected item */}
+                          {selectedItem && showForm && selectedInfo.groupType === groupType && selectedInfo.rowIndex === rowIndex && (
+                            <div 
+                              id={`download-detail-${selectedItem.id}`}
+                              className="mb-6 max-w-4xl mx-auto animate-fade-in scroll-mt-24"
+                            >
+                              <Card className="animate-scale-in border-2 border-[#f9dc24]/30">
+                                <CardHeader className="pb-4">
+                                  <div className="flex items-center justify-between mb-4">
+                                    <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
+                                      {selectedItem.category || TYPE_INFO[selectedItem.download_type].label}
+                                    </Badge>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      onClick={() => handleExpandItem(selectedItem.id)} 
+                                      className="hover:bg-[#f9dc24] hover:text-black transition-colors"
+                                    >
+                                      <X className="h-5 w-5" />
+                                    </Button>
                                   </div>
+                                  
+                                  <div className="flex flex-col lg:flex-row gap-8">
+                                    {/* Left: Content */}
+                                    <div className="lg:w-1/2">
+                                      <h2 className="text-2xl font-bold mb-4 text-foreground">{normalizeText(selectedItem.title)}</h2>
+                                      
+                                      <div className="flex gap-4 text-sm text-muted-foreground mb-6">
+                                        {selectedItem.pages && <span>{selectedItem.pages} Pages</span>}
+                                        {selectedItem.duration && <span>{selectedItem.duration}</span>}
+                                        {(selectedItem.pages || selectedItem.duration) && <span>•</span>}
+                                        <span>{new Date(selectedItem.publish_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                                      </div>
 
-                                  <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-foreground text-sm">Email *</FormLabel>
-                                        <FormControl>
-                                          <Input {...field} type="email" className="bg-background border-border" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name="company"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-foreground text-sm">Company *</FormLabel>
-                                        <FormControl>
-                                          <Input {...field} className="bg-background border-border" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name="position"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-foreground text-sm">Position *</FormLabel>
-                                        <FormControl>
-                                          <Input {...field} className="bg-background border-border" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name="consent"
-                                    render={({ field }) => (
-                                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
-                                        <FormControl>
-                                          <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="border-border data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
-                                          />
-                                        </FormControl>
-                                        <div className="space-y-1 leading-none">
-                                          <FormLabel className="text-sm text-muted-foreground font-normal">
-                                            I agree to receive information about products and services *
-                                          </FormLabel>
-                                          <FormMessage />
+                                      {selectedItem.description && (
+                                        <div className="prose prose-invert max-w-none">
+                                          <DownloadDescription description={selectedItem.description} />
                                         </div>
-                                      </FormItem>
-                                    )}
-                                  />
+                                      )}
+                                    </div>
 
-                                  <Button 
-                                    type="submit" 
-                                    className={`w-full mt-4 transition-all ${
-                                      form.formState.isValid 
-                                        ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
-                                        : 'bg-muted text-muted-foreground cursor-not-allowed'
-                                    }`}
-                                    disabled={!form.formState.isValid || isSubmitting}
-                                  >
-                                    {isSubmitting ? "Processing..." : "Request Download"}
-                                  </Button>
-                                </form>
-                              </Form>
+                                    {/* Right: Form */}
+                                    <div className="lg:w-1/2">
+                                      <div className="bg-card border border-border rounded-lg p-6">
+                                        <h3 className="text-xl font-semibold mb-4 text-foreground">Request Download</h3>
+                                        <p className="text-muted-foreground mb-6 text-sm">
+                                          Please fill out the form below to receive access to this resource.
+                                        </p>
+
+                                        <Form {...form}>
+                                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                              <FormField
+                                                control={form.control}
+                                                name="firstName"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel className="text-foreground text-sm">First Name *</FormLabel>
+                                                    <FormControl>
+                                                      <Input {...field} className="bg-background border-border" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+                                              <FormField
+                                                control={form.control}
+                                                name="lastName"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormLabel className="text-foreground text-sm">Last Name *</FormLabel>
+                                                    <FormControl>
+                                                      <Input {...field} className="bg-background border-border" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                  </FormItem>
+                                                )}
+                                              />
+                                            </div>
+
+                                            <FormField
+                                              control={form.control}
+                                              name="email"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormLabel className="text-foreground text-sm">Email *</FormLabel>
+                                                  <FormControl>
+                                                    <Input {...field} type="email" className="bg-background border-border" />
+                                                  </FormControl>
+                                                  <FormMessage />
+                                                </FormItem>
+                                              )}
+                                            />
+
+                                            <FormField
+                                              control={form.control}
+                                              name="company"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormLabel className="text-foreground text-sm">Company *</FormLabel>
+                                                  <FormControl>
+                                                    <Input {...field} className="bg-background border-border" />
+                                                  </FormControl>
+                                                  <FormMessage />
+                                                </FormItem>
+                                              )}
+                                            />
+
+                                            <FormField
+                                              control={form.control}
+                                              name="position"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormLabel className="text-foreground text-sm">Position *</FormLabel>
+                                                  <FormControl>
+                                                    <Input {...field} className="bg-background border-border" />
+                                                  </FormControl>
+                                                  <FormMessage />
+                                                </FormItem>
+                                              )}
+                                            />
+
+                                            <FormField
+                                              control={form.control}
+                                              name="consent"
+                                              render={({ field }) => (
+                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
+                                                  <FormControl>
+                                                    <Checkbox
+                                                      checked={field.value}
+                                                      onCheckedChange={field.onChange}
+                                                      className="border-border data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+                                                    />
+                                                  </FormControl>
+                                                  <div className="space-y-1 leading-none">
+                                                    <FormLabel className="text-sm text-muted-foreground font-normal">
+                                                      I agree to receive information about products and services *
+                                                    </FormLabel>
+                                                    <FormMessage />
+                                                  </div>
+                                                </FormItem>
+                                              )}
+                                            />
+
+                                            <Button 
+                                              type="submit" 
+                                              className={`w-full mt-4 transition-all ${
+                                                form.formState.isValid 
+                                                  ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
+                                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                              }`}
+                                              disabled={!form.formState.isValid || isSubmitting}
+                                            >
+                                              {isSubmitting ? "Processing..." : "Request Download"}
+                                            </Button>
+                                          </form>
+                                        </Form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                              </Card>
                             </div>
-                          </div>
+                          )}
                         </div>
-                      </CardHeader>
-                    </Card>
+                      ))}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                );
+              });
+            })()}
           </div>
         )}
       </div>
