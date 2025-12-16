@@ -1147,12 +1147,19 @@ const Navigation = () => {
                   </div>
 
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Link to="/downloads" className="w-full">
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
-                        <Microscope className="h-5 w-5 mr-2" />
-                        <span className="text-base font-medium">{t.nav.exploreInfoHub}</span>
-                      </Button>
-                    </Link>
+                    {(() => {
+                      const cta = pageCtaConfig['info-hub'];
+                      const targetSlug = cta?.slug || 'info-hub/explore-info-hub-resources';
+                      const label = cta?.label || t.nav.exploreInfoHub;
+                      return (
+                        <Link to={`/${language}/${targetSlug}`} className="w-full">
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                            <BookOpen className="h-5 w-5 mr-2" />
+                            <span className="text-base font-medium">{label}</span>
+                          </Button>
+                        </Link>
+                      );
+                    })()}
                   </div>
                 </div>
             </SimpleDropdown>
@@ -2153,13 +2160,20 @@ const Navigation = () => {
                           </Link>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to="/downloads" onClick={() => setIsOpen(false)}>
-                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
-                               <Microscope className="h-4 w-4 mr-2" />
-                               <span className="hidden sm:inline">{t.nav.exploreInfoHub}</span>
-                               <span className="sm:hidden">Info Hub</span>
-                             </Button>
-                          </Link>
+                          {(() => {
+                            const cta = pageCtaConfig['info-hub'];
+                            const targetSlug = cta?.slug || 'info-hub/explore-info-hub-resources';
+                            const label = cta?.label || t.nav.exploreInfoHub;
+                            return (
+                              <Link to={`/${language}/${targetSlug}`} onClick={() => setIsOpen(false)}>
+                                <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
+                                  <BookOpen className="h-4 w-4 mr-2" />
+                                  <span className="hidden sm:inline">{label}</span>
+                                  <span className="sm:hidden">Info Hub</span>
+                                </Button>
+                              </Link>
+                            );
+                          })()}
                         </div>
                       </AccordionContent>
                     </AccordionItem>
