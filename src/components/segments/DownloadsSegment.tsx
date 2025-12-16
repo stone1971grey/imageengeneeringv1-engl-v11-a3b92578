@@ -32,7 +32,7 @@ interface Download {
   title: string;
   teaser: string;
   description: string | null;
-  download_type: "whitepaper" | "conference" | "video";
+  download_type: "whitepaper" | "conference" | "video" | "thesis" | "technote" | "datatools";
   category: string | null;
   pages: number | null;
   duration: string | null;
@@ -63,13 +63,16 @@ const downloadFormSchema = z.object({
 type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
 const TYPE_INFO = {
-  whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen, groupTitle: "White Papers & Theses" },
+  whitepaper: { label: "White Paper", color: "bg-blue-500", icon: BookOpen, groupTitle: "White Papers" },
+  thesis: { label: "Diploma Thesis", color: "bg-indigo-500", icon: BookOpen, groupTitle: "Diploma Theses" },
   conference: { label: "Conference Paper", color: "bg-purple-500", icon: Presentation, groupTitle: "Conference Papers" },
   video: { label: "Video", color: "bg-emerald-500", icon: Video, groupTitle: "Video Archive" },
+  technote: { label: "Tech Note", color: "bg-amber-500", icon: FileText, groupTitle: "Tech Notes" },
+  datatools: { label: "Data & Tools", color: "bg-cyan-500", icon: FileText, groupTitle: "Data & Tools" },
 } as const;
 
 // Order for displaying groups
-const GROUP_ORDER: Array<keyof typeof TYPE_INFO> = ['whitepaper', 'conference', 'video'];
+const GROUP_ORDER: Array<keyof typeof TYPE_INFO> = ['whitepaper', 'thesis', 'conference', 'technote', 'datatools', 'video'];
 
 // Helper to normalize unicode characters
 const normalizeText = (text: string): string => {
