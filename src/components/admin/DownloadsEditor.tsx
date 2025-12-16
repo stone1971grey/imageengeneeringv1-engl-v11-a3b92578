@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, FileText, Video, Upload, Globe, Lock, Unlock, CheckSquare, Square, Calendar, BookOpen, Presentation, List, File } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -42,6 +42,13 @@ interface Download {
   position: number;
   created_at: string;
   updated_at: string;
+}
+
+interface DescriptionSection {
+  id: string;
+  heading: string;
+  content: string;
+  isBulletList: boolean;
 }
 
 const DOWNLOAD_TYPES = [
@@ -76,12 +83,32 @@ const getLanguageInfo = (code: string) => {
   return lang || { value: "EN", label: "English", flag: "🇬🇧" };
 };
 
+const parseDescriptionToSections = (description: string): DescriptionSection[] => {
+  if (!description) return [{ id: '1', heading: '', content: '', isBulletList: false }];
+  try {
+    const parsed = JSON.parse(description);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // Legacy format - convert to new format
+    return [{ id: '1', heading: '', content: description, isBulletList: false }];
+  }
+  return [{ id: '1', heading: '', content: '', isBulletList: false }];
+};
+
+const sectionsToJson = (sections: DescriptionSection[]): string => {
+  const filledSections = sections.filter(s => s.heading.trim() || s.content.trim());
+  return filledSections.length > 0 ? JSON.stringify(filledSections) : '';
+};
+
 const DownloadsEditor = () => {
   const { language: currentLanguage } = useLanguage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDownload, setEditingDownload] = useState<Download | null>(null);
   const [selectedDownloads, setSelectedDownloads] = useState<Set<string>>(new Set());
   const [filterType, setFilterType] = useState<string>("all");
+  const [descriptionSections, setDescriptionSections] = useState<DescriptionSection[]>([
+    { id: '1', heading: '', content: '', isBulletList: false }
+  ]);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -258,10 +285,13 @@ const DownloadsEditor = () => {
       published: true,
       visibility: "public",
     });
+    setDescriptionSections([{ id: '1', heading: '', content: '', isBulletList: false }]);
   };
 
   const handleEdit = (download: Download) => {
     setEditingDownload(download);
+    const sections = parseDescriptionToSections(download.description || '');
+    setDescriptionSections(sections);
     setFormData({
       title: download.title,
       slug: download.slug,
@@ -303,6 +333,33 @@ const DownloadsEditor = () => {
 
   const handleImageSelect = (url: string) => {
     setFormData(prev => ({ ...prev, image_url: url }));
+  };
+
+  const handleFileSelect = (url: string) => {
+    setFormData(prev => ({ ...prev, download_url: url }));
+  };
+
+  // Section editor functions
+  const updateSection = (id: string, field: keyof DescriptionSection, value: string | boolean) => {
+    setDescriptionSections(prev => {
+      const updated = prev.map(s => s.id === id ? { ...s, [field]: value } : s);
+      setFormData(f => ({ ...f, description: sectionsToJson(updated) }));
+      return updated;
+    });
+  };
+
+  const addSection = () => {
+    const newId = String(Date.now());
+    setDescriptionSections(prev => [...prev, { id: newId, heading: '', content: '', isBulletList: false }]);
+  };
+
+  const removeSection = (id: string) => {
+    setDescriptionSections(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      const result = updated.length > 0 ? updated : [{ id: '1', heading: '', content: '', isBulletList: false }];
+      setFormData(f => ({ ...f, description: sectionsToJson(result) }));
+      return result;
+    });
   };
 
   if (isLoading) {
@@ -363,18 +420,24 @@ const DownloadsEditor = () => {
               Add Download
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#1a1a1a] border-gray-700">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#1a1a1a] border-gray-700">
             <DialogHeader>
-              <DialogTitle className="text-white">
+              <DialogTitle className="text-white text-xl">
                 {editingDownload ? "Edit Download" : "Create New Download"}
               </DialogTitle>
             </DialogHeader>
 
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-[#2a2a2a]">
-                <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                <TabsTrigger value="content">Content</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 bg-[#2a2a2a] p-1 h-auto">
+                <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
+                  Basic Info
+                </TabsTrigger>
+                <TabsTrigger value="content" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
+                  Content
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
+                  Settings
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="basic" className="space-y-4 mt-4">
@@ -530,66 +593,181 @@ const DownloadsEditor = () => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="content" className="space-y-4 mt-4">
-                {/* Description */}
-                <div className="space-y-2">
-                  <Label className="text-white">Full Description (HTML)</Label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="<h3>Overview</h3><p>Content here...</p>"
-                    className="bg-[#2a2a2a] border-gray-600 text-white min-h-[300px] font-mono text-sm"
-                  />
-                </div>
-
-                {/* Download URL */}
-                <div className="space-y-2">
-                  <Label className="text-white">Download URL</Label>
-                  <Input
-                    value={formData.download_url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, download_url: e.target.value }))}
-                    placeholder="/downloads/file.pdf or https://..."
-                    className="bg-[#2a2a2a] border-gray-600 text-white"
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="settings" className="space-y-4 mt-4">
-                {/* Image */}
-                <div className="space-y-2">
-                  <Label className="text-white">Cover Image</Label>
+              <TabsContent value="content" className="space-y-6 mt-4">
+                {/* PDF/File Upload */}
+                <div className="space-y-3 p-4 bg-[#2a2a2a] rounded-lg border border-gray-600">
+                  <Label className="text-white flex items-center gap-2">
+                    <File className="h-4 w-4 text-[#f9dc24]" />
+                    Download File (PDF/Video)
+                  </Label>
                   <div className="flex gap-2">
                     <Input
-                      value={formData.image_url}
-                      onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                      placeholder="Image URL"
-                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+                      value={formData.download_url}
+                      onChange={(e) => setFormData(prev => ({ ...prev, download_url: e.target.value }))}
+                      placeholder="/downloads/file.pdf or https://..."
+                      className="bg-[#1a1a1a] border-gray-600 text-white flex-1"
                     />
                     <MediaSelector
                       onFileSelect={() => {}}
-                      onMediaSelect={handleImageSelect}
+                      onMediaSelect={handleFileSelect}
                       buttonOnly
-                      buttonLabel="Select Image"
+                      buttonLabel="Browse Files"
+                      acceptedFileTypes=".pdf,.mp4,.webm,.mov"
                     />
                   </div>
-                  {formData.image_url && (
-                    <div className="mt-2">
-                      <img 
-                        src={formData.image_url} 
-                        alt="Preview" 
-                        className="h-32 object-cover rounded border border-gray-700"
-                      />
+                  {formData.download_url && (
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <FileText className="h-4 w-4" />
+                      <span className="truncate">{formData.download_url}</span>
                     </div>
                   )}
                 </div>
 
+                {/* Structured Description Editor with Preview */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Structured Section Editor */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">Full Description</h3>
+                      <p className="text-gray-400 text-sm mb-4">
+                        Add sections with headings and content. Toggle bullet list mode for list items.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                      {descriptionSections.map((section, index) => (
+                        <div key={section.id} className="bg-[#2a2a2a] rounded-lg p-4 space-y-3 border border-gray-600">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-400 font-medium">Section {index + 1}</span>
+                            {descriptionSections.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeSection(section.id)}
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-white text-sm">Heading (H3)</Label>
+                            <Input
+                              value={section.heading}
+                              onChange={(e) => updateSection(section.id, 'heading', e.target.value)}
+                              className="bg-[#1a1a1a] border-gray-600 text-white"
+                              placeholder="Enter section heading..."
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-white text-sm">Content</Label>
+                              <button
+                                type="button"
+                                onClick={() => updateSection(section.id, 'isBulletList', !section.isBulletList)}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                                  section.isBulletList 
+                                    ? 'bg-[#f9dc24] text-black' 
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                }`}
+                              >
+                                <List className="h-3 w-3" />
+                                Bullet List
+                              </button>
+                            </div>
+                            <Textarea
+                              value={section.content}
+                              onChange={(e) => updateSection(section.id, 'content', e.target.value)}
+                              className="bg-[#1a1a1a] border-gray-600 text-white min-h-[100px]"
+                              placeholder={section.isBulletList 
+                                ? "Enter each item on a new line...\nItem 1\nItem 2\nItem 3" 
+                                : "Enter paragraph text..."}
+                            />
+                            {section.isBulletList && (
+                              <p className="text-xs text-gray-500">Each line becomes a bullet point</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addSection}
+                      className="w-full border-dashed border-gray-600 text-gray-400 hover:text-white hover:border-gray-400"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Section
+                    </Button>
+                  </div>
+                  
+                  {/* Live Preview */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-[#f9dc24]" />
+                      <h3 className="text-lg font-semibold text-white">Live Preview</h3>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 border border-gray-600 min-h-[400px] overflow-y-auto">
+                      {descriptionSections.some(s => s.heading || s.content) ? (
+                        <div className="space-y-4">
+                          {descriptionSections.map((section) => {
+                            if (!section.heading && !section.content) return null;
+                            return (
+                              <div key={section.id}>
+                                {section.heading && (
+                                  <h3 className="text-lg font-bold text-gray-900 mt-4 mb-2">{section.heading}</h3>
+                                )}
+                                {section.content && (
+                                  section.isBulletList ? (
+                                    <ul className="my-3 ml-6 list-disc space-y-1">
+                                      {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
+                                        <li key={i} className="pl-1 text-gray-700">{line.trim()}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="mb-3 leading-relaxed text-gray-700">{section.content}</p>
+                                  )
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-gray-400 italic">Add content to see the preview...</p>
+                      )}
+                    </div>
+                    <p className="text-gray-500 text-xs">This is exactly how the description will appear on the download page.</p>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="settings" className="space-y-4 mt-4">
+                {/* Cover Image */}
+                <div className="space-y-2">
+                  <Label className="text-white">Cover Image</Label>
+                  <MediaSelector
+                    onFileSelect={() => {}}
+                    onMediaSelect={handleImageSelect}
+                    label="Cover Image"
+                    currentImageUrl={formData.image_url}
+                    previewSize="large"
+                  />
+                </div>
+
                 {/* Published */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4 p-4 bg-[#2a2a2a] rounded-lg">
                   <Switch
                     checked={formData.published}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
                   />
-                  <Label className="text-white">Published</Label>
+                  <div>
+                    <Label className="text-white">Published</Label>
+                    <p className="text-gray-500 text-xs">When enabled, download is visible on the website</p>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
@@ -611,7 +789,7 @@ const DownloadsEditor = () => {
                 disabled={createMutation.isPending || updateMutation.isPending}
                 className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
               >
-                {editingDownload ? "Update Download" : "Create Download"}
+                Save
               </Button>
             </div>
           </DialogContent>
@@ -659,13 +837,43 @@ const DownloadsEditor = () => {
                       <img
                         src={download.image_url}
                         alt={download.title}
-                        className="w-20 h-20 object-cover rounded flex-shrink-0"
+                        className="w-24 h-16 object-cover rounded"
                       />
                     )}
-
+                    
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="font-medium text-white truncate">{download.title}</h3>
+                          <p className="text-sm text-gray-400 line-clamp-2">{download.teaser}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit(download)}
+                            className="h-8 w-8 p-0 text-gray-400 hover:text-white"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to delete this download?")) {
+                                deleteMutation.mutate(download.id);
+                              }
+                            }}
+                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Badges */}
+                      <div className="flex flex-wrap gap-2 mt-2">
                         <Badge className={`${typeInfo.color} text-white`}>
                           <TypeIcon className="h-3 w-3 mr-1" />
                           {typeInfo.label}
@@ -675,45 +883,31 @@ const DownloadsEditor = () => {
                             {download.category}
                           </Badge>
                         )}
-                        <Badge variant={download.visibility === 'public' ? 'default' : 'destructive'} 
-                               className={download.visibility === 'public' ? 'bg-green-600' : 'bg-red-600'}>
-                          {download.visibility === 'public' ? 'Public' : 'Private'}
+                        <Badge 
+                          variant="outline" 
+                          className={download.visibility === 'public' 
+                            ? 'border-green-600 text-green-400' 
+                            : 'border-red-600 text-red-400'
+                          }
+                        >
+                          {download.visibility === 'public' ? (
+                            <><Unlock className="h-3 w-3 mr-1" /> Public</>
+                          ) : (
+                            <><Lock className="h-3 w-3 mr-1" /> Private</>
+                          )}
                         </Badge>
                         {!download.published && (
-                          <Badge variant="secondary" className="bg-orange-600">Draft</Badge>
+                          <Badge variant="outline" className="border-yellow-600 text-yellow-400">
+                            Draft
+                          </Badge>
+                        )}
+                        {download.download_url && (
+                          <Badge variant="outline" className="border-blue-600 text-blue-400">
+                            <FileText className="h-3 w-3 mr-1" />
+                            File attached
+                          </Badge>
                         )}
                       </div>
-                      <h3 className="font-semibold text-white truncate">{download.title}</h3>
-                      <p className="text-sm text-gray-400 truncate">{download.teaser}</p>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
-                        {download.pages && <span>{download.pages} pages</span>}
-                        {download.duration && <span>{download.duration}</span>}
-                        <span>{new Date(download.publish_date).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 flex-shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(download)}
-                        className="border-gray-600 text-gray-300 hover:text-white"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to delete this download?")) {
-                            deleteMutation.mutate(download.id);
-                          }
-                        }}
-                        className="border-red-600 text-red-400 hover:bg-red-600/20"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </CardContent>
