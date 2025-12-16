@@ -7049,12 +7049,20 @@ const AdminDashboard = () => {
                   )}
 
                   {segment.type === 'downloads' && (
-                    <DownloadsSegmentEditor
-                      segmentId={segment.id}
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      language={editorLanguage}
-                      onSave={() => loadContent()}
-                    />
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Downloads"
+                      segmentType="downloads"
+                    >
+                      {(language) => (
+                        <DownloadsSegmentEditor
+                          key={`downloads-${segment.id}-${language}`}
+                          segmentId={segment.id}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
                   )}
 
                   {segment.type === 'debug' && (() => {

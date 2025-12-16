@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ const DOWNLOAD_TYPES = [
   { value: "video", label: "Videos" },
 ];
 
-export const DownloadsSegmentEditor = ({
+const DownloadsSegmentEditorComponent = ({
   segmentId,
   pageSlug,
   language,
@@ -35,10 +35,31 @@ export const DownloadsSegmentEditor = ({
   const [maxItems, setMaxItems] = useState<number>(12);
   const [showCategories, setShowCategories] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
 
+  // Initialize empty and load content on mount/language change
   useEffect(() => {
+    // Reset state before loading
+    setTitle("");
+    setDescription("");
+    setSelectedTypes([]);
+    setMaxItems(12);
+    setShowCategories(true);
+    
     loadConfiguration();
   }, [segmentId, pageSlug, language]);
+
+  // Listen for Rainbow SplitScreen translate button
+  useEffect(() => {
+    if (language === 'en') return;
+
+    const handleExternalTranslate = () => {
+      handleTranslate();
+    };
+
+    window.addEventListener('downloads-translate', handleExternalTranslate);
+    return () => window.removeEventListener('downloads-translate', handleExternalTranslate);
+  }, [language, pageSlug, segmentId]);
 
   const loadConfiguration = async () => {
     try {
@@ -59,9 +80,94 @@ export const DownloadsSegmentEditor = ({
         setSelectedTypes(config.selectedTypes || []);
         setMaxItems(config.maxItems || 12);
         setShowCategories(config.showCategories !== false);
+      } else if (language !== 'en') {
+        // Fallback to English if no translation exists
+        const { data: enData } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", `downloads-${segmentId}`)
+          .eq("language", "en")
+          .maybeSingle();
+        
+        if (enData?.content_value) {
+          const config = JSON.parse(enData.content_value);
+          // Only copy non-translatable fields
+          setSelectedTypes(config.selectedTypes || []);
+          setMaxItems(config.maxItems || 12);
+          setShowCategories(config.showCategories !== false);
+          // Leave title and description empty for translation
+        }
       }
     } catch (error) {
       console.error("Error loading downloads config:", error);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error('Translation not needed - English is the source language');
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      // Load English version
+      const { data: enData, error: enError } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", `downloads-${segmentId}`)
+        .eq("language", "en")
+        .maybeSingle();
+
+      if (enError) throw enError;
+
+      if (!enData?.content_value) {
+        toast.error('No English version found to translate from');
+        return;
+      }
+
+      const enContent = JSON.parse(enData.content_value);
+
+      // Collect text fields to translate
+      const textsToTranslate: Record<string, string> = {};
+      if (enContent.title) textsToTranslate.title = enContent.title;
+      if (enContent.description) textsToTranslate.description = enContent.description;
+
+      if (Object.keys(textsToTranslate).length === 0) {
+        toast.info('No text content to translate');
+        return;
+      }
+
+      // Translate via edge function
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language,
+        },
+      });
+
+      if (translateError) throw translateError;
+
+      if (translateData?.translatedTexts) {
+        setTitle(translateData.translatedTexts.title || enContent.title || 'Downloads');
+        setDescription(translateData.translatedTexts.description || enContent.description || '');
+        
+        // Copy non-translatable fields from English
+        setSelectedTypes(enContent.selectedTypes || []);
+        setMaxItems(enContent.maxItems || 12);
+        setShowCategories(enContent.showCategories !== false);
+
+        toast.success('Content translated successfully');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to translate content');
+    } finally {
+      // Small delay so visual feedback is visible
+      setTimeout(() => setIsTranslating(false), 600);
     }
   };
 
@@ -111,6 +217,13 @@ export const DownloadsSegmentEditor = ({
 
   return (
     <div className="space-y-6 p-6 bg-[#2a2a2a] rounded-lg">
+      {/* Translation Feedback Bar */}
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
+        </div>
+      )}
+
       <div className="space-y-4">
         <div>
           <Label className="text-white">Segment Title</Label>
@@ -198,4 +311,5 @@ export const DownloadsSegmentEditor = ({
   );
 };
 
+export const DownloadsSegmentEditor = memo(DownloadsSegmentEditorComponent);
 export default DownloadsSegmentEditor;
