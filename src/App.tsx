@@ -58,6 +58,7 @@ import AdminNews from "./pages/AdminNews";
 import AdminEvents from "./pages/AdminEvents";
 import AdminProducts from "./pages/AdminProducts";
 import AdminDownloads from "./pages/AdminDownloads";
+import DownloadDetail from "./pages/DownloadDetail";
 import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
 import NotFound from "./pages/NotFound";
@@ -197,6 +198,7 @@ const App = () => (
 
             {/* Info Hub Routes */}
             <Route path="/:lang/info-hub" element={<DynamicCMSPage />} />
+            <Route path="/:lang/info-hub/downloads/:slug" element={<DownloadDetail />} />
             <Route path="/:lang/info-hub/:slug" element={<DynamicCMSPage />} />
 
             {/* Company Routes */}
