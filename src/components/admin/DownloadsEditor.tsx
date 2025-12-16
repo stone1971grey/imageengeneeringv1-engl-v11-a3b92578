@@ -113,7 +113,10 @@ const DownloadsEditor = () => {
     return 'all';
   });
   const [descriptionSections, setDescriptionSections] = useState<DescriptionSection[]>([
-    { id: '1', heading: '', content: '', isBulletList: false }
+    { id: '1', heading: '', content: '', isBulletList: false },
+    { id: '2', heading: '', content: '', isBulletList: false },
+    { id: '3', heading: '', content: '', isBulletList: false },
+    { id: '4', heading: '', content: '', isBulletList: false }
   ]);
 
   // Persist filter type to localStorage
