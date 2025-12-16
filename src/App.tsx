@@ -210,7 +210,7 @@ const App = () => (
             <Route path="/:lang/styleguide/:slug" element={<DynamicCMSPage />} />
             
             {/* Other pages */}
-            <Route path="/:lang/downloads" element={<Downloads />} />
+            <Route path="/:lang/downloads" element={<DynamicCMSPage />} />
             <Route path="/:lang/hidden-segments" element={<HiddenSegments />} />
             <Route path="/:lang/backlog" element={<Backlog />} />
             <Route path="/:lang/backlog/automotive" element={<Automotive />} />
