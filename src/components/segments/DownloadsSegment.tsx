@@ -18,10 +18,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 interface DownloadsSegmentProps {
   segmentId: number;
+  pageSlug?: string;
   config?: {
     title?: string;
     description?: string;
-    filterType?: string; // 'all' | 'whitepaper' | 'conference' | 'video'
+    selectedTypes?: string[];
+    maxItems?: number;
+    showCategories?: boolean;
+    filterType?: string; // legacy
     showForm?: boolean;
   };
 }
@@ -128,18 +132,62 @@ const DownloadDescription = ({ description }: { description: string }) => {
   );
 };
 
-const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
+const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: DownloadsSegmentProps) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  const filterType = config?.filterType || "all";
+  // Load segment configuration from database
+  const { data: segmentConfig } = useQuery({
+    queryKey: ["downloads-segment-config", segmentId, pageSlug, language],
+    queryFn: async () => {
+      if (!pageSlug) return null;
+      
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", `downloads-${segmentId}`)
+        .eq("language", language)
+        .maybeSingle();
+
+      if (error || !data?.content_value) {
+        // Try English fallback
+        const { data: fallbackData } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", `downloads-${segmentId}`)
+          .eq("language", "en")
+          .maybeSingle();
+        
+        if (fallbackData?.content_value) {
+          return JSON.parse(fallbackData.content_value);
+        }
+        return null;
+      }
+
+      return JSON.parse(data.content_value);
+    },
+    enabled: !!pageSlug,
+  });
+
+  // Merge initialConfig with database config (database takes priority)
+  const config = {
+    ...initialConfig,
+    ...segmentConfig,
+  };
+
+  const selectedTypes = config?.selectedTypes || [];
+  const maxItems = config?.maxItems || 50;
+  const showCategories = config?.showCategories !== false;
   const showForm = config?.showForm !== false;
 
-  // Fetch downloads from database
+  // Fetch downloads from database with type filtering
   const { data: downloads = [], isLoading } = useQuery({
-    queryKey: ["downloads-segment", filterType, language],
+    queryKey: ["downloads-segment", selectedTypes, maxItems, language],
     queryFn: async () => {
       let query = supabase
         .from("downloads")
@@ -149,15 +197,17 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
         .order("position", { ascending: true })
         .order("publish_date", { ascending: false });
 
-      if (filterType !== "all") {
-        query = query.eq("download_type", filterType);
+      // Filter by selected types if any are selected
+      if (selectedTypes.length > 0) {
+        query = query.in("download_type", selectedTypes);
       }
 
       const { data, error } = await query;
       
       if (error) {
         console.error("Error fetching downloads:", error);
-        const fallbackQuery = supabase
+        // Fallback to English
+        let fallbackQuery = supabase
           .from("downloads")
           .select("*")
           .eq("published", true)
@@ -165,16 +215,18 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
           .order("position", { ascending: true })
           .order("publish_date", { ascending: false });
 
-        if (filterType !== "all") {
-          fallbackQuery.eq("download_type", filterType);
+        if (selectedTypes.length > 0) {
+          fallbackQuery = fallbackQuery.in("download_type", selectedTypes);
         }
 
         const { data: fallbackData } = await fallbackQuery;
-        return (fallbackData || []) as Download[];
+        const items = (fallbackData || []) as Download[];
+        return items.slice(0, maxItems);
       }
 
       if (!data || data.length === 0) {
-        const fallbackQuery = supabase
+        // Fallback to English if no data in current language
+        let fallbackQuery = supabase
           .from("downloads")
           .select("*")
           .eq("published", true)
@@ -182,15 +234,16 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
           .order("position", { ascending: true })
           .order("publish_date", { ascending: false });
 
-        if (filterType !== "all") {
-          fallbackQuery.eq("download_type", filterType);
+        if (selectedTypes.length > 0) {
+          fallbackQuery = fallbackQuery.in("download_type", selectedTypes);
         }
 
         const { data: fallbackData } = await fallbackQuery;
-        return (fallbackData || []) as Download[];
+        const items = (fallbackData || []) as Download[];
+        return items.slice(0, maxItems);
       }
 
-      return data as Download[];
+      return (data as Download[]).slice(0, maxItems);
     },
   });
 
@@ -237,11 +290,15 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
 
     setIsSubmitting(true);
     try {
-      const categoryTag = selectedItem.download_type === "whitepaper" 
-        ? "dl:whitepaper" 
-        : selectedItem.download_type === "conference" 
-        ? "dl:conference-paper" 
-        : "dl:video";
+      const categoryTagMap: Record<string, string> = {
+        whitepaper: "dl:whitepaper",
+        thesis: "dl:diploma-thesis",
+        conference: "dl:conference-paper",
+        technote: "dl:tech-note",
+        datatools: "dl:data-tools",
+        video: "dl:video",
+      };
+      const categoryTag = categoryTagMap[selectedItem.download_type] || `dl:${selectedItem.download_type}`;
 
       const { data: responseData, error } = await supabase.functions.invoke('send-download-email', {
         body: {
@@ -289,11 +346,19 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
     }
   };
 
+  // Get unique types from downloads for filter buttons
+  const availableTypes = [...new Set(downloads.map(d => d.download_type))];
+
+  // Filter downloads based on active filter
+  const filteredDownloads = activeFilter 
+    ? downloads.filter(d => d.download_type === activeFilter)
+    : downloads;
+
   // Group downloads by type
   const getGroupedDownloads = () => {
     const groups: Record<string, Download[]> = {};
     
-    downloads.forEach(download => {
+    filteredDownloads.forEach(download => {
       const type = download.download_type;
       if (!groups[type]) {
         groups[type] = [];
@@ -316,7 +381,7 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
   // Find which group and row contains the selected item
   const getSelectedItemInfo = () => {
     if (!expandedItemId) return { groupType: null, rowIndex: -1 };
-    const item = downloads.find(d => d.id === expandedItemId);
+    const item = filteredDownloads.find(d => d.id === expandedItemId);
     if (!item) return { groupType: null, rowIndex: -1 };
     
     const groupType = item.download_type;
@@ -328,7 +393,7 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
     return { groupType, rowIndex };
   };
 
-  const selectedItem = downloads.find(d => d.id === expandedItemId);
+  const selectedItem = filteredDownloads.find(d => d.id === expandedItemId);
 
   const DownloadCard = ({ item }: { item: Download }) => {
     const typeInfo = TYPE_INFO[item.download_type];
@@ -409,6 +474,41 @@ const DownloadsSegment = ({ segmentId, config }: DownloadsSegmentProps) => {
             {config?.description && (
               <p className="text-muted-foreground max-w-2xl">{config.description}</p>
             )}
+          </div>
+        )}
+
+        {/* Category Filter Buttons */}
+        {showCategories && availableTypes.length > 1 && (
+          <div className="mb-8 flex flex-wrap gap-3">
+            <Button
+              variant={activeFilter === null ? "default" : "outline"}
+              onClick={() => setActiveFilter(null)}
+              className={activeFilter === null 
+                ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                : "border-border text-foreground hover:bg-muted"
+              }
+            >
+              All ({downloads.length})
+            </Button>
+            {GROUP_ORDER.filter(type => availableTypes.includes(type)).map(type => {
+              const typeInfo = TYPE_INFO[type];
+              const count = downloads.filter(d => d.download_type === type).length;
+              const TypeIcon = typeInfo.icon;
+              return (
+                <Button
+                  key={type}
+                  variant={activeFilter === type ? "default" : "outline"}
+                  onClick={() => setActiveFilter(activeFilter === type ? null : type)}
+                  className={activeFilter === type 
+                    ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                    : "border-border text-foreground hover:bg-muted"
+                  }
+                >
+                  <TypeIcon className="h-4 w-4 mr-2" />
+                  {typeInfo.groupTitle} ({count})
+                </Button>
+              );
+            })}
           </div>
         )}
 
