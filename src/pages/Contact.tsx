@@ -42,7 +42,7 @@ const contactSchema = z.object({
   firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email address"),
   interests: z.array(z.string()).optional(),
-  message: z.string().min(10, "Message must be at least 10 characters").max(2000),
+  message: z.string().max(2000).optional(),
   consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
 });
 
@@ -329,7 +329,7 @@ const Contact = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)] data-[state=checked]:text-black"
                               />
                             </FormControl>
                             <FormLabel className="text-sm text-black/70 font-normal leading-relaxed">
