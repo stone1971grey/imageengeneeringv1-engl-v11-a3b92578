@@ -215,16 +215,18 @@ const Contact = () => {
 
           {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden">
-              {/* Yellow accent bar at top */}
-              <div className="h-1.5 bg-[hsl(50,95%,55%)]" />
-              <div className="p-10">
+            <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-6 overflow-hidden">
+              {/* Inner gray content area - matching flyout style */}
+              <div className="bg-[#f3f3f3] rounded-xl p-8">
+                {/* Yellow accent bar at top */}
+                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-8" />
+                
                 {/* Header */}
-                <div className="text-center mb-10">
+                <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold text-black mb-3">
                     Submit an Inquiry
                   </h2>
-                  <p className="text-black/60 text-lg leading-relaxed">
+                  <p className="text-black/70 text-lg leading-relaxed">
                     Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
                   </p>
                 </div>
