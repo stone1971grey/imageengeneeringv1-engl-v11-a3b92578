@@ -33,7 +33,9 @@ const INTEREST_OPTIONS = [
   { id: "products", label: "Products & Equipment" },
   { id: "testlab", label: "Test Lab Services" },
   { id: "consulting", label: "Consulting" },
-  { id: "training", label: "Training" },
+  { id: "training", label: "Training & Events" },
+  { id: "software", label: "Software Solutions" },
+  { id: "custom", label: "Custom Projects" },
 ];
 
 const contactSchema = z.object({
@@ -213,7 +215,7 @@ const Contact = () => {
 
           {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-xl bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden">
+            <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden">
               <div className="p-10">
                 {/* Header */}
                 <div className="text-center mb-10">
@@ -237,7 +239,7 @@ const Contact = () => {
                             <FormControl>
                               <Input 
                                 placeholder="Name"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -254,7 +256,7 @@ const Contact = () => {
                               <Input 
                                 type="email"
                                 placeholder="Email"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -266,7 +268,7 @@ const Contact = () => {
 
                     {/* Interest Selection - Modern Pills */}
                     <div className="pt-2">
-                      <p className="text-sm text-black/60 mb-3">I'm interested in:</p>
+                      <p className="text-sm text-black mb-3">I'm interested in:</p>
                       <div className="flex flex-wrap gap-2">
                         {INTEREST_OPTIONS.map((option) => {
                           const interests = form.watch("interests") || [];
@@ -285,7 +287,7 @@ const Contact = () => {
                               }}
                               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                                 isSelected 
-                                  ? "bg-black text-white" 
+                                  ? "bg-[hsl(50,95%,55%)] text-black" 
                                   : "bg-gray-100 text-black hover:bg-gray-200"
                               }`}
                             >
@@ -305,7 +307,7 @@ const Contact = () => {
                           <FormControl>
                             <Textarea 
                               placeholder="Tell us about your project or the challenge you have."
-                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
+                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
                               {...field} 
                             />
                           </FormControl>
