@@ -55,15 +55,10 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const INTEREST_OPTIONS = [
-  { id: "test-charts", label: "Test Charts", icon: Ruler },
-  { id: "automotive", label: "Automotive Testing", icon: Car },
-  { id: "camera-testing", label: "Camera & Image Quality", icon: Camera },
-  { id: "medical", label: "Medical Imaging", icon: Microscope },
-  { id: "machine-vision", label: "Machine Vision", icon: Factory },
-  { id: "software", label: "Analysis Software", icon: Monitor },
-  { id: "consulting", label: "Consulting Services", icon: Lightbulb },
-  { id: "training", label: "Training & Workshops", icon: GraduationCap },
-  { id: "custom-solutions", label: "Custom Solutions", icon: BarChart3 },
+  { id: "products", label: "Products & Equipment", icon: Ruler },
+  { id: "services", label: "Test Lab Services", icon: Camera },
+  { id: "consulting", label: "Consulting", icon: Lightbulb },
+  { id: "training", label: "Training", icon: GraduationCap },
 ];
 
 const Contact = () => {
@@ -243,133 +238,56 @@ const Contact = () => {
 
           {/* Contact Form Dialog */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-md border border-border">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-md border border-gray-200 text-gray-900">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">Submit an Inquiry</DialogTitle>
-                <p className="text-muted-foreground">
+                <DialogTitle className="text-2xl font-bold text-gray-900">Submit an Inquiry</DialogTitle>
+                <p className="text-gray-600">
                   Tell us about your needs and how we can help you.
                 </p>
               </DialogHeader>
 
-              {/* Interest Selection */}
+              {/* Interest Selection - Simplified */}
               <div className="mb-6">
-                  <label className="block text-sm font-medium mb-4">
-                    What are you interested in? <span className="text-muted-foreground">(optional)</span>
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    {INTEREST_OPTIONS.map((interest) => {
-                      const Icon = interest.icon;
-                      const isSelected = selectedInterests.includes(interest.id);
-                      return (
-                        <button
-                          key={interest.id}
-                          type="button"
-                          onClick={() => toggleInterest(interest.id)}
-                          className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all duration-200 ${
-                            isSelected
-                              ? "bg-accent border-accent text-accent-foreground shadow-md"
-                              : "bg-background border-border hover:border-accent/50 hover:bg-accent/5"
-                          }`}
-                        >
-                          <Icon className={`w-4 h-4 ${isSelected ? "text-accent-foreground" : "text-muted-foreground"}`} />
-                          <span className="text-sm font-medium">{interest.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  What can we help you with?
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {INTEREST_OPTIONS.map((interest) => {
+                    const Icon = interest.icon;
+                    const isSelected = selectedInterests.includes(interest.id);
+                    return (
+                      <button
+                        key={interest.id}
+                        type="button"
+                        onClick={() => toggleInterest(interest.id)}
+                        className={`flex items-center gap-2 px-5 py-3 rounded-lg border-2 transition-all duration-200 ${
+                          isSelected
+                            ? "bg-[hsl(50,95%,55%)] border-[hsl(50,95%,55%)] text-black shadow-md"
+                            : "bg-white border-gray-300 text-gray-700 hover:border-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,95%)]"
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 ${isSelected ? "text-black" : "text-gray-500"}`} />
+                        <span className="font-medium">{interest.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
+              </div>
 
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Name Fields */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First Name *</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="John" 
-                                className="h-12 bg-background"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last Name *</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Doe" 
-                                className="h-12 bg-background"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Email & Company */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Address *</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="email"
-                                placeholder="john@company.com" 
-                                className="h-12 bg-background"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Company</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Your Company" 
-                                className="h-12 bg-background"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Phone */}
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                  {/* Name Fields */}
+                  <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="phone"
+                      name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
+                          <FormLabel className="text-gray-700">First Name *</FormLabel>
                           <FormControl>
                             <Input 
-                              type="tel"
-                              placeholder="+49 123 456 7890" 
-                              className="h-12 bg-background"
+                              placeholder="John" 
+                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                               {...field} 
                             />
                           </FormControl>
@@ -377,18 +295,16 @@ const Contact = () => {
                         </FormItem>
                       )}
                     />
-
-                    {/* Message */}
                     <FormField
                       control={form.control}
-                      name="message"
+                      name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Your Message *</FormLabel>
+                          <FormLabel className="text-gray-700">Last Name *</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Tell us about your project, challenge, or how we can assist you..."
-                              className="min-h-[150px] bg-background resize-none"
+                            <Input 
+                              placeholder="Doe" 
+                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                               {...field} 
                             />
                           </FormControl>
@@ -396,53 +312,133 @@ const Contact = () => {
                         </FormItem>
                       )}
                     />
+                  </div>
 
-                    {/* Consent */}
+                  {/* Email & Company */}
+                  <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="consent"
+                      name="email"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormItem>
+                          <FormLabel className="text-gray-700">Email Address *</FormLabel>
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
+                            <Input 
+                              type="email"
+                              placeholder="john@company.com" 
+                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                              {...field} 
                             />
                           </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="text-sm font-normal text-muted-foreground">
-                              I consent to the processing of my personal data and agree to the{" "}
-                              <a href="/privacy" className="text-accent hover:underline">
-                                Privacy Policy
-                              </a>
-                              . *
-                            </FormLabel>
-                            <FormMessage />
-                          </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="company"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">Company</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your Company" 
+                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      size="lg"
-                      disabled={isSubmitting || !form.formState.isValid}
-                      className={`w-full h-14 text-lg font-semibold transition-all duration-300 ${
-                        form.formState.isValid
-                          ? "bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg shadow-accent/20"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center gap-2">
-                          <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          Sending...
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Send className="w-5 h-5" />
-                          Submit Inquiry
+                  {/* Phone */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="tel"
+                            placeholder="+49 123 456 7890" 
+                            className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Message */}
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Your Message *</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Tell us about your project or how we can help..."
+                            className="min-h-[120px] bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 resize-none"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Consent */}
+                  <FormField
+                    control={form.control}
+                    name="consent"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="border-gray-400 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)]"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm font-normal text-gray-600">
+                            I consent to the processing of my personal data and agree to the{" "}
+                            <a href="/privacy" className="text-gray-900 underline hover:text-gray-700">
+                              Privacy Policy
+                            </a>
+                            . *
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting || !form.formState.isValid}
+                    className={`w-full h-14 text-lg font-semibold transition-all duration-300 ${
+                      form.formState.isValid
+                        ? "bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black shadow-lg"
+                        : "bg-gray-200 text-gray-400"
+                    }`}
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        Sending...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Send className="w-5 h-5" />
+                        Submit Inquiry
                         </span>
                       )}
                     </Button>
