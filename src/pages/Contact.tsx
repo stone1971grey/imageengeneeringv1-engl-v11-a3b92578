@@ -42,7 +42,7 @@ const contactSchema = z.object({
   firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email address"),
   interests: z.array(z.string()).optional(),
-  message: z.string().max(2000).optional(),
+  message: z.string().optional().default(""),
   consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
 });
 
