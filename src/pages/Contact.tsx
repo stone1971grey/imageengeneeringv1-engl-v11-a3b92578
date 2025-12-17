@@ -12,6 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -32,7 +38,8 @@ import {
   Lightbulb,
   BarChart3,
   Ruler,
-  GraduationCap
+  GraduationCap,
+  X
 } from "lucide-react";
 
 const contactSchema = z.object({
@@ -165,9 +172,6 @@ const Contact = () => {
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <p className="text-accent font-medium mb-4 tracking-wide uppercase text-sm">
-              Get in Touch
-            </p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               Let's explore how we can{" "}
               <span className="relative inline-block">
@@ -183,79 +187,72 @@ const Contact = () => {
 
           {/* Contact Options Cards */}
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16">
-            {/* Submit Inquiry Card */}
+            {/* Submit Inquiry Card - Yellow */}
             <Card 
-              className={`group cursor-pointer transition-all duration-300 border-2 ${
-                showForm 
-                  ? "bg-accent border-accent shadow-lg shadow-accent/20" 
-                  : "bg-accent/10 border-accent/30 hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/20"
-              }`}
+              className="group cursor-pointer transition-all duration-300 bg-accent border-2 border-accent shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30"
               onClick={() => setShowForm(true)}
             >
               <CardContent className="p-8">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-colors ${
-                  showForm ? "bg-accent-foreground/10" : "bg-accent/20 group-hover:bg-accent-foreground/10"
-                }`}>
-                  <MessageSquare className={`w-7 h-7 ${showForm ? "text-accent-foreground" : "text-accent-foreground group-hover:text-accent-foreground"}`} />
+                <div className="w-14 h-14 bg-accent-foreground/10 rounded-2xl flex items-center justify-center mb-6">
+                  <MessageSquare className="w-7 h-7 text-accent-foreground" />
                 </div>
-                <h3 className={`text-2xl font-bold mb-3 ${showForm ? "text-accent-foreground" : "text-foreground group-hover:text-accent-foreground"}`}>
+                <h3 className="text-2xl font-bold mb-3 text-accent-foreground">
                   Submit an Inquiry
                 </h3>
-                <p className={`mb-6 ${showForm ? "text-accent-foreground/80" : "text-muted-foreground group-hover:text-accent-foreground/80"}`}>
+                <p className="text-accent-foreground/80 mb-6">
                   Connect with us, request information, ask a question, or get started with a new project.
                 </p>
                 <Button 
-                  variant={showForm ? "secondary" : "outline"}
-                  className={`${showForm ? "bg-background text-foreground hover:bg-background/90" : "border-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground"}`}
+                  className="bg-accent-foreground text-accent hover:bg-accent-foreground/90"
                 >
                   Leave us a Message
                 </Button>
-                <p className={`text-sm mt-4 ${showForm ? "text-accent-foreground/60" : "text-muted-foreground group-hover:text-accent-foreground/60"}`}>
+                <p className="text-sm mt-4 text-accent-foreground/60">
                   We typically reply within one business day.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Schedule Meeting Card */}
-            <Card className="group cursor-pointer transition-all duration-300 bg-primary/10 border-2 border-primary/30 hover:bg-primary hover:border-primary hover:shadow-lg hover:shadow-primary/20">
+            {/* Schedule Meeting Card - Black with white border */}
+            <Card 
+              className="group cursor-pointer transition-all duration-300 bg-foreground border border-white/30 hover:border-white/50 hover:shadow-lg"
+              onClick={() => window.open("mailto:info@image-engineering.de?subject=Meeting Request", "_blank")}
+            >
               <CardContent className="p-8">
-                <div className="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-foreground/10 transition-colors">
-                  <Calendar className="w-7 h-7 text-primary group-hover:text-primary-foreground" />
+                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white/20 transition-colors">
+                  <Calendar className="w-7 h-7 text-background" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground group-hover:text-primary-foreground">
+                <h3 className="text-2xl font-bold mb-3 text-background">
                   Schedule a Meeting
                 </h3>
-                <p className="text-muted-foreground mb-6 group-hover:text-primary-foreground/80">
+                <p className="text-background/70 mb-6">
                   Select a convenient time slot and have a video call with our experts to discuss your needs.
                 </p>
                 <Button 
                   variant="outline"
-                  className="border-primary text-primary group-hover:bg-primary-foreground group-hover:text-primary group-hover:border-primary-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open("mailto:info@image-engineering.de?subject=Meeting Request", "_blank");
-                  }}
+                  className="border-white/50 text-background bg-transparent hover:bg-white/10 hover:text-background"
                 >
                   Book a Video Meeting
                 </Button>
-                <p className="text-sm text-muted-foreground mt-4 group-hover:text-primary-foreground/60">
+                <p className="text-sm text-background/50 mt-4">
                   Synced with availability on both sides.
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Contact Form Section */}
-          {showForm && (
-            <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="bg-card rounded-3xl border border-border p-8 md:p-12 shadow-xl">
-                <h2 className="text-3xl font-bold mb-2">Submit an Inquiry</h2>
-                <p className="text-muted-foreground mb-8">
+          {/* Contact Form Dialog */}
+          <Dialog open={showForm} onOpenChange={setShowForm}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-md border border-border">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Submit an Inquiry</DialogTitle>
+                <p className="text-muted-foreground">
                   Tell us about your needs and how we can help you.
                 </p>
+              </DialogHeader>
 
-                {/* Interest Selection */}
-                <div className="mb-8">
+              {/* Interest Selection */}
+              <div className="mb-6">
                   <label className="block text-sm font-medium mb-4">
                     What are you interested in? <span className="text-muted-foreground">(optional)</span>
                   </label>
@@ -451,9 +448,8 @@ const Contact = () => {
                     </Button>
                   </form>
                 </Form>
-              </div>
-            </div>
-          )}
+            </DialogContent>
+          </Dialog>
 
           {/* Contact Info */}
           <div className="max-w-5xl mx-auto mt-16 grid md:grid-cols-3 gap-8 text-center">
