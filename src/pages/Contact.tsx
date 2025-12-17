@@ -215,18 +215,18 @@ const Contact = () => {
 
           {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-6 overflow-hidden">
+            <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-5 overflow-hidden max-h-[85vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3">
               {/* Inner gray content area - matching flyout style */}
-              <div className="bg-[#f3f3f3] rounded-xl p-8">
+              <div className="bg-[#f3f3f3] rounded-xl p-6">
                 {/* Yellow accent bar at top */}
-                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-8" />
+                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-6" />
                 
                 {/* Header */}
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-black mb-3">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-black mb-2">
                     Submit an Inquiry
                   </h2>
-                  <p className="text-black/70 text-lg leading-relaxed">
+                  <p className="text-black text-base leading-relaxed">
                     Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
                   </p>
                 </div>
@@ -234,7 +234,7 @@ const Contact = () => {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     {/* Name & Email - Side by side */}
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="firstName"
@@ -243,7 +243,7 @@ const Contact = () => {
                             <FormControl>
                               <Input 
                                 placeholder="Name"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-12 bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -260,7 +260,7 @@ const Contact = () => {
                               <Input 
                                 type="email"
                                 placeholder="Email"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-12 bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -271,8 +271,8 @@ const Contact = () => {
                     </div>
 
                     {/* Interest Selection - Modern Pills */}
-                    <div className="pt-2">
-                      <p className="text-sm text-black mb-3">I'm interested in:</p>
+                    <div className="pt-1">
+                      <p className="text-sm text-black mb-2">I'm interested in:</p>
                       <div className="flex flex-wrap gap-2">
                         {INTEREST_OPTIONS.map((option) => {
                           const interests = form.watch("interests") || [];
@@ -289,7 +289,7 @@ const Contact = () => {
                                   form.setValue("interests", [...current, option.id]);
                                 }
                               }}
-                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                                 isSelected 
                                   ? "bg-black text-white" 
                                   : "bg-[hsl(50,95%,55%)] text-black hover:bg-[hsl(50,95%,45%)]"
@@ -311,7 +311,7 @@ const Contact = () => {
                           <FormControl>
                             <Textarea 
                               placeholder="Tell us about your project or the challenge you have."
-                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-black/60 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
+                              className="min-h-[80px] bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
                               {...field} 
                             />
                           </FormControl>
@@ -321,7 +321,7 @@ const Contact = () => {
                     />
 
                     {/* Consent */}
-                    <div className="pt-4 space-y-3">
+                    <div className="pt-2 space-y-2">
                       <FormField
                         control={form.control}
                         name="consent"
@@ -331,10 +331,10 @@ const Contact = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)] data-[state=checked]:text-black"
+                                className="mt-1 h-5 w-5 border-2 border-gray-500 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)] data-[state=checked]:text-black"
                               />
                             </FormControl>
-                            <FormLabel className="text-sm text-black/70 font-normal leading-relaxed">
+                            <FormLabel className="text-sm text-black font-normal leading-relaxed">
                               I consent to the processing of my personal data and agree to the{" "}
                               <a href="/privacy" className="underline hover:text-black">
                                 Terms & Conditions
