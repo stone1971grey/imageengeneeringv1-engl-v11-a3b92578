@@ -14,8 +14,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -26,68 +24,35 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { 
-  Send, 
   MessageSquare, 
   Calendar, 
-  CheckCircle2,
-  Camera,
-  Car,
-  Microscope,
-  Monitor,
-  Factory,
-  Lightbulb,
-  BarChart3,
-  Ruler,
-  GraduationCap,
-  X
+  CheckCircle2
 } from "lucide-react";
 
 const contactSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters").max(50),
-  lastName: z.string().min(2, "Last name must be at least 2 characters").max(50),
+  firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email address"),
-  company: z.string().optional(),
-  phone: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters").max(2000),
   consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const INTEREST_OPTIONS = [
-  { id: "products", label: "Products & Equipment", icon: Ruler },
-  { id: "services", label: "Test Lab Services", icon: Camera },
-  { id: "consulting", label: "Consulting", icon: Lightbulb },
-  { id: "training", label: "Training", icon: GraduationCap },
-];
-
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [showForm, setShowForm] = useState(false);
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       firstName: "",
-      lastName: "",
       email: "",
-      company: "",
-      phone: "",
       message: "",
       consent: false,
     },
     mode: "onChange",
   });
-
-  const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => 
-      prev.includes(interestId) 
-        ? prev.filter(id => id !== interestId)
-        : [...prev, interestId]
-    );
-  };
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
@@ -97,18 +62,17 @@ const Contact = () => {
         .from("contact_submissions")
         .insert({
           first_name: data.firstName,
-          last_name: data.lastName,
+          last_name: "",
           email: data.email,
-          phone: data.phone || null,
-          subject: selectedInterests.length > 0 
-            ? `Interests: ${selectedInterests.join(", ")}`
-            : "General Inquiry",
-          message: data.message + (data.company ? `\n\nCompany: ${data.company}` : ""),
+          phone: null,
+          subject: "General Inquiry",
+          message: data.message,
         });
 
       if (error) throw error;
 
       setIsSubmitted(true);
+      setShowForm(false);
       toast({
         title: "Message sent successfully!",
         description: "We'll get back to you within one business day.",
@@ -143,8 +107,6 @@ const Contact = () => {
                 onClick={() => {
                   setIsSubmitted(false);
                   form.reset();
-                  setSelectedInterests([]);
-                  setShowForm(false);
                 }}
                 variant="outline"
                 size="lg"
@@ -236,58 +198,69 @@ const Contact = () => {
             </Card>
           </div>
 
-          {/* Contact Form Dialog */}
+          {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-md border border-gray-200 text-gray-900">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-gray-900">Submit an Inquiry</DialogTitle>
-                <p className="text-gray-600">
-                  Tell us about your needs and how we can help you.
-                </p>
-              </DialogHeader>
-
-              {/* Interest Selection - Simplified */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  What can we help you with?
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {INTEREST_OPTIONS.map((interest) => {
-                    const Icon = interest.icon;
-                    const isSelected = selectedInterests.includes(interest.id);
-                    return (
-                      <button
-                        key={interest.id}
-                        type="button"
-                        onClick={() => toggleInterest(interest.id)}
-                        className={`flex items-center gap-2 px-5 py-3 rounded-lg border-2 transition-all duration-200 ${
-                          isSelected
-                            ? "bg-[hsl(50,95%,55%)] border-[hsl(50,95%,55%)] text-black shadow-md"
-                            : "bg-white border-gray-300 text-gray-700 hover:border-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,95%)]"
-                        }`}
-                      >
-                        <Icon className={`w-5 h-5 ${isSelected ? "text-black" : "text-gray-500"}`} />
-                        <span className="font-medium">{interest.label}</span>
-                      </button>
-                    );
-                  })}
+            <DialogContent className="max-w-xl bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden">
+              <div className="p-10">
+                {/* Header */}
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                    Submit an Inquiry
+                  </h2>
+                  <p className="text-gray-500 text-lg leading-relaxed">
+                    Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
+                  </p>
                 </div>
-              </div>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  {/* Name Fields */}
-                  <div className="grid md:grid-cols-2 gap-4">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Name & Email - Side by side */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input 
+                                placeholder="Name"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input 
+                                type="email"
+                                placeholder="Email"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Message */}
                     <FormField
                       control={form.control}
-                      name="firstName"
+                      name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700">First Name *</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="John" 
-                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                            <Textarea 
+                              placeholder="Tell us about your project or the challenge you have."
+                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
                               {...field} 
                             />
                           </FormControl>
@@ -295,155 +268,53 @@ const Contact = () => {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Last Name *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Doe" 
-                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
 
-                  {/* Email & Company */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Email Address *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email"
-                              placeholder="john@company.com" 
-                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="company"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Company</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Your Company" 
-                              className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                    {/* Consent */}
+                    <div className="pt-4 space-y-3">
+                      <FormField
+                        control={form.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-gray-900 data-[state=checked]:border-gray-900"
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm text-gray-600 font-normal leading-relaxed">
+                              I consent to the processing of my personal data and agree to the{" "}
+                              <a href="/privacy" className="underline hover:text-gray-900">
+                                Terms & Conditions
+                              </a>.
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                  {/* Phone */}
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Phone Number</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="tel"
-                            placeholder="+49 123 456 7890" 
-                            className="h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Message */}
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Your Message *</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Tell us about your project or how we can help..."
-                            className="min-h-[120px] bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 resize-none"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Consent */}
-                  <FormField
-                    control={form.control}
-                    name="consent"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="border-gray-400 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)]"
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-normal text-gray-600">
-                            I consent to the processing of my personal data and agree to the{" "}
-                            <a href="/privacy" className="text-gray-900 underline hover:text-gray-700">
-                              Privacy Policy
-                            </a>
-                            . *
-                          </FormLabel>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={isSubmitting || !form.formState.isValid}
-                    className={`w-full h-14 text-lg font-semibold transition-all duration-300 ${
-                      form.formState.isValid
-                        ? "bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black shadow-lg"
-                        : "bg-gray-200 text-gray-400"
-                    }`}
-                  >
-                    {isSubmitting ? (
-                      <span className="flex items-center gap-2">
-                        <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        Sending...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        <Send className="w-5 h-5" />
-                        Submit Inquiry
-                        </span>
-                      )}
-                    </Button>
+                    {/* Submit Button */}
+                    <div className="pt-4">
+                      <Button
+                        type="submit"
+                        size="lg"
+                        disabled={isSubmitting || !form.formState.isValid}
+                        className="w-full h-14 text-lg font-semibold bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black rounded-lg transition-all duration-200 disabled:bg-gray-100 disabled:text-gray-400"
+                      >
+                        {isSubmitting ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            Sending...
+                          </span>
+                        ) : (
+                          "Submit"
+                        )}
+                      </Button>
+                    </div>
                   </form>
                 </Form>
+              </div>
             </DialogContent>
           </Dialog>
 
