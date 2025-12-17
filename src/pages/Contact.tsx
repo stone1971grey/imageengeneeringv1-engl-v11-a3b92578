@@ -216,6 +216,8 @@ const Contact = () => {
           {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden">
+              {/* Yellow accent bar at top */}
+              <div className="h-1.5 bg-[hsl(50,95%,55%)]" />
               <div className="p-10">
                 {/* Header */}
                 <div className="text-center mb-10">
@@ -287,8 +289,8 @@ const Contact = () => {
                               }}
                               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                                 isSelected 
-                                  ? "bg-[hsl(50,95%,55%)] text-black" 
-                                  : "bg-gray-100 text-black hover:bg-gray-200"
+                                  ? "bg-black text-white" 
+                                  : "bg-[hsl(50,95%,55%)] text-black hover:bg-[hsl(50,95%,45%)]"
                               }`}
                             >
                               {option.label}
