@@ -29,9 +29,17 @@ import {
   CheckCircle2
 } from "lucide-react";
 
+const INTEREST_OPTIONS = [
+  { id: "products", label: "Products & Equipment" },
+  { id: "testlab", label: "Test Lab Services" },
+  { id: "consulting", label: "Consulting" },
+  { id: "training", label: "Training" },
+];
+
 const contactSchema = z.object({
   firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email address"),
+  interests: z.array(z.string()).optional(),
   message: z.string().min(10, "Message must be at least 10 characters").max(2000),
   consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
 });
@@ -48,6 +56,7 @@ const Contact = () => {
     defaultValues: {
       firstName: "",
       email: "",
+      interests: [],
       message: "",
       consent: false,
     },
@@ -58,6 +67,10 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      const interestLabels = data.interests?.map(id => 
+        INTEREST_OPTIONS.find(opt => opt.id === id)?.label
+      ).filter(Boolean).join(", ") || "General";
+      
       const { error } = await supabase
         .from("contact_submissions")
         .insert({
@@ -65,7 +78,7 @@ const Contact = () => {
           last_name: "",
           email: data.email,
           phone: null,
-          subject: "General Inquiry",
+          subject: `Inquiry: ${interestLabels}`,
           message: data.message,
         });
 
@@ -204,10 +217,10 @@ const Contact = () => {
               <div className="p-10">
                 {/* Header */}
                 <div className="text-center mb-10">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-3xl font-bold text-black mb-3">
                     Submit an Inquiry
                   </h2>
-                  <p className="text-gray-500 text-lg leading-relaxed">
+                  <p className="text-black/60 text-lg leading-relaxed">
                     Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
                   </p>
                 </div>
@@ -224,7 +237,7 @@ const Contact = () => {
                             <FormControl>
                               <Input 
                                 placeholder="Name"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -241,7 +254,7 @@ const Contact = () => {
                               <Input 
                                 type="email"
                                 placeholder="Email"
-                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-14 bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -249,6 +262,38 @@ const Contact = () => {
                           </FormItem>
                         )}
                       />
+                    </div>
+
+                    {/* Interest Selection - Modern Pills */}
+                    <div className="pt-2">
+                      <p className="text-sm text-black/60 mb-3">I'm interested in:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {INTEREST_OPTIONS.map((option) => {
+                          const interests = form.watch("interests") || [];
+                          const isSelected = interests.includes(option.id);
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => {
+                                const current = form.getValues("interests") || [];
+                                if (isSelected) {
+                                  form.setValue("interests", current.filter(id => id !== option.id));
+                                } else {
+                                  form.setValue("interests", [...current, option.id]);
+                                }
+                              }}
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                                isSelected 
+                                  ? "bg-black text-white" 
+                                  : "bg-gray-100 text-black hover:bg-gray-200"
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {/* Message */}
@@ -260,7 +305,7 @@ const Contact = () => {
                           <FormControl>
                             <Textarea 
                               placeholder="Tell us about your project or the challenge you have."
-                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-gray-900 text-lg placeholder:text-gray-400 focus:border-gray-900 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
+                              className="min-h-[120px] bg-transparent border-0 border-b-2 border-gray-200 rounded-none text-black text-lg placeholder:text-gray-400 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
                               {...field} 
                             />
                           </FormControl>
@@ -280,12 +325,12 @@ const Contact = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-gray-900 data-[state=checked]:border-gray-900"
+                                className="mt-1 h-5 w-5 border-2 border-gray-300 data-[state=checked]:bg-black data-[state=checked]:border-black"
                               />
                             </FormControl>
-                            <FormLabel className="text-sm text-gray-600 font-normal leading-relaxed">
+                            <FormLabel className="text-sm text-black/70 font-normal leading-relaxed">
                               I consent to the processing of my personal data and agree to the{" "}
-                              <a href="/privacy" className="underline hover:text-gray-900">
+                              <a href="/privacy" className="underline hover:text-black">
                                 Terms & Conditions
                               </a>.
                             </FormLabel>
