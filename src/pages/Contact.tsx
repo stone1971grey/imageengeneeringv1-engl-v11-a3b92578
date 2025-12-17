@@ -189,25 +189,25 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16">
             {/* Submit Inquiry Card - Yellow */}
             <Card 
-              className="group cursor-pointer transition-all duration-300 bg-accent border-2 border-accent shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30"
+              className="group cursor-pointer transition-all duration-300 bg-[hsl(50,95%,55%)] border-2 border-[hsl(50,95%,55%)] shadow-lg hover:shadow-xl hover:bg-[hsl(50,95%,50%)]"
               onClick={() => setShowForm(true)}
             >
               <CardContent className="p-8">
-                <div className="w-14 h-14 bg-accent-foreground/10 rounded-2xl flex items-center justify-center mb-6">
-                  <MessageSquare className="w-7 h-7 text-accent-foreground" />
+                <div className="w-14 h-14 bg-black/10 rounded-2xl flex items-center justify-center mb-6">
+                  <MessageSquare className="w-7 h-7 text-black" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-accent-foreground">
+                <h3 className="text-2xl font-bold mb-3 text-black">
                   Submit an Inquiry
                 </h3>
-                <p className="text-accent-foreground/80 mb-6">
+                <p className="text-black/70 mb-6">
                   Connect with us, request information, ask a question, or get started with a new project.
                 </p>
                 <Button 
-                  className="bg-accent-foreground text-accent hover:bg-accent-foreground/90"
+                  className="bg-black text-white hover:bg-black/90"
                 >
                   Leave us a Message
                 </Button>
-                <p className="text-sm mt-4 text-accent-foreground/60">
+                <p className="text-sm mt-4 text-black/60">
                   We typically reply within one business day.
                 </p>
               </CardContent>
@@ -215,26 +215,26 @@ const Contact = () => {
 
             {/* Schedule Meeting Card - Black with white border */}
             <Card 
-              className="group cursor-pointer transition-all duration-300 bg-foreground border border-white/30 hover:border-white/50 hover:shadow-lg"
+              className="group cursor-pointer transition-all duration-300 bg-black border border-white/40 hover:border-white/60 hover:shadow-lg"
               onClick={() => window.open("mailto:info@image-engineering.de?subject=Meeting Request", "_blank")}
             >
               <CardContent className="p-8">
                 <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white/20 transition-colors">
-                  <Calendar className="w-7 h-7 text-background" />
+                  <Calendar className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-background">
+                <h3 className="text-2xl font-bold mb-3 text-white">
                   Schedule a Meeting
                 </h3>
-                <p className="text-background/70 mb-6">
+                <p className="text-white/70 mb-6">
                   Select a convenient time slot and have a video call with our experts to discuss your needs.
                 </p>
                 <Button 
                   variant="outline"
-                  className="border-white/50 text-background bg-transparent hover:bg-white/10 hover:text-background"
+                  className="border-white/50 text-white bg-transparent hover:bg-white/10"
                 >
                   Book a Video Meeting
                 </Button>
-                <p className="text-sm text-background/50 mt-4">
+                <p className="text-sm text-white/50 mt-4">
                   Synced with availability on both sides.
                 </p>
               </CardContent>
