@@ -75,24 +75,7 @@ const SplitScreenSegmentEditorComponent = ({
 
   return (
     <div className="space-y-4">
-      {/* Language Restriction Notice */}
-      {isLanguageRestricted && (
-        <Card className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border-amber-600/50">
-          <CardHeader className="py-3">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-400" />
-              <div>
-                <CardTitle className="text-amber-200 text-sm">Eingeschränkter Sprachzugriff</CardTitle>
-                <CardDescription className="text-amber-300/80 text-xs mt-1">
-                  Sie können nur Übersetzungen in {allowedLanguages?.map(l => 
-                    LANGUAGES.find(lang => lang.code === l)?.name
-                  ).join(', ')} bearbeiten.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-      )}
+      {/* Language selector area - no restriction notice needed */}
 
       {/* Language Selector */}
       <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
