@@ -459,17 +459,6 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-
-            {/* Main Address Bar */}
-            <div className="bg-[hsl(0,0%,12%)] rounded-xl p-6 border border-white/10 flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-center">
-              <span className="text-white/80 text-sm">Im Gleisdreieck 5, 50169 Kerpen, Germany</span>
-              <span className="text-white/40">|</span>
-              <span className="text-white/80 text-sm">T <a href="tel:+492273999910" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+49 2273 99 99 10</a></span>
-              <span className="text-white/40">|</span>
-              <span className="text-white/80 text-sm">F +49 2273 99 99 1-10</span>
-              <span className="text-white/40">|</span>
-              <a href="mailto:info@image-engineering.de" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)] text-sm">info@image-engineering.de</a>
-            </div>
           </div>
 
           <Dialog open={showForm} onOpenChange={setShowForm}>
