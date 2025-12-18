@@ -116,6 +116,10 @@ export const UserManagement = () => {
   const [editUserRole, setEditUserRole] = useState<AppRole>('editor');
   const [editSelectedEditors, setEditSelectedEditors] = useState<string[]>([]);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editUserName, setEditUserName] = useState('');
+  const [editUserEmail, setEditUserEmail] = useState('');
+  const [editUserPassword, setEditUserPassword] = useState('');
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -420,6 +424,27 @@ export const UserManagement = () => {
 
     setIsSavingEdit(true);
     try {
+      // Update profile (name)
+      if (editUserName !== selectedUser.full_name) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ full_name: editUserName })
+          .eq('id', selectedUser.id);
+
+        if (profileError) throw profileError;
+      }
+
+      // Update email if changed (requires admin API - we'll update profile only)
+      if (editUserEmail !== selectedUser.email) {
+        const { error: emailError } = await supabase
+          .from('profiles')
+          .update({ email: editUserEmail })
+          .eq('id', selectedUser.id);
+
+        if (emailError) throw emailError;
+        toast.info('E-Mail in Profil aktualisiert. Auth-E-Mail bleibt unverändert.');
+      }
+
       // Update role - delete existing and add new
       const { error: deleteRoleError } = await supabase
         .from('user_roles')
@@ -679,6 +704,9 @@ export const UserManagement = () => {
                         <button
                           onClick={() => {
                             setSelectedUser(user);
+                            setEditUserName(user.full_name || '');
+                            setEditUserEmail(user.email);
+                            setEditUserPassword('');
                             setEditUserRole(user.roles.includes('admin') ? 'admin' : 'editor');
                             setEditSelectedEditors(user.contentEditors || []);
                             setShowEditUserDialog(true);
@@ -1044,53 +1072,83 @@ export const UserManagement = () => {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {/* User Info (read-only) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border">
-              <div>
-                <Label className="text-xs text-gray-500">Name</Label>
-                <p className="text-sm font-medium text-gray-900">{selectedUser?.full_name || 'Kein Name'}</p>
+            {/* Editable User Info */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name" className="text-base font-semibold">Name</Label>
+                <Input
+                  id="edit-name"
+                  placeholder="Name eingeben"
+                  value={editUserName}
+                  onChange={(e) => setEditUserName(e.target.value)}
+                  className="text-base h-12"
+                />
               </div>
-              <div>
-                <Label className="text-xs text-gray-500">E-Mail</Label>
-                <p className="text-sm font-medium text-gray-900">{selectedUser?.email}</p>
+              <div className="space-y-2">
+                <Label htmlFor="edit-email" className="text-base font-semibold">E-Mail</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  placeholder="email@example.com"
+                  value={editUserEmail}
+                  onChange={(e) => setEditUserEmail(e.target.value)}
+                  className="text-base h-12"
+                />
               </div>
-              <div>
-                <Label className="text-xs text-gray-500">Passwort</Label>
-                <p className="text-sm font-mono text-gray-500">••••••••</p>
+              <div className="space-y-2">
+                <Label htmlFor="edit-password" className="text-base font-semibold">Neues Passwort</Label>
+                <div className="relative">
+                  <Input
+                    id="edit-password"
+                    type={showEditPassword ? "text" : "password"}
+                    placeholder="Leer lassen = unverändert"
+                    value={editUserPassword}
+                    onChange={(e) => setEditUserPassword(e.target.value)}
+                    className="pr-12 text-base h-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPassword(!showEditPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showEditPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500">Nur ausfüllen wenn Passwort geändert werden soll</p>
               </div>
             </div>
 
             {/* Role Selection */}
-            <div className="space-y-3">
-              <Label className="text-base font-bold text-gray-900">Rolle</Label>
+            <div className="space-y-3 pt-4 border-t">
+              <Label className="text-lg font-bold text-gray-900">Rolle</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'editor' 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
                   }`}
                   onClick={() => setEditUserRole('editor')}
                 >
-                  <div className="flex items-center gap-2">
-                    <Pencil className={`h-5 w-5 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-base font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
+                  <div className="flex items-center gap-3">
+                    <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
                   </div>
-                  <p className={`text-sm mt-1 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`}>Kann zugewiesene Inhalte bearbeiten</p>
                 </div>
                 <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'admin' 
                       ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
                   }`}
                   onClick={() => setEditUserRole('admin')}
                 >
-                  <div className="flex items-center gap-2">
-                    <Crown className={`h-5 w-5 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-base font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
+                  <div className="flex items-center gap-3">
+                    <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
                   </div>
-                  <p className={`text-sm mt-1 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`}>Voller Systemzugriff</p>
                 </div>
               </div>
             </div>
@@ -1099,8 +1157,8 @@ export const UserManagement = () => {
             {editUserRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-base font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-sm text-gray-600 mt-1">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <Label className="text-lg font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <p className="text-base text-gray-600 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1116,21 +1174,21 @@ export const UserManagement = () => {
                             setEditSelectedEditors([...editSelectedEditors, editor.id]);
                           }
                         }}
-                        className={`relative overflow-hidden rounded-xl border-3 transition-all duration-300 cursor-pointer ${
+                        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
                             ? `border-green-500 bg-green-50 shadow-xl ring-2 ring-green-300` 
                             : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-lg'
                         }`}
                       >
                         <div className={`absolute top-0 left-0 right-0 h-2 ${editor.bgColor}`}></div>
-                        <div className="p-4 pt-5 flex flex-col items-center text-center">
-                          <div className={`h-12 w-12 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
+                        <div className="p-5 pt-6 flex flex-col items-center text-center">
+                          <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-xs text-gray-600 mt-1">{editor.description}</p>
+                          <h4 className="text-base font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{editor.description}</p>
                           {isSelected && (
-                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1 shadow-md">
+                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
                               <Check className="h-5 w-5 text-white" strokeWidth={3} />
                             </div>
                           )}
@@ -1141,8 +1199,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {editSelectedEditors.length > 0 && (
-                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-4 py-3">
-                    <p className="text-base font-bold text-yellow-800">
+                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-yellow-800">
                       ✓ {editSelectedEditors.length} Editor(en) ausgewählt
                     </p>
                   </div>
