@@ -60,9 +60,8 @@ const SplitScreenSegmentEditorComponent = ({
 
   // Filter available languages based on editor access
   const availableTargetLanguages = LANGUAGES.filter(lang => {
-    if (lang.code === 'en') return false; // English is never a target language
-    if (!isLanguageRestricted) return true; // Full access
-    return allowedLanguages?.includes(lang.code);
+    if (!isLanguageRestricted) return true; // Full access - show all languages
+    return allowedLanguages?.includes(lang.code); // Only show allowed languages
   });
 
   if (isLoading) {
