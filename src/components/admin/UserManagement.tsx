@@ -424,34 +424,30 @@ export const UserManagement = () => {
 
     setIsDeleting(true);
     try {
-      // Delete user roles first
-      const { error: rolesError } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', selectedUser.id);
-
-      if (rolesError) {
-        console.error('Error deleting roles:', rolesError);
+      // Get the current session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Nicht authentifiziert');
+        setIsDeleting(false);
+        return;
       }
 
-      // Delete editor page access
-      const { error: accessError } = await supabase
-        .from('editor_page_access')
-        .delete()
-        .eq('user_id', selectedUser.id);
+      // Call the edge function to delete the user
+      const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+        body: { userId: selectedUser.id }
+      });
 
-      if (accessError) {
-        console.error('Error deleting editor access:', accessError);
+      if (error) {
+        console.error('Error calling delete user function:', error);
+        toast.error('Fehler beim Löschen: ' + error.message);
+        return;
       }
 
-      // Delete profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', selectedUser.id);
-
-      if (profileError) {
-        console.error('Error deleting profile:', profileError);
+      if (data?.error) {
+        console.error('Delete user function returned error:', data.error);
+        toast.error(data.error);
+        return;
       }
 
       toast.success(`Benutzer "${selectedUser.email}" wurde gelöscht`);
