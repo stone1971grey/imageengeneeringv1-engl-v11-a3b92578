@@ -8,7 +8,7 @@ const MiniFooter = () => {
       <div className="container mx-auto px-6 py-6">
         <div className="text-center space-y-4">
           <p className="text-sm text-white">
-            {t.footer.copyright}
+            © {new Date().getFullYear()} {t.footer.copyright}
           </p>
           <div className="flex flex-wrap justify-center gap-6 text-sm">
             <a href="#" className="text-white hover:text-white/80 transition-colors">
