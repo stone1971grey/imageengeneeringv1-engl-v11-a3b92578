@@ -302,11 +302,11 @@ nav [data-radix-navigation-menu-list] > li:last-child [data-radix-navigation-men
 .calendly-popup-close,
 .calendly-close-overlay,
 .calendly-overlay .calendly-popup-close {
-  top: 80px !important;
-  right: 20px !important;
+  top: 140px !important;
+  right: 80px !important;
 }
 
 /* Calendly popup content positioning */
 .calendly-popup-content {
-  top: 60px !important;
+  top: 100px !important;
 }
