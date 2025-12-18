@@ -291,7 +291,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Options Cards - 2x2 Grid */}
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto mb-16">
             {/* Submit Inquiry Card - Yellow */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-[hsl(50,95%,55%)] border-2 border-[hsl(50,95%,55%)] shadow-lg hover:shadow-xl hover:bg-[hsl(50,95%,50%)]"
