@@ -296,7 +296,8 @@ export const CMSPageOverview = () => {
   const CATEGORY_ORDER = ['Home', 'Your Solution', 'Products', 'Test Lab', 'Training & Events', 'Info Hub', 'Company', 'Styleguide'];
 
   // Static pages - these are React components that don't use CMS segments
-  const STATIC_PAGES = ['contact', 'news', 'styleguide'];
+  // Includes: pure static pages AND navigation parent pages (category overview pages)
+  const STATIC_PAGES = ['contact', 'news', 'styleguide', 'your-solution', 'products', 'training-events'];
 
   const isStaticPage = (slug: string): boolean => {
     return STATIC_PAGES.includes(slug) || slug.startsWith('styleguide');
