@@ -96,15 +96,15 @@ const SplitScreenSegmentEditorComponent = ({
                   id="split-screen-toggle"
                   checked={isSplitScreenEnabled}
                   onCheckedChange={handleSplitScreenToggle}
-                  disabled={isLanguageRestricted}
+                  disabled={isLanguageRestricted && !canEditEnglish}
                   className="data-[state=checked]:bg-blue-600"
                 />
                 <Label 
                   htmlFor="split-screen-toggle" 
-                  className={`text-white text-sm ${isLanguageRestricted ? 'opacity-50' : 'cursor-pointer'}`}
+                  className={`text-white text-sm ${isLanguageRestricted && !canEditEnglish ? 'opacity-50' : 'cursor-pointer'}`}
                 >
                   Split-Screen Mode
-                  {isLanguageRestricted && <Lock className="h-3 w-3 inline ml-1" />}
+                  {isLanguageRestricted && !canEditEnglish && <Lock className="h-3 w-3 inline ml-1" />}
                 </Label>
               </div>
               {isSplitScreenEnabled && (
