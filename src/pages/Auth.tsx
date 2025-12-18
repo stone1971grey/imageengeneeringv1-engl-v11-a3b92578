@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
 import logoIE from "@/assets/logo-ie-new-v7.png";
@@ -143,8 +144,8 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader className="space-y-4">
           <div className="flex justify-center gap-4 items-center">
             <img 
@@ -153,11 +154,16 @@ const Auth = () => {
               className="h-16 w-auto"
             />
             <div className="flex flex-col">
-              <span className="text-3xl font-bold text-foreground">Lovable</span>
-              <span className="text-xl font-medium text-muted-foreground">CMS</span>
+              <div className="flex items-center gap-2">
+                <span className="text-3xl font-bold text-white">Lovable</span>
+                <Badge variant="outline" className="bg-zinc-800 text-zinc-300 border-zinc-600 text-xs">
+                  v0.9
+                </Badge>
+              </div>
+              <span className="text-xl font-medium text-zinc-400">CMS</span>
             </div>
           </div>
-          <div className="border-t border-border my-4" />
+          <div className="border-t border-zinc-700 my-4" />
           <div className="flex justify-center">
             <img 
               src={logoIE} 
@@ -165,48 +171,33 @@ const Auth = () => {
               className="h-16 w-auto"
             />
           </div>
-          <CardTitle className="text-2xl text-center">
-            {isLogin ? "Login" : "Create Account"}
+          <CardTitle className="text-2xl text-center text-white">
+            Login
           </CardTitle>
-          <CardDescription className="text-center">
-            {isLogin 
-              ? "Enter your credentials to access the admin panel" 
-              : "Sign up for an admin account"}
+          <CardDescription className="text-center text-zinc-400">
+            Enter your credentials to access the admin panel
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={isLogin ? handleLogin : handleSignUp} className="space-y-4">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-            )}
-            
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="loginIdentifier">
-                {isLogin ? "Benutzername oder E-Mail" : "Email"}
+              <Label htmlFor="loginIdentifier" className="text-zinc-300">
+                Benutzername oder E-Mail
               </Label>
               <Input
                 id="loginIdentifier"
-                type={isLogin ? "text" : "email"}
-                placeholder={isLogin ? "Benutzername oder email@example.com" : "email@example.com"}
-                value={isLogin ? loginIdentifier : signupEmail}
-                onChange={(e) => isLogin ? setLoginIdentifier(e.target.value) : setSignupEmail(e.target.value)}
+                type="text"
+                placeholder="Benutzername oder email@example.com"
+                value={loginIdentifier}
+                onChange={(e) => setLoginIdentifier(e.target.value)}
                 disabled={loading}
                 required
+                className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-zinc-300">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -215,6 +206,7 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 required
+                className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
               />
             </div>
 
@@ -223,19 +215,9 @@ const Auth = () => {
               className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
               disabled={loading}
             >
-              {loading ? "Please wait..." : (isLogin ? "Login" : "Sign Up")}
+              {loading ? "Please wait..." : "Login"}
             </Button>
           </form>
-
-          <div className="mt-4 text-center text-sm">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-white hover:text-gray-200 underline font-semibold"
-              disabled={loading}
-            >
-              {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
-            </button>
-          </div>
         </CardContent>
       </Card>
     </div>
