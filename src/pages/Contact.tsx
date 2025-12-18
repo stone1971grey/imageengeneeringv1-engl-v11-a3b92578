@@ -743,27 +743,6 @@ const Contact = () => {
             </DialogContent>
           </Dialog>
 
-          {/* Contact Info */}
-          <div className="max-w-5xl mx-auto mt-16 grid md:grid-cols-3 gap-8 text-center">
-            <div className="p-6">
-              <h4 className="font-semibold mb-2">Email</h4>
-              <a href="mailto:info@image-engineering.de" className="text-accent hover:underline">
-                info@image-engineering.de
-              </a>
-            </div>
-            <div className="p-6">
-              <h4 className="font-semibold mb-2">Phone</h4>
-              <a href="tel:+4922719789700" className="text-muted-foreground hover:text-foreground">
-                +49 2271 9789-700
-              </a>
-            </div>
-            <div className="p-6">
-              <h4 className="font-semibold mb-2">Location</h4>
-              <p className="text-muted-foreground">
-                Frechen-Königsdorf, Germany
-              </p>
-            </div>
-          </div>
         </div>
       </main>
 
