@@ -49,7 +49,7 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 // Calendly booking URL
-const CALENDLY_URL = "https://calendly.com/walter-hagenmayer/30-minute-meeting";
+const CALENDLY_URL = "https://calendly.com/hagenmayerccds/30min";
 
 declare global {
   interface Window {
