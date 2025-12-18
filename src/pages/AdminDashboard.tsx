@@ -3974,15 +3974,41 @@ const AdminDashboard = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-              <Button
-                onClick={handleLogout}
-                variant="destructive"
-                size="sm"
-                className="flex items-center gap-2 flex-shrink-0"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
+              <div className="flex items-center gap-3">
+                <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50"
+                    >
+                      <Shield className="h-4 w-4" />
+                      User Management
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-red-600" />
+                        User Management - Roles & Permissions
+                      </DialogTitle>
+                      <DialogDescription>
+                        Manage user roles and permissions for the Admin Dashboard
+                      </DialogDescription>
+                    </DialogHeader>
+                    <UserManagement />
+                  </DialogContent>
+                </Dialog>
+                <Button
+                  onClick={handleLogout}
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center gap-2 flex-shrink-0"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
             </div>
             
             <div className="flex items-center gap-4 flex-wrap">
@@ -7610,22 +7636,6 @@ const AdminDashboard = () => {
         onOpenChange={setIsCreateCMSDialogOpen}
         onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
       />
-
-      {/* User Management Dialog */}
-      <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
-              <Shield className="h-6 w-6 text-red-500" />
-              User Management
-            </DialogTitle>
-            <DialogDescription>
-              Manage user accounts, roles and permissions
-            </DialogDescription>
-          </DialogHeader>
-          <UserManagement />
-        </DialogContent>
-      </Dialog>
       </div>
     </AdminDashboardErrorBoundary>
   );
