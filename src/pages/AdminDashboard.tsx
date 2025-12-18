@@ -3985,13 +3985,20 @@ const AdminDashboard = () => {
                       User Management
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Shield className="h-5 w-5 text-red-600" />
+                  <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+                    <DialogHeader className="relative">
+                      <button
+                        onClick={() => setShowUserManagement(false)}
+                        className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+                        title="Schließen"
+                      >
+                        ×
+                      </button>
+                      <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+                        <Shield className="h-6 w-6 text-red-600" />
                         User Management - Roles & Permissions
                       </DialogTitle>
-                      <DialogDescription>
+                      <DialogDescription className="text-base text-gray-700">
                         Manage user roles and permissions for the Admin Dashboard
                       </DialogDescription>
                     </DialogHeader>
