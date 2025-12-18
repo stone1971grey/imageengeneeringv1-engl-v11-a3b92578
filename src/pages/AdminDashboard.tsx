@@ -603,16 +603,9 @@ const AdminDashboard = () => {
   // Persist selected page to sessionStorage for navigation between admin views
   const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
   
-  // Restore selected page from sessionStorage when URL has no page parameter
-  useEffect(() => {
-    if (!selectedPage && user && (isAdmin || isEditor)) {
-      const savedPage = sessionStorage.getItem(ADMIN_SELECTED_PAGE_KEY);
-      if (savedPage) {
-        // Navigate to the saved page
-        navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(savedPage)}`, { replace: true });
-      }
-    }
-  }, [user, isAdmin, isEditor, language]);
+  // NOTE: We no longer auto-restore page from sessionStorage on login
+  // This ensures editors see the Welcome page after login
+  // The page is only saved for navigation between admin views (News/Products -> Dashboard)
   
   useEffect(() => {
     if (selectedPage) {
