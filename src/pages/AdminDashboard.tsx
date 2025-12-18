@@ -3978,9 +3978,8 @@ const AdminDashboard = () => {
                 <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
                   <DialogTrigger asChild>
                     <Button
-                      variant="outline"
                       size="sm"
-                      className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50"
+                      className="flex items-center gap-2 bg-gray-800 text-white hover:bg-gray-700"
                     >
                       <Shield className="h-4 w-4" />
                       User Management
