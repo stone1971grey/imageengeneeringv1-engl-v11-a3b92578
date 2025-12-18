@@ -495,29 +495,37 @@ export const UserManagement = () => {
         }
       }
 
-      // Update role - delete existing and add new
-      console.log('Deleting existing roles for user:', selectedUser.id);
-      const { error: deleteRoleError } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', selectedUser.id);
+      // Update role - only change if different
+      const currentRole = selectedUser.roles[0];
+      if (currentRole !== editUserRole) {
+        console.log('Changing role from', currentRole, 'to', editUserRole);
+        
+        // Delete old role first
+        if (currentRole) {
+          const { error: deleteRoleError } = await supabase
+            .from('user_roles')
+            .delete()
+            .eq('user_id', selectedUser.id)
+            .eq('role', currentRole);
 
-      if (deleteRoleError) {
-        console.error('Delete role error:', deleteRoleError);
-        throw deleteRoleError;
+          if (deleteRoleError) {
+            console.error('Delete role error:', deleteRoleError);
+            throw deleteRoleError;
+          }
+        }
+
+        // Insert new role
+        const { error: insertRoleError } = await supabase
+          .from('user_roles')
+          .insert({ user_id: selectedUser.id, role: editUserRole });
+
+        if (insertRoleError) {
+          console.error('Insert role error:', insertRoleError);
+          throw insertRoleError;
+        }
       }
 
-      console.log('Inserting new role:', editUserRole);
-      const { error: insertRoleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: selectedUser.id, role: editUserRole });
-
-      if (insertRoleError) {
-        console.error('Insert role error:', insertRoleError);
-        throw insertRoleError;
-      }
-
-      // Update editor access - delete existing
+      // Update editor access - delete all existing first
       console.log('Deleting existing editor access');
       const { error: deleteAccessError } = await supabase
         .from('editor_page_access')
@@ -529,7 +537,7 @@ export const UserManagement = () => {
         throw deleteAccessError;
       }
 
-      // Only add editor access if role is editor and editors are selected
+      // Add editor access if role is editor and editors are selected
       if (editUserRole === 'editor' && editSelectedEditors.length > 0) {
         console.log('Inserting editor access:', editSelectedEditors);
         const entries = editSelectedEditors.map(editorId => ({
