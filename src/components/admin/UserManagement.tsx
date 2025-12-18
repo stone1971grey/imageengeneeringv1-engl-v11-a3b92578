@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Search, Languages } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -25,61 +25,61 @@ interface ContentEditor {
   borderColor: string;
 }
 
-// Define available content editors with their styling - using direct colors for visibility
+// Define available content editors with their styling - matching AdminDashboard Welcome page
 const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'news',
     name: 'Manage News',
     description: 'News-Artikel erstellen & bearbeiten',
     icon: <Newspaper className="h-6 w-6" />,
-    color: '#dc2626',
-    bgColor: 'bg-red-600',
-    borderColor: 'border-red-600'
+    color: 'hsl(var(--primary))',
+    bgColor: 'bg-[hsl(var(--primary))]',
+    borderColor: 'border-[hsl(var(--primary))]'
   },
   {
     id: 'events',
     name: 'Manage Events',
     description: 'Events & Veranstaltungen verwalten',
     icon: <Calendar className="h-6 w-6" />,
-    color: '#16a34a',
-    bgColor: 'bg-green-600',
-    borderColor: 'border-green-600'
+    color: 'hsl(var(--events-button))',
+    bgColor: 'bg-[hsl(var(--events-button))]',
+    borderColor: 'border-[hsl(var(--events-button))]'
   },
   {
     id: 'products',
     name: 'Manage Products',
     description: 'Produkt-Katalog verwalten',
     icon: <Target className="h-6 w-6" />,
-    color: '#2563eb',
-    bgColor: 'bg-blue-600',
-    borderColor: 'border-blue-600'
+    color: 'hsl(var(--accent-blue))',
+    bgColor: 'bg-[hsl(var(--accent-blue))]',
+    borderColor: 'border-[hsl(var(--accent-blue))]'
   },
   {
     id: 'downloads',
     name: 'Manage Downloads',
     description: 'Downloads & Ressourcen verwalten',
     icon: <Download className="h-6 w-6" />,
-    color: '#0891b2',
-    bgColor: 'bg-cyan-600',
-    borderColor: 'border-cyan-600'
+    color: 'hsl(180 60% 45%)',
+    bgColor: 'bg-[hsl(180_60%_45%)]',
+    borderColor: 'border-[hsl(180_60%_45%)]'
   },
   {
     id: 'seo',
     name: 'SEO Settings',
     description: 'SEO-Einstellungen bearbeiten',
-    icon: <Search className="h-6 w-6" />,
-    color: '#9333ea',
-    bgColor: 'bg-purple-600',
-    borderColor: 'border-purple-600'
+    icon: <Eye className="h-6 w-6" />,
+    color: 'hsl(var(--seo-button))',
+    bgColor: 'bg-[hsl(var(--seo-button))]',
+    borderColor: 'border-[hsl(var(--seo-button))]'
   },
   {
     id: 'glossary',
     name: 'Translation Glossary',
     description: 'Übersetzungs-Glossar verwalten',
-    icon: <Languages className="h-6 w-6" />,
-    color: '#059669',
-    bgColor: 'bg-emerald-600',
-    borderColor: 'border-emerald-600'
+    icon: <Book className="h-6 w-6" />,
+    color: 'hsl(var(--accent-violet))',
+    bgColor: 'bg-[hsl(var(--accent-violet))]',
+    borderColor: 'border-[hsl(var(--accent-violet))]'
   }
 ];
 
