@@ -13,7 +13,7 @@ import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, Ey
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type AppRole = 'admin' | 'editor' | 'user';
+type AppRole = 'admin' | 'editor';
 
 interface UserWithRole {
   id: string;
@@ -44,6 +44,8 @@ export const UserManagement = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteFullName, setInviteFullName] = useState("");
+  const [invitePassword, setInvitePassword] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("editor");
   const [isInviting, setIsInviting] = useState(false);
   const [showEditorAccessDialog, setShowEditorAccessDialog] = useState(false);
@@ -51,6 +53,7 @@ export const UserManagement = () => {
   const [selectedPages, setSelectedPages] = useState<string[]>([]);
   const [availablePages, setAvailablePages] = useState<{slug: string; title: string}[]>([]);
   const [savingAccess, setSavingAccess] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -192,6 +195,124 @@ export const UserManagement = () => {
     }
   };
 
+  const handleInviteUser = async () => {
+    if (!inviteEmail.trim() || !invitePassword.trim()) {
+      toast.error('Bitte E-Mail und Passwort eingeben');
+      return;
+    }
+
+    if (invitePassword.length < 6) {
+      toast.error('Passwort muss mindestens 6 Zeichen lang sein');
+      return;
+    }
+
+    setIsInviting(true);
+    try {
+      // Create user via Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: inviteEmail.trim(),
+        password: invitePassword,
+        options: {
+          data: {
+            full_name: inviteFullName.trim() || inviteEmail.trim().split('@')[0]
+          },
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          toast.error('Diese E-Mail-Adresse ist bereits registriert');
+        } else {
+          throw authError;
+        }
+        return;
+      }
+
+      if (!authData.user) {
+        toast.error('Benutzer konnte nicht erstellt werden');
+        return;
+      }
+
+      // Add role for the new user
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({ user_id: authData.user.id, role: inviteRole });
+
+      if (roleError) {
+        console.error('Error adding role:', roleError);
+      }
+
+      toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${inviteEmail}" wurde erfolgreich angelegt`);
+      setShowInviteDialog(false);
+      setInviteEmail("");
+      setInviteFullName("");
+      setInvitePassword("");
+      setInviteRole("editor");
+      loadUsers();
+    } catch (error) {
+      console.error('Error inviting user:', error);
+      toast.error('Fehler beim Anlegen des Benutzers');
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+
+    // Prevent deleting the last admin
+    const admins = users.filter(u => u.roles.includes('admin'));
+    if (selectedUser.roles.includes('admin') && admins.length <= 1) {
+      toast.error('Der letzte Admin kann nicht gelöscht werden');
+      setShowDeleteConfirm(false);
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      // Delete user roles first
+      const { error: rolesError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', selectedUser.id);
+
+      if (rolesError) {
+        console.error('Error deleting roles:', rolesError);
+      }
+
+      // Delete editor page access
+      const { error: accessError } = await supabase
+        .from('editor_page_access')
+        .delete()
+        .eq('user_id', selectedUser.id);
+
+      if (accessError) {
+        console.error('Error deleting editor access:', accessError);
+      }
+
+      // Delete profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', selectedUser.id);
+
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+      }
+
+      toast.success(`Benutzer "${selectedUser.email}" wurde gelöscht`);
+      setShowDeleteConfirm(false);
+      setSelectedUser(null);
+      loadUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Fehler beim Löschen des Benutzers');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const getRoleIcon = (role: AppRole) => {
     switch (role) {
       case 'admin':
@@ -285,12 +406,12 @@ export const UserManagement = () => {
     }
   };
 
-  const allRoles: AppRole[] = ['admin', 'editor', 'user'];
+  const allRoles: AppRole[] = ['admin', 'editor'];
 
   return (
     <div className="space-y-6">
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="h-12 w-12 rounded-xl bg-red-500 flex items-center justify-center">
@@ -319,27 +440,13 @@ export const UserManagement = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-gray-500 flex items-center justify-center">
-              <User className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Users</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {users.filter(u => u.roles.includes('user') || u.roles.length === 0).length}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
         <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="h-12 w-12 rounded-xl bg-green-500 flex items-center justify-center">
               <Users className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-green-600 font-medium">Total Users</p>
+              <p className="text-sm text-green-600 font-medium">Gesamt</p>
               <p className="text-2xl font-bold text-green-900">{users.length}</p>
             </div>
           </CardContent>
@@ -353,12 +460,19 @@ export const UserManagement = () => {
             <div>
               <CardTitle className="text-xl flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                User Roles & Permissions
+                Benutzer & Rollen
               </CardTitle>
               <CardDescription>
-                Manage user access levels and permissions
+                Admins und Editoren verwalten
               </CardDescription>
             </div>
+            <Button 
+              onClick={() => setShowInviteDialog(true)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Neuen Benutzer anlegen
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -445,25 +559,38 @@ export const UserManagement = () => {
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Select
-                        onValueChange={(value) => handleAddRole(user.id, value as AppRole)}
-                      >
-                        <SelectTrigger className="w-32 h-8 text-sm">
-                          <SelectValue placeholder="Add role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {allRoles
-                            .filter(role => !user.roles.includes(role))
-                            .map((role) => (
-                              <SelectItem key={role} value={role}>
-                                <span className="flex items-center gap-2">
-                                  {getRoleIcon(role)}
-                                  {role}
-                                </span>
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="flex items-center justify-end gap-2">
+                        <Select
+                          onValueChange={(value) => handleAddRole(user.id, value as AppRole)}
+                        >
+                          <SelectTrigger className="w-28 h-8 text-sm">
+                            <SelectValue placeholder="Rolle +" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allRoles
+                              .filter(role => !user.roles.includes(role))
+                              .map((role) => (
+                                <SelectItem key={role} value={role}>
+                                  <span className="flex items-center gap-2">
+                                    {getRoleIcon(role)}
+                                    {role}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowDeleteConfirm(true);
+                          }}
+                          className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -478,22 +605,22 @@ export const UserManagement = () => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <ShieldCheck className="h-5 w-5" />
-            Role Permissions Overview
+            Rollen-Übersicht
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-red-50 border border-red-200">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="h-5 w-5 text-red-600" />
                 <h4 className="font-semibold text-red-900">Admin</h4>
               </div>
               <ul className="text-sm text-red-700 space-y-1">
-                <li>• Full system access</li>
-                <li>• Manage all users & roles</li>
-                <li>• Edit all pages & content</li>
-                <li>• Access to all settings</li>
-                <li>• Delete content permanently</li>
+                <li>• Voller Systemzugriff</li>
+                <li>• Benutzer & Rollen verwalten</li>
+                <li>• Alle Seiten & Inhalte bearbeiten</li>
+                <li>• Zugriff auf alle Einstellungen</li>
+                <li>• Inhalte dauerhaft löschen</li>
               </ul>
             </div>
 
@@ -503,30 +630,145 @@ export const UserManagement = () => {
                 <h4 className="font-semibold text-blue-900">Editor</h4>
               </div>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Edit assigned pages</li>
-                <li>• Create & update content</li>
-                <li>• Upload media files</li>
-                <li>• Manage translations</li>
-                <li>• Access glossary</li>
-              </ul>
-            </div>
-
-            <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-5 w-5 text-gray-600" />
-                <h4 className="font-semibold text-gray-900">User</h4>
-              </div>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• View published content</li>
-                <li>• Access public resources</li>
-                <li>• Submit forms</li>
-                <li>• Register for events</li>
-                <li>• Download resources</li>
+                <li>• Zugewiesene Seiten bearbeiten</li>
+                <li>• Inhalte erstellen & aktualisieren</li>
+                <li>• Mediendateien hochladen</li>
+                <li>• Übersetzungen verwalten</li>
+                <li>• Zugriff auf Glossar</li>
               </ul>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Invite User Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Neuen Benutzer anlegen
+            </DialogTitle>
+            <DialogDescription>
+              Legen Sie einen neuen Admin oder Editor an.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="invite-name">Name</Label>
+              <Input
+                id="invite-name"
+                placeholder="Max Mustermann"
+                value={inviteFullName}
+                onChange={(e) => setInviteFullName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invite-email">E-Mail *</Label>
+              <Input
+                id="invite-email"
+                type="email"
+                placeholder="email@example.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invite-password">Passwort *</Label>
+              <Input
+                id="invite-password"
+                type="password"
+                placeholder="Mindestens 6 Zeichen"
+                value={invitePassword}
+                onChange={(e) => setInvitePassword(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Rolle *</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    inviteRole === 'editor' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setInviteRole('editor')}
+                >
+                  <div className="flex items-center gap-2">
+                    <Pencil className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium">Editor</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Kann zugewiesene Inhalte bearbeiten</p>
+                </div>
+                <div 
+                  className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    inviteRole === 'admin' 
+                      ? 'border-red-500 bg-red-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setInviteRole('admin')}
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown className="h-4 w-4 text-red-600" />
+                    <span className="font-medium">Admin</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Voller Systemzugriff</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={handleInviteUser} 
+              disabled={isInviting || !inviteEmail.trim() || !invitePassword.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isInviting ? (
+                <>Wird angelegt...</>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Benutzer anlegen
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-red-600" />
+              Benutzer löschen
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchten Sie den Benutzer <strong>{selectedUser?.full_name || selectedUser?.email}</strong> wirklich löschen? 
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Wird gelöscht...' : 'Löschen'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Editor Access Dialog */}
       <Dialog open={showEditorAccessDialog} onOpenChange={setShowEditorAccessDialog}>
