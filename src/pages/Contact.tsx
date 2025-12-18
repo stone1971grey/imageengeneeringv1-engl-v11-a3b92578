@@ -5,7 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import MiniFooter from "@/components/MiniFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -269,7 +269,7 @@ const Contact = () => {
             </div>
           </div>
         </main>
-        <Footer />
+        <MiniFooter />
       </div>
     );
   }
@@ -746,7 +746,7 @@ const Contact = () => {
         </div>
       </main>
 
-      <Footer />
+      <MiniFooter />
     </div>
   );
 };
