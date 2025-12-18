@@ -12,9 +12,10 @@ import lovableLogo from "@/assets/lovable-cms-logo.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState(""); // Can be username or email
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -53,7 +54,7 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!email || !password) {
+    if (!signupEmail || !password) {
       toast.error("Please fill in all fields");
       setLoading(false);
       return;
@@ -68,7 +69,7 @@ const Auth = () => {
     const redirectUrl = `${window.location.origin}/admin-dashboard`;
 
     const { error } = await supabase.auth.signUp({
-      email,
+      email: signupEmail,
       password,
       options: {
         emailRedirectTo: redirectUrl,
@@ -91,14 +92,40 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!email || !password) {
+    if (!loginIdentifier || !password) {
       toast.error("Please fill in all fields");
       setLoading(false);
       return;
     }
 
+    let emailToUse = loginIdentifier;
+
+    // Check if input is a username (no @ symbol) - need to look up the email
+    if (!loginIdentifier.includes('@')) {
+      const { data: profile, error: lookupError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('username', loginIdentifier)
+        .maybeSingle();
+
+      if (lookupError) {
+        console.error('Username lookup error:', lookupError);
+        toast.error("Fehler bei der Benutzersuche");
+        setLoading(false);
+        return;
+      }
+
+      if (!profile) {
+        toast.error("Benutzername nicht gefunden");
+        setLoading(false);
+        return;
+      }
+
+      emailToUse = profile.email;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: emailToUse,
       password,
     });
 
@@ -160,13 +187,15 @@ const Auth = () => {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="loginIdentifier">
+                {isLogin ? "Benutzername oder E-Mail" : "Email"}
+              </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="admin@imageengineering.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="loginIdentifier"
+                type={isLogin ? "text" : "email"}
+                placeholder={isLogin ? "Benutzername oder email@example.com" : "email@example.com"}
+                value={isLogin ? loginIdentifier : signupEmail}
+                onChange={(e) => isLogin ? setLoginIdentifier(e.target.value) : setSignupEmail(e.target.value)}
                 disabled={loading}
                 required
               />
