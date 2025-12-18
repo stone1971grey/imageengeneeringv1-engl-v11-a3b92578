@@ -828,7 +828,7 @@ const AdminDashboard = () => {
       .maybeSingle();
 
     if (editorData) {
-      // Get editor's allowed pages
+      // Get editor's allowed pages (content editors like 'news', 'products')
       const { data: pageAccessData, error: pageAccessError } = await supabase
         .from("editor_page_access")
         .select("page_slug")
@@ -846,10 +846,9 @@ const AdminDashboard = () => {
       setIsAdmin(false);
       setAllowedPages(pages);
       
-      // Redirect to first allowed page if current page is not in allowed pages
-      if (pages.length > 0 && !pages.includes(selectedPage)) {
-        navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(pages[0])}`);
-      }
+      // For editors: don't redirect - let them see the Welcome page
+      // The Welcome page shows them which content editors (news, products, etc.) they can access
+      // Special page_slugs like '__global__', '__all__', 'news', 'products' are NOT CMS pages to navigate to
       
       setLoading(false);
       return;

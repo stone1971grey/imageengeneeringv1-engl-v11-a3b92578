@@ -34,13 +34,35 @@ const AdminProducts = () => {
         .eq("user_id", user.id);
 
       const hasAdminRole = roles?.some(r => r.role === "admin");
+      const hasEditorRole = roles?.some(r => r.role === "editor");
       
-      if (!hasAdminRole) {
-        navigate("/");
+      // Admins have full access
+      if (hasAdminRole) {
+        setIsAdmin(true);
+        setLoading(false);
         return;
       }
-
-      setIsAdmin(true);
+      
+      // Editors need to have 'products' in their page access
+      if (hasEditorRole) {
+        const { data: pageAccess } = await supabase
+          .from("editor_page_access")
+          .select("page_slug")
+          .eq("user_id", user.id);
+        
+        const hasProductsAccess = pageAccess?.some(p => 
+          p.page_slug === 'products' || p.page_slug === '__all__'
+        );
+        
+        if (hasProductsAccess) {
+          setIsAdmin(true); // Reuse isAdmin state to grant access
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // No access
+      navigate("/");
     } catch (error) {
       console.error("Error checking admin access:", error);
       navigate("/");
