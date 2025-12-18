@@ -76,7 +76,46 @@ export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess
           return;
         }
 
-        // Collect page-specific permissions if pageSlug is provided
+        // For content editors (news, events, products, downloads), 
+        // check if user has access to that editor, then use global language permissions
+        const contentEditors = ['news', 'events', 'products', 'downloads', 'seo', 'glossary'];
+        const isContentEditor = pageSlug && contentEditors.includes(pageSlug);
+        
+        if (isContentEditor) {
+          // Check if user has access to this content editor
+          const hasEditorAccess = accessData.some(a => 
+            a.page_slug === pageSlug || a.page_slug === '__all__'
+          );
+          
+          if (!hasEditorAccess) {
+            setHasAccess(false);
+            setIsLoading(false);
+            return;
+          }
+          
+          // User has access to the editor - now get global language permissions
+          const globalLanguages: LanguageCode[] = [];
+          accessData.forEach(access => {
+            if (access.page_slug === '__global__' && access.language_code) {
+              globalLanguages.push(access.language_code as LanguageCode);
+            }
+          });
+          
+          if (globalLanguages.length > 0) {
+            setHasAccess(true);
+            setAllowedLanguages([...new Set(globalLanguages)]);
+            setIsLoading(false);
+            return;
+          }
+          
+          // No global language restrictions - full access
+          setHasAccess(true);
+          setAllowedLanguages(null);
+          setIsLoading(false);
+          return;
+        }
+
+        // Collect page-specific permissions if pageSlug is provided (for CMS segments)
         const pageSpecificLanguages: LanguageCode[] = [];
         let hasPageSpecific = false;
 
