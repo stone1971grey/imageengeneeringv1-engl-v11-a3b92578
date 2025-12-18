@@ -215,24 +215,24 @@ const Contact = () => {
 
           {/* Contact Form Dialog - Clean & Modern */}
           <Dialog open={showForm} onOpenChange={setShowForm}>
-            <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-5 overflow-hidden max-h-[85vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3">
+            <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-4 overflow-hidden max-h-[70vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3 mt-24">
               {/* Inner gray content area - matching flyout style */}
-              <div className="bg-[#f3f3f3] rounded-xl p-6">
+              <div className="bg-[#e8e8e8] rounded-xl p-5">
                 {/* Yellow accent bar at top */}
-                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-6" />
+                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-4" />
                 
                 {/* Header */}
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-black mb-2">
+                <div className="text-center mb-4">
+                  <h2 className="text-xl font-bold text-black mb-1">
                     Submit an Inquiry
                   </h2>
-                  <p className="text-black text-base leading-relaxed">
+                  <p className="text-black text-sm leading-relaxed">
                     Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
                   </p>
                 </div>
 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     {/* Name & Email - Side by side */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <FormField
@@ -243,7 +243,7 @@ const Contact = () => {
                             <FormControl>
                               <Input 
                                 placeholder="Name"
-                                className="h-12 bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-11 bg-transparent border-0 border-b-2 border-gray-700 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -260,7 +260,7 @@ const Contact = () => {
                               <Input 
                                 type="email"
                                 placeholder="Email"
-                                className="h-12 bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                className="h-11 bg-transparent border-0 border-b-2 border-gray-700 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                                 {...field} 
                               />
                             </FormControl>
@@ -311,7 +311,7 @@ const Contact = () => {
                           <FormControl>
                             <Textarea 
                               placeholder="Tell us about your project or the challenge you have."
-                              className="min-h-[80px] bg-transparent border-0 border-b-2 border-gray-500 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
+                              className="min-h-[60px] bg-transparent border-0 border-b-2 border-gray-700 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 resize-none transition-colors"
                               {...field} 
                             />
                           </FormControl>
@@ -321,7 +321,7 @@ const Contact = () => {
                     />
 
                     {/* Consent */}
-                    <div className="pt-2 space-y-2">
+                    <div className="pt-1 space-y-2">
                       <FormField
                         control={form.control}
                         name="consent"
@@ -331,7 +331,7 @@ const Contact = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="mt-1 h-5 w-5 border-2 border-gray-500 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)] data-[state=checked]:text-black"
+                                className="mt-1 h-5 w-5 border-2 border-gray-700 data-[state=checked]:bg-[hsl(50,95%,55%)] data-[state=checked]:border-[hsl(50,95%,55%)] data-[state=checked]:text-black"
                               />
                             </FormControl>
                             <FormLabel className="text-sm text-black font-normal leading-relaxed">
@@ -346,12 +346,12 @@ const Contact = () => {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="pt-4">
+                    <div className="pt-2">
                       <Button
                         type="submit"
                         size="lg"
                         disabled={isSubmitting || !form.formState.isValid}
-                        className="w-full h-14 text-lg font-semibold bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black rounded-lg transition-all duration-200 disabled:bg-gray-100 disabled:text-gray-400"
+                        className="w-full h-12 text-base font-semibold bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black rounded-lg transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-500"
                       >
                         {isSubmitting ? (
                           <span className="flex items-center gap-2">
