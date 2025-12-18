@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
+import { Eye, EyeOff } from "lucide-react";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 import lovableLogo from "@/assets/lovable-cms-logo.png";
 
@@ -20,6 +21,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,7 +158,7 @@ const Auth = () => {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-bold text-white">Lovable</span>
-                <Badge variant="outline" className="bg-zinc-800 text-zinc-300 border-zinc-600 text-xs">
+                <Badge variant="outline" className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold">
                   v0.9
                 </Badge>
               </div>
@@ -198,16 +200,26 @@ const Auth = () => {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-zinc-300">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-                className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <Button
