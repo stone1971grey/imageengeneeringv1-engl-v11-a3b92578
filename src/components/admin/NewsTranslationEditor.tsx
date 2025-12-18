@@ -28,6 +28,7 @@ interface NewsTranslationEditorProps {
 }
 
 const ALL_LANGUAGES = [
+  { code: "en", name: "English", flag: "🇺🇸" },
   { code: "de", name: "German", flag: "🇩🇪" },
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
   { code: "ko", name: "Korean", flag: "🇰🇷" },
