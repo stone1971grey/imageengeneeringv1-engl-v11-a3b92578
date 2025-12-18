@@ -435,51 +435,57 @@ export const UserManagement = () => {
 
     setIsSavingEdit(true);
     try {
-      // Update profile (name)
-      if (editUserName !== selectedUser.full_name) {
+      // Update profile (name) - only if changed
+      if (editUserName !== (selectedUser.full_name || '')) {
+        console.log('Updating name to:', editUserName);
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ full_name: editUserName })
           .eq('id', selectedUser.id);
 
-        if (profileError) throw profileError;
-      }
-
-      // Update email if changed (requires admin API - we'll update profile only)
-      if (editUserEmail !== selectedUser.email) {
-        const { error: emailError } = await supabase
-          .from('profiles')
-          .update({ email: editUserEmail })
-          .eq('id', selectedUser.id);
-
-        if (emailError) throw emailError;
-        toast.info('E-Mail in Profil aktualisiert. Auth-E-Mail bleibt unverändert.');
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+          throw profileError;
+        }
       }
 
       // Update role - delete existing and add new
+      console.log('Deleting existing roles for user:', selectedUser.id);
       const { error: deleteRoleError } = await supabase
         .from('user_roles')
         .delete()
         .eq('user_id', selectedUser.id);
 
-      if (deleteRoleError) throw deleteRoleError;
+      if (deleteRoleError) {
+        console.error('Delete role error:', deleteRoleError);
+        throw deleteRoleError;
+      }
 
+      console.log('Inserting new role:', editUserRole);
       const { error: insertRoleError } = await supabase
         .from('user_roles')
         .insert({ user_id: selectedUser.id, role: editUserRole });
 
-      if (insertRoleError) throw insertRoleError;
+      if (insertRoleError) {
+        console.error('Insert role error:', insertRoleError);
+        throw insertRoleError;
+      }
 
-      // Update editor access
+      // Update editor access - delete existing
+      console.log('Deleting existing editor access');
       const { error: deleteAccessError } = await supabase
         .from('editor_page_access')
         .delete()
         .eq('user_id', selectedUser.id);
 
-      if (deleteAccessError) throw deleteAccessError;
+      if (deleteAccessError) {
+        console.error('Delete access error:', deleteAccessError);
+        throw deleteAccessError;
+      }
 
-      // Only add editor access if role is editor
+      // Only add editor access if role is editor and editors are selected
       if (editUserRole === 'editor' && editSelectedEditors.length > 0) {
+        console.log('Inserting editor access:', editSelectedEditors);
         const entries = editSelectedEditors.map(editorId => ({
           user_id: selectedUser.id,
           page_slug: editorId
@@ -489,15 +495,18 @@ export const UserManagement = () => {
           .from('editor_page_access')
           .insert(entries);
 
-        if (insertAccessError) throw insertAccessError;
+        if (insertAccessError) {
+          console.error('Insert access error:', insertAccessError);
+          throw insertAccessError;
+        }
       }
 
       toast.success('Benutzer erfolgreich aktualisiert');
       setShowEditUserDialog(false);
       loadUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating user:', error);
-      toast.error('Fehler beim Aktualisieren des Benutzers');
+      toast.error(`Fehler: ${error?.message || 'Unbekannter Fehler'}`);
     } finally {
       setIsSavingEdit(false);
     }
@@ -790,20 +799,20 @@ export const UserManagement = () => {
 
       {/* Invite User Dialog */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16">
+        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16 bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5" />
+            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+              <UserPlus className="h-6 w-6" />
               Neuen Benutzer anlegen
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base text-gray-700">
               Legen Sie einen neuen Admin oder Editor an.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-name" className="text-base font-semibold">Name</Label>
+              <Label htmlFor="invite-name" className="text-base font-semibold text-gray-900">Name</Label>
               <Input
                 id="invite-name"
                 placeholder="Max Mustermann"
@@ -814,7 +823,7 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email" className="text-base font-semibold">E-Mail *</Label>
+              <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">E-Mail *</Label>
               <Input
                 id="invite-email"
                 type="email"
@@ -866,7 +875,7 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-password" className="text-base font-semibold">Passwort *</Label>
+              <Label htmlFor="invite-password" className="text-base font-semibold text-gray-900">Passwort *</Label>
               <div className="relative">
                 <Input
                   id="invite-password"
@@ -887,35 +896,35 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-3">
-              <Label className="text-base font-semibold">Rolle *</Label>
+              <Label className="text-lg font-bold text-gray-900">Rolle *</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'editor' 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
                   }`}
                   onClick={() => setInviteRole('editor')}
                 >
                   <div className="flex items-center gap-3">
-                    <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
+                    <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Kann zugewiesene Inhalte bearbeiten</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'admin' 
                       ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
                   }`}
                   onClick={() => setInviteRole('admin')}
                 >
                   <div className="flex items-center gap-3">
-                    <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
+                    <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Voller Systemzugriff</p>
                 </div>
               </div>
             </div>
@@ -924,8 +933,8 @@ export const UserManagement = () => {
             {inviteRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-lg font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-base text-gray-600 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -942,7 +951,7 @@ export const UserManagement = () => {
                           }
                           setInviteEditorAccess('custom');
                         }}
-                        className={`relative overflow-hidden rounded-xl border-3 transition-all duration-300 cursor-pointer ${
+                        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
                             ? `border-green-500 bg-green-50 shadow-xl ring-2 ring-green-300` 
                             : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-lg'
@@ -953,8 +962,8 @@ export const UserManagement = () => {
                           <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-base font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{editor.description}</p>
+                          <h4 className="text-lg font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-base text-gray-700 mt-1">{editor.description}</p>
                           {isSelected && (
                             <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
                               <Check className="h-5 w-5 text-white" strokeWidth={3} />
@@ -1111,13 +1120,13 @@ export const UserManagement = () => {
       </Dialog>
       {/* Edit User Dialog */}
       <Dialog open={showEditUserDialog} onOpenChange={setShowEditUserDialog}>
-        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16">
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Pencil className="h-5 w-5 text-yellow-600" />
+            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+              <Pencil className="h-6 w-6 text-yellow-600" />
               Benutzer bearbeiten
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base text-gray-700">
               Bearbeiten Sie die Einstellungen für {selectedUser?.full_name || selectedUser?.email}
             </DialogDescription>
           </DialogHeader>
@@ -1126,7 +1135,7 @@ export const UserManagement = () => {
             {/* Editable User Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name" className="text-base font-semibold">Name</Label>
+                <Label htmlFor="edit-name" className="text-base font-semibold text-gray-900">Name</Label>
                 <Input
                   id="edit-name"
                   placeholder="Name eingeben"
@@ -1136,7 +1145,7 @@ export const UserManagement = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-email" className="text-base font-semibold">E-Mail</Label>
+                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">E-Mail</Label>
                 <Input
                   id="edit-email"
                   type="email"
@@ -1147,7 +1156,7 @@ export const UserManagement = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-password" className="text-base font-semibold">Neues Passwort</Label>
+                <Label htmlFor="edit-password" className="text-base font-semibold text-gray-900">Neues Passwort</Label>
                 <div className="relative">
                   <Input
                     id="edit-password"
@@ -1165,41 +1174,41 @@ export const UserManagement = () => {
                     {showEditPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">Nur ausfüllen wenn Passwort geändert werden soll</p>
+                <p className="text-sm text-gray-600">Nur ausfüllen wenn Passwort geändert werden soll</p>
               </div>
             </div>
 
             {/* Role Selection */}
-            <div className="space-y-3 pt-4 border-t">
+            <div className="space-y-3 pt-4 border-t border-gray-200">
               <Label className="text-lg font-bold text-gray-900">Rolle</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'editor' 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
                   }`}
                   onClick={() => setEditUserRole('editor')}
                 >
                   <div className="flex items-center gap-3">
-                    <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
+                    <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Kann zugewiesene Inhalte bearbeiten</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'admin' 
                       ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
                   }`}
                   onClick={() => setEditUserRole('admin')}
                 >
                   <div className="flex items-center gap-3">
-                    <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
+                    <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Voller Systemzugriff</p>
                 </div>
               </div>
             </div>
@@ -1208,8 +1217,8 @@ export const UserManagement = () => {
             {editUserRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-lg font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-base text-gray-600 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1236,8 +1245,8 @@ export const UserManagement = () => {
                           <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-base font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{editor.description}</p>
+                          <h4 className="text-lg font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-base text-gray-700 mt-1">{editor.description}</p>
                           {isSelected && (
                             <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
                               <Check className="h-5 w-5 text-white" strokeWidth={3} />
