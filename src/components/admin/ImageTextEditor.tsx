@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo, useRef } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,16 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
-
-// Utility functions for persisting textarea size
-const getTextareaSize = (key: string): number | null => {
-  const stored = localStorage.getItem(`textarea-size-${key}`);
-  return stored ? parseInt(stored, 10) : null;
-};
-
-const saveTextareaSize = (key: string, height: number) => {
-  localStorage.setItem(`textarea-size-${key}`, height.toString());
-};
+import { SimpleRichTextEditor } from "./SimpleRichTextEditor";
 
 interface ImageTextItem {
   title: string;
@@ -589,25 +580,12 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               </div>
 
               <div>
-                <Label className="text-white">Description</Label>
-                <p className="text-xs text-gray-400 mb-1">
-                  Formatierung: **fett**, [Link](url), - Aufzählung
-                </p>
-                <Textarea
+                <Label className="text-white mb-2 block">Description</Label>
+                <SimpleRichTextEditor
                   value={item.description || ''}
-                  onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                  rows={4}
-                  className="border-2 border-gray-600 bg-gray-800 text-white font-mono text-sm resize-y"
-                  placeholder="Text mit **fett** und [Links](https://...) und&#10;- Aufzählung&#10;- Punkt 2"
-                  style={{ 
-                    height: getTextareaSize(`imagetext-${segmentId}-${index}`) 
-                      ? `${getTextareaSize(`imagetext-${segmentId}-${index}`)}px` 
-                      : undefined 
-                  }}
-                  onMouseUp={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    saveTextareaSize(`imagetext-${segmentId}-${index}`, target.offsetHeight);
-                  }}
+                  onChange={(value) => handleItemChange(index, 'description', value)}
+                  placeholder="Text eingeben..."
+                  storageKey={`imagetext-${segmentId}-${index}`}
                 />
               </div>
 
