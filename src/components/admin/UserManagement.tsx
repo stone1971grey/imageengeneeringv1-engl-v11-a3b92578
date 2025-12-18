@@ -47,6 +47,8 @@ export const UserManagement = () => {
   const [inviteFullName, setInviteFullName] = useState("");
   const [invitePassword, setInvitePassword] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("editor");
+  const [inviteEditorAccess, setInviteEditorAccess] = useState<'all_public' | 'custom' | 'none'>('all_public');
+  const [inviteSelectedPages, setInviteSelectedPages] = useState<string[]>([]);
   const [isInviting, setIsInviting] = useState(false);
   const [showEditorAccessDialog, setShowEditorAccessDialog] = useState(false);
   const [editorAccessType, setEditorAccessType] = useState<'all_public' | 'custom' | 'none'>('none');
@@ -243,12 +245,40 @@ export const UserManagement = () => {
         console.error('Error adding role:', roleError);
       }
 
+      // If editor, add page access permissions
+      if (inviteRole === 'editor') {
+        if (inviteEditorAccess === 'all_public') {
+          const { error: accessError } = await supabase
+            .from('editor_page_access')
+            .insert({ user_id: authData.user.id, page_slug: '__all_public__' });
+
+          if (accessError) {
+            console.error('Error adding editor access:', accessError);
+          }
+        } else if (inviteEditorAccess === 'custom' && inviteSelectedPages.length > 0) {
+          const entries = inviteSelectedPages.map(slug => ({
+            user_id: authData.user.id,
+            page_slug: slug
+          }));
+
+          const { error: accessError } = await supabase
+            .from('editor_page_access')
+            .insert(entries);
+
+          if (accessError) {
+            console.error('Error adding editor access:', accessError);
+          }
+        }
+      }
+
       toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${inviteEmail}" wurde erfolgreich angelegt`);
       setShowInviteDialog(false);
       setInviteEmail("");
       setInviteFullName("");
       setInvitePassword("");
       setInviteRole("editor");
+      setInviteEditorAccess("all_public");
+      setInviteSelectedPages([]);
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
@@ -720,6 +750,144 @@ export const UserManagement = () => {
                 </div>
               </div>
             </div>
+
+            {/* Editor Access Selection - only shown when Editor is selected */}
+            {inviteRole === 'editor' && (
+              <div className="space-y-3 pt-2 border-t">
+                <Label className="text-sm font-medium">Content-Berechtigungen für Editor</Label>
+                
+                <div className="grid gap-2">
+                  {/* All Public Option */}
+                  <div 
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      inviteEditorAccess === 'all_public' 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setInviteEditorAccess('all_public')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                        inviteEditorAccess === 'all_public' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                      }`}>
+                        {inviteEditorAccess === 'all_public' && <Check className="h-2.5 w-2.5 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-green-600" />
+                          <span className="font-medium text-sm">Alle Public-Bereiche</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Zugriff auf alle öffentlichen Seiten (außer Admin, Styleguide, Backlog)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Custom Selection Option */}
+                  <div 
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      inviteEditorAccess === 'custom' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setInviteEditorAccess('custom')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                        inviteEditorAccess === 'custom' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                      }`}>
+                        {inviteEditorAccess === 'custom' && <Check className="h-2.5 w-2.5 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Settings className="h-4 w-4 text-blue-600" />
+                          <span className="font-medium text-sm">Benutzerdefinierte Auswahl</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Nur bestimmte Seiten auswählen
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* No Access Option */}
+                  <div 
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      inviteEditorAccess === 'none' 
+                        ? 'border-gray-500 bg-gray-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setInviteEditorAccess('none')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                        inviteEditorAccess === 'none' ? 'border-gray-500 bg-gray-500' : 'border-gray-300'
+                      }`}>
+                        {inviteEditorAccess === 'none' && <Check className="h-2.5 w-2.5 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Lock className="h-4 w-4 text-gray-600" />
+                          <span className="font-medium text-sm">Keine Berechtigung</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Berechtigungen später zuweisen
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Custom Page Selection */}
+                {inviteEditorAccess === 'custom' && (
+                  <div className="space-y-2 mt-3">
+                    <Label className="text-xs text-gray-600">Seiten auswählen:</Label>
+                    <div className="border rounded-lg max-h-40 overflow-y-auto">
+                      {availablePages.length === 0 ? (
+                        <div className="p-3 text-center text-gray-500 text-sm">Keine Seiten verfügbar</div>
+                      ) : (
+                        <div className="divide-y">
+                          {availablePages.map((page) => (
+                            <div 
+                              key={page.slug} 
+                              className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer"
+                              onClick={() => {
+                                if (inviteSelectedPages.includes(page.slug)) {
+                                  setInviteSelectedPages(inviteSelectedPages.filter(s => s !== page.slug));
+                                } else {
+                                  setInviteSelectedPages([...inviteSelectedPages, page.slug]);
+                                }
+                              }}
+                            >
+                              <Checkbox 
+                                checked={inviteSelectedPages.includes(page.slug)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setInviteSelectedPages([...inviteSelectedPages, page.slug]);
+                                  } else {
+                                    setInviteSelectedPages(inviteSelectedPages.filter(s => s !== page.slug));
+                                  }
+                                }}
+                              />
+                              <div className="flex-1">
+                                <p className="font-medium text-xs">{page.title}</p>
+                                <p className="text-[10px] text-gray-500">/{page.slug}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {inviteSelectedPages.length > 0 && (
+                      <p className="text-xs text-blue-600">
+                        {inviteSelectedPages.length} Seite(n) ausgewählt
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <DialogFooter>
