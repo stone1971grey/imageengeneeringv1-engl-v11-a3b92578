@@ -580,6 +580,39 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscriptions: {
+        Row: {
+          confirmed: boolean | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          language: string | null
+          mautic_contact_id: string | null
+          topics: string[] | null
+        }
+        Insert: {
+          confirmed?: boolean | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          language?: string | null
+          mautic_contact_id?: string | null
+          topics?: string[] | null
+        }
+        Update: {
+          confirmed?: boolean | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          language?: string | null
+          mautic_contact_id?: string | null
+          topics?: string[] | null
+        }
+        Relationships: []
+      }
       page_content: {
         Row: {
           content_type: string

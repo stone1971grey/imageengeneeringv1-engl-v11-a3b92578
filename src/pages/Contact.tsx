@@ -39,6 +39,15 @@ const INTEREST_OPTIONS = [
   { id: "custom", label: "Custom Projects" },
 ];
 
+const NEWSLETTER_TOPICS = [
+  { id: "product-updates", label: "Product Updates" },
+  { id: "industry-news", label: "Industry News" },
+  { id: "standards", label: "Standards & Regulations" },
+  { id: "events", label: "Events & Webinars" },
+  { id: "technical", label: "Technical Articles" },
+  { id: "case-studies", label: "Case Studies" },
+];
+
 const contactSchema = z.object({
   firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email address"),
@@ -47,7 +56,15 @@ const contactSchema = z.object({
   consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
 });
 
+const newsletterSchema = z.object({
+  firstName: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Please enter a valid email address"),
+  topics: z.array(z.string()).min(1, "Please select at least one topic"),
+  consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
+});
+
 type ContactFormData = z.infer<typeof contactSchema>;
+type NewsletterFormData = z.infer<typeof newsletterSchema>;
 
 // Calendly booking URL
 const CALENDLY_URL = "https://calendly.com/hagenmayerccds/30min";
@@ -65,6 +82,11 @@ const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [calendlyLoaded, setCalendlyLoaded] = useState(false);
+  
+  // Newsletter states
+  const [showNewsletterForm, setShowNewsletterForm] = useState(false);
+  const [isNewsletterSubmitting, setIsNewsletterSubmitting] = useState(false);
+  const [isNewsletterSubmitted, setIsNewsletterSubmitted] = useState(false);
 
   // Load Calendly script
   useEffect(() => {
@@ -125,6 +147,17 @@ const Contact = () => {
     mode: "onChange",
   });
 
+  const newsletterForm = useForm<NewsletterFormData>({
+    resolver: zodResolver(newsletterSchema),
+    defaultValues: {
+      firstName: "",
+      email: "",
+      topics: [],
+      consent: false,
+    },
+    mode: "onChange",
+  });
+
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     
@@ -161,6 +194,50 @@ const Contact = () => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const onNewsletterSubmit = async (data: NewsletterFormData) => {
+    setIsNewsletterSubmitting(true);
+    
+    try {
+      const { error } = await supabase
+        .from("newsletter_subscriptions")
+        .insert({
+          first_name: data.firstName,
+          email: data.email,
+          topics: data.topics,
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          // Unique constraint violation - email already exists
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+          });
+          setShowNewsletterForm(false);
+          return;
+        }
+        throw error;
+      }
+
+      setIsNewsletterSubmitted(true);
+      setShowNewsletterForm(false);
+      toast({
+        title: "Successfully subscribed!",
+        description: "You'll receive updates on your selected topics.",
+      });
+      newsletterForm.reset();
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error);
+      toast({
+        title: "Error subscribing",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsNewsletterSubmitting(false);
     }
   };
 
@@ -276,7 +353,7 @@ const Contact = () => {
             {/* Newsletter Card - Blue/Primary */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-primary border border-primary hover:bg-primary/90 hover:shadow-lg"
-              onClick={() => window.open('https://m-ie.loveable-cms.de/subscribe', '_blank')}
+              onClick={() => setShowNewsletterForm(true)}
             >
               <CardContent className="p-7">
                 <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
@@ -445,6 +522,140 @@ const Contact = () => {
                           </span>
                         ) : (
                           "Submit"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Newsletter Subscription Dialog */}
+          <Dialog open={showNewsletterForm} onOpenChange={setShowNewsletterForm}>
+            <DialogContent className="max-w-2xl bg-white border-0 shadow-2xl rounded-2xl p-4 overflow-hidden max-h-[70vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3 mt-24">
+              <div className="bg-[#e8e8e8] rounded-xl p-5">
+                {/* Header */}
+                <div className="text-center mb-5">
+                  <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
+                    Subscribe to Newsletter
+                  </h2>
+                  <p className="text-black text-base leading-relaxed">
+                    Stay updated with the latest news on your topics of interest.
+                  </p>
+                </div>
+
+                <Form {...newsletterForm}>
+                  <form onSubmit={newsletterForm.handleSubmit(onNewsletterSubmit)} className="space-y-4">
+                    {/* Name & Email - Side by side */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField
+                        control={newsletterForm.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input 
+                                placeholder="Name"
+                                className="h-11 bg-transparent border-0 border-b-2 border-gray-700 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={newsletterForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input 
+                                type="email"
+                                placeholder="Email"
+                                className="h-11 bg-transparent border-0 border-b-2 border-gray-700 rounded-none text-black text-base placeholder:text-black focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Topic Selection */}
+                    <div className="pt-1">
+                      <p className="text-sm text-black mb-2">I'm interested in:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {NEWSLETTER_TOPICS.map((topic) => {
+                          const selectedTopics = newsletterForm.watch("topics") || [];
+                          const isSelected = selectedTopics.includes(topic.id);
+                          return (
+                            <button
+                              key={topic.id}
+                              type="button"
+                              onClick={() => {
+                                const current = newsletterForm.getValues("topics") || [];
+                                if (isSelected) {
+                                  newsletterForm.setValue("topics", current.filter(id => id !== topic.id), { shouldValidate: true });
+                                } else {
+                                  newsletterForm.setValue("topics", [...current, topic.id], { shouldValidate: true });
+                                }
+                              }}
+                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                                isSelected 
+                                  ? "bg-primary text-white" 
+                                  : "bg-[hsl(50,95%,55%)] text-black hover:bg-[hsl(50,95%,45%)]"
+                              }`}
+                            >
+                              {topic.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Consent */}
+                    <div className="pt-1 space-y-2">
+                      <FormField
+                        control={newsletterForm.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="mt-1 h-5 w-5 border-2 border-gray-700 data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-white"
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm text-black font-normal leading-relaxed">
+                              I consent to receive newsletter emails and agree to the{" "}
+                              <a href="/privacy" className="underline hover:text-black">
+                                Privacy Policy
+                              </a>.
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        size="lg"
+                        disabled={isNewsletterSubmitting || !newsletterForm.formState.isValid}
+                        className="w-full h-12 text-base font-semibold bg-[hsl(50,95%,55%)] hover:bg-[hsl(50,95%,50%)] text-black rounded-lg transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-500"
+                      >
+                        {isNewsletterSubmitting ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            Subscribing...
+                          </span>
+                        ) : (
+                          "Subscribe"
                         )}
                       </Button>
                     </div>
