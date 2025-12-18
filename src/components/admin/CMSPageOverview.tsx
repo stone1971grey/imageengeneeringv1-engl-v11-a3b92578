@@ -968,7 +968,7 @@ export const CMSPageOverview = () => {
           CMS Hub
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-hidden flex flex-col bg-gray-900 border-gray-700 text-white">
+      <DialogContent className="max-w-[90vw] max-h-[85vh] overflow-hidden flex flex-col bg-gray-900 border-gray-700 text-white top-[8%] translate-y-0">
         <DialogHeader className="relative">
           <DialogTitle className="text-2xl font-bold text-[#f9dc24] flex items-center gap-2">
             <Layers className="h-6 w-6" />

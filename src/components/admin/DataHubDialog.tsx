@@ -1276,7 +1276,7 @@ export function DataHubDialog({
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
+        <DialogContent className="max-w-6xl max-h-[85vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700 top-[8%] translate-y-0">
           <DialogHeader className="border-b border-gray-700 pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
