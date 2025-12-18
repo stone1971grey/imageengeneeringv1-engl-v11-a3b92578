@@ -3329,9 +3329,12 @@ const AdminDashboard = () => {
     };
 
     // Add new segment to tab order
-    // Meta-navigation is at start, full-hero/action-hero after meta-nav, other segments at end
+    // Meta-navigation is at start, full-hero/action-hero after meta-nav, mini-footer and footer are NOT in tab_order (fixed position tabs)
     let updatedTabOrder: string[];
-    if (templateType === 'meta-navigation') {
+    if (templateType === 'mini-footer') {
+      // Mini-footer is a fixed position tab, NOT added to tab_order
+      updatedTabOrder = [...tabOrder];
+    } else if (templateType === 'meta-navigation') {
       // Meta-navigation always goes at the very start
       updatedTabOrder = [String(segmentId), ...tabOrder];
     } else if (templateType === 'full-hero' || templateType === 'action-hero') {
@@ -3455,6 +3458,10 @@ const AdminDashboard = () => {
   const handleDeleteSegment = async (segmentId: string) => {
     if (!user) return;
 
+    // Check if we're deleting a mini-footer - if so, we need to restore the regular footer
+    const deletingSegment = pageSegments.find(seg => seg.id === segmentId);
+    const isDeletingMiniFooter = deletingSegment?.type === 'mini-footer';
+
     // Remove the segment with this ID (no need to renumber positions)
     const updatedSegments = pageSegments.filter(seg => seg.id !== segmentId);
     
@@ -3473,6 +3480,104 @@ const AdminDashboard = () => {
       if (registryError) {
         console.error("Error marking segment as deleted in registry:", registryError);
         throw registryError;
+      }
+
+      // If we're deleting a mini-footer, restore the regular footer
+      if (isDeletingMiniFooter) {
+        // Find the footer segment that was deactivated when mini-footer was added
+        const { data: footerData } = await supabase
+          .from("segment_registry")
+          .select("*")
+          .eq("page_slug", resolvedPageSlug || selectedPage)
+          .eq("segment_type", "footer")
+          .eq("deleted", true)
+          .maybeSingle();
+
+        if (footerData) {
+          // Restore the footer segment
+          await supabase
+            .from("segment_registry")
+            .update({ deleted: false })
+            .eq("id", footerData.id);
+
+          // Add footer to page_segments and tab_order for all languages
+          const languages = ['en', 'de', 'ja', 'ko', 'zh'];
+          const footerSegment = {
+            id: footerData.segment_key,
+            type: 'footer',
+            segment_key: footerData.segment_key,
+            position: 999
+          };
+
+          for (const lang of languages) {
+            // Get current segments for this language
+            const { data: langContent } = await supabase
+              .from("page_content")
+              .select("content_value")
+              .eq("page_slug", resolvedPageSlug || selectedPage)
+              .eq("section_key", "page_segments")
+              .eq("language", lang)
+              .maybeSingle();
+
+            let langSegments = [];
+            if (langContent?.content_value) {
+              langSegments = JSON.parse(langContent.content_value);
+            }
+            // Remove mini-footer and add regular footer
+            langSegments = langSegments.filter((seg: any) => seg.type !== 'mini-footer');
+            langSegments.push(footerSegment);
+
+            await supabase
+              .from("page_content")
+              .upsert({
+                page_slug: resolvedPageSlug || selectedPage,
+                section_key: "page_segments",
+                content_type: "json",
+                content_value: JSON.stringify(langSegments),
+                language: lang,
+                updated_at: new Date().toISOString(),
+                updated_by: user.id
+              }, { onConflict: 'page_slug,section_key,language' });
+
+            // Update tab_order
+            const { data: langTabOrder } = await supabase
+              .from("page_content")
+              .select("content_value")
+              .eq("page_slug", resolvedPageSlug || selectedPage)
+              .eq("section_key", "tab_order")
+              .eq("language", lang)
+              .maybeSingle();
+
+            let langOrder = [];
+            if (langTabOrder?.content_value) {
+              langOrder = JSON.parse(langTabOrder.content_value);
+            }
+            // Remove mini-footer from tab_order (footer is fixed, not in tab_order)
+            langOrder = langOrder.filter((id: string) => id !== segmentId);
+
+            await supabase
+              .from("page_content")
+              .upsert({
+                page_slug: resolvedPageSlug || selectedPage,
+                section_key: "tab_order",
+                content_type: "json",
+                content_value: JSON.stringify(langOrder),
+                language: lang,
+                updated_at: new Date().toISOString(),
+                updated_by: user.id
+              }, { onConflict: 'page_slug,section_key,language' });
+          }
+
+          // Update local state with restored footer
+          const newSegments = updatedSegments.filter(seg => seg.type !== 'mini-footer');
+          newSegments.push(footerSegment);
+          setPageSegments(newSegments);
+          setTabOrder(updatedTabOrder.filter(id => id !== segmentId));
+          setActiveTab('footer');
+          
+          toast.success("Mini-Footer deleted, regular Footer restored!");
+          return;
+        }
       }
 
       // CRITICAL: Remove segment from ALL language versions, not just current editor language
@@ -5577,20 +5682,20 @@ const AdminDashboard = () => {
                   </TabsTrigger>
                 )}
 
-                {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Action Hero, Hero, and Footer */}
+                {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Action Hero, Hero, Footer, and Mini-Footer */}
                 <SortableContext
                   items={tabOrder.filter(tabId => {
                     const segment = pageSegments.find(s => s.id === tabId);
-                    // Exclude meta-navigation, full-hero, action-hero, and footer from draggable section
-                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer');
+                    // Exclude meta-navigation, full-hero, action-hero, footer, and mini-footer from draggable section
+                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer' && segment.type !== 'mini-footer');
                   })}
                   strategy={horizontalListSortingStrategy}
                 >
                   {tabOrder
                     .filter(tabId => {
                       const segment = pageSegments.find(s => s.id === tabId);
-                      // Exclude meta-navigation, full-hero, action-hero, and footer from draggable section
-                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer');
+                      // Exclude meta-navigation, full-hero, action-hero, footer, and mini-footer from draggable section
+                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer' && segment.type !== 'mini-footer');
                     })
                     .map((tabId) => {
                     // Static tabs - only show if not deleted (in segmentRegistry)
