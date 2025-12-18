@@ -304,78 +304,84 @@ export const UserManagement = () => {
       const username = inviteUsername.trim() || null;
       const email = inviteEmail.trim();
       
-      // Create user via Supabase Auth with email
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email,
-        password: invitePassword,
-        options: {
-          data: {
-            full_name: inviteFullName.trim() || email.split('@')[0]
-          },
-          emailRedirectTo: `${window.location.origin}/`
-        }
-      });
-
-      if (authError) {
-        if (authError.message.includes('already registered')) {
-          toast.error('Diese E-Mail-Adresse ist bereits registriert');
-        } else {
-          throw authError;
-        }
+      // Get current session for auth header
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Nicht autorisiert - bitte erneut anmelden');
         return;
       }
 
-      if (!authData.user) {
+      // Create user via admin edge function
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
+          email,
+          password: invitePassword,
+          fullName: inviteFullName.trim() || email.split('@')[0],
+          username,
+          role: inviteRole
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        toast.error('Fehler beim Anlegen des Benutzers');
+        return;
+      }
+
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      if (!data?.user?.id) {
         toast.error('Benutzer konnte nicht erstellt werden');
         return;
       }
 
-      // Add role for the new user
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: authData.user.id, role: inviteRole });
-
-      if (roleError) {
-        console.error('Error adding role:', roleError);
-      }
+      const newUserId = data.user.id;
 
       // If editor, add content editor access permissions
       if (inviteRole === 'editor') {
         if (inviteEditorAccess === 'all') {
           const { error: accessError } = await supabase
             .from('editor_page_access')
-            .insert({ user_id: authData.user.id, page_slug: '__all__' });
+            .insert({ user_id: newUserId, page_slug: '__all__' });
 
           if (accessError) {
             console.error('Error adding editor access:', accessError);
           }
         } else if (inviteEditorAccess === 'custom' && inviteSelectedEditors.length > 0) {
-          const entries = inviteSelectedEditors.map(editorId => ({
-            user_id: authData.user.id,
-            page_slug: editorId
-          }));
+          // Insert editor access with language codes
+          const entries: { user_id: string; page_slug: string; language_code?: string }[] = [];
+          
+          inviteSelectedEditors.forEach(editorId => {
+            const languages = inviteEditorLanguages[editorId] || [];
+            if (languages.length > 0) {
+              // Add one entry per language
+              languages.forEach(lang => {
+                entries.push({
+                  user_id: newUserId,
+                  page_slug: editorId,
+                  language_code: lang
+                });
+              });
+            } else {
+              // No language restriction - full access to this editor
+              entries.push({
+                user_id: newUserId,
+                page_slug: editorId
+              });
+            }
+          });
 
-          const { error: accessError } = await supabase
-            .from('editor_page_access')
-            .insert(entries);
+          if (entries.length > 0) {
+            const { error: accessError } = await supabase
+              .from('editor_page_access')
+              .insert(entries);
 
-          if (accessError) {
-            console.error('Error adding editor access:', accessError);
-          }
-        }
-      }
-
-      // Update profile with username if provided
-      if (username) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ username: username })
-          .eq('id', authData.user.id);
-
-        if (profileError) {
-          console.error('Error updating profile username:', profileError);
-          if (profileError.code === '23505') {
-            toast.error('Dieser Benutzername ist bereits vergeben');
+            if (accessError) {
+              console.error('Error adding editor access:', accessError);
+            }
           }
         }
       }
@@ -389,6 +395,7 @@ export const UserManagement = () => {
       setInviteRole("editor");
       setInviteEditorAccess("all");
       setInviteSelectedEditors([]);
+      setInviteEditorLanguages({});
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
