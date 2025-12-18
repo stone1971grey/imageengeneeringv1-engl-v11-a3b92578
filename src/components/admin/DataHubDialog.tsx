@@ -1302,7 +1302,7 @@ export function DataHubDialog({
                 disabled={isRefreshing}
                 size="sm"
                 variant="outline"
-                className="bg-gray-800/50 border-gray-600 hover:bg-gray-700 text-white"
+                className="bg-gray-800/50 border-gray-600 hover:bg-gray-700 text-white mt-[5px]"
                 title="Refresh media library"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
