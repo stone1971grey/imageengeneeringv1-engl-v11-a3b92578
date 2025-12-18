@@ -3283,7 +3283,26 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Generate a unique numeric ID for this segment (globally unique across all pages)
+    // Mini Footer handling: when adding mini-footer, mark the regular footer as deleted
+    if (templateType === 'mini-footer') {
+      // Find and deactivate regular footer
+      const footerSegment = pageSegments.find(seg => seg.type === 'footer');
+      if (footerSegment) {
+        // Mark regular footer as deleted in segment_registry
+        const { error: deactivateError } = await supabase
+          .from("segment_registry")
+          .update({ deleted: true })
+          .eq("page_slug", resolvedPageSlug || selectedPage)
+          .eq("segment_type", "footer");
+        
+        if (deactivateError) {
+          console.error("Error deactivating regular footer:", deactivateError);
+        } else {
+          console.log("Regular footer deactivated for page:", resolvedPageSlug || selectedPage);
+        }
+      }
+    }
+
     // CRITICAL: Always fetch the latest max ID from database to avoid race conditions
     const { data: maxIdData, error: maxIdError } = await supabase
       .from("segment_registry")
@@ -4527,6 +4546,34 @@ const AdminDashboard = () => {
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-600 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
+
+                      {/* Mini Footer - U */}
+                      <div 
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
+                          pageSegments.some(seg => seg.type === 'mini-footer')
+                            ? 'border-gray-400 opacity-50 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-gray-500 cursor-pointer'
+                        }`}
+                        onClick={() => !pageSegments.some(seg => seg.type === 'mini-footer') && handleAddSegment('mini-footer')}
+                      >
+                        {pageSegments.some(seg => seg.type === 'mini-footer') && (
+                          <div className="absolute top-2 right-2 z-10 bg-gray-500 text-white text-xs px-2 py-1 rounded">
+                            Already active
+                          </div>
+                        )}
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-gray-600 to-gray-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <PanelBottom className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Mini Footer - U</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Minimal footer (replaces full footer)
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-gray-600 to-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -5603,6 +5650,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
                       if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
                       if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
+                      if (segment.type === 'mini-footer') label = `Mini Footer - U-${displayNumber}`;
                       
                       return (
                         <SortableTab key={tabId} id={tabId} value={tabId}>
@@ -5614,18 +5662,37 @@ const AdminDashboard = () => {
                   })}
                 </SortableContext>
 
-                {/* Footer Tab - Fixed Right (show if footer exists in pageSegments OR segmentRegistry) */}
+                {/* Footer Tab - Fixed Right (show if footer exists AND mini-footer NOT active) */}
                 {(() => {
+                  const hasMiniFooter = pageSegments.some(s => s.type === 'mini-footer');
                   const footerSegment = pageSegments.find(s => s.type === 'footer');
                   const footerId = segmentRegistry['footer'] || (footerSegment ? segmentRegistry[footerSegment.id] : null) || footerSegment?.id;
                   
-                  if (footerId) {
+                  // Only show regular footer tab if mini-footer is not active
+                  if (footerId && !hasMiniFooter) {
                     return (
                       <TabsTrigger 
                         value="footer"
                         className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                       >
                         ID {footerId}: Footer
+                      </TabsTrigger>
+                    );
+                  }
+                  return null;
+                })()}
+
+                {/* Mini Footer Tab - Fixed Right (show if mini-footer is active) */}
+                {(() => {
+                  const miniFooterSegment = pageSegments.find(s => s.type === 'mini-footer');
+                  if (miniFooterSegment) {
+                    const miniFooterId = segmentRegistry[miniFooterSegment.id] || miniFooterSegment.id;
+                    return (
+                      <TabsTrigger 
+                        value={miniFooterSegment.id}
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {miniFooterId}: Mini Footer - U
                       </TabsTrigger>
                     );
                   }
@@ -6785,6 +6852,7 @@ const AdminDashboard = () => {
             else if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
             else if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
             else if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
+            else if (segment.type === 'mini-footer') label = `Mini Footer - U-${displayNumber}`;
             else if (segment.type === 'feature-overview') label = `Features - K-${displayNumber}`;
             else if (segment.type === 'table') label = `Table - L-${displayNumber}`;
             else if (segment.type === 'faq') label = `FAQ - O-${displayNumber}`;
@@ -6896,6 +6964,7 @@ const AdminDashboard = () => {
                       if (segType === 'events') return `Events List - R-${displayNumber}`;
                       if (segType === 'product-list') return `Product List - S-${displayNumber}`;
                       if (segType === 'downloads') return `Downloads - T-${displayNumber}`;
+                      if (segType === 'mini-footer') return `Mini Footer - U-${displayNumber}`;
                       return segType;
                     };
 
@@ -7169,6 +7238,30 @@ const AdminDashboard = () => {
                         />
                       )}
                     </SplitScreenSegmentEditor>
+                  )}
+
+                  {segment.type === 'mini-footer' && (
+                    <div className="space-y-4">
+                      <div className="bg-gray-700 rounded-lg p-6 text-center">
+                        <PanelBottom className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-white mb-2">Mini Footer Active</h3>
+                        <p className="text-gray-300 mb-4">
+                          This page uses a minimal footer with only copyright and legal links. 
+                          The full footer with contact info and team quote is hidden.
+                        </p>
+                        <div className="bg-gray-600 rounded p-4 text-left text-sm text-gray-300">
+                          <p><strong>Displays:</strong></p>
+                          <ul className="list-disc list-inside mt-2 space-y-1">
+                            <li>© 2025 Image Engineering GmbH & Co. KG</li>
+                            <li>Terms, Imprint, Privacy, Compliance links</li>
+                            <li>Carbon Neutral, ESG, Disposal info links</li>
+                          </ul>
+                        </div>
+                        <p className="text-gray-400 text-sm mt-4">
+                          To restore the full footer, delete this segment.
+                        </p>
+                      </div>
+                    </div>
                   )}
 
                   {segment.type === 'debug' && (() => {

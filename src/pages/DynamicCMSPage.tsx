@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MiniFooter from "@/components/MiniFooter";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
@@ -1403,15 +1404,16 @@ const DynamicCMSPage = () => {
                  String(s.segment_key) === String(segmentId) ||
                  String(s.id) === numericId
           );
-          // Skip meta-navigation (rendered separately above) and footer (rendered separately below)
-          return segment?.type !== 'meta-navigation' && segment?.type !== 'footer';
+          // Skip meta-navigation (rendered separately above), footer, and mini-footer (rendered separately below)
+          return segment?.type !== 'meta-navigation' && segment?.type !== 'footer' && segment?.type !== 'mini-footer';
         })
         .map((segmentId) => {
           const content = renderSegment(segmentId);
           return content || null;
         })
       }
-      <Footer />
+      {/* Conditionally render MiniFooter or regular Footer */}
+      {pageSegments.some(seg => seg.type === 'mini-footer') ? <MiniFooter /> : <Footer />}
     </div>
   );
 };
