@@ -22,27 +22,34 @@ Deno.serve(async (req) => {
       )
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
-
-    // Create a client with the user's token to verify they're an admin
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    })
-
-    // Get the current user
-    const { data: { user: callerUser }, error: userError } = await userClient.auth.getUser()
-    if (userError || !callerUser) {
-      console.error('[admin-delete-user] Failed to get caller user:', userError)
+    // Extract the JWT token from the header
+    const token = authHeader.replace('Bearer ', '')
+    if (!token) {
+      console.error('[admin-delete-user] No token in authorization header')
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'No token provided' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
     // Create admin client with service role key
     const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Verify the JWT token and get the user
+    const { data: { user: callerUser }, error: userError } = await adminClient.auth.getUser(token)
+    
+    if (userError || !callerUser) {
+      console.error('[admin-delete-user] Failed to verify token:', userError)
+      return new Response(
+        JSON.stringify({ error: 'Ungültiges Token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('[admin-delete-user] Caller verified:', callerUser.email)
 
     // Verify caller is an admin
     const { data: callerRoles, error: rolesError } = await adminClient
