@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 import Navigation from "@/components/Navigation";
 import MiniFooter from "@/components/MiniFooter";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,7 @@ declare global {
 }
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -252,9 +254,9 @@ const Contact = () => {
               <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="w-10 h-10 text-accent-foreground" />
               </div>
-              <h1 className="text-4xl font-bold mb-4">Thank You!</h1>
+              <h1 className="text-4xl font-bold mb-4">{t.contactPage?.thankYou || "Thank You!"}</h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Your message has been received. Our team will review your inquiry and get back to you within one business day.
+                {t.contactPage?.messageSent || "Your message has been received. Our team will review your inquiry and get back to you within one business day."}
               </p>
               <Button 
                 onClick={() => {
@@ -264,7 +266,7 @@ const Contact = () => {
                 variant="outline"
                 size="lg"
               >
-                Send Another Message
+                {t.contactPage?.sendAnother || "Send Another Message"}
               </Button>
             </div>
           </div>
@@ -283,10 +285,10 @@ const Contact = () => {
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto mb-16">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight whitespace-nowrap">
-              Let's explore how we can <span className="relative inline-block"><span className="relative z-10">work together</span><span className="absolute bottom-1 left-0 w-full h-2 bg-accent/30 -z-0"></span></span>
+              {t.contactPage?.heroTitle || "Let's explore how we can"} <span className="relative inline-block"><span className="relative z-10">{t.contactPage?.heroTitleHighlight || "work together"}</span><span className="absolute bottom-1 left-0 w-full h-2 bg-accent/30 -z-0"></span></span>
             </h1>
             <p className="text-xl text-foreground max-w-5xl mx-auto">
-              Whether you need test equipment, consulting services, or custom solutions — our team of imaging experts is here to help. Submit an inquiry, schedule a meeting, chat with us via WhatsApp, or subscribe to our newsletter for specialized topics.
+              {t.contactPage?.heroDescription || "Whether you need test equipment, consulting services, or custom solutions — our team of imaging experts is here to help. Submit an inquiry, schedule a meeting, chat with us via WhatsApp, or subscribe to our newsletter for specialized topics."}
             </p>
           </div>
 
@@ -302,19 +304,19 @@ const Contact = () => {
                   <MessageSquare className="w-7 h-7 text-black" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-black">
-                  Submit an Inquiry
+                  {t.contactPage?.submitInquiry || "Submit an Inquiry"}
                 </h3>
                 <p className="text-black/70 mb-5 flex-grow">
-                  Connect with us, request information, or get started with a project.
+                  {t.contactPage?.submitInquiryDesc || "Connect with us, request information, or get started with a project."}
                 </p>
                 <div>
                   <Button 
                     className="bg-black text-white hover:bg-black/90 w-full"
                   >
-                    Leave us a Message
+                    {t.contactPage?.leaveMessage || "Leave us a Message"}
                   </Button>
                   <p className="text-sm mt-4 text-black/60">
-                    Reply within one business day.
+                    {t.contactPage?.replyTime || "Reply within one business day."}
                   </p>
                 </div>
               </CardContent>
@@ -330,20 +332,20 @@ const Contact = () => {
                   <Calendar className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">
-                  Schedule a Meeting
+                  {t.contactPage?.scheduleMeeting || "Schedule a Meeting"}
                 </h3>
                 <p className="text-white/70 mb-5 flex-grow">
-                  Book a video call with our experts to discuss your needs.
+                  {t.contactPage?.scheduleMeetingDesc || "Book a video call with our experts to discuss your needs."}
                 </p>
                 <div>
                   <Button 
                     variant="outline"
                     className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
                   >
-                    Book a Video Meeting
+                    {t.contactPage?.bookVideoMeeting || "Book a Video Meeting"}
                   </Button>
                   <p className="text-sm text-white/50 mt-4">
-                    Synced with availability.
+                    {t.contactPage?.syncedAvailability || "Synced with availability."}
                   </p>
                 </div>
               </CardContent>
@@ -359,20 +361,20 @@ const Contact = () => {
                   <Phone className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">
-                  Chat via WhatsApp
+                  {t.contactPage?.chatWhatsApp || "Chat via WhatsApp"}
                 </h3>
                 <p className="text-white/70 mb-5 flex-grow">
-                  Quick questions? Reach us directly via WhatsApp for fast support.
+                  {t.contactPage?.chatWhatsAppDesc || "Quick questions? Reach us directly via WhatsApp for fast support."}
                 </p>
                 <div>
                   <Button 
                     variant="outline"
                     className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
                   >
-                    Start Chat
+                    {t.contactPage?.startChat || "Start Chat"}
                   </Button>
                   <p className="text-sm text-white/50 mt-4">
-                    Available during business hours.
+                    {t.contactPage?.availableBusinessHours || "Available during business hours."}
                   </p>
                 </div>
               </CardContent>
@@ -388,20 +390,20 @@ const Contact = () => {
                   <Mail className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">
-                  Subscribe to Newsletter
+                  {t.contactPage?.subscribeNewsletter || "Subscribe to Newsletter"}
                 </h3>
                 <p className="text-white/70 mb-5 flex-grow">
-                  Get updates on new products, events, and specialized topics.
+                  {t.contactPage?.subscribeNewsletterDesc || "Get updates on new products, events, and specialized topics."}
                 </p>
                 <div>
                   <Button 
                     variant="outline"
                     className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
                   >
-                    Subscribe Now
+                    {t.contactPage?.subscribeNow || "Subscribe Now"}
                   </Button>
                   <p className="text-sm text-white/50 mt-4">
-                    Choose your topics of interest.
+                    {t.contactPage?.chooseTopics || "Choose your topics of interest."}
                   </p>
                 </div>
               </CardContent>
