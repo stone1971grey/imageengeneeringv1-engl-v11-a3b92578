@@ -324,8 +324,17 @@ const AdminDashboard = () => {
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
+    try {
+      // Clear local storage first to prevent stale session issues
+      localStorage.removeItem('sb-afrcagkprhtvvucukubf-auth-token');
+      sessionStorage.removeItem('admin_selected_page');
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always navigate to auth, even if signOut fails
+      navigate('/auth');
+    }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -834,6 +843,7 @@ const AdminDashboard = () => {
       }
 
       const pages = pageAccessData.map(p => p.page_slug);
+      console.log('[AdminDashboard] Editor allowedPages loaded:', pages);
       
       setIsEditor(true);
       setIsAdmin(false);
