@@ -297,3 +297,8 @@ nav [data-radix-navigation-menu-list] > li:nth-child(4) [data-radix-navigation-m
 nav [data-radix-navigation-menu-list] > li:last-child [data-radix-navigation-menu-content] {
   left: 0 !important;
 }
+
+/* Calendly popup close button positioning */
+.calendly-popup-close {
+  top: 80px !important;
+}
