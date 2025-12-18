@@ -5181,7 +5181,7 @@ const AdminDashboard = () => {
               {/* Version Badge - Top Right */}
               <div className="absolute top-6 right-6 z-10">
                 <span className="px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#f9dc24] via-yellow-300 to-[#f9dc24] text-gray-900 rounded-lg shadow-lg shadow-yellow-400/30 border border-yellow-400/50">
-                  Version 0.8.6
+                  Version 0.9
                 </span>
               </div>
               <CardContent className="p-12">
@@ -5542,6 +5542,18 @@ const AdminDashboard = () => {
                           </div>
                           <h4 className="text-sm font-bold text-gray-900">Downloads</h4>
                           <p className="text-xs text-gray-500">Download resources</p>
+                        </div>
+                      </div>
+
+                      {/* U - Mini Footer */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-gray-600 text-white text-xs font-black rounded">U</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-gray-600 to-gray-500 flex items-center justify-center shadow">
+                            <PanelBottom className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Mini Footer</h4>
+                          <p className="text-xs text-gray-500">Compact footer</p>
                         </div>
                       </div>
                     </div>
