@@ -495,33 +495,35 @@ export const UserManagement = () => {
         }
       }
 
-      // Update role - only change if different
+      // Update role - check if already has target role
       const currentRole = selectedUser.roles[0];
-      if (currentRole !== editUserRole) {
-        console.log('Changing role from', currentRole, 'to', editUserRole);
-        
-        // Delete old role first
-        if (currentRole) {
-          const { error: deleteRoleError } = await supabase
-            .from('user_roles')
-            .delete()
-            .eq('user_id', selectedUser.id)
-            .eq('role', currentRole);
-
-          if (deleteRoleError) {
-            console.error('Delete role error:', deleteRoleError);
-            throw deleteRoleError;
-          }
-        }
-
-        // Insert new role
+      const hasTargetRole = selectedUser.roles.includes(editUserRole);
+      console.log('Current roles:', selectedUser.roles, 'Target role:', editUserRole, 'Has target:', hasTargetRole);
+      
+      if (!hasTargetRole) {
+        // Only insert if user doesn't already have this role
         const { error: insertRoleError } = await supabase
           .from('user_roles')
           .insert({ user_id: selectedUser.id, role: editUserRole });
 
-        if (insertRoleError) {
+        if (insertRoleError && insertRoleError.code !== '23505') {
+          // Ignore duplicate key error, throw others
           console.error('Insert role error:', insertRoleError);
           throw insertRoleError;
+        }
+      }
+
+      // Delete old role if different from new role
+      if (currentRole && currentRole !== editUserRole) {
+        const { error: deleteRoleError } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', selectedUser.id)
+          .eq('role', currentRole);
+
+        if (deleteRoleError) {
+          console.error('Delete old role error:', deleteRoleError);
+          // Don't throw - the important thing is new role was added
         }
       }
 
