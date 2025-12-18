@@ -63,12 +63,34 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [calendlyLoaded, setCalendlyLoaded] = useState(false);
 
   // Load Calendly script
   useEffect(() => {
+    // Check if already loaded
+    if (window.Calendly) {
+      setCalendlyLoaded(true);
+      return;
+    }
+
+    // Check if script already exists
+    const existingScript = document.querySelector('script[src*="calendly.com"]');
+    if (existingScript) {
+      const checkCalendly = setInterval(() => {
+        if (window.Calendly) {
+          setCalendlyLoaded(true);
+          clearInterval(checkCalendly);
+        }
+      }, 100);
+      return () => clearInterval(checkCalendly);
+    }
+
     const script = document.createElement("script");
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
+    script.onload = () => {
+      setCalendlyLoaded(true);
+    };
     document.body.appendChild(script);
 
     const link = document.createElement("link");
@@ -77,8 +99,7 @@ const Contact = () => {
     document.head.appendChild(link);
 
     return () => {
-      document.body.removeChild(script);
-      document.head.removeChild(link);
+      // Don't remove script/link to avoid issues with re-renders
     };
   }, []);
 
@@ -86,10 +107,8 @@ const Contact = () => {
     if (window.Calendly) {
       window.Calendly.initPopupWidget({ url: CALENDLY_URL });
     } else {
-      toast({
-        title: "Loading...",
-        description: "Please try again in a moment.",
-      });
+      // Fallback: open in new tab
+      window.open(CALENDLY_URL, "_blank");
     }
   };
 
