@@ -692,7 +692,7 @@ const Contact = () => {
                               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                                 isSelected 
                                   ? "bg-black text-white" 
-                                  : "bg-blue-500 text-white hover:bg-blue-600"
+                                  : "bg-[hsl(0,0%,40%)] text-white hover:bg-[hsl(0,0%,35%)]"
                               }`}
                             >
                               {topic.label}
@@ -733,7 +733,7 @@ const Contact = () => {
                         type="submit"
                         size="lg"
                         disabled={isNewsletterSubmitting || !newsletterForm.formState.isValid}
-                        className="w-full h-12 text-base font-semibold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-500"
+                        className="w-full h-12 text-base font-semibold bg-[hsl(0,0%,40%)] hover:bg-[hsl(0,0%,35%)] text-white rounded-lg transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-500"
                       >
                         {isNewsletterSubmitting ? (
                           <span className="flex items-center gap-2">
