@@ -14,9 +14,10 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 
 type AppRole = 'admin' | 'editor';
-type LanguageCode = 'de' | 'ja' | 'ko' | 'zh';
+type LanguageCode = 'en' | 'de' | 'ja' | 'ko' | 'zh';
 
 const AVAILABLE_LANGUAGES = [
+  { code: 'en' as LanguageCode, name: 'Englisch', flag: '🇬🇧' },
   { code: 'de' as LanguageCode, name: 'Deutsch', flag: '🇩🇪' },
   { code: 'ja' as LanguageCode, name: 'Japanisch', flag: '🇯🇵' },
   { code: 'ko' as LanguageCode, name: 'Koreanisch', flag: '🇰🇷' },
@@ -1123,7 +1124,6 @@ export const UserManagement = () => {
                   <p className="text-base text-gray-700 mt-2">
                     Wählen Sie die Sprachen aus, die der Editor bearbeiten darf.
                     Diese Berechtigung gilt für <strong>alle Bereiche</strong>: CMS-Segmente, News, Events, Products, Downloads.
-                    Englisch (Original) ist immer schreibgeschützt.
                   </p>
                 </div>
                 
@@ -1502,7 +1502,6 @@ export const UserManagement = () => {
                   <p className="text-base text-gray-700 mt-2">
                     Wählen Sie die Sprachen aus, die der Editor bearbeiten darf. 
                     Diese Berechtigung gilt für <strong>alle Bereiche</strong>: CMS-Segmente, News, Events, Products, Downloads.
-                    Englisch (Original) ist immer schreibgeschützt.
                   </p>
                 </div>
                 

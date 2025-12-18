@@ -86,7 +86,7 @@ const SplitScreenSegmentEditorComponent = ({
                 <CardDescription className="text-amber-300/80 text-xs mt-1">
                   Sie können nur Übersetzungen in {allowedLanguages?.map(l => 
                     LANGUAGES.find(lang => lang.code === l)?.name
-                  ).join(', ')} bearbeiten. Die englische Originalversion ist schreibgeschützt.
+                  ).join(', ')} bearbeiten.
                 </CardDescription>
               </div>
             </div>
