@@ -982,22 +982,22 @@ export const UserManagement = () => {
                           }
                           setInviteEditorAccess('custom');
                         }}
-                        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
-                            ? `border-green-500 bg-green-50 shadow-xl ring-2 ring-green-300` 
-                            : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-lg'
+                            ? `${editor.borderColor} bg-white shadow-xl` 
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
                         }`}
                       >
-                        <div className={`absolute top-0 left-0 right-0 h-2 ${editor.bgColor}`}></div>
-                        <div className="p-5 pt-6 flex flex-col items-center text-center">
-                          <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
+                        <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
+                        <div className="p-5 space-y-3 text-center">
+                          <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-lg font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-base text-gray-700 mt-1">{editor.description}</p>
+                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-xs text-gray-500">{editor.description}</p>
                           {isSelected && (
-                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
-                              <Check className="h-5 w-5 text-white" strokeWidth={3} />
+                            <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
+                              <Check className="h-4 w-4 text-white" strokeWidth={3} />
                             </div>
                           )}
                         </div>
@@ -1007,8 +1007,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {inviteSelectedEditors.length > 0 && (
-                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-yellow-800">
+                  <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-green-800">
                       ✓ {inviteSelectedEditors.length} Editor(en) ausgewählt
                     </p>
                   </div>
@@ -1080,10 +1080,12 @@ export const UserManagement = () => {
 
           <div className="space-y-6 py-4">
             {/* Access Type Selection */}
-            <Label className="text-sm font-medium">Content-Editoren auswählen</Label>
-            <p className="text-xs text-gray-500 mb-4">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+            <div>
+              <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
+              <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+            </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {CONTENT_EDITORS.map((editor) => {
                 const isSelected = selectedEditors.includes(editor.id);
                 return (
@@ -1097,22 +1099,22 @@ export const UserManagement = () => {
                       }
                       setEditorAccessType('custom');
                     }}
-                    className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                    className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                       isSelected 
-                        ? `${editor.borderColor} bg-white shadow-lg` 
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                        ? `${editor.borderColor} bg-white shadow-xl` 
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
                     }`}
                   >
                     <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
-                    <div className="p-3 pt-4 flex flex-col items-center text-center">
-                      <div className={`h-10 w-10 rounded-lg ${editor.bgColor} flex items-center justify-center mb-2`}>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                         <div className="text-white">{editor.icon}</div>
                       </div>
-                      <h4 className="text-xs font-bold text-gray-900">{editor.name}</h4>
-                      <p className="text-[10px] text-gray-500 mt-0.5">{editor.description}</p>
+                      <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
+                      <p className="text-xs text-gray-500">{editor.description}</p>
                       {isSelected && (
-                        <div className="absolute top-2 right-2">
-                          <Check className="h-4 w-4 text-green-600" />
+                        <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
+                          <Check className="h-4 w-4 text-white" strokeWidth={3} />
                         </div>
                       )}
                     </div>
@@ -1122,9 +1124,11 @@ export const UserManagement = () => {
             </div>
             
             {selectedEditors.length > 0 && (
-              <p className="text-sm text-blue-600 mt-3">
-                {selectedEditors.length} Editor(en) ausgewählt
-              </p>
+              <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
+                <p className="text-lg font-bold text-green-800">
+                  ✓ {selectedEditors.length} Editor(en) ausgewählt
+                </p>
+              </div>
             )}
           </div>
 
@@ -1265,22 +1269,22 @@ export const UserManagement = () => {
                             setEditSelectedEditors([...editSelectedEditors, editor.id]);
                           }
                         }}
-                        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
-                            ? `border-green-500 bg-green-50 shadow-xl ring-2 ring-green-300` 
-                            : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-lg'
+                            ? `${editor.borderColor} bg-white shadow-xl` 
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
                         }`}
                       >
-                        <div className={`absolute top-0 left-0 right-0 h-2 ${editor.bgColor}`}></div>
-                        <div className="p-5 pt-6 flex flex-col items-center text-center">
-                          <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
+                        <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
+                        <div className="p-5 space-y-3 text-center">
+                          <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-lg font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-base text-gray-700 mt-1">{editor.description}</p>
+                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-xs text-gray-500">{editor.description}</p>
                           {isSelected && (
-                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
-                              <Check className="h-5 w-5 text-white" strokeWidth={3} />
+                            <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
+                              <Check className="h-4 w-4 text-white" strokeWidth={3} />
                             </div>
                           )}
                         </div>
@@ -1290,8 +1294,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {editSelectedEditors.length > 0 && (
-                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-yellow-800">
+                  <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-green-800">
                       ✓ {editSelectedEditors.length} Editor(en) ausgewählt
                     </p>
                   </div>
