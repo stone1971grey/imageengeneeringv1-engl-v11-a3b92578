@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -1162,20 +1161,10 @@ const DynamicCMSPage = () => {
                       )}
                       <div className="p-8">
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
-                        <div className="text-gray-600 leading-relaxed">
-                          <ReactMarkdown
-                            components={{
-                              p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
-                              strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                              a: ({href, children}) => <a href={href} className="text-blue-600 underline hover:text-blue-800" target="_blank" rel="noopener noreferrer">{children}</a>,
-                              ul: ({children}) => <ul className="list-disc pl-5 mb-3 space-y-1">{children}</ul>,
-                              ol: ({children}) => <ol className="list-decimal pl-5 mb-3 space-y-1">{children}</ol>,
-                              li: ({children}) => <li>{children}</li>,
-                            }}
-                          >
-                            {solution.description || ''}
-                          </ReactMarkdown>
-                        </div>
+                        <div 
+                          className="text-gray-600 leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1"
+                          dangerouslySetInnerHTML={{ __html: solution.description || '' }}
+                        />
                       </div>
                     </div>
                   );
