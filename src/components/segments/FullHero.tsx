@@ -198,7 +198,7 @@ const FullHero = ({
           )}
 
           {subtitle && (
-            <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl whitespace-pre-line">
               {subtitle}
             </p>
           )}

@@ -50,7 +50,7 @@ const FAQ: React.FC<FAQProps> = ({
             </h2>
           )}
           {subtext && (
-            <p className="text-xl text-muted-foreground mb-12 max-w-3xl text-center mx-auto">
+            <p className="text-xl text-muted-foreground mb-12 max-w-3xl text-center mx-auto whitespace-pre-line">
               {subtext}
             </p>
           )}
@@ -68,7 +68,7 @@ const FAQ: React.FC<FAQProps> = ({
                       <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-4 text-lg">
                         {item.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-foreground pb-4 pt-2 text-lg font-light">
+                      <AccordionContent className="text-foreground pb-4 pt-2 text-lg font-light whitespace-pre-line">
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>

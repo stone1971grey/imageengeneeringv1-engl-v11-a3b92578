@@ -88,7 +88,7 @@ const IndustriesSegment = ({
           <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 tracking-tight">
             {title}
           </h2>
-          <p className="text-xl text-black max-w-2xl mx-auto font-light">
+          <p className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line">
             {subtitle}
           </p>
         </div>
@@ -124,7 +124,7 @@ const IndustriesSegment = ({
                   <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
                     {item.title}
                   </h3>
-                  <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed px-2">
+                  <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed px-2 whitespace-pre-line">
                     {item.description}
                   </p>
                 </div>
