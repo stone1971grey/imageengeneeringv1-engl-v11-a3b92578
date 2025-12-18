@@ -4292,7 +4292,7 @@ const AdminDashboard = () => {
                   SEO Settings
                 </Button>
               )}
-              {isAdmin && (
+              {(isAdmin || allowedPages.includes('glossary')) && (
                 <Button
                   variant="decision"
                   className="flex items-center gap-2 bg-[hsl(var(--accent-violet))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent-violet))]/90 shadow-soft hover:shadow-lg"
