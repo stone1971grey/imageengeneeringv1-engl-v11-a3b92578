@@ -3,10 +3,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useState, useRef } from "react";
 
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -121,12 +123,12 @@ const UtilityNavigation = () => {
         </SelectContent>
       </Select>
       
-      <Link to="/contact">
+      <Link to={`/${language}/contact`}>
         <Button 
           variant="default" 
           className="h-10 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black border border-[#f9dc24] hover:border-[#f9dc24]/90 transition-all duration-300 flex items-center justify-center px-6 rounded-md font-medium"
         >
-          Contact
+          {t.nav.contact}
         </Button>
       </Link>
     </div>
