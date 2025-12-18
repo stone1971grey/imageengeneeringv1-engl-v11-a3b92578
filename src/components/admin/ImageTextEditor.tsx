@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
 import { SimpleRichTextEditor } from "./SimpleRichTextEditor";
+import { MediaSelector } from "./MediaSelector";
 
 interface ImageTextItem {
   title: string;
@@ -400,6 +401,149 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
     });
   };
 
+  // Handler for hero image file upload
+  const handleHeroFileSelect = async (file: File) => {
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const shortId = Math.random().toString(36).slice(2, 6);
+      const fileName = `${baseName}-${shortId}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(fileName);
+
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise(resolve => img.onload = resolve);
+
+      const metadata = {
+        originalFileName: file.name,
+        width: img.width,
+        height: img.height,
+        fileSizeKB: Math.round(file.size / 1024),
+        format: fileExt,
+        uploadDate: new Date().toISOString(),
+        altText: ''
+      };
+
+      setHeroImageUrl(publicUrl);
+      setHeroImageMetadata(metadata);
+      toast.success('Image uploaded successfully!');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Handler for hero image media selection
+  const handleHeroMediaSelect = (url: string, metadata?: any) => {
+    if (!url) {
+      setHeroImageUrl('');
+      setHeroImageMetadata(null);
+      return;
+    }
+    setHeroImageUrl(url);
+    if (metadata) {
+      setHeroImageMetadata({
+        originalFileName: metadata.name || 'Media file',
+        width: metadata.width || 0,
+        height: metadata.height || 0,
+        fileSizeKB: metadata.size ? Math.round(metadata.size / 1024) : 0,
+        format: metadata.contentType?.split('/')[1] || 'unknown',
+        uploadDate: metadata.created_at || new Date().toISOString(),
+        altText: metadata.alt_text || ''
+      });
+    }
+    toast.success('Image selected from Media Management!');
+  };
+
+  // Handler for item image file upload
+  const handleItemFileSelect = async (itemIndex: number, file: File) => {
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const shortId = Math.random().toString(36).slice(2, 6);
+      const fileName = `${baseName}-${shortId}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(fileName);
+
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise(resolve => img.onload = resolve);
+
+      const metadata = {
+        originalFileName: file.name,
+        width: img.width,
+        height: img.height,
+        fileSizeKB: Math.round(file.size / 1024),
+        format: fileExt,
+        uploadDate: new Date().toISOString(),
+        altText: ''
+      };
+
+      const newItems = [...items];
+      newItems[itemIndex] = {
+        ...newItems[itemIndex],
+        imageUrl: publicUrl,
+        metadata
+      };
+      setItems(newItems);
+      toast.success('Item image uploaded successfully!');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Handler for item image media selection
+  const handleItemMediaSelect = (itemIndex: number, url: string, metadata?: any) => {
+    const newItems = [...items];
+    if (!url) {
+      newItems[itemIndex] = {
+        ...newItems[itemIndex],
+        imageUrl: '',
+        metadata: null
+      };
+    } else {
+      newItems[itemIndex] = {
+        ...newItems[itemIndex],
+        imageUrl: url,
+        metadata: metadata ? {
+          originalFileName: metadata.name || 'Media file',
+          width: metadata.width || 0,
+          height: metadata.height || 0,
+          fileSizeKB: metadata.size ? Math.round(metadata.size / 1024) : 0,
+          format: metadata.contentType?.split('/')[1] || 'unknown',
+          uploadDate: metadata.created_at || new Date().toISOString(),
+          altText: metadata.alt_text || ''
+        } : null
+      };
+      toast.success('Item image selected from Media Management!');
+    }
+    setItems(newItems);
+  };
+
   if (isLoading) {
     return <div className="text-white p-4">Loading...</div>;
   }
@@ -416,36 +560,12 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       <Card className="bg-gray-700 border-gray-600">
         <CardContent className="pt-6 space-y-4">
           <div>
-            <Label className="text-white">Section Image (optional)</Label>
-            <p className="text-sm text-gray-300 mb-2">
-              {heroImageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this section"}
-            </p>
-            {heroImageUrl && (
-              <div className="mb-3 max-w-xs">
-                <img 
-                  src={heroImageUrl} 
-                  alt="Section Image" 
-                  className="w-full h-auto object-contain rounded-lg border-2 border-gray-600"
-                />
-              </div>
-            )}
-            
-            <Button
-              type="button"
-              onClick={() => document.getElementById(`image_text_hero_${segmentId}_${language}`)?.click()}
-              disabled={uploading}
-              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-            >
-              {uploading ? "Uploading..." : (heroImageUrl ? "Replace Image" : "Upload Image")}
-            </Button>
-            
-            <Input
-              id={`image_text_hero_${segmentId}_${language}`}
-              type="file"
-              accept="image/*"
-              onChange={handleHeroImageUpload}
-              disabled={uploading}
-              className="hidden"
+            <Label className="text-white mb-2 block">Section Image (optional)</Label>
+            <MediaSelector
+              onFileSelect={handleHeroFileSelect}
+              onMediaSelect={handleHeroMediaSelect}
+              currentImageUrl={heroImageUrl}
+              label=""
             />
             
             {heroImageMetadata && (
@@ -467,10 +587,6 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                   <div>
                     <span className="text-gray-400">Format:</span>
                     <p className="text-white font-medium uppercase">{heroImageMetadata.format}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-gray-400">Upload Date:</span>
-                    <p className="text-white font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
                   </div>
                 </div>
                 
@@ -590,36 +706,12 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               </div>
 
               <div>
-                <Label className="text-white">Item Image (optional)</Label>
-                <p className="text-sm text-gray-300 mb-2">
-                  {item.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this item"}
-                </p>
-                {item.imageUrl && (
-                  <div className="mb-3 max-w-xs">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.title} 
-                      className="w-full h-auto object-contain rounded-lg border-2 border-gray-600"
-                    />
-                  </div>
-                )}
-                
-                <Button
-                  type="button"
-                  onClick={() => document.getElementById(`image_text_item_${segmentId}_${index}_${language}`)?.click()}
-                  disabled={uploading}
-                  className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                >
-                  {uploading ? "Uploading..." : (item.imageUrl ? "Replace Image" : "Upload Image")}
-                </Button>
-                
-                <Input
-                  id={`image_text_item_${segmentId}_${index}_${language}`}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleItemImageUpload(index, e)}
-                  disabled={uploading}
-                  className="hidden"
+                <Label className="text-white mb-2 block">Item Image (optional)</Label>
+                <MediaSelector
+                  onFileSelect={(file) => handleItemFileSelect(index, file)}
+                  onMediaSelect={(url, metadata) => handleItemMediaSelect(index, url, metadata)}
+                  currentImageUrl={item.imageUrl}
+                  label=""
                 />
                 
                 {item.metadata && (
