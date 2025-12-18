@@ -284,7 +284,7 @@ const Contact = () => {
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight whitespace-nowrap">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight text-center">
               {t.contactPage?.heroTitle || "Let's explore how we can"} <span className="relative inline-block"><span className="relative z-10">{t.contactPage?.heroTitleHighlight || "work together"}</span><span className="absolute bottom-1 left-0 w-full h-2 bg-accent/30 -z-0"></span></span>
             </h1>
             <p className="text-xl text-foreground max-w-5xl mx-auto">
@@ -415,52 +415,52 @@ const Contact = () => {
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               {/* Germany Office */}
               <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-bold text-white mb-1">Head Office Germany</h3>
+                <h3 className="text-xl font-bold text-white mb-1">{t.contactPage?.headOfficeGermany || "Head Office Germany"}</h3>
                 <p className="text-white/60 text-sm mb-4">Image Engineering GmbH & Co. KG</p>
                 <p className="text-white/70 text-sm mb-4">
-                  Monday-Friday: 9:00 a.m. to 5:00 p.m. (CET)<br />
-                  Saturday, Sunday: by special appointment
+                  {t.contactPage?.mondayFriday || "Monday-Friday"}: 9:00 a.m. to 5:00 p.m. (CET)<br />
+                  {t.contactPage?.saturdaySunday || "Saturday, Sunday: by special appointment"}
                 </p>
                 <div className="space-y-2">
                   <p className="text-white/80 text-sm">
-                    Phone: <a href="tel:+4922739999-10" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+49 2273 99 99 1-0</a>
+                    {t.contactPage?.phone || "Phone"}: <a href="tel:+4922739999-10" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+49 2273 99 99 1-0</a>
                   </p>
                   <p className="text-white/80 text-sm">
-                    Email: <a href="mailto:info@image-engineering.de" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">info@image-engineering.de</a>
+                    {t.contactPage?.email || "Email"}: <a href="mailto:info@image-engineering.de" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">info@image-engineering.de</a>
                   </p>
                 </div>
               </div>
 
               {/* USA Office */}
               <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-bold text-white mb-1">Office USA</h3>
+                <h3 className="text-xl font-bold text-white mb-1">{t.contactPage?.officeUSA || "Office USA"}</h3>
                 <p className="text-white/60 text-sm mb-4">&nbsp;</p>
                 <p className="text-white/70 text-sm mb-4">
-                  Mon-Fri: 8:00 a.m. to 6:00 p.m. (CT)
+                  {t.contactPage?.mondayFriday || "Mon-Fri"}: 8:00 a.m. to 6:00 p.m. (CT)
                 </p>
                 <div className="space-y-2">
                   <p className="text-white/80 text-sm">
-                    Phone: <a href="tel:+14083861496" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+1 408 386 1496</a>
+                    {t.contactPage?.phone || "Phone"}: <a href="tel:+14083861496" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+1 408 386 1496</a>
                   </p>
                   <p className="text-white/80 text-sm">
-                    Email: <a href="mailto:sales@image-engineering.us" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">sales@image-engineering.us</a>
+                    {t.contactPage?.email || "Email"}: <a href="mailto:sales@image-engineering.us" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">sales@image-engineering.us</a>
                   </p>
                 </div>
               </div>
 
               {/* China Office */}
               <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-bold text-white mb-1">Office China</h3>
+                <h3 className="text-xl font-bold text-white mb-1">{t.contactPage?.officeChina || "Office China"}</h3>
                 <p className="text-white/60 text-sm mb-4">Shenzhen Image Engineering Optoelectronic Equipment Co., Ltd.</p>
                 <p className="text-white/70 text-sm mb-4">
-                  Mon-Fri: 9:00 a.m. to 6:00 p.m. (CST)
+                  {t.contactPage?.mondayFriday || "Mon-Fri"}: 9:00 a.m. to 6:00 p.m. (CST)
                 </p>
                 <div className="space-y-2">
                   <p className="text-white/80 text-sm">
-                    Phone: <a href="tel:+8615889619096" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+86 158 8961 9096</a>
+                    {t.contactPage?.phone || "Phone"}: <a href="tel:+8615889619096" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+86 158 8961 9096</a>
                   </p>
                   <p className="text-white/80 text-sm">
-                    Email: <a href="mailto:leon.xiao@image-engineering.com" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">leon.xiao@image-engineering.com</a>
+                    {t.contactPage?.email || "Email"}: <a href="mailto:leon.xiao@image-engineering.com" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">leon.xiao@image-engineering.com</a>
                   </p>
                 </div>
               </div>
