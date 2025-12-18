@@ -284,31 +284,31 @@ const Footer = () => {
               © {new Date().getFullYear()} {t.footer.copyright}
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/terms-of-service`} className="text-white hover:text-white transition-colors">
                 {t.footer.terms}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/impressum`} className="text-white hover:text-white transition-colors">
                 {t.footer.imprint}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/privacy-policy`} className="text-white hover:text-white transition-colors">
                 {t.footer.privacy}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/compliance`} className="text-white hover:text-white transition-colors">
                 {t.footer.compliance}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/carbon-footprint`} className="text-white hover:text-white transition-colors">
                 {t.footer.carbon}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/esg`} className="text-white hover:text-white transition-colors">
                 {t.footer.esg}
               </a>
               <span className="text-white">•</span>
-              <a href="#" className="text-white hover:text-white transition-colors">
+              <a href={`/${language}/disposal`} className="text-white hover:text-white transition-colors">
                 {t.footer.disposal}
               </a>
             </div>
