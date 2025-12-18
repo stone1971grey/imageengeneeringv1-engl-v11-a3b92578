@@ -130,7 +130,13 @@ export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess
 
         if (globalLanguages.length > 0) {
           setHasAccess(true);
-          setAllowedLanguages([...new Set(globalLanguages)]);
+          // If editor has access to 'en' (English), they have full access (allowedLanguages = null)
+          // because English is the master language that all translations reference
+          if (globalLanguages.includes('en')) {
+            setAllowedLanguages(null); // Full access when English is included
+          } else {
+            setAllowedLanguages([...new Set(globalLanguages)]);
+          }
           setIsLoading(false);
           return;
         }
