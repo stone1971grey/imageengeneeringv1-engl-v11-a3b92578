@@ -282,12 +282,8 @@ const Contact = () => {
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Let's explore how we can{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">work together</span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-accent/30 -z-0"></span>
-              </span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight whitespace-nowrap">
+              Let's explore how we can <span className="relative inline-block"><span className="relative z-10">work together</span><span className="absolute bottom-1 left-0 w-full h-2 bg-accent/30 -z-0"></span></span>
             </h1>
             <p className="text-xl text-foreground max-w-5xl mx-auto">
               Whether you need test equipment, consulting services, or custom solutions — our team of imaging experts is here to help. Submit an inquiry, schedule a meeting, chat with us via WhatsApp, or subscribe to our newsletter for specialized topics.
