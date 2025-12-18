@@ -4,44 +4,96 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Languages } from "lucide-react";
+import { Languages, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { useEditorLanguageAccess } from "@/hooks/useEditorLanguageAccess";
 
 type LanguageCode = 'en' | 'de' | 'ja' | 'ko' | 'zh';
 
 interface SplitScreenSegmentEditorProps {
-  children: (language: LanguageCode) => React.ReactNode;
+  children: (language: LanguageCode, readOnly?: boolean) => React.ReactNode;
   segmentTitle: string;
   segmentType: string;
+  pageSlug?: string;
 }
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'de', name: 'German', flag: '🇩🇪' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+  { code: 'en' as LanguageCode, name: 'English', flag: '🇺🇸' },
+  { code: 'de' as LanguageCode, name: 'German', flag: '🇩🇪' },
+  { code: 'ja' as LanguageCode, name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko' as LanguageCode, name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh' as LanguageCode, name: 'Chinese', flag: '🇨🇳' },
 ];
 
 const SplitScreenSegmentEditorComponent = ({ 
   children, 
   segmentTitle,
-  segmentType 
+  segmentType,
+  pageSlug
 }: SplitScreenSegmentEditorProps) => {
+  const { allowedLanguages, isLoading, canEditEnglish, isLanguageRestricted } = useEditorLanguageAccess(pageSlug);
+  
   const [targetLanguage, setTargetLanguage] = useState<LanguageCode>('de');
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
     const saved = localStorage.getItem('cms-split-screen-mode');
     return saved !== null ? saved === 'true' : true;
   });
 
+  // For language-restricted editors: force split-screen and set their allowed language
+  useEffect(() => {
+    if (isLanguageRestricted && allowedLanguages && allowedLanguages.length > 0) {
+      setIsSplitScreenEnabled(true);
+      // Set the first allowed language as target
+      if (!allowedLanguages.includes(targetLanguage)) {
+        setTargetLanguage(allowedLanguages[0]);
+      }
+    }
+  }, [isLanguageRestricted, allowedLanguages, targetLanguage]);
+
   const handleSplitScreenToggle = (checked: boolean) => {
+    // Language-restricted editors cannot disable split-screen
+    if (isLanguageRestricted) return;
     setIsSplitScreenEnabled(checked);
     localStorage.setItem('cms-split-screen-mode', String(checked));
   };
 
+  // Filter available languages based on editor access
+  const availableTargetLanguages = LANGUAGES.filter(lang => {
+    if (lang.code === 'en') return false; // English is never a target language
+    if (!isLanguageRestricted) return true; // Full access
+    return allowedLanguages?.includes(lang.code);
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      {/* Language Restriction Notice */}
+      {isLanguageRestricted && (
+        <Card className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border-amber-600/50">
+          <CardHeader className="py-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-amber-400" />
+              <div>
+                <CardTitle className="text-amber-200 text-sm">Eingeschränkter Sprachzugriff</CardTitle>
+                <CardDescription className="text-amber-300/80 text-xs mt-1">
+                  Sie können nur Übersetzungen in {allowedLanguages?.map(l => 
+                    LANGUAGES.find(lang => lang.code === l)?.name
+                  ).join(', ')} bearbeiten. Die englische Originalversion ist schreibgeschützt.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+      )}
+
       {/* Language Selector */}
       <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
         <CardHeader className="pb-4">
@@ -61,10 +113,15 @@ const SplitScreenSegmentEditorComponent = ({
                   id="split-screen-toggle"
                   checked={isSplitScreenEnabled}
                   onCheckedChange={handleSplitScreenToggle}
+                  disabled={isLanguageRestricted}
                   className="data-[state=checked]:bg-blue-600"
                 />
-                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
+                <Label 
+                  htmlFor="split-screen-toggle" 
+                  className={`text-white text-sm ${isLanguageRestricted ? 'opacity-50' : 'cursor-pointer'}`}
+                >
                   Split-Screen Mode
+                  {isLanguageRestricted && <Lock className="h-3 w-3 inline ml-1" />}
                 </Label>
               </div>
               {isSplitScreenEnabled && (
@@ -79,12 +136,16 @@ const SplitScreenSegmentEditorComponent = ({
           {isSplitScreenEnabled && (
             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
               <label className="text-white font-medium text-sm">Target Language:</label>
-              <Select value={targetLanguage} onValueChange={(value) => setTargetLanguage(value as LanguageCode)}>
+              <Select 
+                value={targetLanguage} 
+                onValueChange={(value) => setTargetLanguage(value as LanguageCode)}
+                disabled={availableTargetLanguages.length <= 1}
+              >
                 <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-900 border-blue-700 z-50">
-                  {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
+                  {availableTargetLanguages.map(lang => (
                     <SelectItem 
                       key={lang.code} 
                       value={lang.code}
@@ -120,15 +181,32 @@ const SplitScreenSegmentEditorComponent = ({
           <>
             {/* Left Panel - English (Reference) */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+              <div className={`flex items-center gap-2 px-4 py-3 rounded-lg ${
+                isLanguageRestricted 
+                  ? 'bg-gradient-to-r from-gray-800/50 to-gray-700/50 border-2 border-gray-600/50'
+                  : 'bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50'
+              }`}>
                 <span className="text-2xl">🇺🇸</span>
-                <div>
-                  <p className="text-white font-semibold text-sm">English (Reference)</p>
-                  <p className="text-green-200 text-xs">Master language - all translations reference this</p>
+                <div className="flex-1">
+                  <p className="text-white font-semibold text-sm flex items-center gap-2">
+                    English (Reference)
+                    {isLanguageRestricted && (
+                      <Badge variant="outline" className="bg-gray-700/50 text-gray-300 border-gray-500 text-xs">
+                        <Lock className="h-3 w-3 mr-1" />
+                        Schreibgeschützt
+                      </Badge>
+                    )}
+                  </p>
+                  <p className={`text-xs ${isLanguageRestricted ? 'text-gray-400' : 'text-green-200'}`}>
+                    {isLanguageRestricted 
+                      ? 'Nur Ansicht - Sie können diese Version nicht bearbeiten'
+                      : 'Master language - all translations reference this'
+                    }
+                  </p>
                 </div>
               </div>
-              <div className="rounded-lg">
-                {children('en')}
+              <div className={`rounded-lg ${isLanguageRestricted ? 'pointer-events-none opacity-75' : ''}`}>
+                {children('en', isLanguageRestricted)}
               </div>
             </div>
 
@@ -146,12 +224,12 @@ const SplitScreenSegmentEditorComponent = ({
                 </div>
               </div>
               <div className="rounded-lg">
-                {children(targetLanguage)}
+                {children(targetLanguage, false)}
               </div>
             </div>
           </>
         ) : (
-          /* Single View - English Only */
+          /* Single View - English Only (only available for full-access editors) */
           <div className="space-y-3">
             <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
               <span className="text-2xl">🇺🇸</span>
@@ -161,7 +239,7 @@ const SplitScreenSegmentEditorComponent = ({
               </div>
             </div>
             <div className="rounded-lg">
-              {children('en')}
+              {children('en', false)}
             </div>
           </div>
         )}
