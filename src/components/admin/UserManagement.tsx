@@ -509,6 +509,50 @@ export const UserManagement = () => {
 
     setIsSavingEdit(true);
     try {
+      // Update password and/or auth email if provided (via edge function)
+      if (editUserPassword || editUserEmail !== selectedUser.email) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        
+        if (!token) {
+          toast.error('Nicht authentifiziert');
+          setIsSavingEdit(false);
+          return;
+        }
+
+        const updatePayload: { userId: string; password?: string; email?: string } = {
+          userId: selectedUser.id
+        };
+        
+        if (editUserPassword && editUserPassword.length >= 6) {
+          updatePayload.password = editUserPassword;
+        }
+        
+        if (editUserEmail !== selectedUser.email) {
+          updatePayload.email = editUserEmail;
+        }
+
+        const { data: updateResult, error: updateError } = await supabase.functions.invoke('admin-update-user', {
+          body: updatePayload
+        });
+
+        if (updateError) {
+          console.error('Error updating auth user:', updateError);
+          toast.error(`Fehler beim Aktualisieren: ${updateError.message}`);
+          setIsSavingEdit(false);
+          return;
+        }
+
+        if (updateResult?.error) {
+          console.error('Edge function error:', updateResult.error);
+          toast.error(updateResult.error);
+          setIsSavingEdit(false);
+          return;
+        }
+
+        console.log('Auth user updated successfully');
+      }
+
       // Update profile (name and username)
       const updateData: { full_name?: string; username?: string | null; email?: string } = {};
       
