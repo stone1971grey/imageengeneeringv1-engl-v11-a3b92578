@@ -2,18 +2,20 @@ import { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import DynamicCMSPage from "@/pages/DynamicCMSPage";
 
 /**
  * PageIdRouter - Routes numeric page IDs to their hierarchical URLs with language prefix
  * Example: /en/3 -> /en/your-solution/photography
  * 
- * Now simplified for Universal Dynamic Page System - no component mapping needed
+ * For non-numeric slugs (like "impressum"), renders DynamicCMSPage directly
  */
 const PageIdRouter = () => {
   const { pageId, lang } = useParams<{ pageId: string; lang: string }>();
   const { language } = useLanguage();
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isTopLevelSlug, setIsTopLevelSlug] = useState(false);
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -24,7 +26,24 @@ const PageIdRouter = () => {
 
       const numericPageId = parseInt(pageId, 10);
 
+      // If not a number, check if it's a valid top-level CMS page slug
       if (isNaN(numericPageId)) {
+        console.log(`[PageIdRouter] Non-numeric slug detected: "${pageId}", checking if CMS page exists...`);
+        
+        // Check if this slug exists in page_registry as a top-level page
+        const { data: pageData } = await supabase
+          .from("page_registry")
+          .select("page_slug")
+          .eq("page_slug", pageId)
+          .maybeSingle();
+        
+        if (pageData) {
+          console.log(`[PageIdRouter] Found CMS page for slug: "${pageId}", rendering DynamicCMSPage`);
+          setIsTopLevelSlug(true);
+        } else {
+          console.log(`[PageIdRouter] No CMS page found for slug: "${pageId}"`);
+          setRedirectUrl(null);
+        }
         setLoading(false);
         return;
       }
@@ -104,6 +123,11 @@ const PageIdRouter = () => {
         </div>
       </div>
     );
+  }
+
+  // If it's a top-level slug (like "impressum"), render DynamicCMSPage directly
+  if (isTopLevelSlug) {
+    return <DynamicCMSPage />;
   }
 
   if (!redirectUrl) {
