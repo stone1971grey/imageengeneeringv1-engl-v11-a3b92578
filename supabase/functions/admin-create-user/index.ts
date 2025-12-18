@@ -94,8 +94,83 @@ serve(async (req) => {
       console.error('Error creating user:', createError);
       
       if (createError.message.includes('already been registered')) {
+        // User exists in auth.users - check if profile exists
+        console.log('User already exists, checking for orphaned profile...');
+        
+        // Find the existing user by email
+        const { data: existingUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+        
+        if (listError) {
+          console.error('Error listing users:', listError);
+          return new Response(
+            JSON.stringify({ error: 'Diese E-Mail-Adresse ist bereits registriert' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        
+        if (existingUser) {
+          // Check if profile exists
+          const { data: existingProfile, error: profileCheckError } = await supabaseAdmin
+            .from('profiles')
+            .select('id')
+            .eq('id', existingUser.id)
+            .single();
+          
+          if (profileCheckError && profileCheckError.code === 'PGRST116') {
+            // Profile doesn't exist - create it
+            console.log('Creating missing profile for existing user:', existingUser.id);
+            
+            const { error: profileInsertError } = await supabaseAdmin
+              .from('profiles')
+              .insert({
+                id: existingUser.id,
+                email: existingUser.email!,
+                full_name: fullName || existingUser.user_metadata?.full_name || '',
+                username: username || null,
+              });
+            
+            if (profileInsertError) {
+              console.error('Error creating profile:', profileInsertError);
+              return new Response(
+                JSON.stringify({ error: 'Benutzer existiert, aber Profil konnte nicht erstellt werden' }),
+                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+            
+            // Assign role if specified
+            if (role && role !== 'user') {
+              const { error: roleInsertError } = await supabaseAdmin
+                .from('user_roles')
+                .upsert({
+                  user_id: existingUser.id,
+                  role: role,
+                }, { onConflict: 'user_id,role' });
+              
+              if (roleInsertError) {
+                console.error('Error assigning role:', roleInsertError);
+              }
+            }
+            
+            console.log('Profile created successfully for existing user');
+            return new Response(
+              JSON.stringify({ 
+                success: true, 
+                user: {
+                  id: existingUser.id,
+                  email: existingUser.email,
+                  fullName: fullName || '',
+                },
+                message: 'Benutzer existierte bereits, Profil wurde erstellt'
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+        
         return new Response(
-          JSON.stringify({ error: 'Diese E-Mail-Adresse ist bereits registriert' }),
+          JSON.stringify({ error: 'Diese E-Mail-Adresse ist bereits registriert und hat ein Profil' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
