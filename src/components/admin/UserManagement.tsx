@@ -511,31 +511,31 @@ export const UserManagement = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold">User</TableHead>
-                  <TableHead className="font-semibold">Email</TableHead>
-                  <TableHead className="font-semibold">Roles</TableHead>
-                  <TableHead className="font-semibold">Editor-Berechtigungen</TableHead>
-                  <TableHead className="font-semibold">Created</TableHead>
-                  <TableHead className="font-semibold text-right">Actions</TableHead>
+                <TableRow className="bg-white">
+                  <TableHead className="font-semibold text-black">User</TableHead>
+                  <TableHead className="font-semibold text-black">Email</TableHead>
+                  <TableHead className="font-semibold text-black">Roles</TableHead>
+                  <TableHead className="font-semibold text-black">Editor-Berechtigungen</TableHead>
+                  <TableHead className="font-semibold text-black">Created</TableHead>
+                  <TableHead className="font-semibold text-black text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.map((user) => (
-                  <TableRow key={user.id} className="hover:bg-gray-50">
+                  <TableRow key={user.id} className="hover:bg-white group">
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                           <User className="h-5 w-5 text-gray-600" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 group-hover:text-black">
                             {user.full_name || 'No name'}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-600">{user.email}</TableCell>
+                    <TableCell className="text-gray-600 group-hover:text-black">{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {user.roles.length > 0 ? (
@@ -585,7 +585,7 @@ export const UserManagement = () => {
                         <span className="text-gray-400 text-sm">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-500 text-sm">
+                    <TableCell className="text-gray-500 text-sm group-hover:text-black">
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
@@ -673,7 +673,7 @@ export const UserManagement = () => {
 
       {/* Invite User Dialog */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5" />
