@@ -167,12 +167,11 @@ export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess
   }, [pageSlug]);
 
   const canEditLanguage = (lang: LanguageCode): boolean => {
-    if (allowedLanguages === null) return true; // Full access
-    if (lang === 'en') return false; // English is always read-only for restricted editors
+    if (allowedLanguages === null) return true; // Full access (admin)
     return allowedLanguages.includes(lang);
   };
 
-  const canEditEnglish = allowedLanguages === null;
+  const canEditEnglish = allowedLanguages === null || allowedLanguages.includes('en');
   const isLanguageRestricted = allowedLanguages !== null && allowedLanguages.length > 0;
 
   return {
