@@ -9,11 +9,79 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Search, Languages } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type AppRole = 'admin' | 'editor';
+
+interface ContentEditor {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+}
+
+// Define available content editors with their styling
+const CONTENT_EDITORS: ContentEditor[] = [
+  {
+    id: 'news',
+    name: 'Manage News',
+    description: 'News-Artikel erstellen & bearbeiten',
+    icon: <Newspaper className="h-5 w-5" />,
+    color: 'hsl(var(--primary))',
+    bgColor: 'bg-[hsl(var(--primary))]',
+    borderColor: 'border-[hsl(var(--primary))]'
+  },
+  {
+    id: 'events',
+    name: 'Manage Events',
+    description: 'Events & Veranstaltungen verwalten',
+    icon: <Calendar className="h-5 w-5" />,
+    color: 'hsl(var(--events-button))',
+    bgColor: 'bg-[hsl(var(--events-button))]',
+    borderColor: 'border-[hsl(var(--events-button))]'
+  },
+  {
+    id: 'products',
+    name: 'Manage Products',
+    description: 'Produkt-Katalog verwalten',
+    icon: <Target className="h-5 w-5" />,
+    color: 'hsl(var(--accent-blue))',
+    bgColor: 'bg-[hsl(var(--accent-blue))]',
+    borderColor: 'border-[hsl(var(--accent-blue))]'
+  },
+  {
+    id: 'downloads',
+    name: 'Manage Downloads',
+    description: 'Downloads & Ressourcen verwalten',
+    icon: <Download className="h-5 w-5" />,
+    color: 'hsl(180 60% 45%)',
+    bgColor: 'bg-[hsl(180_60%_45%)]',
+    borderColor: 'border-[hsl(180_60%_45%)]'
+  },
+  {
+    id: 'seo',
+    name: 'SEO Settings',
+    description: 'SEO-Einstellungen bearbeiten',
+    icon: <Search className="h-5 w-5" />,
+    color: 'hsl(280 60% 50%)',
+    bgColor: 'bg-[hsl(280_60%_50%)]',
+    borderColor: 'border-[hsl(280_60%_50%)]'
+  },
+  {
+    id: 'glossary',
+    name: 'Translation Glossary',
+    description: 'Übersetzungs-Glossar verwalten',
+    icon: <Languages className="h-5 w-5" />,
+    color: 'hsl(160 60% 40%)',
+    bgColor: 'bg-[hsl(160_60%_40%)]',
+    borderColor: 'border-[hsl(160_60%_40%)]'
+  }
+];
 
 interface UserWithRole {
   id: string;
@@ -21,21 +89,9 @@ interface UserWithRole {
   full_name: string | null;
   roles: AppRole[];
   created_at: string;
-  editorAccess?: 'all_public' | 'custom' | 'none';
-  customPages?: string[];
+  editorAccess?: 'all' | 'custom' | 'none';
+  contentEditors?: string[];
 }
-
-// Hidden page slugs that editors should NOT have access to
-const HIDDEN_PAGE_SLUGS = [
-  'styleguide',
-  'comprehensive-styleguide',
-  'icons-styleguide',
-  'segments',
-  'segment-debug',
-  'backlog',
-  'hidden-segments',
-  'admin'
-];
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
@@ -47,46 +103,19 @@ export const UserManagement = () => {
   const [inviteFullName, setInviteFullName] = useState("");
   const [invitePassword, setInvitePassword] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("editor");
-  const [inviteEditorAccess, setInviteEditorAccess] = useState<'all_public' | 'custom' | 'none'>('all_public');
-  const [inviteSelectedPages, setInviteSelectedPages] = useState<string[]>([]);
+  const [inviteEditorAccess, setInviteEditorAccess] = useState<'all' | 'custom' | 'none'>('all');
+  const [inviteSelectedEditors, setInviteSelectedEditors] = useState<string[]>([]);
   const [isInviting, setIsInviting] = useState(false);
   const [showInvitePassword, setShowInvitePassword] = useState(false);
   const [showEditorAccessDialog, setShowEditorAccessDialog] = useState(false);
-  const [editorAccessType, setEditorAccessType] = useState<'all_public' | 'custom' | 'none'>('none');
-  const [selectedPages, setSelectedPages] = useState<string[]>([]);
-  const [availablePages, setAvailablePages] = useState<{slug: string; title: string}[]>([]);
+  const [editorAccessType, setEditorAccessType] = useState<'all' | 'custom' | 'none'>('none');
+  const [selectedEditors, setSelectedEditors] = useState<string[]>([]);
   const [savingAccess, setSavingAccess] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadUsers();
-    loadAvailablePages();
   }, []);
-
-  const loadAvailablePages = async () => {
-    try {
-      const { data: pages, error } = await supabase
-        .from('page_registry')
-        .select('page_slug, page_title')
-        .order('page_title');
-
-      if (error) throw error;
-
-      // Filter out hidden pages
-      const publicPages = (pages || [])
-        .filter(page => !HIDDEN_PAGE_SLUGS.some(hidden => 
-          page.page_slug.toLowerCase().startsWith(hidden.toLowerCase())
-        ))
-        .map(page => ({
-          slug: page.page_slug,
-          title: page.page_title
-        }));
-
-      setAvailablePages(publicPages);
-    } catch (error) {
-      console.error('Error loading pages:', error);
-    }
-  };
 
   const loadUsers = async () => {
     setLoading(true);
@@ -106,7 +135,7 @@ export const UserManagement = () => {
 
       if (rolesError) throw rolesError;
 
-      // Fetch editor page access
+      // Fetch editor page access (now used for content editors)
       const { data: editorAccess, error: accessError } = await supabase
         .from('editor_page_access')
         .select('user_id, page_slug');
@@ -119,15 +148,15 @@ export const UserManagement = () => {
           .filter(r => r.user_id === profile.id)
           .map(r => r.role as AppRole);
         
-        const userPages = (editorAccess || [])
+        const userEditors = (editorAccess || [])
           .filter(a => a.user_id === profile.id)
           .map(a => a.page_slug);
 
         // Determine access type
-        let accessType: 'all_public' | 'custom' | 'none' = 'none';
-        if (userPages.includes('__all_public__')) {
-          accessType = 'all_public';
-        } else if (userPages.length > 0) {
+        let accessType: 'all' | 'custom' | 'none' = 'none';
+        if (userEditors.includes('__all__')) {
+          accessType = 'all';
+        } else if (userEditors.length > 0) {
           accessType = 'custom';
         }
         
@@ -138,7 +167,7 @@ export const UserManagement = () => {
           roles: userRoles,
           created_at: profile.created_at || '',
           editorAccess: accessType,
-          customPages: userPages.filter(p => p !== '__all_public__')
+          contentEditors: userEditors.filter(p => p !== '__all__')
         };
       });
 
@@ -246,20 +275,20 @@ export const UserManagement = () => {
         console.error('Error adding role:', roleError);
       }
 
-      // If editor, add page access permissions
+      // If editor, add content editor access permissions
       if (inviteRole === 'editor') {
-        if (inviteEditorAccess === 'all_public') {
+        if (inviteEditorAccess === 'all') {
           const { error: accessError } = await supabase
             .from('editor_page_access')
-            .insert({ user_id: authData.user.id, page_slug: '__all_public__' });
+            .insert({ user_id: authData.user.id, page_slug: '__all__' });
 
           if (accessError) {
             console.error('Error adding editor access:', accessError);
           }
-        } else if (inviteEditorAccess === 'custom' && inviteSelectedPages.length > 0) {
-          const entries = inviteSelectedPages.map(slug => ({
+        } else if (inviteEditorAccess === 'custom' && inviteSelectedEditors.length > 0) {
+          const entries = inviteSelectedEditors.map(editorId => ({
             user_id: authData.user.id,
-            page_slug: slug
+            page_slug: editorId
           }));
 
           const { error: accessError } = await supabase
@@ -278,8 +307,8 @@ export const UserManagement = () => {
       setInviteFullName("");
       setInvitePassword("");
       setInviteRole("editor");
-      setInviteEditorAccess("all_public");
-      setInviteSelectedPages([]);
+      setInviteEditorAccess("all");
+      setInviteSelectedEditors([]);
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
@@ -378,7 +407,7 @@ export const UserManagement = () => {
   const openEditorAccessDialog = (user: UserWithRole) => {
     setSelectedUser(user);
     setEditorAccessType(user.editorAccess || 'none');
-    setSelectedPages(user.customPages || []);
+    setSelectedEditors(user.contentEditors || []);
     setShowEditorAccessDialog(true);
   };
 
@@ -396,16 +425,16 @@ export const UserManagement = () => {
       if (deleteError) throw deleteError;
 
       // Insert new access entries based on type
-      if (editorAccessType === 'all_public') {
+      if (editorAccessType === 'all') {
         const { error: insertError } = await supabase
           .from('editor_page_access')
-          .insert({ user_id: selectedUser.id, page_slug: '__all_public__' });
+          .insert({ user_id: selectedUser.id, page_slug: '__all__' });
 
         if (insertError) throw insertError;
-      } else if (editorAccessType === 'custom' && selectedPages.length > 0) {
-        const entries = selectedPages.map(slug => ({
+      } else if (editorAccessType === 'custom' && selectedEditors.length > 0) {
+        const entries = selectedEditors.map(editorId => ({
           user_id: selectedUser.id,
-          page_slug: slug
+          page_slug: editorId
         }));
 
         const { error: insertError } = await supabase
@@ -426,10 +455,10 @@ export const UserManagement = () => {
     }
   };
 
-  const getEditorAccessLabel = (access: 'all_public' | 'custom' | 'none' | undefined) => {
+  const getEditorAccessLabel = (access: 'all' | 'custom' | 'none' | undefined) => {
     switch (access) {
-      case 'all_public':
-        return 'Alle Public-Bereiche';
+      case 'all':
+        return 'Alle Editoren';
       case 'custom':
         return 'Benutzerdefiniert';
       default:
@@ -569,7 +598,7 @@ export const UserManagement = () => {
                           size="sm"
                           onClick={() => openEditorAccessDialog(user)}
                           className={`text-xs ${
-                            user.editorAccess === 'all_public' 
+                            user.editorAccess === 'all' 
                               ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
                               : user.editorAccess === 'custom'
                               ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
@@ -578,8 +607,8 @@ export const UserManagement = () => {
                         >
                           <Settings className="h-3 w-3 mr-1" />
                           {getEditorAccessLabel(user.editorAccess)}
-                          {user.editorAccess === 'custom' && user.customPages && (
-                            <span className="ml-1">({user.customPages.length})</span>
+                          {user.editorAccess === 'custom' && user.contentEditors && (
+                            <span className="ml-1">({user.contentEditors.length})</span>
                           )}
                         </Button>
                       ) : (
@@ -764,138 +793,52 @@ export const UserManagement = () => {
 
             {/* Editor Access Selection - only shown when Editor is selected */}
             {inviteRole === 'editor' && (
-              <div className="space-y-3 pt-2 border-t">
-                <Label className="text-sm font-medium">Content-Berechtigungen für Editor</Label>
+              <div className="space-y-4 pt-4 border-t">
+                <Label className="text-sm font-medium">Content-Editoren auswählen</Label>
+                <p className="text-xs text-gray-500">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
                 
-                <div className="grid gap-2">
-                  {/* All Public Option */}
-                  <div 
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      inviteEditorAccess === 'all_public' 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setInviteEditorAccess('all_public')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
-                        inviteEditorAccess === 'all_public' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                      }`}>
-                        {inviteEditorAccess === 'all_public' && <Check className="h-2.5 w-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-green-600" />
-                          <span className="font-medium text-sm">Alle Public-Bereiche</span>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Zugriff auf alle öffentlichen Seiten (außer Admin, Styleguide, Backlog)
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Custom Selection Option */}
-                  <div 
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      inviteEditorAccess === 'custom' 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setInviteEditorAccess('custom')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
-                        inviteEditorAccess === 'custom' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
-                      }`}>
-                        {inviteEditorAccess === 'custom' && <Check className="h-2.5 w-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Settings className="h-4 w-4 text-blue-600" />
-                          <span className="font-medium text-sm">Benutzerdefinierte Auswahl</span>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Nur bestimmte Seiten auswählen
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* No Access Option */}
-                  <div 
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      inviteEditorAccess === 'none' 
-                        ? 'border-gray-500 bg-gray-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setInviteEditorAccess('none')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
-                        inviteEditorAccess === 'none' ? 'border-gray-500 bg-gray-500' : 'border-gray-300'
-                      }`}>
-                        {inviteEditorAccess === 'none' && <Check className="h-2.5 w-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Lock className="h-4 w-4 text-gray-600" />
-                          <span className="font-medium text-sm">Keine Berechtigung</span>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Berechtigungen später zuweisen
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Custom Page Selection */}
-                {inviteEditorAccess === 'custom' && (
-                  <div className="space-y-2 mt-3">
-                    <Label className="text-xs text-gray-600">Seiten auswählen:</Label>
-                    <div className="border rounded-lg max-h-40 overflow-y-auto">
-                      {availablePages.length === 0 ? (
-                        <div className="p-3 text-center text-gray-500 text-sm">Keine Seiten verfügbar</div>
-                      ) : (
-                        <div className="divide-y">
-                          {availablePages.map((page) => (
-                            <div 
-                              key={page.slug} 
-                              className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => {
-                                if (inviteSelectedPages.includes(page.slug)) {
-                                  setInviteSelectedPages(inviteSelectedPages.filter(s => s !== page.slug));
-                                } else {
-                                  setInviteSelectedPages([...inviteSelectedPages, page.slug]);
-                                }
-                              }}
-                            >
-                              <Checkbox 
-                                checked={inviteSelectedPages.includes(page.slug)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setInviteSelectedPages([...inviteSelectedPages, page.slug]);
-                                  } else {
-                                    setInviteSelectedPages(inviteSelectedPages.filter(s => s !== page.slug));
-                                  }
-                                }}
-                              />
-                              <div className="flex-1">
-                                <p className="font-medium text-xs">{page.title}</p>
-                                <p className="text-[10px] text-gray-500">/{page.slug}</p>
-                              </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {CONTENT_EDITORS.map((editor) => {
+                    const isSelected = inviteSelectedEditors.includes(editor.id);
+                    return (
+                      <div
+                        key={editor.id}
+                        onClick={() => {
+                          if (isSelected) {
+                            setInviteSelectedEditors(inviteSelectedEditors.filter(id => id !== editor.id));
+                          } else {
+                            setInviteSelectedEditors([...inviteSelectedEditors, editor.id]);
+                          }
+                          setInviteEditorAccess('custom');
+                        }}
+                        className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                          isSelected 
+                            ? `${editor.borderColor} bg-white shadow-lg` 
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                        }`}
+                      >
+                        <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
+                        <div className="p-3 pt-4 flex flex-col items-center text-center">
+                          <div className={`h-10 w-10 rounded-lg ${editor.bgColor} flex items-center justify-center mb-2`}>
+                            <div className="text-white">{editor.icon}</div>
+                          </div>
+                          <h4 className="text-xs font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-[10px] text-gray-500 mt-0.5">{editor.description}</p>
+                          {isSelected && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="h-4 w-4 text-green-600" />
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-                    {inviteSelectedPages.length > 0 && (
-                      <p className="text-xs text-blue-600">
-                        {inviteSelectedPages.length} Seite(n) ausgewählt
-                      </p>
-                    )}
-                  </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {inviteSelectedEditors.length > 0 && (
+                  <p className="text-xs text-blue-600">
+                    {inviteSelectedEditors.length} Editor(en) ausgewählt
+                  </p>
                 )}
               </div>
             )}
@@ -964,139 +907,51 @@ export const UserManagement = () => {
 
           <div className="space-y-6 py-4">
             {/* Access Type Selection */}
-            <div className="space-y-4">
-              <Label className="text-sm font-medium">Berechtigungstyp</Label>
-              
-              <div className="grid gap-3">
-                {/* All Public Option */}
-                <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    editorAccessType === 'all_public' 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setEditorAccessType('all_public')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
-                      editorAccessType === 'all_public' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                    }`}>
-                      {editorAccessType === 'all_public' && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-green-600" />
-                        <span className="font-medium">Alle Public-Bereiche</span>
+            <Label className="text-sm font-medium">Content-Editoren auswählen</Label>
+            <p className="text-xs text-gray-500 mb-4">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {CONTENT_EDITORS.map((editor) => {
+                const isSelected = selectedEditors.includes(editor.id);
+                return (
+                  <div
+                    key={editor.id}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedEditors(selectedEditors.filter(id => id !== editor.id));
+                      } else {
+                        setSelectedEditors([...selectedEditors, editor.id]);
+                      }
+                      setEditorAccessType('custom');
+                    }}
+                    className={`relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                      isSelected 
+                        ? `${editor.borderColor} bg-white shadow-lg` 
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                    }`}
+                  >
+                    <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
+                    <div className="p-3 pt-4 flex flex-col items-center text-center">
+                      <div className={`h-10 w-10 rounded-lg ${editor.bgColor} flex items-center justify-center mb-2`}>
+                        <div className="text-white">{editor.icon}</div>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Editor kann alle öffentlichen Seiten bearbeiten (außer Styleguide, Segments, Backlog, Admin)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Custom Selection Option */}
-                <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    editorAccessType === 'custom' 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setEditorAccessType('custom')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
-                      editorAccessType === 'custom' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
-                    }`}>
-                      {editorAccessType === 'custom' && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Settings className="h-4 w-4 text-blue-600" />
-                        <span className="font-medium">Benutzerdefinierte Auswahl</span>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Wählen Sie einzelne Seiten aus, die der Editor bearbeiten darf
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* No Access Option */}
-                <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    editorAccessType === 'none' 
-                      ? 'border-gray-500 bg-gray-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setEditorAccessType('none')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
-                      editorAccessType === 'none' ? 'border-gray-500 bg-gray-500' : 'border-gray-300'
-                    }`}>
-                      {editorAccessType === 'none' && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Lock className="h-4 w-4 text-gray-600" />
-                        <span className="font-medium">Keine Berechtigung</span>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Editor hat keine Berechtigungen zum Bearbeiten von Seiten
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Custom Page Selection */}
-            {editorAccessType === 'custom' && (
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Seiten auswählen</Label>
-                <div className="border rounded-lg max-h-64 overflow-y-auto">
-                  {availablePages.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">Keine Seiten verfügbar</div>
-                  ) : (
-                    <div className="divide-y">
-                      {availablePages.map((page) => (
-                        <div 
-                          key={page.slug} 
-                          className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
-                          onClick={() => {
-                            if (selectedPages.includes(page.slug)) {
-                              setSelectedPages(selectedPages.filter(s => s !== page.slug));
-                            } else {
-                              setSelectedPages([...selectedPages, page.slug]);
-                            }
-                          }}
-                        >
-                          <Checkbox 
-                            checked={selectedPages.includes(page.slug)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedPages([...selectedPages, page.slug]);
-                              } else {
-                                setSelectedPages(selectedPages.filter(s => s !== page.slug));
-                              }
-                            }}
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{page.title}</p>
-                            <p className="text-xs text-gray-500">/{page.slug}</p>
-                          </div>
+                      <h4 className="text-xs font-bold text-gray-900">{editor.name}</h4>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{editor.description}</p>
+                      {isSelected && (
+                        <div className="absolute top-2 right-2">
+                          <Check className="h-4 w-4 text-green-600" />
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
-                </div>
-                {selectedPages.length > 0 && (
-                  <p className="text-sm text-blue-600">
-                    {selectedPages.length} Seite(n) ausgewählt
-                  </p>
-                )}
-              </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {selectedEditors.length > 0 && (
+              <p className="text-sm text-blue-600 mt-3">
+                {selectedEditors.length} Editor(en) ausgewählt
+              </p>
             )}
           </div>
 
