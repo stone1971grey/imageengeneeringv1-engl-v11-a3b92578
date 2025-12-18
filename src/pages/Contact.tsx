@@ -219,29 +219,28 @@ const Contact = () => {
           </div>
 
           {/* Contact Options Cards */}
-          <div className="grid md:grid-cols-3 gap-4 max-w-6xl mx-auto mb-16">
+          <div className="grid md:grid-cols-3 gap-5 max-w-6xl mx-auto mb-16">
             {/* Submit Inquiry Card - Yellow */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-[hsl(50,95%,55%)] border-2 border-[hsl(50,95%,55%)] shadow-lg hover:shadow-xl hover:bg-[hsl(50,95%,50%)]"
               onClick={() => setShowForm(true)}
             >
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-black/10 rounded-xl flex items-center justify-center mb-4">
-                  <MessageSquare className="w-6 h-6 text-black" />
+              <CardContent className="p-7">
+                <div className="w-14 h-14 bg-black/10 rounded-xl flex items-center justify-center mb-5">
+                  <MessageSquare className="w-7 h-7 text-black" />
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-black">
+                <h3 className="text-2xl font-bold mb-3 text-black">
                   Submit an Inquiry
                 </h3>
-                <p className="text-black/70 mb-4 text-sm">
+                <p className="text-black/70 mb-5">
                   Connect with us, request information, or get started with a project.
                 </p>
                 <Button 
                   className="bg-black text-white hover:bg-black/90 w-full"
-                  size="sm"
                 >
                   Leave us a Message
                 </Button>
-                <p className="text-xs mt-3 text-black/60">
+                <p className="text-sm mt-4 text-black/60">
                   Reply within one business day.
                 </p>
               </CardContent>
@@ -252,24 +251,23 @@ const Contact = () => {
               className="group cursor-pointer transition-all duration-300 bg-black border border-white/40 hover:border-white/60 hover:shadow-lg"
               onClick={openCalendly}
             >
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/20 transition-colors">
-                  <Calendar className="w-6 h-6 text-white" />
+              <CardContent className="p-7">
+                <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
+                  <Calendar className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-white">
+                <h3 className="text-2xl font-bold mb-3 text-white">
                   Schedule a Meeting
                 </h3>
-                <p className="text-white/70 mb-4 text-sm">
+                <p className="text-white/70 mb-5">
                   Book a video call with our experts to discuss your needs.
                 </p>
                 <Button 
                   variant="outline"
                   className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
-                  size="sm"
                 >
                   Book a Video Meeting
                 </Button>
-                <p className="text-xs text-white/50 mt-3">
+                <p className="text-sm text-white/50 mt-4">
                   Synced with availability.
                 </p>
               </CardContent>
@@ -280,24 +278,23 @@ const Contact = () => {
               className="group cursor-pointer transition-all duration-300 bg-primary border border-primary hover:bg-primary/90 hover:shadow-lg"
               onClick={() => window.open('https://m-ie.loveable-cms.de/subscribe', '_blank')}
             >
-              <CardContent className="p-6">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/20 transition-colors">
-                  <Mail className="w-6 h-6 text-white" />
+              <CardContent className="p-7">
+                <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
+                  <Mail className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-white">
+                <h3 className="text-2xl font-bold mb-3 text-white">
                   Subscribe to Newsletter
                 </h3>
-                <p className="text-white/70 mb-4 text-sm">
+                <p className="text-white/70 mb-5">
                   Get updates on new products, events, and specialized topics.
                 </p>
                 <Button 
                   variant="outline"
                   className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
-                  size="sm"
                 >
                   Subscribe Now
                 </Button>
-                <p className="text-xs text-white/50 mt-3">
+                <p className="text-sm text-white/50 mt-4">
                   Choose your topics of interest.
                 </p>
               </CardContent>
