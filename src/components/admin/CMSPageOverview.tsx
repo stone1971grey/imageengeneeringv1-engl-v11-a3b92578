@@ -68,6 +68,7 @@ export const CMSPageOverview = () => {
   const [pages, setPages] = useState<CMSPage[]>([]);
   const [filteredPages, setFilteredPages] = useState<CMSPage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showStaticOnly, setShowStaticOnly] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -97,21 +98,27 @@ export const CMSPageOverview = () => {
   }, [isOpen]);
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredPages(pages);
-      return;
+    let result = pages;
+    
+    // Apply static filter first
+    if (showStaticOnly) {
+      result = result.filter(page => isStaticPage(page.page_slug));
     }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = pages.filter(
-      (page) =>
-        page.page_id.toString().includes(query) ||
-        page.page_title.toLowerCase().includes(query) ||
-        page.page_slug.toLowerCase().includes(query) ||
-        page.parent_slug?.toLowerCase().includes(query)
-    );
-    setFilteredPages(filtered);
-  }, [searchQuery, pages]);
+    
+    // Then apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (page) =>
+          page.page_id.toString().includes(query) ||
+          page.page_title.toLowerCase().includes(query) ||
+          page.page_slug.toLowerCase().includes(query) ||
+          page.parent_slug?.toLowerCase().includes(query)
+      );
+    }
+    
+    setFilteredPages(result);
+  }, [searchQuery, pages, showStaticOnly]);
 
   const loadPages = async () => {
     setLoading(true);
@@ -992,16 +999,29 @@ export const CMSPageOverview = () => {
           )}
         </DialogHeader>
 
-        {/* Search Bar */}
-        <div className="relative mb-2">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search by Page ID, Title, or Slug..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
-          />
+        {/* Search Bar & Filters */}
+        <div className="flex items-center gap-4 mb-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search by Page ID, Title, or Slug..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
+            />
+          </div>
+          
+          {/* Static Pages Filter */}
+          <label className="flex items-center gap-2 cursor-pointer px-3 py-2 bg-gray-800 border border-gray-600 rounded-md hover:border-orange-500 transition-colors">
+            <input
+              type="checkbox"
+              checked={showStaticOnly}
+              onChange={(e) => setShowStaticOnly(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-500 bg-gray-700 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-900"
+            />
+            <span className="text-sm text-orange-300 whitespace-nowrap">Static Pages Only</span>
+          </label>
         </div>
         
         {/* Drag & Drop Help */}
