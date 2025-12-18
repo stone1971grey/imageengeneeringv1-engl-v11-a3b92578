@@ -354,7 +354,7 @@ const Contact = () => {
             {/* WhatsApp Card - Green */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-[hsl(142,70%,45%)] border border-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] hover:shadow-lg"
-              onClick={() => window.open('https://wa.me/4922199440', '_blank')}
+              onClick={() => window.open('https://wa.me/4916099587744', '_blank')}
             >
               <CardContent className="p-7">
                 <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
