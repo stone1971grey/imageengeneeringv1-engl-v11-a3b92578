@@ -307,7 +307,7 @@ export const CMSPageOverview = () => {
   const STATIC_PAGES = ['contact'];
 
   const isStaticPage = (slug: string): boolean => {
-    return STATIC_PAGES.includes(slug);
+    return STATIC_PAGES.includes(slug) || slug.startsWith('styleguide');
   };
 
   const getStaticBadge = (slug: string) => {
