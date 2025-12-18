@@ -112,6 +112,10 @@ export const UserManagement = () => {
   const [selectedEditors, setSelectedEditors] = useState<string[]>([]);
   const [savingAccess, setSavingAccess] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showEditUserDialog, setShowEditUserDialog] = useState(false);
+  const [editUserRole, setEditUserRole] = useState<AppRole>('editor');
+  const [editSelectedEditors, setEditSelectedEditors] = useState<string[]>([]);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -411,6 +415,58 @@ export const UserManagement = () => {
     setShowEditorAccessDialog(true);
   };
 
+  const handleSaveEditUser = async () => {
+    if (!selectedUser) return;
+
+    setIsSavingEdit(true);
+    try {
+      // Update role - delete existing and add new
+      const { error: deleteRoleError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', selectedUser.id);
+
+      if (deleteRoleError) throw deleteRoleError;
+
+      const { error: insertRoleError } = await supabase
+        .from('user_roles')
+        .insert({ user_id: selectedUser.id, role: editUserRole });
+
+      if (insertRoleError) throw insertRoleError;
+
+      // Update editor access
+      const { error: deleteAccessError } = await supabase
+        .from('editor_page_access')
+        .delete()
+        .eq('user_id', selectedUser.id);
+
+      if (deleteAccessError) throw deleteAccessError;
+
+      // Only add editor access if role is editor
+      if (editUserRole === 'editor' && editSelectedEditors.length > 0) {
+        const entries = editSelectedEditors.map(editorId => ({
+          user_id: selectedUser.id,
+          page_slug: editorId
+        }));
+
+        const { error: insertAccessError } = await supabase
+          .from('editor_page_access')
+          .insert(entries);
+
+        if (insertAccessError) throw insertAccessError;
+      }
+
+      toast.success('Benutzer erfolgreich aktualisiert');
+      setShowEditUserDialog(false);
+      loadUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Fehler beim Aktualisieren des Benutzers');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
   const handleSaveEditorAccess = async () => {
     if (!selectedUser) return;
 
@@ -619,37 +675,29 @@ export const UserManagement = () => {
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Select
-                          onValueChange={(value) => handleAddRole(user.id, value as AppRole)}
+                      <div className="flex items-center justify-end gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setEditUserRole(user.roles.includes('admin') ? 'admin' : 'editor');
+                            setEditSelectedEditors(user.contentEditors || []);
+                            setShowEditUserDialog(true);
+                          }}
+                          className="h-8 w-8 flex items-center justify-center text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors"
+                          title="Benutzer bearbeiten"
                         >
-                          <SelectTrigger className="w-28 h-8 text-sm">
-                            <SelectValue placeholder="Rolle +" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {allRoles
-                              .filter(role => !user.roles.includes(role))
-                              .map((role) => (
-                                <SelectItem key={role} value={role}>
-                                  <span className="flex items-center gap-2">
-                                    {getRoleIcon(role)}
-                                    {role}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          variant="outline"
-                          size="sm"
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => {
                             setSelectedUser(user);
                             setShowDeleteConfirm(true);
                           }}
-                          className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                          className="h-8 w-8 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                          title="Benutzer löschen"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -974,6 +1022,148 @@ export const UserManagement = () => {
                 <>
                   <Save className="h-4 w-4 mr-2" />
                   Speichern
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Edit User Dialog */}
+      <Dialog open={showEditUserDialog} onOpenChange={setShowEditUserDialog}>
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5 text-yellow-600" />
+              Benutzer bearbeiten
+            </DialogTitle>
+            <DialogDescription>
+              Bearbeiten Sie die Einstellungen für {selectedUser?.full_name || selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* User Info (read-only) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border">
+              <div>
+                <Label className="text-xs text-gray-500">Name</Label>
+                <p className="text-sm font-medium text-gray-900">{selectedUser?.full_name || 'Kein Name'}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">E-Mail</Label>
+                <p className="text-sm font-medium text-gray-900">{selectedUser?.email}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">Passwort</Label>
+                <p className="text-sm font-mono text-gray-500">••••••••</p>
+              </div>
+            </div>
+
+            {/* Role Selection */}
+            <div className="space-y-3">
+              <Label className="text-base font-bold text-gray-900">Rolle</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div 
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    editUserRole === 'editor' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                  }`}
+                  onClick={() => setEditUserRole('editor')}
+                >
+                  <div className="flex items-center gap-2">
+                    <Pencil className={`h-5 w-5 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-base font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
+                  </div>
+                  <p className={`text-sm mt-1 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                </div>
+                <div 
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    editUserRole === 'admin' 
+                      ? 'border-red-500 bg-red-50' 
+                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                  }`}
+                  onClick={() => setEditUserRole('admin')}
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown className={`h-5 w-5 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-base font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
+                  </div>
+                  <p className={`text-sm mt-1 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Voller Systemzugriff</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Editor Selection - only for Editor role */}
+            {editUserRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-base font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <p className="text-sm text-gray-600 mt-1">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {CONTENT_EDITORS.map((editor) => {
+                    const isSelected = editSelectedEditors.includes(editor.id);
+                    return (
+                      <div
+                        key={editor.id}
+                        onClick={() => {
+                          if (isSelected) {
+                            setEditSelectedEditors(editSelectedEditors.filter(id => id !== editor.id));
+                          } else {
+                            setEditSelectedEditors([...editSelectedEditors, editor.id]);
+                          }
+                        }}
+                        className={`relative overflow-hidden rounded-xl border-3 transition-all duration-300 cursor-pointer ${
+                          isSelected 
+                            ? `border-green-500 bg-green-50 shadow-xl ring-2 ring-green-300` 
+                            : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-lg'
+                        }`}
+                      >
+                        <div className={`absolute top-0 left-0 right-0 h-2 ${editor.bgColor}`}></div>
+                        <div className="p-4 pt-5 flex flex-col items-center text-center">
+                          <div className={`h-12 w-12 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
+                            <div className="text-white">{editor.icon}</div>
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-xs text-gray-600 mt-1">{editor.description}</p>
+                          {isSelected && (
+                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1 shadow-md">
+                              <Check className="h-5 w-5 text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {editSelectedEditors.length > 0 && (
+                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-4 py-3">
+                    <p className="text-base font-bold text-yellow-800">
+                      ✓ {editSelectedEditors.length} Editor(en) ausgewählt
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditUserDialog(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={handleSaveEditUser} 
+              disabled={isSavingEdit}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isSavingEdit ? (
+                <>Wird gespeichert...</>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Änderungen speichern
                 </>
               )}
             </Button>
