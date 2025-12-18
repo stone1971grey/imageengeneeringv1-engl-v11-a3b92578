@@ -1008,19 +1008,6 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-username" className="text-base font-semibold text-gray-900">Login (Benutzername)</Label>
-              <Input
-                id="invite-username"
-                type="text"
-                placeholder="z.B. admin123 oder max.mustermann"
-                value={inviteUsername}
-                onChange={(e) => setInviteUsername(e.target.value)}
-                className="text-base h-12"
-              />
-              <p className="text-sm text-gray-600">Der Benutzername für den Login. Kann frei gewählt werden.</p>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">E-Mail-Adresse *</Label>
               <Input
                 id="invite-email"
@@ -1079,6 +1066,19 @@ export const UserManagement = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invite-username" className="text-base font-semibold text-gray-900">Login (Benutzername)</Label>
+              <Input
+                id="invite-username"
+                type="text"
+                placeholder="z.B. admin123 oder max.mustermann"
+                value={inviteUsername}
+                onChange={(e) => setInviteUsername(e.target.value)}
+                className="text-base h-12"
+              />
+              <p className="text-sm text-gray-600">Der Benutzername für den Login. Kann frei gewählt werden.</p>
             </div>
 
             <div className="space-y-2">
