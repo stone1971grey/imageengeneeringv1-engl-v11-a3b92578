@@ -289,10 +289,8 @@ const Contact = () => {
                 <span className="absolute bottom-2 left-0 w-full h-3 bg-accent/30 -z-0"></span>
               </span>
             </h1>
-            <p className="text-xl text-foreground max-w-2xl mx-auto">
-              Whether you need test equipment, consulting services, or custom solutions — 
-              our team of imaging experts is here to help. Submit an inquiry, schedule a meeting, 
-              chat with us via WhatsApp, or subscribe to our newsletter for specialized topics.
+            <p className="text-xl text-foreground max-w-5xl mx-auto">
+              Whether you need test equipment, consulting services, or custom solutions — our team of imaging experts is here to help. Submit an inquiry, schedule a meeting, chat with us via WhatsApp, or subscribe to our newsletter for specialized topics.
             </p>
           </div>
 
