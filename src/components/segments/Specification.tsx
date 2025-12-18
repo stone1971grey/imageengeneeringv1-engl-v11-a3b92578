@@ -36,8 +36,8 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
                       key={index} 
                       className={index !== rows.length - 1 ? "border-b border-gray-100" : ""}
                     >
-                      <td className="py-3 px-4 text-[#555]">{row.specification}</td>
-                      <td className="py-3 px-4 text-[#555]">{row.value}</td>
+                      <td className="py-3 px-4 text-[#555] whitespace-pre-line">{row.specification}</td>
+                      <td className="py-3 px-4 text-[#555] whitespace-pre-line">{row.value}</td>
                     </tr>
                   ))}
                 </tbody>

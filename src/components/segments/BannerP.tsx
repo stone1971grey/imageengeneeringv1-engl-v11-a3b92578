@@ -48,7 +48,7 @@ export const BannerP = ({
 
           {/* Subtext */}
           {subtext && (
-            <p className="text-lg text-gray-700 mb-8">
+            <p className="text-lg text-gray-700 mb-8 whitespace-pre-line">
               {subtext}
             </p>
           )}

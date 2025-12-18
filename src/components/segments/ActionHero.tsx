@@ -30,7 +30,7 @@ const ActionHero = ({ id, title, description, backgroundImage, flipImage = false
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">
             {title}
           </h1>
-          <p className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-2">
+          <p className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-2 whitespace-pre-line">
             {description}
           </p>
         </div>

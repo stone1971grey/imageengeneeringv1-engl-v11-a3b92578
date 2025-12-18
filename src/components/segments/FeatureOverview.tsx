@@ -59,7 +59,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
           </h2>
         )}
         {subtext && (
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto">
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto whitespace-pre-line">
             {subtext}
           </p>
         )}
@@ -75,7 +75,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
                     </h3>
                   )}
                   {item.description && (
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                       {item.description}
                     </p>
                   )}

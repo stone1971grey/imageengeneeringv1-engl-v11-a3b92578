@@ -895,7 +895,7 @@ const DynamicCMSPage = () => {
                     {segment.data.title}
                   </h2>
                   {segment.data?.description && (
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
                       {segment.data.description}
                     </p>
                   )}
@@ -931,7 +931,7 @@ const DynamicCMSPage = () => {
                         <div className="p-8">
                           <div className="space-y-3 flex-1 text-center">
                             <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
-                            <p className="text-gray-600 leading-relaxed">{tile.description}</p>
+                            <p className="text-gray-600 leading-relaxed whitespace-pre-line">{tile.description}</p>
                           </div>
                           {tile.showButton !== false && tile.ctaText && tile.ctaLink && (
                             <div className="mt-6 flex justify-center">
@@ -975,7 +975,7 @@ const DynamicCMSPage = () => {
                 )}
 
                 {segment.data?.subtext && (
-                  <p className="text-lg text-gray-700 mb-8">
+                  <p className="text-lg text-gray-700 mb-8 whitespace-pre-line">
                     {segment.data.subtext}
                   </p>
                 )}
@@ -1131,7 +1131,7 @@ const DynamicCMSPage = () => {
                     {segment.data.title}
                   </h2>
                   {segment.data?.subtext && (
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
                       {segment.data.subtext}
                     </p>
                   )}
@@ -1161,7 +1161,7 @@ const DynamicCMSPage = () => {
                       )}
                       <div className="p-8">
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
-                        <p className="text-gray-600 leading-relaxed">{solution.description}</p>
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line">{solution.description}</p>
                       </div>
                     </div>
                   );

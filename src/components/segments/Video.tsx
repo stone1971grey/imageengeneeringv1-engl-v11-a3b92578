@@ -46,7 +46,7 @@ export const Video = ({ id, data }: VideoProps) => {
               ></iframe>
             </div>
             {data.caption && (
-              <p className="text-center text-gray-700 mt-6 text-lg">
+              <p className="text-center text-gray-700 mt-6 text-lg whitespace-pre-line">
                 {data.caption}
               </p>
             )}
