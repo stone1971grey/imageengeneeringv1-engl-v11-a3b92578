@@ -27,7 +27,8 @@ import {
   MessageSquare, 
   Calendar, 
   CheckCircle2,
-  Mail
+  Mail,
+  Phone
 } from "lucide-react";
 
 const INTEREST_OPTIONS = [
@@ -295,8 +296,8 @@ const Contact = () => {
             </p>
           </div>
 
-          {/* Contact Options Cards */}
-          <div className="grid md:grid-cols-3 gap-5 max-w-6xl mx-auto mb-16">
+          {/* Contact Options Cards - 2x2 Grid */}
+          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-16">
             {/* Submit Inquiry Card - Yellow */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-[hsl(50,95%,55%)] border-2 border-[hsl(50,95%,55%)] shadow-lg hover:shadow-xl hover:bg-[hsl(50,95%,50%)]"
@@ -346,6 +347,33 @@ const Contact = () => {
                 </Button>
                 <p className="text-sm text-white/50 mt-4">
                   Synced with availability.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* WhatsApp Card - Green */}
+            <Card 
+              className="group cursor-pointer transition-all duration-300 bg-[hsl(142,70%,45%)] border border-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] hover:shadow-lg"
+              onClick={() => window.open('https://wa.me/4922199440', '_blank')}
+            >
+              <CardContent className="p-7">
+                <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
+                  <Phone className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-white">
+                  Chat via WhatsApp
+                </h3>
+                <p className="text-white/70 mb-5">
+                  Quick questions? Reach us directly via WhatsApp for fast support.
+                </p>
+                <Button 
+                  variant="outline"
+                  className="border-white/50 text-white bg-transparent hover:bg-white/10 w-full"
+                >
+                  Start Chat
+                </Button>
+                <p className="text-sm text-white/50 mt-4">
+                  Available during business hours.
                 </p>
               </CardContent>
             </Card>
