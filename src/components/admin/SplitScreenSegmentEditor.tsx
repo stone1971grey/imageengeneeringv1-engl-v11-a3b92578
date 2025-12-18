@@ -40,20 +40,21 @@ const SplitScreenSegmentEditorComponent = ({
     return saved !== null ? saved === 'true' : true;
   });
 
-  // For language-restricted editors: force split-screen and set their allowed language
+  // For language-restricted editors who cannot edit English: force split-screen and set their allowed language
   useEffect(() => {
-    if (isLanguageRestricted && allowedLanguages && allowedLanguages.length > 0) {
+    if (isLanguageRestricted && !canEditEnglish && allowedLanguages && allowedLanguages.length > 0) {
       setIsSplitScreenEnabled(true);
-      // Set the first allowed language as target
-      if (!allowedLanguages.includes(targetLanguage)) {
-        setTargetLanguage(allowedLanguages[0]);
+      // Set the first allowed language as target (exclude EN since they can't edit it)
+      const nonEnLanguages = allowedLanguages.filter(l => l !== 'en') as LanguageCode[];
+      if (nonEnLanguages.length > 0 && !nonEnLanguages.includes(targetLanguage)) {
+        setTargetLanguage(nonEnLanguages[0]);
       }
     }
-  }, [isLanguageRestricted, allowedLanguages, targetLanguage]);
+  }, [isLanguageRestricted, canEditEnglish, allowedLanguages, targetLanguage]);
 
   const handleSplitScreenToggle = (checked: boolean) => {
-    // Language-restricted editors cannot disable split-screen
-    if (isLanguageRestricted) return;
+    // Language-restricted editors who cannot edit English cannot disable split-screen
+    if (isLanguageRestricted && !canEditEnglish) return;
     setIsSplitScreenEnabled(checked);
     localStorage.setItem('cms-split-screen-mode', String(checked));
   };
@@ -161,34 +162,34 @@ const SplitScreenSegmentEditorComponent = ({
       <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
         {isSplitScreenEnabled ? (
           <>
-            {/* Left Panel - English (Reference) */}
+            {/* Left Panel - English (Reference or Editable) */}
             <div className="space-y-3">
               <div className={`flex items-center gap-2 px-4 py-3 rounded-lg ${
-                isLanguageRestricted 
+                !canEditEnglish 
                   ? 'bg-gradient-to-r from-gray-800/50 to-gray-700/50 border-2 border-gray-600/50'
                   : 'bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50'
               }`}>
                 <span className="text-2xl">🇺🇸</span>
                 <div className="flex-1">
                   <p className="text-white font-semibold text-sm flex items-center gap-2">
-                    English (Reference)
-                    {isLanguageRestricted && (
+                    English {canEditEnglish ? '' : '(Reference)'}
+                    {!canEditEnglish && (
                       <Badge variant="outline" className="bg-gray-700/50 text-gray-300 border-gray-500 text-xs">
                         <Lock className="h-3 w-3 mr-1" />
                         Schreibgeschützt
                       </Badge>
                     )}
                   </p>
-                  <p className={`text-xs ${isLanguageRestricted ? 'text-gray-400' : 'text-green-200'}`}>
-                    {isLanguageRestricted 
+                  <p className={`text-xs ${!canEditEnglish ? 'text-gray-400' : 'text-green-200'}`}>
+                    {!canEditEnglish 
                       ? 'Nur Ansicht - Sie können diese Version nicht bearbeiten'
-                      : 'Master language - all translations reference this'
+                      : 'Master language - editable'
                     }
                   </p>
                 </div>
               </div>
-              <div className={`rounded-lg ${isLanguageRestricted ? 'pointer-events-none opacity-75' : ''}`}>
-                {children('en', isLanguageRestricted)}
+              <div className={`rounded-lg ${!canEditEnglish ? 'pointer-events-none opacity-75' : ''}`}>
+                {children('en', !canEditEnglish)}
               </div>
             </div>
 
