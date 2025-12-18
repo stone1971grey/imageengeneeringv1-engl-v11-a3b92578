@@ -643,7 +643,7 @@ export const UserManagement = () => {
 
       {/* Invite User Dialog */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5" />
@@ -691,32 +691,32 @@ export const UserManagement = () => {
               <Label>Rolle *</Label>
               <div className="grid grid-cols-2 gap-3">
                 <div 
-                  className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'editor' 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
                   }`}
                   onClick={() => setInviteRole('editor')}
                 >
                   <div className="flex items-center gap-2">
-                    <Pencil className="h-4 w-4 text-blue-600" />
-                    <span className="font-medium">Editor</span>
+                    <Pencil className={`h-4 w-4 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`font-medium ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-xs mt-1 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Kann zugewiesene Inhalte bearbeiten</p>
                 </div>
                 <div 
-                  className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'admin' 
                       ? 'border-red-500 bg-red-50' 
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
                   }`}
                   onClick={() => setInviteRole('admin')}
                 >
                   <div className="flex items-center gap-2">
-                    <Crown className="h-4 w-4 text-red-600" />
-                    <span className="font-medium">Admin</span>
+                    <Crown className={`h-4 w-4 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`font-medium ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Voller Systemzugriff</p>
+                  <p className={`text-xs mt-1 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Voller Systemzugriff</p>
                 </div>
               </div>
             </div>
