@@ -99,7 +99,8 @@ export const UserManagement = () => {
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
-  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteLoginEmail, setInviteLoginEmail] = useState("");
+  const [inviteContactEmail, setInviteContactEmail] = useState("");
   const [inviteFullName, setInviteFullName] = useState("");
   const [invitePassword, setInvitePassword] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("editor");
@@ -122,15 +123,15 @@ export const UserManagement = () => {
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [existingUserMatch, setExistingUserMatch] = useState<UserWithRole | null>(null);
 
-  // Check for existing user when email changes
+  // Check for existing user when login email changes
   useEffect(() => {
-    if (inviteEmail.trim()) {
-      const match = users.find(u => u.email.toLowerCase() === inviteEmail.trim().toLowerCase());
+    if (inviteLoginEmail.trim()) {
+      const match = users.find(u => u.email.toLowerCase() === inviteLoginEmail.trim().toLowerCase());
       setExistingUserMatch(match || null);
     } else {
       setExistingUserMatch(null);
     }
-  }, [inviteEmail, users]);
+  }, [inviteLoginEmail, users]);
 
   useEffect(() => {
     loadUsers();
@@ -247,8 +248,8 @@ export const UserManagement = () => {
   };
 
   const handleInviteUser = async () => {
-    if (!inviteEmail.trim() || !invitePassword.trim()) {
-      toast.error('Bitte E-Mail und Passwort eingeben');
+    if (!inviteLoginEmail.trim() || !invitePassword.trim()) {
+      toast.error('Bitte Login-E-Mail und Passwort eingeben');
       return;
     }
 
@@ -259,13 +260,16 @@ export const UserManagement = () => {
 
     setIsInviting(true);
     try {
-      // Create user via Supabase Auth
+      // Use contact email if provided, otherwise use login email
+      const profileEmail = inviteContactEmail.trim() || inviteLoginEmail.trim();
+      
+      // Create user via Supabase Auth with login email
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: inviteEmail.trim(),
+        email: inviteLoginEmail.trim(),
         password: invitePassword,
         options: {
           data: {
-            full_name: inviteFullName.trim() || inviteEmail.trim().split('@')[0]
+            full_name: inviteFullName.trim() || inviteLoginEmail.trim().split('@')[0]
           },
           emailRedirectTo: `${window.location.origin}/`
         }
@@ -320,9 +324,22 @@ export const UserManagement = () => {
         }
       }
 
-      toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${inviteEmail}" wurde erfolgreich angelegt`);
+      // Update profile email if a different contact email was provided
+      if (inviteContactEmail.trim() && inviteContactEmail.trim() !== inviteLoginEmail.trim()) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ email: profileEmail })
+          .eq('id', authData.user.id);
+
+        if (profileError) {
+          console.error('Error updating profile email:', profileError);
+        }
+      }
+
+      toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${inviteLoginEmail}" wurde erfolgreich angelegt`);
       setShowInviteDialog(false);
-      setInviteEmail("");
+      setInviteLoginEmail("");
+      setInviteContactEmail("");
       setInviteFullName("");
       setInvitePassword("");
       setInviteRole("editor");
@@ -823,19 +840,20 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">E-Mail *</Label>
+              <Label htmlFor="invite-login-email" className="text-base font-semibold text-gray-900">Login E-Mail * (für Authentifizierung)</Label>
               <Input
-                id="invite-email"
+                id="invite-login-email"
                 type="email"
-                placeholder="email@example.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="login@example.com"
+                value={inviteLoginEmail}
+                onChange={(e) => setInviteLoginEmail(e.target.value)}
                 className={`text-base h-12 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-200' : ''}`}
               />
+              <p className="text-sm text-gray-600">Diese E-Mail wird für den Login verwendet.</p>
               {existingUserMatch && (
                 <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mt-2">
                   <p className="text-base font-bold text-yellow-800 mb-2">
-                    ⚠️ Diese E-Mail ist bereits als Benutzer registriert:
+                    ⚠️ Diese Login-E-Mail ist bereits als Benutzer registriert:
                   </p>
                   <div className="bg-white rounded-lg p-3 border border-yellow-300">
                     <div className="flex items-center justify-between">
@@ -872,6 +890,19 @@ export const UserManagement = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invite-contact-email" className="text-base font-semibold text-gray-900">Kontakt E-Mail (optional)</Label>
+              <Input
+                id="invite-contact-email"
+                type="email"
+                placeholder="kontakt@example.com"
+                value={inviteContactEmail}
+                onChange={(e) => setInviteContactEmail(e.target.value)}
+                className="text-base h-12"
+              />
+              <p className="text-sm text-gray-600">Falls abweichend von der Login-E-Mail. Wird im Profil gespeichert.</p>
             </div>
 
             <div className="space-y-2">
@@ -992,7 +1023,7 @@ export const UserManagement = () => {
             </Button>
             <Button 
               onClick={handleInviteUser} 
-              disabled={isInviting || !inviteEmail.trim() || !invitePassword.trim()}
+              disabled={isInviting || !inviteLoginEmail.trim() || !invitePassword.trim()}
               className="bg-green-600 hover:bg-green-700"
             >
               {isInviting ? (
