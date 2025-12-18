@@ -812,32 +812,35 @@ export const UserManagement = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-white">
-                  <TableHead className="font-semibold text-black">User</TableHead>
-                  <TableHead className="font-semibold text-black">Email</TableHead>
-                  <TableHead className="font-semibold text-black">Roles</TableHead>
-                  <TableHead className="font-semibold text-black">Sprachen</TableHead>
-                  <TableHead className="font-semibold text-black">Content-Editoren</TableHead>
-                  <TableHead className="font-semibold text-black">Created</TableHead>
-                  <TableHead className="font-semibold text-black text-right">Actions</TableHead>
+                <TableRow className="bg-gray-50 border-b border-gray-200">
+                  <TableHead className="font-semibold text-gray-700">User</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Email</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Rolle</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Sprachen</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Content-Editoren</TableHead>
+                  <TableHead className="font-semibold text-gray-700">Erstellt</TableHead>
+                  <TableHead className="font-semibold text-gray-700 text-right">Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.map((user) => (
-                  <TableRow key={user.id} className="hover:bg-white group">
+                  <TableRow key={user.id} className="bg-white hover:bg-gray-100 transition-colors group border-b border-gray-100">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <User className="h-5 w-5 text-gray-600" />
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
+                          <User className="h-5 w-5 text-gray-500" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 group-hover:text-black">
-                            {user.full_name || 'No name'}
+                          <p className="font-medium text-gray-900">
+                            {user.full_name || 'Kein Name'}
                           </p>
+                          {user.username && user.username !== user.email && (
+                            <p className="text-xs text-gray-500">@{user.username}</p>
+                          )}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-600 group-hover:text-black">{user.email}</TableCell>
+                    <TableCell className="text-gray-600">{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {user.roles.length > 0 ? (
@@ -848,30 +851,52 @@ export const UserManagement = () => {
                               className={`${getRoleBadgeVariant(role)} flex items-center gap-1`}
                             >
                               {getRoleIcon(role)}
-                              {role}
-                              <button
-                                onClick={() => handleRemoveRole(user.id, role)}
-                                className="ml-1 hover:text-red-600 transition-colors"
-                                title="Remove role"
-                              >
-                                ×
-                              </button>
+                              {role === 'admin' ? 'Admin' : 'Editor'}
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-gray-400 text-sm">No roles assigned</span>
+                          <span className="text-gray-400 text-sm">Keine Rolle</span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      {user.roles.includes('editor') ? (
-                        user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
+                      {user.roles.includes('admin') ? (
+                        <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
+                          Alle Sprachen
+                        </Badge>
+                      ) : user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {user.globalSegmentLanguages.map(lang => {
+                            const langInfo = AVAILABLE_LANGUAGES.find(l => l.code === lang);
+                            return (
+                              <Badge key={lang} variant="outline" className="bg-purple-50 border-purple-300 text-purple-700 text-xs">
+                                {langInfo?.flag} {langInfo?.name || lang}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-sm">Keine</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.roles.includes('admin') ? (
+                        <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
+                          Alle Editoren
+                        </Badge>
+                      ) : user.roles.includes('editor') ? (
+                        user.editorAccess === 'all' ? (
+                          <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
+                            Alle Editoren
+                          </Badge>
+                        ) : user.contentEditors && user.contentEditors.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
-                            {user.globalSegmentLanguages.map(lang => {
-                              const langInfo = AVAILABLE_LANGUAGES.find(l => l.code === lang);
+                            {user.contentEditors.map(editorId => {
+                              const editor = CONTENT_EDITORS.find(e => e.id === editorId);
+                              if (!editor) return null;
                               return (
-                                <Badge key={lang} variant="outline" className="bg-purple-50 border-purple-300 text-purple-700 text-xs">
-                                  {langInfo?.flag} {langInfo?.name || lang}
+                                <Badge key={editorId} variant="outline" className="bg-blue-50 border-blue-300 text-blue-700 text-xs">
+                                  {editor.name}
                                 </Badge>
                               );
                             })}
@@ -883,37 +908,11 @@ export const UserManagement = () => {
                         <span className="text-gray-400 text-sm">—</span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {user.roles.includes('editor') ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openEditorAccessDialog(user)}
-                          className={`text-xs ${
-                            user.editorAccess === 'all' 
-                              ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
-                              : user.editorAccess === 'custom'
-                              ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
-                              : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Settings className="h-3 w-3 mr-1" />
-                          {getEditorAccessLabel(user.editorAccess)}
-                          {user.editorAccess === 'custom' && user.contentEditors && (() => {
-                            const validEditorIds = CONTENT_EDITORS.map(e => e.id);
-                            const validCount = user.contentEditors.filter(id => validEditorIds.includes(id)).length;
-                            return validCount > 0 ? <span className="ml-1">({validCount})</span> : null;
-                          })()}
-                        </Button>
-                      ) : (
-                        <span className="text-gray-400 text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-gray-500 text-sm group-hover:text-black">
+                    <TableCell className="text-gray-500 text-sm">
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => {
                             // Filter to only include valid CONTENT_EDITORS ids
@@ -937,7 +936,7 @@ export const UserManagement = () => {
                             setEditGlobalSegmentLanguages(user.globalSegmentLanguages || []);
                             setShowEditUserDialog(true);
                           }}
-                          className="h-8 w-8 flex items-center justify-center text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors"
+                          className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors border border-gray-200 hover:border-yellow-300"
                           title="Benutzer bearbeiten"
                         >
                           <Pencil className="h-4 w-4" />
@@ -947,7 +946,7 @@ export const UserManagement = () => {
                             setSelectedUser(user);
                             setShowDeleteConfirm(true);
                           }}
-                          className="h-8 w-8 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                          className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors border border-gray-200 hover:border-red-300"
                           title="Benutzer löschen"
                         >
                           <Trash2 className="h-4 w-4" />
