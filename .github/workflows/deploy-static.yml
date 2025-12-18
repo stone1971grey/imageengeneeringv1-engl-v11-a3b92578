@@ -29,7 +29,7 @@ jobs:
         uses: easingthemes/ssh-deploy@v5.1.0
         env:
           SSH_PRIVATE_KEY: ${{ secrets.MW_STATIC_SSH_PRIVATE_KEY }}
-          ARGS: "-avzr --delete"
+          ARGS: "-avzr --delete --exclude='.htaccess'"
           SOURCE: "dist/"
           REMOTE_HOST: ${{ secrets.MW_STATIC_SSH_HOST }}
           REMOTE_USER: ${{ secrets.MW_STATIC_SSH_USER }}
