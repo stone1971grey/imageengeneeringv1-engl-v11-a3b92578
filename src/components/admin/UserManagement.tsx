@@ -795,10 +795,10 @@ export const UserManagement = () => {
             </div>
             <Button 
               onClick={() => setShowInviteDialog(true)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
-              <UserPlus className="h-4 w-4 mr-2" />
-              Neuen Benutzer anlegen
+              <UserPlus className="h-4 w-4 mr-2 text-white" />
+              Neuer Benutzer
             </Button>
           </div>
         </CardHeader>
@@ -808,14 +808,14 @@ export const UserManagement = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50 border-b border-gray-200">
-                  <TableHead className="font-semibold text-gray-700">User</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Email</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Rolle</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Sprachen</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Content-Editoren</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Erstellt</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-right">Aktionen</TableHead>
+                <TableRow className="bg-muted/50 border-b border-border">
+                  <TableHead className="font-semibold text-muted-foreground">User</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Email</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Rolle</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Sprachen</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Content-Editoren</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Erstellt</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground text-right">Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
