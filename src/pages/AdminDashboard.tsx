@@ -602,6 +602,18 @@ const AdminDashboard = () => {
 
   // Persist selected page to sessionStorage for navigation between admin views
   const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
+  
+  // Restore selected page from sessionStorage when URL has no page parameter
+  useEffect(() => {
+    if (!selectedPage && user && (isAdmin || isEditor)) {
+      const savedPage = sessionStorage.getItem(ADMIN_SELECTED_PAGE_KEY);
+      if (savedPage) {
+        // Navigate to the saved page
+        navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(savedPage)}`, { replace: true });
+      }
+    }
+  }, [user, isAdmin, isEditor, language]);
+  
   useEffect(() => {
     if (selectedPage) {
       sessionStorage.setItem(ADMIN_SELECTED_PAGE_KEY, selectedPage);
@@ -3975,36 +3987,38 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
               <div className="flex items-center gap-3">
-                <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-                  <DialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="flex items-center gap-2 bg-gray-800 text-white hover:bg-gray-700"
-                    >
-                      <Shield className="h-4 w-4" />
-                      User Management
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
-                    <DialogHeader className="relative">
-                      <button
-                        onClick={() => setShowUserManagement(false)}
-                        className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
-                        title="Schließen"
+                {isAdmin && (
+                  <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="flex items-center gap-2 bg-gray-800 text-white hover:bg-gray-700"
                       >
-                        ×
-                      </button>
-                      <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
-                        <Shield className="h-6 w-6 text-red-600" />
-                        User Management - Roles & Permissions
-                      </DialogTitle>
-                      <DialogDescription className="text-base text-gray-700">
-                        Manage user roles and permissions for the Admin Dashboard
-                      </DialogDescription>
-                    </DialogHeader>
-                    <UserManagement />
-                  </DialogContent>
-                </Dialog>
+                        <Shield className="h-4 w-4" />
+                        User Management
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+                      <DialogHeader className="relative">
+                        <button
+                          onClick={() => setShowUserManagement(false)}
+                          className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+                          title="Schließen"
+                        >
+                          ×
+                        </button>
+                        <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+                          <Shield className="h-6 w-6 text-red-600" />
+                          User Management - Roles & Permissions
+                        </DialogTitle>
+                        <DialogDescription className="text-base text-gray-700">
+                          Manage user roles and permissions for the Admin Dashboard
+                        </DialogDescription>
+                      </DialogHeader>
+                      <UserManagement />
+                    </DialogContent>
+                  </Dialog>
+                )}
                 <Button
                   onClick={handleLogout}
                   variant="destructive"
@@ -4235,54 +4249,67 @@ const AdminDashboard = () => {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-3">
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => navigate(`/${language}/admin-dashboard/news`)}
-              >
-                <Newspaper className="h-4 w-4" />
-                Manage News
-              </Button>
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--events-button))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--events-button))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => navigate(`/${language}/admin-dashboard/events`)}
-              >
-                <Calendar className="h-4 w-4" />
-                Manage Events
-              </Button>
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--accent-blue))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-blue))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => navigate(`/${language}/admin-dashboard/products`)}
-              >
-                <Target className="h-4 w-4" />
-                Manage Products
-              </Button>
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(180_60%_45%)] text-white hover:bg-[hsl(180_60%_40%)] shadow-soft hover:shadow-lg"
-                onClick={() => navigate(`/${language}/admin-dashboard/downloads`)}
-              >
-                <Download className="h-4 w-4" />
-                Manage Downloads
-              </Button>
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
-              >
-                <Eye className="h-4 w-4" />
-                SEO Settings
-              </Button>
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--accent-violet))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent-violet))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
-              >
-                <Book className="h-4 w-4" />
-                Translation Glossary
-              </Button>
+              {/* Only show buttons for areas the user has access to */}
+              {(isAdmin || allowedPages.includes('news') || allowedPages.includes('__all__')) && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90 shadow-soft hover:shadow-lg"
+                  onClick={() => navigate(`/${language}/admin-dashboard/news`)}
+                >
+                  <Newspaper className="h-4 w-4" />
+                  Manage News
+                </Button>
+              )}
+              {(isAdmin || allowedPages.includes('events') || allowedPages.includes('__all__')) && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(var(--events-button))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--events-button))]/90 shadow-soft hover:shadow-lg"
+                  onClick={() => navigate(`/${language}/admin-dashboard/events`)}
+                >
+                  <Calendar className="h-4 w-4" />
+                  Manage Events
+                </Button>
+              )}
+              {(isAdmin || allowedPages.includes('products') || allowedPages.includes('__all__')) && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(var(--accent-blue))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-blue))]/90 shadow-soft hover:shadow-lg"
+                  onClick={() => navigate(`/${language}/admin-dashboard/products`)}
+                >
+                  <Target className="h-4 w-4" />
+                  Manage Products
+                </Button>
+              )}
+              {(isAdmin || allowedPages.includes('downloads') || allowedPages.includes('__all__')) && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(180_60%_45%)] text-white hover:bg-[hsl(180_60%_40%)] shadow-soft hover:shadow-lg"
+                  onClick={() => navigate(`/${language}/admin-dashboard/downloads`)}
+                >
+                  <Download className="h-4 w-4" />
+                  Manage Downloads
+                </Button>
+              )}
+              {isAdmin && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
+                  onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+                >
+                  <Eye className="h-4 w-4" />
+                  SEO Settings
+                </Button>
+              )}
+              {isAdmin && (
+                <Button
+                  variant="decision"
+                  className="flex items-center gap-2 bg-[hsl(var(--accent-violet))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent-violet))]/90 shadow-soft hover:shadow-lg"
+                  onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
+                >
+                  <Book className="h-4 w-4" />
+                  Translation Glossary
+                </Button>
+              )}
             </div>
           </div>
         </div>
