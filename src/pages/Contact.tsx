@@ -404,7 +404,74 @@ const Contact = () => {
             </Card>
           </div>
 
-          {/* Contact Form Dialog - Clean & Modern */}
+          {/* Contact Details Section */}
+          <div className="max-w-5xl mx-auto mb-16">
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {/* Germany Office */}
+              <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
+                <h3 className="text-xl font-bold text-white mb-1">Head Office Germany</h3>
+                <p className="text-white/60 text-sm mb-4">Image Engineering GmbH & Co. KG</p>
+                <p className="text-white/70 text-sm mb-4">
+                  Monday-Friday: 9:00 a.m. to 5:00 p.m. (CET)<br />
+                  Saturday, Sunday: by special appointment
+                </p>
+                <div className="space-y-2">
+                  <p className="text-white/80 text-sm">
+                    Phone: <a href="tel:+4922739999-10" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+49 2273 99 99 1-0</a>
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    Email: <a href="mailto:info@image-engineering.de" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">info@image-engineering.de</a>
+                  </p>
+                </div>
+              </div>
+
+              {/* USA Office */}
+              <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
+                <h3 className="text-xl font-bold text-white mb-1">Office USA</h3>
+                <p className="text-white/60 text-sm mb-4">&nbsp;</p>
+                <p className="text-white/70 text-sm mb-4">
+                  Mon-Fri: 8:00 a.m. to 6:00 p.m. (CT)
+                </p>
+                <div className="space-y-2">
+                  <p className="text-white/80 text-sm">
+                    Phone: <a href="tel:+14083861496" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+1 408 386 1496</a>
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    Email: <a href="mailto:sales@image-engineering.us" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">sales@image-engineering.us</a>
+                  </p>
+                </div>
+              </div>
+
+              {/* China Office */}
+              <div className="bg-[hsl(0,0%,15%)] rounded-xl p-6 border border-white/10">
+                <h3 className="text-xl font-bold text-white mb-1">Office China</h3>
+                <p className="text-white/60 text-sm mb-4">Shenzhen Image Engineering Optoelectronic Equipment Co., Ltd.</p>
+                <p className="text-white/70 text-sm mb-4">
+                  Mon-Fri: 9:00 a.m. to 6:00 p.m. (CST)
+                </p>
+                <div className="space-y-2">
+                  <p className="text-white/80 text-sm">
+                    Phone: <a href="tel:+8615889619096" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+86 158 8961 9096</a>
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    Email: <a href="mailto:leon.xiao@image-engineering.com" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">leon.xiao@image-engineering.com</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Address Bar */}
+            <div className="bg-[hsl(0,0%,12%)] rounded-xl p-6 border border-white/10 flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-center">
+              <span className="text-white/80 text-sm">Im Gleisdreieck 5, 50169 Kerpen, Germany</span>
+              <span className="text-white/40">|</span>
+              <span className="text-white/80 text-sm">T <a href="tel:+492273999910" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)]">+49 2273 99 99 10</a></span>
+              <span className="text-white/40">|</span>
+              <span className="text-white/80 text-sm">F +49 2273 99 99 1-10</span>
+              <span className="text-white/40">|</span>
+              <a href="mailto:info@image-engineering.de" className="text-[hsl(50,95%,55%)] hover:text-[hsl(50,95%,65%)] text-sm">info@image-engineering.de</a>
+            </div>
+          </div>
+
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-4 overflow-hidden max-h-[70vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3 mt-24">
               {/* Inner gray content area - matching flyout style */}
