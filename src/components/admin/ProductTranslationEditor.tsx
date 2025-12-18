@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Languages, CheckCircle, AlertCircle, X } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { useEditorLanguageAccess } from "@/hooks/useEditorLanguageAccess";
 
 interface ChartSizeSection {
   id: string;
@@ -54,7 +55,7 @@ interface ProductTranslationEditorProps {
   onSave: () => void;
 }
 
-const LANGUAGES = [
+const ALL_LANGUAGES = [
   { code: "de", name: "German", flag: "🇩🇪" },
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
   { code: "ko", name: "Korean", flag: "🇰🇷" },
@@ -66,10 +67,23 @@ interface TranslationStatus {
 }
 
 const ProductTranslationEditor = ({ productSlug, englishData, onSave }: ProductTranslationEditorProps) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("de");
+  // Get editor's language access - use 'products' as the page context
+  const { allowedLanguages, canEditLanguage, isLoading: languageAccessLoading } = useEditorLanguageAccess('products');
+  
+  // Filter languages based on editor's access
+  const LANGUAGES = ALL_LANGUAGES.filter(lang => canEditLanguage(lang.code as 'en' | 'de' | 'ja' | 'ko' | 'zh'));
+  
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [translationStatus, setTranslationStatus] = useState<TranslationStatus>({});
+  
+  // Set initial selected language when languages are loaded
+  useEffect(() => {
+    if (!languageAccessLoading && LANGUAGES.length > 0 && !selectedLanguage) {
+      setSelectedLanguage(LANGUAGES[0].code);
+    }
+  }, [languageAccessLoading, LANGUAGES.length, selectedLanguage]);
   
   // Target language form data
   const [targetTitle, setTargetTitle] = useState("");

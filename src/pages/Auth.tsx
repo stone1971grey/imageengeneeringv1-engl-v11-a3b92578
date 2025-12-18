@@ -45,6 +45,8 @@ const Auth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        // Also clear sessionStorage here for existing sessions
+        sessionStorage.removeItem("admin_selected_page");
         navigate("/en/admin-dashboard");
       }
     });
