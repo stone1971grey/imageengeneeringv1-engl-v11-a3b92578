@@ -762,30 +762,32 @@ export const UserManagement = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-6 py-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-name">Name</Label>
+              <Label htmlFor="invite-name" className="text-base font-semibold">Name</Label>
               <Input
                 id="invite-name"
                 placeholder="Max Mustermann"
                 value={inviteFullName}
                 onChange={(e) => setInviteFullName(e.target.value)}
+                className="text-base h-12"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email">E-Mail *</Label>
+              <Label htmlFor="invite-email" className="text-base font-semibold">E-Mail *</Label>
               <Input
                 id="invite-email"
                 type="email"
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
+                className="text-base h-12"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-password">Passwort *</Label>
+              <Label htmlFor="invite-password" className="text-base font-semibold">Passwort *</Label>
               <div className="relative">
                 <Input
                   id="invite-password"
@@ -793,48 +795,48 @@ export const UserManagement = () => {
                   placeholder="Mindestens 6 Zeichen"
                   value={invitePassword}
                   onChange={(e) => setInvitePassword(e.target.value)}
-                  className="pr-10"
+                  className="pr-12 text-base h-12"
                 />
                 <button
                   type="button"
                   onClick={() => setShowInvitePassword(!showInvitePassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showInvitePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showInvitePassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Rolle *</Label>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">Rolle *</Label>
+              <div className="grid grid-cols-2 gap-4">
                 <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'editor' 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
                   }`}
                   onClick={() => setInviteRole('editor')}
                 >
-                  <div className="flex items-center gap-2">
-                    <Pencil className={`h-4 w-4 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`font-medium ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
+                  <div className="flex items-center gap-3">
+                    <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900 group-hover:text-white'}`}>Editor</span>
                   </div>
-                  <p className={`text-xs mt-1 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600 group-hover:text-white'}`}>Kann zugewiesene Inhalte bearbeiten</p>
                 </div>
                 <div 
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'admin' 
                       ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-black hover:border-black group'
+                      : 'bg-white border-gray-200 hover:bg-gray-900 hover:border-gray-900 group'
                   }`}
                   onClick={() => setInviteRole('admin')}
                 >
-                  <div className="flex items-center gap-2">
-                    <Crown className={`h-4 w-4 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
-                    <span className={`font-medium ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
+                  <div className="flex items-center gap-3">
+                    <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900 group-hover:text-white'}`}>Admin</span>
                   </div>
-                  <p className={`text-xs mt-1 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-500 group-hover:text-gray-300'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600 group-hover:text-white'}`}>Voller Systemzugriff</p>
                 </div>
               </div>
             </div>
@@ -843,8 +845,8 @@ export const UserManagement = () => {
             {inviteRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-base font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-sm text-gray-600 mt-1">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <Label className="text-lg font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <p className="text-base text-gray-600 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -868,14 +870,14 @@ export const UserManagement = () => {
                         }`}
                       >
                         <div className={`absolute top-0 left-0 right-0 h-2 ${editor.bgColor}`}></div>
-                        <div className="p-4 pt-5 flex flex-col items-center text-center">
-                          <div className={`h-12 w-12 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
+                        <div className="p-5 pt-6 flex flex-col items-center text-center">
+                          <div className={`h-14 w-14 rounded-xl ${editor.bgColor} flex items-center justify-center mb-3 shadow-md`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-xs text-gray-600 mt-1">{editor.description}</p>
+                          <h4 className="text-base font-bold text-gray-900">{editor.name}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{editor.description}</p>
                           {isSelected && (
-                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1 shadow-md">
+                            <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-md">
                               <Check className="h-5 w-5 text-white" strokeWidth={3} />
                             </div>
                           )}
@@ -886,8 +888,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {inviteSelectedEditors.length > 0 && (
-                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-4 py-3">
-                    <p className="text-base font-bold text-yellow-800">
+                  <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-yellow-800">
                       ✓ {inviteSelectedEditors.length} Editor(en) ausgewählt
                     </p>
                   </div>
