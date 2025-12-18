@@ -295,6 +295,26 @@ export const CMSPageOverview = () => {
   // Category order for navigation hierarchy sorting
   const CATEGORY_ORDER = ['Home', 'Your Solution', 'Products', 'Test Lab', 'Training & Events', 'Info Hub', 'Company', 'Styleguide'];
 
+  // Static pages - these are React components that don't use CMS segments
+  const STATIC_PAGES = ['contact', 'news', 'styleguide'];
+
+  const isStaticPage = (slug: string): boolean => {
+    return STATIC_PAGES.includes(slug) || slug.startsWith('styleguide');
+  };
+
+  const getStaticBadge = (slug: string) => {
+    if (!isStaticPage(slug)) return null;
+    return (
+      <Badge 
+        variant="outline" 
+        className="bg-orange-900/40 text-orange-300 border-orange-600 text-xs"
+        title="Static React page - not managed via CMS segments"
+      >
+        Static
+      </Badge>
+    );
+  };
+
   const getCategoryName = (slug: string): string => {
     if (slug === "index") return 'Home';
     if (slug.startsWith("your-solution")) return 'Your Solution';
@@ -866,6 +886,7 @@ export const CMSPageOverview = () => {
             <span>{page.page_slug}</span>
             <ShortcutBadge targetSlug={page.target_page_slug || null} targetPageId={page.target_page_id} />
             {getCtaBadge(page)}
+            {getStaticBadge(page.page_slug)}
             <EditSlugDialog
               pageId={page.page_id}
               currentSlug={page.page_slug}
@@ -991,7 +1012,7 @@ export const CMSPageOverview = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-4 gap-4 mb-4">
           <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
             <div className="text-sm text-gray-400">Total Pages</div>
             <div className="text-2xl font-bold text-[#f9dc24]">{pages.length}</div>
@@ -1000,6 +1021,12 @@ export const CMSPageOverview = () => {
             <div className="text-sm text-gray-400">CMS Ready</div>
             <div className="text-2xl font-bold text-green-400">
               {pages.filter((p) => p.segment_count > 0).length}
+            </div>
+          </div>
+          <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
+            <div className="text-sm text-gray-400">Static Pages</div>
+            <div className="text-2xl font-bold text-orange-400">
+              {pages.filter((p) => isStaticPage(p.page_slug)).length}
             </div>
           </div>
           <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
