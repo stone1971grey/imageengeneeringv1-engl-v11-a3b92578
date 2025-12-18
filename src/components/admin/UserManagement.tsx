@@ -25,61 +25,61 @@ interface ContentEditor {
   borderColor: string;
 }
 
-// Define available content editors with their styling
+// Define available content editors with their styling - using direct colors for visibility
 const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'news',
     name: 'Manage News',
     description: 'News-Artikel erstellen & bearbeiten',
-    icon: <Newspaper className="h-5 w-5" />,
-    color: 'hsl(var(--primary))',
-    bgColor: 'bg-[hsl(var(--primary))]',
-    borderColor: 'border-[hsl(var(--primary))]'
+    icon: <Newspaper className="h-6 w-6" />,
+    color: '#dc2626',
+    bgColor: 'bg-red-600',
+    borderColor: 'border-red-600'
   },
   {
     id: 'events',
     name: 'Manage Events',
     description: 'Events & Veranstaltungen verwalten',
-    icon: <Calendar className="h-5 w-5" />,
-    color: 'hsl(var(--events-button))',
-    bgColor: 'bg-[hsl(var(--events-button))]',
-    borderColor: 'border-[hsl(var(--events-button))]'
+    icon: <Calendar className="h-6 w-6" />,
+    color: '#16a34a',
+    bgColor: 'bg-green-600',
+    borderColor: 'border-green-600'
   },
   {
     id: 'products',
     name: 'Manage Products',
     description: 'Produkt-Katalog verwalten',
-    icon: <Target className="h-5 w-5" />,
-    color: 'hsl(var(--accent-blue))',
-    bgColor: 'bg-[hsl(var(--accent-blue))]',
-    borderColor: 'border-[hsl(var(--accent-blue))]'
+    icon: <Target className="h-6 w-6" />,
+    color: '#2563eb',
+    bgColor: 'bg-blue-600',
+    borderColor: 'border-blue-600'
   },
   {
     id: 'downloads',
     name: 'Manage Downloads',
     description: 'Downloads & Ressourcen verwalten',
-    icon: <Download className="h-5 w-5" />,
-    color: 'hsl(180 60% 45%)',
-    bgColor: 'bg-[hsl(180_60%_45%)]',
-    borderColor: 'border-[hsl(180_60%_45%)]'
+    icon: <Download className="h-6 w-6" />,
+    color: '#0891b2',
+    bgColor: 'bg-cyan-600',
+    borderColor: 'border-cyan-600'
   },
   {
     id: 'seo',
     name: 'SEO Settings',
     description: 'SEO-Einstellungen bearbeiten',
-    icon: <Search className="h-5 w-5" />,
-    color: 'hsl(280 60% 50%)',
-    bgColor: 'bg-[hsl(280_60%_50%)]',
-    borderColor: 'border-[hsl(280_60%_50%)]'
+    icon: <Search className="h-6 w-6" />,
+    color: '#9333ea',
+    bgColor: 'bg-purple-600',
+    borderColor: 'border-purple-600'
   },
   {
     id: 'glossary',
     name: 'Translation Glossary',
     description: 'Übersetzungs-Glossar verwalten',
-    icon: <Languages className="h-5 w-5" />,
-    color: 'hsl(160 60% 40%)',
-    bgColor: 'bg-[hsl(160_60%_40%)]',
-    borderColor: 'border-[hsl(160_60%_40%)]'
+    icon: <Languages className="h-6 w-6" />,
+    color: '#059669',
+    bgColor: 'bg-emerald-600',
+    borderColor: 'border-emerald-600'
   }
 ];
 
@@ -120,6 +120,17 @@ export const UserManagement = () => {
   const [editUserEmail, setEditUserEmail] = useState('');
   const [editUserPassword, setEditUserPassword] = useState('');
   const [showEditPassword, setShowEditPassword] = useState(false);
+  const [existingUserMatch, setExistingUserMatch] = useState<UserWithRole | null>(null);
+
+  // Check for existing user when email changes
+  useEffect(() => {
+    if (inviteEmail.trim()) {
+      const match = users.find(u => u.email.toLowerCase() === inviteEmail.trim().toLowerCase());
+      setExistingUserMatch(match || null);
+    } else {
+      setExistingUserMatch(null);
+    }
+  }, [inviteEmail, users]);
 
   useEffect(() => {
     loadUsers();
@@ -810,8 +821,48 @@ export const UserManagement = () => {
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="text-base h-12"
+                className={`text-base h-12 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-200' : ''}`}
               />
+              {existingUserMatch && (
+                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mt-2">
+                  <p className="text-base font-bold text-yellow-800 mb-2">
+                    ⚠️ Diese E-Mail ist bereits als Benutzer registriert:
+                  </p>
+                  <div className="bg-white rounded-lg p-3 border border-yellow-300">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-base font-bold text-gray-900">{existingUserMatch.full_name || 'Kein Name'}</p>
+                        <p className="text-sm text-gray-600">{existingUserMatch.email}</p>
+                        <div className="flex gap-2 mt-1">
+                          {existingUserMatch.roles.map(role => (
+                            <span key={role} className={`text-xs px-2 py-1 rounded ${role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-yellow-500 text-yellow-700 hover:bg-yellow-100"
+                        onClick={() => {
+                          setShowInviteDialog(false);
+                          setSelectedUser(existingUserMatch);
+                          setEditUserName(existingUserMatch.full_name || '');
+                          setEditUserEmail(existingUserMatch.email);
+                          setEditUserPassword('');
+                          setEditUserRole(existingUserMatch.roles.includes('admin') ? 'admin' : 'editor');
+                          setEditSelectedEditors(existingUserMatch.contentEditors || []);
+                          setShowEditUserDialog(true);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4 mr-1" />
+                        Bearbeiten
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
