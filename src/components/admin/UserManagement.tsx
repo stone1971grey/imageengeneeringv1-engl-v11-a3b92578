@@ -611,7 +611,7 @@ export const UserManagement = () => {
       }
 
       toast.success('Benutzer erfolgreich aktualisiert');
-      setShowEditUserDialog(false);
+      // Dialog bleibt offen - wird nur über X-Button geschlossen
       loadUsers();
     } catch (error: any) {
       console.error('Error updating user:', error);
@@ -1268,9 +1268,19 @@ export const UserManagement = () => {
         </DialogContent>
       </Dialog>
       {/* Edit User Dialog */}
-      <Dialog open={showEditUserDialog} onOpenChange={setShowEditUserDialog}>
-        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white">
-          <DialogHeader>
+      <Dialog open={showEditUserDialog} onOpenChange={(open) => {
+        // Nur schließen wenn explizit geschlossen wird (nicht bei Overlay-Click)
+        if (!open) return;
+      }}>
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white" onInteractOutside={(e) => e.preventDefault()}>
+          <DialogHeader className="relative">
+            <button
+              onClick={() => setShowEditUserDialog(false)}
+              className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors"
+              title="Schließen"
+            >
+              ×
+            </button>
             <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
               <Pencil className="h-6 w-6 text-yellow-600" />
               Benutzer bearbeiten
@@ -1491,7 +1501,7 @@ export const UserManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditUserDialog(false)}>
-              Abbrechen
+              Schließen
             </Button>
             <Button 
               onClick={handleSaveEditUser} 
