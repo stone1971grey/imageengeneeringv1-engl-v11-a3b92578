@@ -580,11 +580,15 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
 
               <div>
                 <Label className="text-white">Description</Label>
+                <p className="text-xs text-gray-400 mb-1">
+                  Formatierung: **fett**, [Link](url), - Aufzählung
+                </p>
                 <Textarea
                   value={item.description || ''}
                   onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                   rows={4}
-                  className="border-2 border-gray-600 bg-gray-800 text-white"
+                  className="border-2 border-gray-600 bg-gray-800 text-white font-mono text-sm"
+                  placeholder="Text mit **fett** und [Links](https://...) und&#10;- Aufzählung&#10;- Punkt 2"
                 />
               </div>
 
