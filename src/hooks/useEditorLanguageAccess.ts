@@ -15,10 +15,13 @@ interface EditorLanguageAccess {
 /**
  * Hook to check editor's language access permissions
  * 
- * Permission model:
- * - `page_slug = '__global__'` with `language_code` = global language permissions (default for all pages)
- * - `page_slug = 'specific-page-slug'` with `language_code` = page-specific override
+ * Unified permission model:
+ * - `page_slug = '__global__'` with `language_code` = global language permissions
+ *   These apply to ALL areas: CMS segments, News, Events, Products, Downloads
+ * - `page_slug = 'specific-page-slug'` with `language_code` = page-specific override (optional)
  * - `page_slug = '__all__'` = legacy full access (no restrictions)
+ * - Content editors (news, events, etc.) use page_slug to grant access, 
+ *   but language restrictions come from global permissions
  * 
  * Priority: page-specific > global > full access check
  */
