@@ -725,9 +725,11 @@ export const UserManagement = () => {
                         >
                           <Settings className="h-3 w-3 mr-1" />
                           {getEditorAccessLabel(user.editorAccess)}
-                          {user.editorAccess === 'custom' && user.contentEditors && (
-                            <span className="ml-1">({user.contentEditors.length})</span>
-                          )}
+                          {user.editorAccess === 'custom' && user.contentEditors && (() => {
+                            const validEditorIds = CONTENT_EDITORS.map(e => e.id);
+                            const validCount = user.contentEditors.filter(id => validEditorIds.includes(id)).length;
+                            return validCount > 0 ? <span className="ml-1">({validCount})</span> : null;
+                          })()}
                         </Button>
                       ) : (
                         <span className="text-gray-400 text-sm">—</span>
@@ -740,12 +742,16 @@ export const UserManagement = () => {
                       <div className="flex items-center justify-end gap-3">
                         <button
                           onClick={() => {
+                            // Filter to only include valid CONTENT_EDITORS ids
+                            const validEditorIds = CONTENT_EDITORS.map(e => e.id);
+                            const filteredEditors = (user.contentEditors || []).filter(id => validEditorIds.includes(id));
+                            
                             setSelectedUser(user);
                             setEditUserName(user.full_name || '');
                             setEditUserEmail(user.email);
                             setEditUserPassword('');
                             setEditUserRole(user.roles.includes('admin') ? 'admin' : 'editor');
-                            setEditSelectedEditors(user.contentEditors || []);
+                            setEditSelectedEditors(filteredEditors);
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors"
@@ -873,13 +879,17 @@ export const UserManagement = () => {
                         variant="outline"
                         className="border-yellow-500 text-yellow-700 hover:bg-yellow-100"
                         onClick={() => {
+                          // Filter to only include valid CONTENT_EDITORS ids
+                          const validEditorIds = CONTENT_EDITORS.map(e => e.id);
+                          const filteredEditors = (existingUserMatch.contentEditors || []).filter(id => validEditorIds.includes(id));
+                          
                           setShowInviteDialog(false);
                           setSelectedUser(existingUserMatch);
                           setEditUserName(existingUserMatch.full_name || '');
                           setEditUserEmail(existingUserMatch.email);
                           setEditUserPassword('');
                           setEditUserRole(existingUserMatch.roles.includes('admin') ? 'admin' : 'editor');
-                          setEditSelectedEditors(existingUserMatch.contentEditors || []);
+                          setEditSelectedEditors(filteredEditors);
                           setShowEditUserDialog(true);
                         }}
                       >
@@ -1180,7 +1190,7 @@ export const UserManagement = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">E-Mail</Label>
+                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">Kontakt E-Mail (Profil)</Label>
                 <Input
                   id="edit-email"
                   type="email"
@@ -1189,6 +1199,7 @@ export const UserManagement = () => {
                   onChange={(e) => setEditUserEmail(e.target.value)}
                   className="text-base h-12"
                 />
+                <p className="text-sm text-gray-600">Die Login-E-Mail kann hier nicht geändert werden</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-password" className="text-base font-semibold text-gray-900">Neues Passwort</Label>
