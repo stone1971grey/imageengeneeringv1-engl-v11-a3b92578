@@ -219,12 +219,12 @@ const Contact = () => {
               {/* Inner gray content area - matching flyout style */}
               <div className="bg-[#e8e8e8] rounded-xl p-5">
                 {/* Header */}
-                <div className="text-center mb-4">
-                  <h2 className="text-xl font-bold text-black mb-1">
-                    Submit an Inquiry
+                <div className="text-center mb-5">
+                  <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
+                    Get in Touch
                   </h2>
-                  <p className="text-black text-sm leading-relaxed">
-                    Tell us more about your needs, and how we can assist you. We will get in touch with you and do our best to help.
+                  <p className="text-black text-base leading-relaxed max-w-lg mx-auto">
+                    Tell us about your needs and we'll get back to you within one business day.
                   </p>
                 </div>
 
