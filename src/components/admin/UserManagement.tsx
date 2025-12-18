@@ -961,8 +961,15 @@ export const UserManagement = () => {
 
       {/* Invite User Dialog */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16 bg-white">
-          <DialogHeader>
+        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+          <DialogHeader className="relative">
+            <button
+              onClick={() => setShowInviteDialog(false)}
+              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+              title="Schließen"
+            >
+              ×
+            </button>
             <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
               <UserPlus className="h-6 w-6" />
               Neuen Benutzer anlegen
@@ -1371,15 +1378,12 @@ export const UserManagement = () => {
         </DialogContent>
       </Dialog>
       {/* Edit User Dialog */}
-      <Dialog open={showEditUserDialog} onOpenChange={(open) => {
-        // Nur schließen wenn explizit geschlossen wird (nicht bei Overlay-Click)
-        if (!open) return;
-      }}>
-        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white" onInteractOutside={(e) => e.preventDefault()}>
+      <Dialog open={showEditUserDialog} onOpenChange={setShowEditUserDialog}>
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
           <DialogHeader className="relative">
             <button
               onClick={() => setShowEditUserDialog(false)}
-              className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
               title="Schließen"
             >
               ×
