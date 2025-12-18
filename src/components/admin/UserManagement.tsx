@@ -50,6 +50,7 @@ export const UserManagement = () => {
   const [inviteEditorAccess, setInviteEditorAccess] = useState<'all_public' | 'custom' | 'none'>('all_public');
   const [inviteSelectedPages, setInviteSelectedPages] = useState<string[]>([]);
   const [isInviting, setIsInviting] = useState(false);
+  const [showInvitePassword, setShowInvitePassword] = useState(false);
   const [showEditorAccessDialog, setShowEditorAccessDialog] = useState(false);
   const [editorAccessType, setEditorAccessType] = useState<'all_public' | 'custom' | 'none'>('none');
   const [selectedPages, setSelectedPages] = useState<string[]>([]);
@@ -708,13 +709,23 @@ export const UserManagement = () => {
 
             <div className="space-y-2">
               <Label htmlFor="invite-password">Passwort *</Label>
-              <Input
-                id="invite-password"
-                type="password"
-                placeholder="Mindestens 6 Zeichen"
-                value={invitePassword}
-                onChange={(e) => setInvitePassword(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  id="invite-password"
+                  type={showInvitePassword ? "text" : "password"}
+                  placeholder="Mindestens 6 Zeichen"
+                  value={invitePassword}
+                  onChange={(e) => setInvitePassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowInvitePassword(!showInvitePassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showInvitePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-2">
