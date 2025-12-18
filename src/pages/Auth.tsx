@@ -29,8 +29,10 @@ const Auth = () => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Redirect to admin dashboard after successful login (English default)
+          // Redirect to admin dashboard Welcome page (no page parameter = Welcome screen)
           setTimeout(() => {
+            // Clear any saved page selection so user lands on Welcome page
+            sessionStorage.removeItem("admin_selected_page");
             navigate("/en/admin-dashboard");
           }, 0);
         }
