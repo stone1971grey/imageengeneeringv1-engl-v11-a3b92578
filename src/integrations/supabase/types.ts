@@ -216,18 +216,21 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          language_code: string | null
           page_slug: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
+          language_code?: string | null
           page_slug: string
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
+          language_code?: string | null
           page_slug?: string
           user_id?: string
         }

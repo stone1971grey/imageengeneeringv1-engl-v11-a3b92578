@@ -14,6 +14,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 
 type AppRole = 'admin' | 'editor';
+type LanguageCode = 'de' | 'ja' | 'ko' | 'zh';
+
+const AVAILABLE_LANGUAGES = [
+  { code: 'de' as LanguageCode, name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ja' as LanguageCode, name: 'Japanisch', flag: '🇯🇵' },
+  { code: 'ko' as LanguageCode, name: 'Koreanisch', flag: '🇰🇷' },
+  { code: 'zh' as LanguageCode, name: 'Chinesisch', flag: '🇨🇳' },
+];
 
 interface ContentEditor {
   id: string;
@@ -23,6 +31,11 @@ interface ContentEditor {
   color: string;
   bgColor: string;
   borderColor: string;
+}
+
+interface EditorLanguageAccess {
+  editorId: string;
+  languages: LanguageCode[];
 }
 
 // Define available content editors with their styling - matching AdminDashboard Welcome page
@@ -88,6 +101,7 @@ interface UserWithRole {
   email: string;
   username: string | null;
   full_name: string | null;
+  editorLanguageAccess?: EditorLanguageAccess[];
   roles: AppRole[];
   created_at: string;
   editorAccess?: 'all' | 'custom' | 'none';
@@ -117,6 +131,7 @@ export const UserManagement = () => {
   const [showEditUserDialog, setShowEditUserDialog] = useState(false);
   const [editUserRole, setEditUserRole] = useState<AppRole>('editor');
   const [editSelectedEditors, setEditSelectedEditors] = useState<string[]>([]);
+  const [editEditorLanguages, setEditEditorLanguages] = useState<Record<string, LanguageCode[]>>({});
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editUserName, setEditUserName] = useState('');
   const [editUsername, setEditUsername] = useState('');
@@ -124,6 +139,7 @@ export const UserManagement = () => {
   const [editUserPassword, setEditUserPassword] = useState('');
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [existingUserMatch, setExistingUserMatch] = useState<UserWithRole | null>(null);
+  const [inviteEditorLanguages, setInviteEditorLanguages] = useState<Record<string, LanguageCode[]>>({});
 
   // Check for existing user when username or email changes
   useEffect(() => {
@@ -161,10 +177,10 @@ export const UserManagement = () => {
 
       if (rolesError) throw rolesError;
 
-      // Fetch editor page access (now used for content editors)
+      // Fetch editor page access (now used for content editors) including language_code
       const { data: editorAccess, error: accessError } = await supabase
         .from('editor_page_access')
-        .select('user_id, page_slug');
+        .select('user_id, page_slug, language_code');
 
       if (accessError) throw accessError;
 
@@ -174,9 +190,10 @@ export const UserManagement = () => {
           .filter(r => r.user_id === profile.id)
           .map(r => r.role as AppRole);
         
-        const userEditors = (editorAccess || [])
-          .filter(a => a.user_id === profile.id)
-          .map(a => a.page_slug);
+        const userEditorAccess = (editorAccess || [])
+          .filter(a => a.user_id === profile.id);
+        
+        const userEditors = userEditorAccess.map(a => a.page_slug);
 
         // Determine access type
         let accessType: 'all' | 'custom' | 'none' = 'none';
@@ -186,6 +203,22 @@ export const UserManagement = () => {
           accessType = 'custom';
         }
         
+        // Build language access per editor
+        const editorLanguageAccess: EditorLanguageAccess[] = [];
+        userEditorAccess.forEach(access => {
+          if (access.page_slug !== '__all__' && access.language_code) {
+            const existing = editorLanguageAccess.find(e => e.editorId === access.page_slug);
+            if (existing) {
+              existing.languages.push(access.language_code as LanguageCode);
+            } else {
+              editorLanguageAccess.push({
+                editorId: access.page_slug,
+                languages: [access.language_code as LanguageCode]
+              });
+            }
+          }
+        });
+        
         return {
           id: profile.id,
           email: profile.email,
@@ -194,7 +227,8 @@ export const UserManagement = () => {
           roles: userRoles,
           created_at: profile.created_at || '',
           editorAccess: accessType,
-          contentEditors: userEditors.filter(p => p !== '__all__')
+          contentEditors: userEditors.filter(p => p !== '__all__'),
+          editorLanguageAccess
         };
       });
 
@@ -541,11 +575,30 @@ export const UserManagement = () => {
 
       // Add editor access if role is editor and editors are selected
       if (editUserRole === 'editor' && editSelectedEditors.length > 0) {
-        console.log('Inserting editor access:', editSelectedEditors);
-        const entries = editSelectedEditors.map(editorId => ({
-          user_id: selectedUser.id,
-          page_slug: editorId
-        }));
+        console.log('Inserting editor access:', editSelectedEditors, 'with languages:', editEditorLanguages);
+        
+        const entries: { user_id: string; page_slug: string; language_code: string | null }[] = [];
+        
+        editSelectedEditors.forEach(editorId => {
+          const languages = editEditorLanguages[editorId] || [];
+          if (languages.length > 0) {
+            // Create one entry per language
+            languages.forEach(lang => {
+              entries.push({
+                user_id: selectedUser.id,
+                page_slug: editorId,
+                language_code: lang
+              });
+            });
+          } else {
+            // No language restriction - full access to this editor
+            entries.push({
+              user_id: selectedUser.id,
+              page_slug: editorId,
+              language_code: null
+            });
+          }
+        });
 
         const { error: insertAccessError } = await supabase
           .from('editor_page_access')
@@ -785,6 +838,12 @@ export const UserManagement = () => {
                             const validEditorIds = CONTENT_EDITORS.map(e => e.id);
                             const filteredEditors = (user.contentEditors || []).filter(id => validEditorIds.includes(id));
                             
+                            // Build language access map from user data
+                            const languageMap: Record<string, LanguageCode[]> = {};
+                            (user.editorLanguageAccess || []).forEach(access => {
+                              languageMap[access.editorId] = access.languages;
+                            });
+                            
                             setSelectedUser(user);
                             setEditUserName(user.full_name || '');
                             setEditUsername(user.username || '');
@@ -792,6 +851,7 @@ export const UserManagement = () => {
                             setEditUserPassword('');
                             setEditUserRole(user.roles.includes('admin') ? 'admin' : 'editor');
                             setEditSelectedEditors(filteredEditors);
+                            setEditEditorLanguages(languageMap);
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors"
@@ -1323,38 +1383,93 @@ export const UserManagement = () => {
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll. Wählen Sie optional Sprachversionen aus.</p>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {CONTENT_EDITORS.map((editor) => {
                     const isSelected = editSelectedEditors.includes(editor.id);
+                    const selectedLanguages = editEditorLanguages[editor.id] || [];
                     return (
                       <div
                         key={editor.id}
-                        onClick={() => {
-                          if (isSelected) {
-                            setEditSelectedEditors(editSelectedEditors.filter(id => id !== editor.id));
-                          } else {
-                            setEditSelectedEditors([...editSelectedEditors, editor.id]);
-                          }
-                        }}
-                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 ${
                           isSelected 
                             ? `${editor.borderColor} bg-white shadow-xl` 
                             : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
                         }`}
                       >
                         <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
-                        <div className="p-5 space-y-3 text-center">
-                          <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                            <div className="text-white">{editor.icon}</div>
+                        <div className="p-4">
+                          <div 
+                            className="flex items-center gap-3 cursor-pointer"
+                            onClick={() => {
+                              if (isSelected) {
+                                setEditSelectedEditors(editSelectedEditors.filter(id => id !== editor.id));
+                                // Clear languages when deselecting
+                                const newLangs = { ...editEditorLanguages };
+                                delete newLangs[editor.id];
+                                setEditEditorLanguages(newLangs);
+                              } else {
+                                setEditSelectedEditors([...editSelectedEditors, editor.id]);
+                              }
+                            }}
+                          >
+                            <div className={`h-10 w-10 rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg`}>
+                              <div className="text-white">{editor.icon}</div>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
+                              <p className="text-xs text-gray-500">{editor.description}</p>
+                            </div>
+                            {isSelected && (
+                              <div className="bg-green-500 rounded-full p-1 shadow-md">
+                                <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                              </div>
+                            )}
                           </div>
-                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-xs text-gray-500">{editor.description}</p>
+                          
+                          {/* Language Selection - only visible when editor is selected */}
                           {isSelected && (
-                            <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
-                              <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                            <div className="mt-4 pt-3 border-t border-gray-200">
+                              <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                <Globe className="h-3 w-3" />
+                                Sprachversionen (leer = voller Zugriff):
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {AVAILABLE_LANGUAGES.map((lang) => {
+                                  const isLangSelected = selectedLanguages.includes(lang.code);
+                                  return (
+                                    <button
+                                      key={lang.code}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const newLangs = isLangSelected
+                                          ? selectedLanguages.filter(l => l !== lang.code)
+                                          : [...selectedLanguages, lang.code];
+                                        setEditEditorLanguages({
+                                          ...editEditorLanguages,
+                                          [editor.id]: newLangs
+                                        });
+                                      }}
+                                      className={`px-2 py-1 text-xs rounded-md border transition-colors flex items-center gap-1 ${
+                                        isLangSelected
+                                          ? 'bg-purple-100 border-purple-400 text-purple-800'
+                                          : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                                      }`}
+                                    >
+                                      <span>{lang.flag}</span>
+                                      <span>{lang.name}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {selectedLanguages.length > 0 && (
+                                <p className="text-xs text-purple-600 mt-2">
+                                  → Nur Übersetzungen in {selectedLanguages.length} Sprache(n) bearbeitbar
+                                </p>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1381,15 +1496,12 @@ export const UserManagement = () => {
             <Button 
               onClick={handleSaveEditUser} 
               disabled={isSavingEdit}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               {isSavingEdit ? (
                 <>Wird gespeichert...</>
               ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Änderungen speichern
-                </>
+                <>Änderungen speichern</>
               )}
             </Button>
           </DialogFooter>
