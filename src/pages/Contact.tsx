@@ -223,7 +223,7 @@ const Contact = () => {
                   <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
                     Get in Touch
                   </h2>
-                  <p className="text-black text-base leading-relaxed max-w-lg mx-auto">
+                  <p className="text-black text-base leading-relaxed whitespace-nowrap">
                     Tell us about your needs and we'll get back to you within one business day.
                   </p>
                 </div>
