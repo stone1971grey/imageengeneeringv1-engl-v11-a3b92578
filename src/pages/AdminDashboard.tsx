@@ -3482,7 +3482,7 @@ const AdminDashboard = () => {
         throw registryError;
       }
 
-      // If we're deleting a mini-footer, restore the regular footer
+      // If we're deleting a mini-footer, restore or create a regular footer
       if (isDeletingMiniFooter) {
         // Find the footer segment that was deactivated when mini-footer was added
         const { data: footerData } = await supabase
@@ -3493,91 +3493,127 @@ const AdminDashboard = () => {
           .eq("deleted", true)
           .maybeSingle();
 
+        let footerSegment: any;
+
         if (footerData) {
-          // Restore the footer segment
+          // Restore the existing footer segment
           await supabase
             .from("segment_registry")
             .update({ deleted: false })
             .eq("id", footerData.id);
 
-          // Add footer to page_segments and tab_order for all languages
-          const languages = ['en', 'de', 'ja', 'ko', 'zh'];
-          const footerSegment = {
+          footerSegment = {
             id: footerData.segment_key,
             type: 'footer',
             segment_key: footerData.segment_key,
             position: 999
           };
+        } else {
+          // No existing footer found - create a NEW footer segment
+          const { data: maxIdData } = await supabase
+            .from("segment_registry")
+            .select("segment_id")
+            .order("segment_id", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-          for (const lang of languages) {
-            // Get current segments for this language
-            const { data: langContent } = await supabase
-              .from("page_content")
-              .select("content_value")
-              .eq("page_slug", resolvedPageSlug || selectedPage)
-              .eq("section_key", "page_segments")
-              .eq("language", lang)
-              .maybeSingle();
+          const newFooterId = (maxIdData?.segment_id || 0) + 1;
+          const footerKey = `footer-${newFooterId}`;
 
-            let langSegments = [];
-            if (langContent?.content_value) {
-              langSegments = JSON.parse(langContent.content_value);
-            }
-            // Remove mini-footer and add regular footer
-            langSegments = langSegments.filter((seg: any) => seg.type !== 'mini-footer');
-            langSegments.push(footerSegment);
+          // Create new footer in segment_registry
+          await supabase
+            .from("segment_registry")
+            .insert({
+              segment_id: newFooterId,
+              page_slug: resolvedPageSlug || selectedPage,
+              segment_type: "footer",
+              segment_key: footerKey,
+              is_static: false,
+              deleted: false,
+              position: 999
+            });
 
-            await supabase
-              .from("page_content")
-              .upsert({
-                page_slug: resolvedPageSlug || selectedPage,
-                section_key: "page_segments",
-                content_type: "json",
-                content_value: JSON.stringify(langSegments),
-                language: lang,
-                updated_at: new Date().toISOString(),
-                updated_by: user.id
-              }, { onConflict: 'page_slug,section_key,language' });
+          footerSegment = {
+            id: footerKey,
+            type: 'footer',
+            segment_key: footerKey,
+            position: 999
+          };
 
-            // Update tab_order
-            const { data: langTabOrder } = await supabase
-              .from("page_content")
-              .select("content_value")
-              .eq("page_slug", resolvedPageSlug || selectedPage)
-              .eq("section_key", "tab_order")
-              .eq("language", lang)
-              .maybeSingle();
-
-            let langOrder = [];
-            if (langTabOrder?.content_value) {
-              langOrder = JSON.parse(langTabOrder.content_value);
-            }
-            // Remove mini-footer from tab_order (footer is fixed, not in tab_order)
-            langOrder = langOrder.filter((id: string) => id !== segmentId);
-
-            await supabase
-              .from("page_content")
-              .upsert({
-                page_slug: resolvedPageSlug || selectedPage,
-                section_key: "tab_order",
-                content_type: "json",
-                content_value: JSON.stringify(langOrder),
-                language: lang,
-                updated_at: new Date().toISOString(),
-                updated_by: user.id
-              }, { onConflict: 'page_slug,section_key,language' });
-          }
-
-          // Update local state with restored footer
-          const newSegments = updatedSegments.filter(seg => seg.type !== 'mini-footer');
-          newSegments.push(footerSegment);
-          setPageSegments(newSegments);
-          setTabOrder(updatedTabOrder.filter(id => id !== segmentId));
-          setActiveTab('footer');
-          
-          toast.success("Mini-Footer deleted, regular Footer restored!");
-          return;
+          // Update segmentRegistry state
+          setSegmentRegistry(prev => ({ ...prev, [footerKey]: newFooterId, 'footer': newFooterId }));
         }
+
+        // Add footer to page_segments for all languages
+        const languages = ['en', 'de', 'ja', 'ko', 'zh'];
+
+        for (const lang of languages) {
+          // Get current segments for this language
+          const { data: langContent } = await supabase
+            .from("page_content")
+            .select("content_value")
+            .eq("page_slug", resolvedPageSlug || selectedPage)
+            .eq("section_key", "page_segments")
+            .eq("language", lang)
+            .maybeSingle();
+
+          let langSegments = [];
+          if (langContent?.content_value) {
+            langSegments = JSON.parse(langContent.content_value);
+          }
+          // Remove mini-footer and add regular footer
+          langSegments = langSegments.filter((seg: any) => seg.type !== 'mini-footer');
+          langSegments.push(footerSegment);
+
+          await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: resolvedPageSlug || selectedPage,
+              section_key: "page_segments",
+              content_type: "json",
+              content_value: JSON.stringify(langSegments),
+              language: lang,
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            }, { onConflict: 'page_slug,section_key,language' });
+
+          // Update tab_order - remove mini-footer (footer is fixed, not in tab_order)
+          const { data: langTabOrder } = await supabase
+            .from("page_content")
+            .select("content_value")
+            .eq("page_slug", resolvedPageSlug || selectedPage)
+            .eq("section_key", "tab_order")
+            .eq("language", lang)
+            .maybeSingle();
+
+          let langOrder = [];
+          if (langTabOrder?.content_value) {
+            langOrder = JSON.parse(langTabOrder.content_value);
+          }
+          langOrder = langOrder.filter((id: string) => id !== segmentId);
+
+          await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: resolvedPageSlug || selectedPage,
+              section_key: "tab_order",
+              content_type: "json",
+              content_value: JSON.stringify(langOrder),
+              language: lang,
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            }, { onConflict: 'page_slug,section_key,language' });
+        }
+
+        // Update local state with footer
+        const newSegments = updatedSegments.filter(seg => seg.type !== 'mini-footer');
+        newSegments.push(footerSegment);
+        setPageSegments(newSegments);
+        setTabOrder(updatedTabOrder.filter(id => id !== segmentId));
+        setActiveTab('footer');
+        
+        toast.success("Mini-Footer deleted, Footer restored!");
+        return;
       }
 
       // CRITICAL: Remove segment from ALL language versions, not just current editor language
