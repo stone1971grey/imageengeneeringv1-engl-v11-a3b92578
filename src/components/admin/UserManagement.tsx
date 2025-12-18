@@ -840,7 +840,7 @@ export const UserManagement = () => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-600">{user.email}</TableCell>
+                    <TableCell className="text-gray-900">{user.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {user.roles.length > 0 ? (
@@ -851,11 +851,11 @@ export const UserManagement = () => {
                               className={`${getRoleBadgeVariant(role)} flex items-center gap-1`}
                             >
                               {getRoleIcon(role)}
-                              {role === 'admin' ? 'Admin' : 'Editor'}
+                              {role === 'admin' ? 'Admin' : 'Redakteur'}
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-gray-400 text-sm">Keine Rolle</span>
+                          <span className="text-gray-600 text-sm">Keine Rolle</span>
                         )}
                       </div>
                     </TableCell>
@@ -876,7 +876,7 @@ export const UserManagement = () => {
                           })}
                         </div>
                       ) : (
-                        <span className="text-gray-400 text-sm">Keine</span>
+                        <span className="text-gray-600 text-sm">Keine</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -893,22 +893,23 @@ export const UserManagement = () => {
                           <div className="flex flex-wrap gap-1">
                             {user.contentEditors.map(editorId => {
                               const editor = CONTENT_EDITORS.find(e => e.id === editorId);
-                              if (!editor) return null;
+                              // Show editor name if found, otherwise show raw ID with capitalized first letter
+                              const displayName = editor?.name || editorId.charAt(0).toUpperCase() + editorId.slice(1);
                               return (
                                 <Badge key={editorId} variant="outline" className="bg-blue-50 border-blue-300 text-blue-700 text-xs">
-                                  {editor.name}
+                                  {displayName}
                                 </Badge>
                               );
                             })}
                           </div>
                         ) : (
-                          <span className="text-gray-400 text-sm">Keine</span>
+                          <span className="text-gray-600 text-sm">Keine</span>
                         )
                       ) : (
-                        <span className="text-gray-400 text-sm">—</span>
+                        <span className="text-gray-600 text-sm">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-500 text-sm">
+                    <TableCell className="text-gray-900 text-sm">
                       {formatDate(user.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
