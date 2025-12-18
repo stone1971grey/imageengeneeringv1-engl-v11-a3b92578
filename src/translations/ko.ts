@@ -391,6 +391,30 @@ export const ko = {
     messageSentSuccess: "메시지가 성공적으로 전송되었습니다!",
     messageSentSuccessDesc: "영업일 기준 1일 이내에 연락드리겠습니다.",
     errorSending: "전송 오류",
-    errorSendingDesc: "다시 시도하거나 직접 연락해 주세요."
+    errorSendingDesc: "다시 시도하거나 직접 연락해 주세요.",
+    // Dialog translations
+    inquiryDialogTitle: "문의하기",
+    inquiryDialogDescription: "필요 사항을 알려주시면 영업일 기준 1일 이내에 연락드리겠습니다.",
+    newsletterDialogTitle: "뉴스레터 구독",
+    newsletterDialogDescription: "관심 있는 주제에 대한 최신 뉴스를 받아보세요.",
+    termsAndConditions: "이용약관",
+    privacyPolicy: "개인정보 처리방침",
+    inquiryConsentText: "개인 데이터 처리에 동의하며 다음에 동의합니다",
+    newsletterConsentText: "뉴스레터 이메일 수신에 동의하며 다음에 동의합니다",
+    sending: "전송 중...",
+    // Interest options
+    interestProducts: "제품 및 장비",
+    interestTestlab: "테스트랩 서비스",
+    interestConsulting: "컨설팅",
+    interestTraining: "교육 및 이벤트",
+    interestSoftware: "소프트웨어 솔루션",
+    interestCustom: "맞춤 프로젝트",
+    // Newsletter topics
+    topicProductUpdates: "제품 업데이트",
+    topicIndustryNews: "업계 뉴스",
+    topicStandards: "표준 및 규정",
+    topicEvents: "이벤트 및 웨비나",
+    topicTechnical: "기술 기사",
+    topicCaseStudies: "사례 연구"
   }
 };

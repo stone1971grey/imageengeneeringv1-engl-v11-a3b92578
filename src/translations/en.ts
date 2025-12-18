@@ -374,7 +374,31 @@ export const en = {
     messageSentSuccess: "Message sent successfully!",
     messageSentSuccessDesc: "We'll get back to you within one business day.",
     errorSending: "Error sending message",
-    errorSendingDesc: "Please try again or contact us directly."
+    errorSendingDesc: "Please try again or contact us directly.",
+    // Dialog translations
+    inquiryDialogTitle: "Submit an Inquiry",
+    inquiryDialogDescription: "Tell us about your needs and we'll get back to you within one business day.",
+    newsletterDialogTitle: "Subscribe to Newsletter",
+    newsletterDialogDescription: "Stay updated with the latest news on your topics of interest.",
+    termsAndConditions: "Terms & Conditions",
+    privacyPolicy: "Privacy Policy",
+    inquiryConsentText: "I consent to the processing of my personal data and agree to the",
+    newsletterConsentText: "I consent to receive newsletter emails and agree to the",
+    sending: "Sending...",
+    // Interest options
+    interestProducts: "Products & Equipment",
+    interestTestlab: "Test Lab Services",
+    interestConsulting: "Consulting",
+    interestTraining: "Training & Events",
+    interestSoftware: "Software Solutions",
+    interestCustom: "Custom Projects",
+    // Newsletter topics
+    topicProductUpdates: "Product Updates",
+    topicIndustryNews: "Industry News",
+    topicStandards: "Standards & Regulations",
+    topicEvents: "Events & Webinars",
+    topicTechnical: "Technical Articles",
+    topicCaseStudies: "Case Studies"
   }
 };
 

@@ -32,22 +32,23 @@ import {
   Phone
 } from "lucide-react";
 
-const INTEREST_OPTIONS = [
-  { id: "products", label: "Products & Equipment" },
-  { id: "testlab", label: "Test Lab Services" },
-  { id: "consulting", label: "Consulting" },
-  { id: "training", label: "Training & Events" },
-  { id: "software", label: "Software Solutions" },
-  { id: "custom", label: "Custom Projects" },
+// Interest options - will be translated based on current language
+const getInterestOptions = (t: any) => [
+  { id: "products", label: t.contactPage?.interestProducts || "Products & Equipment" },
+  { id: "testlab", label: t.contactPage?.interestTestlab || "Test Lab Services" },
+  { id: "consulting", label: t.contactPage?.interestConsulting || "Consulting" },
+  { id: "training", label: t.contactPage?.interestTraining || "Training & Events" },
+  { id: "software", label: t.contactPage?.interestSoftware || "Software Solutions" },
+  { id: "custom", label: t.contactPage?.interestCustom || "Custom Projects" },
 ];
 
-const NEWSLETTER_TOPICS = [
-  { id: "product-updates", label: "Product Updates" },
-  { id: "industry-news", label: "Industry News" },
-  { id: "standards", label: "Standards & Regulations" },
-  { id: "events", label: "Events & Webinars" },
-  { id: "technical", label: "Technical Articles" },
-  { id: "case-studies", label: "Case Studies" },
+const getNewsletterTopics = (t: any) => [
+  { id: "product-updates", label: t.contactPage?.topicProductUpdates || "Product Updates" },
+  { id: "industry-news", label: t.contactPage?.topicIndustryNews || "Industry News" },
+  { id: "standards", label: t.contactPage?.topicStandards || "Standards & Regulations" },
+  { id: "events", label: t.contactPage?.topicEvents || "Events & Webinars" },
+  { id: "technical", label: t.contactPage?.topicTechnical || "Technical Articles" },
+  { id: "case-studies", label: t.contactPage?.topicCaseStudies || "Case Studies" },
 ];
 
 const contactSchema = z.object({
@@ -163,6 +164,7 @@ const Contact = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
+    const INTEREST_OPTIONS = getInterestOptions(t);
     
     try {
       const interestLabels = data.interests?.map(id => 
@@ -471,13 +473,13 @@ const Contact = () => {
             <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-4 overflow-hidden max-h-[70vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3 mt-24">
               {/* Inner gray content area - matching flyout style */}
               <div className="bg-[#e8e8e8] rounded-xl p-5">
-                {/* Header */}
+              {/* Header */}
                 <div className="text-center mb-5">
                   <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
-                    Get in Touch
+                    {t.contactPage?.inquiryDialogTitle || "Submit an Inquiry"}
                   </h2>
                   <p className="text-black text-base leading-relaxed whitespace-nowrap">
-                    Tell us about your needs and we'll get back to you within one business day.
+                    {t.contactPage?.inquiryDialogDescription || "Tell us about your needs and we'll get back to you within one business day."}
                   </p>
                 </div>
 
@@ -522,9 +524,9 @@ const Contact = () => {
 
                     {/* Interest Selection - Modern Pills */}
                     <div className="pt-1">
-                      <p className="text-sm text-black mb-2">I'm interested in:</p>
+                      <p className="text-sm text-black mb-2">{t.contactPage?.interestedIn || "I'm interested in:"}</p>
                       <div className="flex flex-wrap gap-2">
-                        {INTEREST_OPTIONS.map((option) => {
+                        {getInterestOptions(t).map((option) => {
                           const interests = form.watch("interests") || [];
                           const isSelected = interests.includes(option.id);
                           return (
@@ -585,9 +587,9 @@ const Contact = () => {
                               />
                             </FormControl>
                             <FormLabel className="text-sm text-black font-normal leading-relaxed">
-                              I consent to the processing of my personal data and agree to the{" "}
+                              {t.contactPage?.inquiryConsentText || "I consent to the processing of my personal data and agree to the"}{" "}
                               <a href="/privacy" className="underline hover:text-black">
-                                Terms & Conditions
+                                {t.contactPage?.termsAndConditions || "Terms & Conditions"}
                               </a>.
                             </FormLabel>
                           </FormItem>
@@ -606,10 +608,10 @@ const Contact = () => {
                         {isSubmitting ? (
                           <span className="flex items-center gap-2">
                             <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                            Sending...
+                            {t.contactPage?.sending || "Sending..."}
                           </span>
                         ) : (
-                          "Submit"
+                          t.contactPage?.submit || "Submit"
                         )}
                       </Button>
                     </div>
@@ -626,10 +628,10 @@ const Contact = () => {
                 {/* Header */}
                 <div className="text-center mb-5">
                   <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
-                    Subscribe to Newsletter
+                    {t.contactPage?.newsletterDialogTitle || "Subscribe to Newsletter"}
                   </h2>
                   <p className="text-black text-base leading-relaxed">
-                    Stay updated with the latest news on your topics of interest.
+                    {t.contactPage?.newsletterDialogDescription || "Stay updated with the latest news on your topics of interest."}
                   </p>
                 </div>
 
@@ -674,9 +676,9 @@ const Contact = () => {
 
                     {/* Topic Selection */}
                     <div className="pt-1">
-                      <p className="text-sm text-black mb-2">I'm interested in:</p>
+                      <p className="text-sm text-black mb-2">{t.contactPage?.interestedIn || "I'm interested in:"}</p>
                       <div className="flex flex-wrap gap-2">
-                        {NEWSLETTER_TOPICS.map((topic) => {
+                        {getNewsletterTopics(t).map((topic) => {
                           const selectedTopics = newsletterForm.watch("topics") || [];
                           const isSelected = selectedTopics.includes(topic.id);
                           return (
@@ -719,9 +721,9 @@ const Contact = () => {
                               />
                             </FormControl>
                             <FormLabel className="text-sm text-black font-normal leading-relaxed">
-                              I consent to receive newsletter emails and agree to the{" "}
+                              {t.contactPage?.newsletterConsentText || "I consent to receive newsletter emails and agree to the"}{" "}
                               <a href="/privacy" className="underline hover:text-black">
-                                Privacy Policy
+                                {t.contactPage?.privacyPolicy || "Privacy Policy"}
                               </a>.
                             </FormLabel>
                           </FormItem>
@@ -740,10 +742,10 @@ const Contact = () => {
                         {isNewsletterSubmitting ? (
                           <span className="flex items-center gap-2">
                             <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                            Subscribing...
+                            {t.contactPage?.subscribing || "Subscribing..."}
                           </span>
                         ) : (
-                          "Subscribe"
+                          t.contactPage?.subscribe || "Subscribe"
                         )}
                       </Button>
                     </div>

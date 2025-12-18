@@ -391,7 +391,31 @@ export const zh = {
     messageSentSuccess: "消息发送成功！",
     messageSentSuccessDesc: "我们将在一个工作日内与您联系。",
     errorSending: "发送错误",
-    errorSendingDesc: "请重试或直接联系我们。"
+    errorSendingDesc: "请重试或直接联系我们。",
+    // Dialog translations
+    inquiryDialogTitle: "提交询问",
+    inquiryDialogDescription: "告诉我们您的需求，我们将在一个工作日内与您联系。",
+    newsletterDialogTitle: "订阅新闻通讯",
+    newsletterDialogDescription: "获取您感兴趣主题的最新资讯。",
+    termsAndConditions: "条款与条件",
+    privacyPolicy: "隐私政策",
+    inquiryConsentText: "我同意处理我的个人数据，并同意",
+    newsletterConsentText: "我同意接收新闻通讯邮件，并同意",
+    sending: "发送中...",
+    // Interest options
+    interestProducts: "产品与设备",
+    interestTestlab: "测试实验室服务",
+    interestConsulting: "咨询服务",
+    interestTraining: "培训与活动",
+    interestSoftware: "软件解决方案",
+    interestCustom: "定制项目",
+    // Newsletter topics
+    topicProductUpdates: "产品更新",
+    topicIndustryNews: "行业新闻",
+    topicStandards: "标准与法规",
+    topicEvents: "活动与网络研讨会",
+    topicTechnical: "技术文章",
+    topicCaseStudies: "案例研究"
   }
 };
 

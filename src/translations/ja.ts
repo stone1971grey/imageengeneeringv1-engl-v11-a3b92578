@@ -391,6 +391,30 @@ export const ja = {
     messageSentSuccess: "メッセージが正常に送信されました！",
     messageSentSuccessDesc: "1営業日以内にご連絡いたします。",
     errorSending: "送信エラー",
-    errorSendingDesc: "もう一度お試しいただくか、直接お問い合わせください。"
+    errorSendingDesc: "もう一度お試しいただくか、直接お問い合わせください。",
+    // Dialog translations
+    inquiryDialogTitle: "お問い合わせを送信",
+    inquiryDialogDescription: "ご要望をお聞かせください。1営業日以内にご連絡いたします。",
+    newsletterDialogTitle: "ニュースレターを購読",
+    newsletterDialogDescription: "興味のあるトピックの最新ニュースをお届けします。",
+    termsAndConditions: "利用規約",
+    privacyPolicy: "プライバシーポリシー",
+    inquiryConsentText: "個人データの処理に同意し、以下に同意します",
+    newsletterConsentText: "ニュースレターメールの受信に同意し、以下に同意します",
+    sending: "送信中...",
+    // Interest options
+    interestProducts: "製品・機器",
+    interestTestlab: "テストラボサービス",
+    interestConsulting: "コンサルティング",
+    interestTraining: "トレーニング・イベント",
+    interestSoftware: "ソフトウェアソリューション",
+    interestCustom: "カスタムプロジェクト",
+    // Newsletter topics
+    topicProductUpdates: "製品情報",
+    topicIndustryNews: "業界ニュース",
+    topicStandards: "規格・規制",
+    topicEvents: "イベント・ウェビナー",
+    topicTechnical: "技術記事",
+    topicCaseStudies: "ケーススタディ"
   }
 };
