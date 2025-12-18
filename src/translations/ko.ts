@@ -245,7 +245,7 @@ export const ko = {
     techSupport: "기술 지원",
     rights: "모든 권리 보유.",
     followUs: "팔로우하기",
-    copyright: "© Image Engineering GmbH & Co. KG – Nynomic 그룹 회원",
+    copyright: "Image Engineering GmbH & Co. KG – Nynomic 그룹 회원",
     // CTA Headlines
     cta: {
       default: "비전을 변화시킬 준비가 되셨습니까?",

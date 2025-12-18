@@ -245,7 +245,7 @@ export const zh = {
     techSupport: "技术支持",
     rights: "版权所有。",
     followUs: "关注我们",
-    copyright: "© Image Engineering GmbH & Co. KG – Nynomic集团成员",
+    copyright: "Image Engineering GmbH & Co. KG – Nynomic集团成员",
     // CTA Headlines
     cta: {
       default: "准备好改变您的视野了吗？",

@@ -245,7 +245,7 @@ export const en = {
     techSupport: "Technical Support",
     rights: "All rights reserved.",
     followUs: "Follow Us",
-    copyright: "© Image Engineering GmbH & Co. KG – Member of the Nynomic Group",
+    copyright: "Image Engineering GmbH & Co. KG – Member of the Nynomic Group",
     cta: {
       default: "Ready to Transform Your Vision?",
       charts: "Test Chart Consultation?",

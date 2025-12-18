@@ -245,7 +245,7 @@ export const de = {
     techSupport: "Technischer Support",
     rights: "Alle Rechte vorbehalten.",
     followUs: "Folgen Sie uns",
-    copyright: "© Image Engineering GmbH & Co. KG – Mitglied der Nynomic Gruppe",
+    copyright: "Image Engineering GmbH & Co. KG – Mitglied der Nynomic Gruppe",
     // CTA Headlines
     cta: {
       default: "Bereit, Ihre Vision zu transformieren?",
