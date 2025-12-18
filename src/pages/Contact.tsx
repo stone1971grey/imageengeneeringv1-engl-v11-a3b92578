@@ -218,9 +218,6 @@ const Contact = () => {
             <DialogContent className="max-w-4xl bg-white border-0 shadow-2xl rounded-2xl p-4 overflow-hidden max-h-[70vh] overflow-y-auto [&>button]:top-3 [&>button]:right-3 mt-24">
               {/* Inner gray content area - matching flyout style */}
               <div className="bg-[#e8e8e8] rounded-xl p-5">
-                {/* Yellow accent bar at top */}
-                <div className="h-1 bg-[hsl(50,95%,55%)] rounded-full mb-4" />
-                
                 {/* Header */}
                 <div className="text-center mb-4">
                   <h2 className="text-xl font-bold text-black mb-1">
