@@ -1335,13 +1335,20 @@ export const UserManagement = () => {
 
       {/* Editor Access Dialog */}
       <Dialog open={showEditorAccessDialog} onOpenChange={setShowEditorAccessDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+          <DialogHeader className="relative">
+            <button
+              onClick={() => setShowEditorAccessDialog(false)}
+              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+              title="Schließen"
+            >
+              ×
+            </button>
+            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+              <Settings className="h-6 w-6 text-blue-600" />
               Editor-Berechtigungen verwalten
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base text-gray-700">
               Wählen Sie die Bereiche aus, die {selectedUser?.full_name || selectedUser?.email} bearbeiten darf.
             </DialogDescription>
           </DialogHeader>
@@ -1402,20 +1409,17 @@ export const UserManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditorAccessDialog(false)}>
-              Abbrechen
+              Schließen
             </Button>
             <Button 
               onClick={handleSaveEditorAccess} 
               disabled={savingAccess}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               {savingAccess ? (
-                <>Speichern...</>
+                <>Wird gespeichert...</>
               ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Speichern
-                </>
+                <>Änderungen speichern</>
               )}
             </Button>
           </DialogFooter>
