@@ -9,8 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type AppRole = 'admin' | 'editor' | 'user';
 
@@ -20,7 +21,21 @@ interface UserWithRole {
   full_name: string | null;
   roles: AppRole[];
   created_at: string;
+  editorAccess?: 'all_public' | 'custom' | 'none';
+  customPages?: string[];
 }
+
+// Hidden page slugs that editors should NOT have access to
+const HIDDEN_PAGE_SLUGS = [
+  'styleguide',
+  'comprehensive-styleguide',
+  'icons-styleguide',
+  'segments',
+  'segment-debug',
+  'backlog',
+  'hidden-segments',
+  'admin'
+];
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
@@ -31,10 +46,41 @@ export const UserManagement = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<AppRole>("editor");
   const [isInviting, setIsInviting] = useState(false);
+  const [showEditorAccessDialog, setShowEditorAccessDialog] = useState(false);
+  const [editorAccessType, setEditorAccessType] = useState<'all_public' | 'custom' | 'none'>('none');
+  const [selectedPages, setSelectedPages] = useState<string[]>([]);
+  const [availablePages, setAvailablePages] = useState<{slug: string; title: string}[]>([]);
+  const [savingAccess, setSavingAccess] = useState(false);
 
   useEffect(() => {
     loadUsers();
+    loadAvailablePages();
   }, []);
+
+  const loadAvailablePages = async () => {
+    try {
+      const { data: pages, error } = await supabase
+        .from('page_registry')
+        .select('page_slug, page_title')
+        .order('page_title');
+
+      if (error) throw error;
+
+      // Filter out hidden pages
+      const publicPages = (pages || [])
+        .filter(page => !HIDDEN_PAGE_SLUGS.some(hidden => 
+          page.page_slug.toLowerCase().startsWith(hidden.toLowerCase())
+        ))
+        .map(page => ({
+          slug: page.page_slug,
+          title: page.page_title
+        }));
+
+      setAvailablePages(publicPages);
+    } catch (error) {
+      console.error('Error loading pages:', error);
+    }
+  };
 
   const loadUsers = async () => {
     setLoading(true);
@@ -54,18 +100,39 @@ export const UserManagement = () => {
 
       if (rolesError) throw rolesError;
 
-      // Combine profiles with their roles
+      // Fetch editor page access
+      const { data: editorAccess, error: accessError } = await supabase
+        .from('editor_page_access')
+        .select('user_id, page_slug');
+
+      if (accessError) throw accessError;
+
+      // Combine profiles with their roles and editor access
       const usersWithRoles: UserWithRole[] = (profiles || []).map(profile => {
         const userRoles = (roles || [])
           .filter(r => r.user_id === profile.id)
           .map(r => r.role as AppRole);
+        
+        const userPages = (editorAccess || [])
+          .filter(a => a.user_id === profile.id)
+          .map(a => a.page_slug);
+
+        // Determine access type
+        let accessType: 'all_public' | 'custom' | 'none' = 'none';
+        if (userPages.includes('__all_public__')) {
+          accessType = 'all_public';
+        } else if (userPages.length > 0) {
+          accessType = 'custom';
+        }
         
         return {
           id: profile.id,
           email: profile.email,
           full_name: profile.full_name,
           roles: userRoles,
-          created_at: profile.created_at || ''
+          created_at: profile.created_at || '',
+          editorAccess: accessType,
+          customPages: userPages.filter(p => p !== '__all_public__')
         };
       });
 
@@ -156,6 +223,68 @@ export const UserManagement = () => {
     });
   };
 
+  const openEditorAccessDialog = (user: UserWithRole) => {
+    setSelectedUser(user);
+    setEditorAccessType(user.editorAccess || 'none');
+    setSelectedPages(user.customPages || []);
+    setShowEditorAccessDialog(true);
+  };
+
+  const handleSaveEditorAccess = async () => {
+    if (!selectedUser) return;
+
+    setSavingAccess(true);
+    try {
+      // Delete existing access entries for this user
+      const { error: deleteError } = await supabase
+        .from('editor_page_access')
+        .delete()
+        .eq('user_id', selectedUser.id);
+
+      if (deleteError) throw deleteError;
+
+      // Insert new access entries based on type
+      if (editorAccessType === 'all_public') {
+        const { error: insertError } = await supabase
+          .from('editor_page_access')
+          .insert({ user_id: selectedUser.id, page_slug: '__all_public__' });
+
+        if (insertError) throw insertError;
+      } else if (editorAccessType === 'custom' && selectedPages.length > 0) {
+        const entries = selectedPages.map(slug => ({
+          user_id: selectedUser.id,
+          page_slug: slug
+        }));
+
+        const { error: insertError } = await supabase
+          .from('editor_page_access')
+          .insert(entries);
+
+        if (insertError) throw insertError;
+      }
+
+      toast.success('Editor-Berechtigungen gespeichert');
+      setShowEditorAccessDialog(false);
+      loadUsers();
+    } catch (error) {
+      console.error('Error saving editor access:', error);
+      toast.error('Fehler beim Speichern der Berechtigungen');
+    } finally {
+      setSavingAccess(false);
+    }
+  };
+
+  const getEditorAccessLabel = (access: 'all_public' | 'custom' | 'none' | undefined) => {
+    switch (access) {
+      case 'all_public':
+        return 'Alle Public-Bereiche';
+      case 'custom':
+        return 'Benutzerdefiniert';
+      default:
+        return 'Keine Berechtigung';
+    }
+  };
+
   const allRoles: AppRole[] = ['admin', 'editor', 'user'];
 
   return (
@@ -241,8 +370,8 @@ export const UserManagement = () => {
                 <TableRow className="bg-gray-50">
                   <TableHead className="font-semibold">User</TableHead>
                   <TableHead className="font-semibold">Email</TableHead>
-                  <TableHead className="font-semibold">Password</TableHead>
                   <TableHead className="font-semibold">Roles</TableHead>
+                  <TableHead className="font-semibold">Editor-Berechtigungen</TableHead>
                   <TableHead className="font-semibold">Created</TableHead>
                   <TableHead className="font-semibold text-right">Actions</TableHead>
                 </TableRow>
@@ -263,12 +392,6 @@ export const UserManagement = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-gray-600">{user.email}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Lock className="h-4 w-4" />
-                        <span className="font-mono text-sm">••••••••</span>
-                      </div>
-                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {user.roles.length > 0 ? (
@@ -293,6 +416,30 @@ export const UserManagement = () => {
                           <span className="text-gray-400 text-sm">No roles assigned</span>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {user.roles.includes('editor') ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditorAccessDialog(user)}
+                          className={`text-xs ${
+                            user.editorAccess === 'all_public' 
+                              ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                              : user.editorAccess === 'custom'
+                              ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
+                              : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <Settings className="h-3 w-3 mr-1" />
+                          {getEditorAccessLabel(user.editorAccess)}
+                          {user.editorAccess === 'custom' && user.customPages && (
+                            <span className="ml-1">({user.customPages.length})</span>
+                          )}
+                        </Button>
+                      ) : (
+                        <span className="text-gray-400 text-sm">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-gray-500 text-sm">
                       {formatDate(user.created_at)}
@@ -380,6 +527,179 @@ export const UserManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Editor Access Dialog */}
+      <Dialog open={showEditorAccessDialog} onOpenChange={setShowEditorAccessDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Editor-Berechtigungen verwalten
+            </DialogTitle>
+            <DialogDescription>
+              Wählen Sie die Bereiche aus, die {selectedUser?.full_name || selectedUser?.email} bearbeiten darf.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Access Type Selection */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium">Berechtigungstyp</Label>
+              
+              <div className="grid gap-3">
+                {/* All Public Option */}
+                <div 
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    editorAccessType === 'all_public' 
+                      ? 'border-green-500 bg-green-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setEditorAccessType('all_public')}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                      editorAccessType === 'all_public' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                    }`}>
+                      {editorAccessType === 'all_public' && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-green-600" />
+                        <span className="font-medium">Alle Public-Bereiche</span>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Editor kann alle öffentlichen Seiten bearbeiten (außer Styleguide, Segments, Backlog, Admin)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Custom Selection Option */}
+                <div 
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    editorAccessType === 'custom' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setEditorAccessType('custom')}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                      editorAccessType === 'custom' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                    }`}>
+                      {editorAccessType === 'custom' && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Settings className="h-4 w-4 text-blue-600" />
+                        <span className="font-medium">Benutzerdefinierte Auswahl</span>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Wählen Sie einzelne Seiten aus, die der Editor bearbeiten darf
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* No Access Option */}
+                <div 
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    editorAccessType === 'none' 
+                      ? 'border-gray-500 bg-gray-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setEditorAccessType('none')}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                      editorAccessType === 'none' ? 'border-gray-500 bg-gray-500' : 'border-gray-300'
+                    }`}>
+                      {editorAccessType === 'none' && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Lock className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium">Keine Berechtigung</span>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Editor hat keine Berechtigungen zum Bearbeiten von Seiten
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Custom Page Selection */}
+            {editorAccessType === 'custom' && (
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Seiten auswählen</Label>
+                <div className="border rounded-lg max-h-64 overflow-y-auto">
+                  {availablePages.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">Keine Seiten verfügbar</div>
+                  ) : (
+                    <div className="divide-y">
+                      {availablePages.map((page) => (
+                        <div 
+                          key={page.slug} 
+                          className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
+                          onClick={() => {
+                            if (selectedPages.includes(page.slug)) {
+                              setSelectedPages(selectedPages.filter(s => s !== page.slug));
+                            } else {
+                              setSelectedPages([...selectedPages, page.slug]);
+                            }
+                          }}
+                        >
+                          <Checkbox 
+                            checked={selectedPages.includes(page.slug)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedPages([...selectedPages, page.slug]);
+                              } else {
+                                setSelectedPages(selectedPages.filter(s => s !== page.slug));
+                              }
+                            }}
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{page.title}</p>
+                            <p className="text-xs text-gray-500">/{page.slug}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {selectedPages.length > 0 && (
+                  <p className="text-sm text-blue-600">
+                    {selectedPages.length} Seite(n) ausgewählt
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditorAccessDialog(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={handleSaveEditorAccess} 
+              disabled={savingAccess}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {savingAccess ? (
+                <>Speichern...</>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Speichern
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
