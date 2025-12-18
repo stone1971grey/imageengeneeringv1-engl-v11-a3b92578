@@ -874,7 +874,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.testServices} disabled={isAdminDashboard}>
+              <SimpleDropdown trigger={t.nav.testServices} disabled={isAdminDashboard} triggerLink={`/${language}/test-lab`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
                   <div className="flex gap-4 p-4">
@@ -1030,7 +1030,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard}>
+              <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/training-events`}>
                 <div className="flex flex-col gap-2 w-[280px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
                      <div className="space-y-3 flex-1">
@@ -1090,7 +1090,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.infoHub} className="right-aligned" disabled={isAdminDashboard}>
+              <SimpleDropdown trigger={t.nav.infoHub} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/info-hub`}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-4 p-4">
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
@@ -1200,7 +1200,7 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard}>
+            <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/company`}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
                        <div className="space-y-3 flex-1 pr-4 border-r border-border">
