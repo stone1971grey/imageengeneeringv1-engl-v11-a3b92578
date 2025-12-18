@@ -102,6 +102,7 @@ interface UserWithRole {
   username: string | null;
   full_name: string | null;
   editorLanguageAccess?: EditorLanguageAccess[];
+  globalSegmentLanguages?: LanguageCode[]; // Global language permissions for CMS segments
   roles: AppRole[];
   created_at: string;
   editorAccess?: 'all' | 'custom' | 'none';
@@ -140,6 +141,8 @@ export const UserManagement = () => {
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [existingUserMatch, setExistingUserMatch] = useState<UserWithRole | null>(null);
   const [inviteEditorLanguages, setInviteEditorLanguages] = useState<Record<string, LanguageCode[]>>({});
+  const [inviteGlobalSegmentLanguages, setInviteGlobalSegmentLanguages] = useState<LanguageCode[]>([]);
+  const [editGlobalSegmentLanguages, setEditGlobalSegmentLanguages] = useState<LanguageCode[]>([]);
 
   // Check for existing user when username or email changes
   useEffect(() => {
@@ -205,8 +208,15 @@ export const UserManagement = () => {
         
         // Build language access per editor
         const editorLanguageAccess: EditorLanguageAccess[] = [];
+        const globalSegmentLanguages: LanguageCode[] = [];
+        
         userEditorAccess.forEach(access => {
-          if (access.page_slug !== '__all__' && access.language_code) {
+          // Collect global segment languages
+          if (access.page_slug === '__global__' && access.language_code) {
+            globalSegmentLanguages.push(access.language_code as LanguageCode);
+          }
+          // Collect editor-specific language access (legacy)
+          else if (access.page_slug !== '__all__' && access.page_slug !== '__global__' && access.language_code) {
             const existing = editorLanguageAccess.find(e => e.editorId === access.page_slug);
             if (existing) {
               existing.languages.push(access.language_code as LanguageCode);
@@ -227,8 +237,9 @@ export const UserManagement = () => {
           roles: userRoles,
           created_at: profile.created_at || '',
           editorAccess: accessType,
-          contentEditors: userEditors.filter(p => p !== '__all__'),
-          editorLanguageAccess
+          contentEditors: userEditors.filter(p => p !== '__all__' && p !== '__global__'),
+          editorLanguageAccess,
+          globalSegmentLanguages
         };
       });
 
@@ -340,24 +351,28 @@ export const UserManagement = () => {
 
       const newUserId = data.user.id;
 
-      // If editor, add content editor access permissions
+      // If editor, add permissions
       if (inviteRole === 'editor') {
+        const entries: { user_id: string; page_slug: string; language_code?: string | null }[] = [];
+        
+        // Add global segment language permissions
+        if (inviteGlobalSegmentLanguages.length > 0) {
+          inviteGlobalSegmentLanguages.forEach(lang => {
+            entries.push({
+              user_id: newUserId,
+              page_slug: '__global__',
+              language_code: lang
+            });
+          });
+        }
+        
+        // Add content editor access
         if (inviteEditorAccess === 'all') {
-          const { error: accessError } = await supabase
-            .from('editor_page_access')
-            .insert({ user_id: newUserId, page_slug: '__all__' });
-
-          if (accessError) {
-            console.error('Error adding editor access:', accessError);
-          }
+          entries.push({ user_id: newUserId, page_slug: '__all__', language_code: null });
         } else if (inviteEditorAccess === 'custom' && inviteSelectedEditors.length > 0) {
-          // Insert editor access with language codes
-          const entries: { user_id: string; page_slug: string; language_code?: string }[] = [];
-          
           inviteSelectedEditors.forEach(editorId => {
             const languages = inviteEditorLanguages[editorId] || [];
             if (languages.length > 0) {
-              // Add one entry per language
               languages.forEach(lang => {
                 entries.push({
                   user_id: newUserId,
@@ -366,22 +381,22 @@ export const UserManagement = () => {
                 });
               });
             } else {
-              // No language restriction - full access to this editor
               entries.push({
                 user_id: newUserId,
-                page_slug: editorId
+                page_slug: editorId,
+                language_code: null
               });
             }
           });
+        }
 
-          if (entries.length > 0) {
-            const { error: accessError } = await supabase
-              .from('editor_page_access')
-              .insert(entries);
+        if (entries.length > 0) {
+          const { error: accessError } = await supabase
+            .from('editor_page_access')
+            .insert(entries);
 
-            if (accessError) {
-              console.error('Error adding editor access:', accessError);
-            }
+          if (accessError) {
+            console.error('Error adding editor access:', accessError);
           }
         }
       }
@@ -396,6 +411,7 @@ export const UserManagement = () => {
       setInviteEditorAccess("all");
       setInviteSelectedEditors([]);
       setInviteEditorLanguages({});
+      setInviteGlobalSegmentLanguages([]);
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
@@ -580,40 +596,57 @@ export const UserManagement = () => {
         throw deleteAccessError;
       }
 
-      // Add editor access if role is editor and editors are selected
-      if (editUserRole === 'editor' && editSelectedEditors.length > 0) {
-        console.log('Inserting editor access:', editSelectedEditors, 'with languages:', editEditorLanguages);
-        
+      // Add editor access if role is editor
+      if (editUserRole === 'editor') {
         const entries: { user_id: string; page_slug: string; language_code: string | null }[] = [];
         
-        editSelectedEditors.forEach(editorId => {
-          const languages = editEditorLanguages[editorId] || [];
-          if (languages.length > 0) {
-            // Create one entry per language
-            languages.forEach(lang => {
+        // Add global segment language permissions
+        if (editGlobalSegmentLanguages.length > 0) {
+          console.log('Inserting global segment languages:', editGlobalSegmentLanguages);
+          editGlobalSegmentLanguages.forEach(lang => {
+            entries.push({
+              user_id: selectedUser.id,
+              page_slug: '__global__',
+              language_code: lang
+            });
+          });
+        }
+        
+        // Add content editor access
+        if (editSelectedEditors.length > 0) {
+          console.log('Inserting editor access:', editSelectedEditors, 'with languages:', editEditorLanguages);
+          
+          editSelectedEditors.forEach(editorId => {
+            const languages = editEditorLanguages[editorId] || [];
+            if (languages.length > 0) {
+              // Create one entry per language
+              languages.forEach(lang => {
+                entries.push({
+                  user_id: selectedUser.id,
+                  page_slug: editorId,
+                  language_code: lang
+                });
+              });
+            } else {
+              // No language restriction - full access to this editor
               entries.push({
                 user_id: selectedUser.id,
                 page_slug: editorId,
-                language_code: lang
+                language_code: null
               });
-            });
-          } else {
-            // No language restriction - full access to this editor
-            entries.push({
-              user_id: selectedUser.id,
-              page_slug: editorId,
-              language_code: null
-            });
+            }
+          });
+        }
+
+        if (entries.length > 0) {
+          const { error: insertAccessError } = await supabase
+            .from('editor_page_access')
+            .insert(entries);
+
+          if (insertAccessError) {
+            console.error('Insert access error:', insertAccessError);
+            throw insertAccessError;
           }
-        });
-
-        const { error: insertAccessError } = await supabase
-          .from('editor_page_access')
-          .insert(entries);
-
-        if (insertAccessError) {
-          console.error('Insert access error:', insertAccessError);
-          throw insertAccessError;
         }
       }
 
@@ -762,7 +795,8 @@ export const UserManagement = () => {
                   <TableHead className="font-semibold text-black">User</TableHead>
                   <TableHead className="font-semibold text-black">Email</TableHead>
                   <TableHead className="font-semibold text-black">Roles</TableHead>
-                  <TableHead className="font-semibold text-black">Editor-Berechtigungen</TableHead>
+                  <TableHead className="font-semibold text-black">CMS-Sprachen</TableHead>
+                  <TableHead className="font-semibold text-black">Content-Editoren</TableHead>
                   <TableHead className="font-semibold text-black">Created</TableHead>
                   <TableHead className="font-semibold text-black text-right">Actions</TableHead>
                 </TableRow>
@@ -807,6 +841,26 @@ export const UserManagement = () => {
                           <span className="text-gray-400 text-sm">No roles assigned</span>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {user.roles.includes('editor') ? (
+                        user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {user.globalSegmentLanguages.map(lang => {
+                              const langInfo = AVAILABLE_LANGUAGES.find(l => l.code === lang);
+                              return (
+                                <Badge key={lang} variant="outline" className="bg-purple-50 border-purple-300 text-purple-700 text-xs">
+                                  {langInfo?.flag} {langInfo?.name || lang}
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm">Keine</span>
+                        )
+                      ) : (
+                        <span className="text-gray-400 text-sm">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('editor') ? (
@@ -859,6 +913,7 @@ export const UserManagement = () => {
                             setEditUserRole(user.roles.includes('admin') ? 'admin' : 'editor');
                             setEditSelectedEditors(filteredEditors);
                             setEditEditorLanguages(languageMap);
+                            setEditGlobalSegmentLanguages(user.globalSegmentLanguages || []);
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-md transition-colors"
@@ -1081,12 +1136,63 @@ export const UserManagement = () => {
               </div>
             </div>
 
+            {/* Global Segment Languages - only shown when Editor is selected */}
+            {inviteRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-purple-600" />
+                    Globale Sprachberechtigungen (CMS-Segmente)
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Wählen Sie die Sprachen aus, die der Editor auf allen CMS-Seiten bearbeiten darf.
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3">
+                  {AVAILABLE_LANGUAGES.map((lang) => {
+                    const isSelected = inviteGlobalSegmentLanguages.includes(lang.code);
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setInviteGlobalSegmentLanguages(inviteGlobalSegmentLanguages.filter(l => l !== lang.code));
+                          } else {
+                            setInviteGlobalSegmentLanguages([...inviteGlobalSegmentLanguages, lang.code]);
+                          }
+                        }}
+                        className={`px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-purple-100 border-purple-500 text-purple-800 shadow-md'
+                            : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                        }`}
+                      >
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className="font-semibold">{lang.name}</span>
+                        {isSelected && <Check className="h-4 w-4 text-purple-600" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {inviteGlobalSegmentLanguages.length > 0 && (
+                  <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-purple-800">
+                      ✓ {inviteGlobalSegmentLanguages.length} Sprache(n) für CMS-Segmente ausgewählt
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Editor Access Selection - only shown when Editor is selected */}
             {inviteRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren (News, Events, etc.), auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1395,12 +1501,73 @@ export const UserManagement = () => {
               </div>
             </div>
 
+            {/* Global Segment Languages - only for Editor role */}
+            {editUserRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-purple-600" />
+                    Globale Sprachberechtigungen (CMS-Segmente)
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Wählen Sie die Sprachen aus, die der Editor auf <strong>allen CMS-Seiten</strong> bearbeiten darf. 
+                    Englisch (Original) ist immer schreibgeschützt.
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3">
+                  {AVAILABLE_LANGUAGES.map((lang) => {
+                    const isSelected = editGlobalSegmentLanguages.includes(lang.code);
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setEditGlobalSegmentLanguages(editGlobalSegmentLanguages.filter(l => l !== lang.code));
+                          } else {
+                            setEditGlobalSegmentLanguages([...editGlobalSegmentLanguages, lang.code]);
+                          }
+                        }}
+                        className={`px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-purple-100 border-purple-500 text-purple-800 shadow-md'
+                            : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                        }`}
+                      >
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className="font-semibold">{lang.name}</span>
+                        {isSelected && <Check className="h-4 w-4 text-purple-600" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {editGlobalSegmentLanguages.length > 0 ? (
+                  <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-purple-800">
+                      ✓ {editGlobalSegmentLanguages.length} Sprache(n) für CMS-Segmente ausgewählt
+                    </p>
+                    <p className="text-sm text-purple-600 mt-1">
+                      Der Editor kann auf allen CMS-Seiten die Splitscreen-Übersetzungen in diesen Sprachen bearbeiten.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-amber-50 border-2 border-amber-300 rounded-lg px-5 py-4">
+                    <p className="text-base text-amber-800">
+                      ⚠️ Keine Sprachen ausgewählt - der Editor kann keine CMS-Segmente bearbeiten.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Content Editor Selection - only for Editor role */}
             {editUserRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
-                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll. Wählen Sie optional Sprachversionen aus.</p>
+                  <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren (News, Events, etc.), auf die der Benutzer Zugriff haben soll.</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

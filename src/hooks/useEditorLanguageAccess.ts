@@ -12,6 +12,16 @@ interface EditorLanguageAccess {
   isLanguageRestricted: boolean;
 }
 
+/**
+ * Hook to check editor's language access permissions
+ * 
+ * Permission model:
+ * - `page_slug = '__global__'` with `language_code` = global language permissions (default for all pages)
+ * - `page_slug = 'specific-page-slug'` with `language_code` = page-specific override
+ * - `page_slug = '__all__'` = legacy full access (no restrictions)
+ * 
+ * Priority: page-specific > global > full access check
+ */
 export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess => {
   const [allowedLanguages, setAllowedLanguages] = useState<LanguageCode[] | null>(null);
   const [hasAccess, setHasAccess] = useState(true);
@@ -54,8 +64,8 @@ export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess
           return;
         }
 
-        // Check if user has __all__ access (legacy full access)
-        const hasAllAccess = accessData.some(a => a.page_slug === '__all__');
+        // Check for legacy __all__ access (full access)
+        const hasAllAccess = accessData.some(a => a.page_slug === '__all__' && !a.language_code);
         if (hasAllAccess) {
           setHasAccess(true);
           setAllowedLanguages(null);
@@ -63,47 +73,83 @@ export const useEditorLanguageAccess = (pageSlug?: string): EditorLanguageAccess
           return;
         }
 
-        // Collect all language restrictions
-        // If any entry has null language_code, user has full access for that editor/page
-        // If all entries have language_code, user is restricted to those languages
-        const languageRestrictions: LanguageCode[] = [];
-        let hasUnrestrictedAccess = false;
+        // Collect page-specific permissions if pageSlug is provided
+        const pageSpecificLanguages: LanguageCode[] = [];
+        let hasPageSpecific = false;
+
+        if (pageSlug) {
+          accessData.forEach(access => {
+            if (access.page_slug === pageSlug) {
+              hasPageSpecific = true;
+              if (access.language_code === null) {
+                // Full access for this specific page
+                pageSpecificLanguages.length = 0; // Clear to signal full access
+              } else if (access.language_code) {
+                pageSpecificLanguages.push(access.language_code as LanguageCode);
+              }
+            }
+          });
+        }
+
+        // If page-specific permissions exist, use those
+        if (hasPageSpecific) {
+          setHasAccess(true);
+          if (pageSpecificLanguages.length === 0) {
+            // Full access for this page (had null language_code)
+            setAllowedLanguages(null);
+          } else {
+            setAllowedLanguages([...new Set(pageSpecificLanguages)]);
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        // Fall back to global permissions (__global__)
+        const globalLanguages: LanguageCode[] = [];
+        let hasGlobalFullAccess = false;
 
         accessData.forEach(access => {
-          // Check if this access applies to the current page/editor
-          const matchesPage = !pageSlug || access.page_slug === pageSlug || access.page_slug === '__all__';
-          
-          if (matchesPage) {
+          if (access.page_slug === '__global__') {
             if (access.language_code === null) {
-              hasUnrestrictedAccess = true;
+              hasGlobalFullAccess = true;
             } else if (access.language_code) {
-              languageRestrictions.push(access.language_code as LanguageCode);
+              globalLanguages.push(access.language_code as LanguageCode);
             }
           }
         });
 
-        setHasAccess(true);
-        
-        if (hasUnrestrictedAccess) {
-          setAllowedLanguages(null); // Full access
-        } else if (languageRestrictions.length > 0) {
-          // Remove duplicates
-          setAllowedLanguages([...new Set(languageRestrictions)]);
-        } else {
-          // No specific page access found, but user has some access
-          // Collect all their language restrictions globally
-          const allLanguages: LanguageCode[] = [];
-          accessData.forEach(access => {
-            if (access.language_code) {
-              allLanguages.push(access.language_code as LanguageCode);
-            }
-          });
-          
-          if (allLanguages.length > 0) {
-            setAllowedLanguages([...new Set(allLanguages)]);
-          } else {
-            setAllowedLanguages(null); // No restrictions found
+        if (hasGlobalFullAccess) {
+          setHasAccess(true);
+          setAllowedLanguages(null);
+          setIsLoading(false);
+          return;
+        }
+
+        if (globalLanguages.length > 0) {
+          setHasAccess(true);
+          setAllowedLanguages([...new Set(globalLanguages)]);
+          setIsLoading(false);
+          return;
+        }
+
+        // No global or page-specific access found - check for any access entry (legacy support)
+        // Collect all language codes from any access entries
+        const anyLanguages: LanguageCode[] = [];
+        accessData.forEach(access => {
+          if (access.language_code) {
+            anyLanguages.push(access.language_code as LanguageCode);
           }
+        });
+
+        if (anyLanguages.length > 0) {
+          setHasAccess(true);
+          setAllowedLanguages([...new Set(anyLanguages)]);
+        } else if (accessData.length > 0) {
+          // Has some access entries but no language restrictions
+          setHasAccess(true);
+          setAllowedLanguages(null);
+        } else {
+          setHasAccess(false);
         }
 
       } catch (error) {
