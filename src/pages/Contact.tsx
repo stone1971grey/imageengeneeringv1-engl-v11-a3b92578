@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -48,10 +48,50 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
+// TODO: Replace with your actual Calendly URL
+const CALENDLY_URL = "https://calendly.com/image-engineering";
+
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
+
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
+  // Load Calendly script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://assets.calendly.com/assets/external/widget.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    const link = document.createElement("link");
+    link.href = "https://assets.calendly.com/assets/external/widget.css";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    return () => {
+      document.body.removeChild(script);
+      document.head.removeChild(link);
+    };
+  }, []);
+
+  const openCalendly = () => {
+    if (window.Calendly) {
+      window.Calendly.initPopupWidget({ url: CALENDLY_URL });
+    } else {
+      toast({
+        title: "Loading...",
+        description: "Please try again in a moment.",
+      });
+    }
+  };
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -188,7 +228,7 @@ const Contact = () => {
             {/* Schedule Meeting Card - Black with white border */}
             <Card 
               className="group cursor-pointer transition-all duration-300 bg-black border border-white/40 hover:border-white/60 hover:shadow-lg"
-              onClick={() => window.open("mailto:info@image-engineering.de?subject=Meeting Request", "_blank")}
+              onClick={openCalendly}
             >
               <CardContent className="p-8">
                 <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white/20 transition-colors">
