@@ -40,17 +40,27 @@ const SplitScreenSegmentEditorComponent = ({
     return saved !== null ? saved === 'true' : true;
   });
 
-  // For language-restricted editors who cannot edit English: force split-screen and set their allowed language
+  // Ensure targetLanguage is valid when allowedLanguages change
   useEffect(() => {
-    if (isLanguageRestricted && !canEditEnglish && allowedLanguages && allowedLanguages.length > 0) {
-      setIsSplitScreenEnabled(true);
-      // Set the first allowed language as target (exclude EN since they can't edit it)
-      const nonEnLanguages = allowedLanguages.filter(l => l !== 'en') as LanguageCode[];
-      if (nonEnLanguages.length > 0 && !nonEnLanguages.includes(targetLanguage)) {
-        setTargetLanguage(nonEnLanguages[0]);
+    if (!isLoading && allowedLanguages && allowedLanguages.length > 0) {
+      // Check if current targetLanguage is in allowed languages
+      if (!allowedLanguages.includes(targetLanguage)) {
+        // Set to first non-EN allowed language, or first allowed language if no non-EN
+        const nonEnLanguages = allowedLanguages.filter(l => l !== 'en') as LanguageCode[];
+        if (nonEnLanguages.length > 0) {
+          setTargetLanguage(nonEnLanguages[0]);
+        } else if (allowedLanguages.includes('en')) {
+          // Only EN is allowed - this is unusual but handle it
+          setTargetLanguage('en');
+        }
       }
     }
-  }, [isLanguageRestricted, canEditEnglish, allowedLanguages, targetLanguage]);
+    
+    // For language-restricted editors who cannot edit English: force split-screen
+    if (isLanguageRestricted && !canEditEnglish) {
+      setIsSplitScreenEnabled(true);
+    }
+  }, [isLoading, isLanguageRestricted, canEditEnglish, allowedLanguages, targetLanguage]);
 
   const handleSplitScreenToggle = (checked: boolean) => {
     // Language-restricted editors who cannot edit English cannot disable split-screen
