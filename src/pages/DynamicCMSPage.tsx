@@ -1394,24 +1394,49 @@ const DynamicCMSPage = () => {
         />
       )}
       
-      {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation und Footer) */}
-      {tabOrder
-        .filter(segmentId => {
-          // Extract numeric ID from prefixed keys like "downloads-507" -> "507"
-          const numericId = String(segmentId).replace(/^[a-z-]+-/i, '');
+      {/* Content wrapper - adds top padding if no hero segment is present */}
+      {(() => {
+        // Check if first content segment is a full-height hero type
+        const firstContentSegmentId = tabOrder.find(segmentId => {
           const segment = pageSegments.find(
             s => String(s.id) === String(segmentId) || 
-                 String(s.segment_key) === String(segmentId) ||
-                 String(s.id) === numericId
+                 String(s.segment_key) === String(segmentId)
           );
-          // Skip meta-navigation (rendered separately above), footer, and mini-footer (rendered separately below)
           return segment?.type !== 'meta-navigation' && segment?.type !== 'footer' && segment?.type !== 'mini-footer';
-        })
-        .map((segmentId) => {
-          const content = renderSegment(segmentId);
-          return content || null;
-        })
-      }
+        });
+        
+        const firstSegment = firstContentSegmentId ? pageSegments.find(
+          s => String(s.id) === String(firstContentSegmentId) || 
+               String(s.segment_key) === String(firstContentSegmentId)
+        ) : null;
+        
+        // Hero segment types that don't need top padding
+        const heroTypes = ['full-hero', 'action-hero'];
+        const hasHeroFirst = firstSegment && heroTypes.includes(firstSegment.type);
+        
+        return (
+          <div className={!hasHeroFirst && !isEmpty ? 'pt-24' : ''}>
+            {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation und Footer) */}
+            {tabOrder
+              .filter(segmentId => {
+                // Extract numeric ID from prefixed keys like "downloads-507" -> "507"
+                const numericId = String(segmentId).replace(/^[a-z-]+-/i, '');
+                const segment = pageSegments.find(
+                  s => String(s.id) === String(segmentId) || 
+                       String(s.segment_key) === String(segmentId) ||
+                       String(s.id) === numericId
+                );
+                // Skip meta-navigation (rendered separately above), footer, and mini-footer (rendered separately below)
+                return segment?.type !== 'meta-navigation' && segment?.type !== 'footer' && segment?.type !== 'mini-footer';
+              })
+              .map((segmentId) => {
+                const content = renderSegment(segmentId);
+                return content || null;
+              })
+            }
+          </div>
+        );
+      })()}
       {/* Conditionally render MiniFooter or regular Footer */}
       {pageSegments.some(seg => seg.type === 'mini-footer') ? <MiniFooter /> : <Footer />}
     </div>
