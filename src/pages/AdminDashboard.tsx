@@ -79,6 +79,7 @@ import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
 import { ProductListSegmentEditor } from '@/components/admin/ProductListSegmentEditor';
 import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEditor';
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
+import { UserManagement } from '@/components/admin/UserManagement';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -279,6 +280,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTabState] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
+  const [showUserManagement, setShowUserManagement] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Wrapper to persist activeTab to sessionStorage
@@ -5648,6 +5650,21 @@ const AdminDashboard = () => {
                       <p className="text-xs text-gray-500">Terminology database</p>
                     </div>
                   </div>
+
+                  {/* User Management - Red/Shield */}
+                  <div 
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-500 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                    onClick={() => setShowUserManagement(true)}
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-red-500"></div>
+                    <div className="p-5 space-y-3 text-center">
+                      <div className="h-12 w-12 mx-auto rounded-xl bg-red-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <Shield className="h-6 w-6 text-white" />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-900">User Management</h4>
+                      <p className="text-xs text-gray-500">Roles & permissions</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -7593,6 +7610,22 @@ const AdminDashboard = () => {
         onOpenChange={setIsCreateCMSDialogOpen}
         onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
       />
+
+      {/* User Management Dialog */}
+      <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Shield className="h-6 w-6 text-red-500" />
+              User Management
+            </DialogTitle>
+            <DialogDescription>
+              Manage user accounts, roles and permissions
+            </DialogDescription>
+          </DialogHeader>
+          <UserManagement />
+        </DialogContent>
+      </Dialog>
       </div>
     </AdminDashboardErrorBoundary>
   );
