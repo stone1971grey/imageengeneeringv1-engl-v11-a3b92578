@@ -48,8 +48,8 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-// TODO: Replace with your actual Calendly URL
-const CALENDLY_URL = "https://calendly.com/image-engineering";
+// Calendly booking URL
+const CALENDLY_URL = "https://calendly.com/walter-hagenmayer/30-minute-meeting";
 
 declare global {
   interface Window {
