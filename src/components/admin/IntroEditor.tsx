@@ -8,8 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Heading1 } from "lucide-react";
-
 import { toast } from "sonner";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface IntroEditorProps {
   pageSlug: string;
@@ -198,6 +198,9 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
   const saveContent = async () => {
     try {
       setIsSaving(true);
+      
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, segmentKey, language);
       
       console.log('[IntroEditor] Starting save with:', {
         pageSlug,
