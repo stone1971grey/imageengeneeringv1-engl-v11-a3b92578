@@ -94,6 +94,19 @@ import {
 } from '@/components/admin/dashboard/AdminConstants';
 import { getDefaultSegmentData, getLanguageIndependentFields } from '@/components/admin/dashboard/segmentUtils';
 import { createNewCMSPage, createNewCMSPageWithSlug } from '@/components/admin/dashboard/cmsPageUtils';
+import { 
+  PageInfo, 
+  isAllowedPageLevel, 
+  resolvePageSlug as resolvePageSlugUtil,
+  loadPageInfo as loadPageInfoUtil,
+  saveFlyoutInfo,
+  clearFlyoutInfo,
+  saveDesignElement,
+  removeDesignElement,
+  saveCtaConfig,
+  loadFlyoutTranslations,
+  handleFlyoutImageSelection
+} from '@/components/admin/dashboard/pageRegistryUtils';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
 import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
@@ -613,219 +626,75 @@ const AdminDashboard = () => {
 
   // checkUserAccess is now handled by useAdminAuth hook
 
+  // Flyout image selection handler - uses extracted utility
   const handleFlyoutImageSelect = async (url: string) => {
     setFlyoutImageUrl(url || null);
-
-    // If no custom description is set yet, try to load alt text from mapping as a starting point
-    const currentEnglishDesc = flyoutDescriptionTranslations['en'] || '';
-    if (url && !currentEnglishDesc) {
-      try {
-        const altText = await loadAltTextFromMapping(url, 'page-images', 'en');
-        if (altText) {
-          setFlyoutDescriptionTranslations(prev => ({ ...prev, en: altText }));
-        }
-      } catch (error) {
-        console.error('[handleFlyoutImageSelect] Failed to load alt text for flyout image:', error);
-      }
+    if (url) {
+      const updatedTranslations = await handleFlyoutImageSelection(url, flyoutDescriptionTranslations);
+      setFlyoutDescriptionTranslations(updatedTranslations);
     }
   };
 
+  // Save flyout info handler - uses extracted utility
   const handleSaveFlyoutInfo = async () => {
     if (!pageInfo) {
       toast.error('No page selected');
       return;
     }
 
-    // Safety net: allow for second-level pages AND third-level pages under test-lab/training-events/info-hub
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub', 'company'];
-    const isSecondLevelSave = pageInfo.parentSlug && SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug);
-    const isThirdLevelUnderTestLabSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
-    const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
-    const isThirdLevelUnderInfoHubSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('info-hub') && pageInfo.parentSlug !== 'info-hub';
-    const isThirdLevelUnderCompanySave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('company') && pageInfo.parentSlug !== 'company';
-    
-    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave && !isThirdLevelUnderInfoHubSave && !isThirdLevelUnderCompanySave) {
+    if (!isAllowedPageLevel(pageInfo.parentSlug)) {
       toast.error('Flyout content is only available for second and third-level navigation pages.');
       return;
     }
 
     setIsSavingFlyout(true);
-
-    try {
+    const success = await saveFlyoutInfo(pageInfo.pageId, flyoutImageUrl, flyoutDescriptionTranslations);
+    if (success) {
       const englishDesc = flyoutDescriptionTranslations['en'] || '';
-      const { error } = await supabase
-        .from('page_registry')
-        .update({
-          flyout_image_url: flyoutImageUrl,
-          flyout_description: englishDesc || null,
-          flyout_description_translations: flyoutDescriptionTranslations,
-        })
-        .eq('page_id', pageInfo.pageId);
-
-      if (error) {
-        console.error('[handleSaveFlyoutInfo] Error updating flyout content:', error);
-        toast.error('Failed to save flyout content');
-        return;
-      }
-
       setPageInfo(prev => prev ? { ...prev, flyoutImageUrl, flyoutDescription: englishDesc } : prev);
-      toast.success('Flyout content saved');
       setIsFlyoutDialogOpen(false);
-    } catch (error) {
-      console.error('[handleSaveFlyoutInfo] Unexpected error:', error);
-      toast.error('Failed to save flyout content');
-    } finally {
-      setIsSavingFlyout(false);
     }
+    setIsSavingFlyout(false);
   };
 
+  // Clear flyout info handler - uses extracted utility
   const handleClearFlyoutInfo = async () => {
     if (!pageInfo) return;
 
     setIsSavingFlyout(true);
-
-    try {
-      const { error } = await supabase
-        .from('page_registry')
-        .update({
-          flyout_image_url: null,
-          flyout_description: null,
-          flyout_description_translations: {},
-        })
-        .eq('page_id', pageInfo.pageId);
-
-      if (error) {
-        console.error('[handleClearFlyoutInfo] Error clearing flyout content:', error);
-        toast.error('Failed to clear flyout content');
-        return;
-      }
-
+    const success = await clearFlyoutInfo(pageInfo.pageId);
+    if (success) {
       setFlyoutImageUrl(null);
       setFlyoutDescriptionTranslations({});
       setPageInfo(prev => prev ? { ...prev, flyoutImageUrl: null, flyoutDescription: null } : prev);
-      toast.success('Flyout content removed');
-    } catch (error) {
-      console.error('[handleClearFlyoutInfo] Unexpected error:', error);
-      toast.error('Failed to clear flyout content');
-    } finally {
-      setIsSavingFlyout(false);
     }
+    setIsSavingFlyout(false);
   };
+
   // Helper function to resolve non-hierarchical slug to full hierarchical slug
   const resolvePageSlug = async (slug: string): Promise<string> => {
-    if (!slug) return slug;
-    
-    // First try exact match
-    const { data: exactMatch } = await supabase
-      .from('page_registry')
-      .select('page_slug')
-      .eq('page_slug', slug)
-      .maybeSingle();
-    
-    if (exactMatch) {
-      console.log(`🔍 Exact match for slug "${slug}"`);
-      setResolvedPageSlug(exactMatch.page_slug);
-      return exactMatch.page_slug;
-    }
-    
-    // If no exact match, try to find hierarchical slug ending with this slug
-    // Use .limit(1) instead of .maybeSingle() to avoid errors when multiple pages match
-    const { data: hierarchicalMatches } = await supabase
-      .from('page_registry')
-      .select('page_slug')
-      .ilike('page_slug', `%/${slug}`)
-      .limit(1);
-    
-    const hierarchicalMatch = hierarchicalMatches?.[0] || null;
-    
-    if (hierarchicalMatch) {
-      console.log(`🔍 Resolved slug "${slug}" to "${hierarchicalMatch.page_slug}"`);
-      setResolvedPageSlug(hierarchicalMatch.page_slug);
-      return hierarchicalMatch.page_slug;
-    }
-    
-    console.log(`⚠️ No match found for slug "${slug}"`);
-    setResolvedPageSlug(slug);
-    return slug;
+    return resolvePageSlugUtil(slug, setResolvedPageSlug);
   };
 
   // Load page info (Page ID, Title, Slug) from page_registry
   const loadPageInfo = async () => {
-    try {
-      let querySlug = await resolvePageSlug(selectedPage);
-      console.log('[loadPageInfo] Querying for slug:', querySlug, 'original:', selectedPage);
-      
-      // First try exact match
-      let { data, error } = await supabase
-        .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
-        .eq("page_slug", querySlug)
-        .maybeSingle();
-      
-      // If no results and querySlug doesn't contain '/', try hierarchical search
-      if (!data && !querySlug.includes('/')) {
-        console.log('[loadPageInfo] No exact match, trying hierarchical search for:', querySlug);
-        const { data: hierarchicalData, error: hierarchicalError } = await supabase
-          .from("page_registry")
-          .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
-          .ilike("page_slug", `%/${querySlug}`)
-          .limit(1);
-        
-        if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
-          data = hierarchicalData[0];
-          console.log('[loadPageInfo] Found hierarchical match:', hierarchicalData[0].page_slug);
-          setResolvedPageSlug(hierarchicalData[0].page_slug);
-        }
-      }
-      
-      if (error) {
-        console.error('[loadPageInfo] Error loading page info:', error);
-        setPageInfo(null);
-        return;
-      }
-      
-      if (data) {
-        setPageInfo({
-          pageId: data.page_id,
-          pageTitle: data.page_title,
-          pageSlug: data.page_slug,
-          parentSlug: (data as any).parent_slug ?? null,
-          designIcon: (data as any).design_icon ?? null,
-          flyoutImageUrl: (data as any).flyout_image_url ?? null,
-          flyoutDescription: (data as any).flyout_description ?? null,
-          ctaGroup: (data as any).cta_group ?? null,
-          ctaLabel: (data as any).cta_label ?? null,
-          ctaIcon: (data as any).cta_icon ?? null,
-          targetPageSlug: (data as any).target_page_slug ?? null,
-        });
-      } else {
-        setPageInfo(null);
-      }
-    } catch (error) {
-      console.error('[loadPageInfo] Unexpected error:', error);
-      setPageInfo(null);
-    }
+    const info = await loadPageInfoUtil(selectedPage, resolvePageSlug, setResolvedPageSlug);
+    setPageInfo(info);
   };
 
   // Sync flyout & CTA editor state when pageInfo changes
   useEffect(() => {
-    const loadFlyoutTranslations = async () => {
+    const syncFlyoutState = async () => {
       if (pageInfo) {
         setFlyoutImageUrl(pageInfo.flyoutImageUrl ?? null);
         setCtaGroup(pageInfo.ctaGroup ?? 'none');
         setCtaLabel(pageInfo.ctaLabel ?? '');
         setCtaIcon(pageInfo.ctaIcon ?? 'auto');
         
-        // Load flyout description translations from database
         if (pageInfo.pageSlug) {
-          const { data } = await supabase
-            .from('page_registry')
-            .select('flyout_description_translations')
-            .eq('page_slug', pageInfo.pageSlug)
-            .maybeSingle();
-          
-          if (data?.flyout_description_translations && typeof data.flyout_description_translations === 'object') {
-            setFlyoutDescriptionTranslations(data.flyout_description_translations as Record<string, string>);
+          const translations = await loadFlyoutTranslations(pageInfo.pageSlug);
+          if (Object.keys(translations).length > 0) {
+            setFlyoutDescriptionTranslations(translations);
           } else if (pageInfo.flyoutDescription) {
             setFlyoutDescriptionTranslations({ en: pageInfo.flyoutDescription });
           } else {
@@ -841,157 +710,56 @@ const AdminDashboard = () => {
       }
     };
     
-    loadFlyoutTranslations();
+    syncFlyoutState();
   }, [pageInfo]);
 
+  // Save design element handler - uses extracted utility
   const handleSaveDesignElement = async () => {
-    console.log('[handleSaveDesignElement] pageInfo:', pageInfo);
-    console.log('[handleSaveDesignElement] pendingDesignIcon:', pendingDesignIcon);
-    console.log('[handleSaveDesignElement] parentSlug:', pageInfo?.parentSlug);
-    
     if (!pageInfo || !pendingDesignIcon) {
       toast.error("Please select a design element");
       return;
     }
 
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub', 'company'];
-    const isSecondLevel = SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug || '');
-    const isThirdLevelUnderTestLabSave = pageInfo.parentSlug?.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
-    const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug?.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
-    const isThirdLevelUnderInfoHubSave = pageInfo.parentSlug?.startsWith('info-hub') && pageInfo.parentSlug !== 'info-hub';
-    const isThirdLevelUnderCompanySave = pageInfo.parentSlug?.startsWith('company') && pageInfo.parentSlug !== 'company';
-    
-    console.log('[handleSaveDesignElement] isSecondLevel:', isSecondLevel);
-    console.log('[handleSaveDesignElement] isThirdLevelUnderTestLabSave:', isThirdLevelUnderTestLabSave);
-    console.log('[handleSaveDesignElement] isThirdLevelUnderTrainingEventsSave:', isThirdLevelUnderTrainingEventsSave);
-    console.log('[handleSaveDesignElement] isThirdLevelUnderInfoHubSave:', isThirdLevelUnderInfoHubSave);
-    console.log('[handleSaveDesignElement] isThirdLevelUnderCompanySave:', isThirdLevelUnderCompanySave);
-    
-    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave && !isThirdLevelUnderInfoHubSave && !isThirdLevelUnderCompanySave)) {
-      console.log('[handleSaveDesignElement] BLOCKED - parentSlug validation failed');
+    if (!isAllowedPageLevel(pageInfo.parentSlug)) {
       toast.error("Design elements are only allowed for second and third-level navigation pages.");
       return;
     }
 
-    try {
-      const { error } = await supabase
-        .from("page_registry")
-        .update({ design_icon: pendingDesignIcon })
-        .eq("page_id", pageInfo.pageId);
-
-      if (error) {
-        console.error("[handleSaveDesignElement] Error updating design_icon:", error);
-        toast.error("Failed to save design element");
-        return;
-      }
-
+    const success = await saveDesignElement(pageInfo.pageId, pendingDesignIcon);
+    if (success) {
       setPageInfo(prev => prev ? { ...prev, designIcon: pendingDesignIcon } : prev);
-      toast.success("Design element saved");
       setIsDesignElementDialogOpen(false);
-    } catch (error) {
-      console.error("[handleSaveDesignElement] Unexpected error:", error);
-      toast.error("Failed to save design element");
     }
   };
 
+  // Remove design element handler - uses extracted utility
   const handleRemoveDesignElement = async () => {
     if (!pageInfo) return;
 
-    try {
-      const { error } = await supabase
-        .from("page_registry")
-        .update({ design_icon: null })
-        .eq("page_id", pageInfo.pageId);
-
-      if (error) {
-        console.error("[handleRemoveDesignElement] Error clearing design_icon:", error);
-        toast.error("Failed to remove design element");
-        return;
-      }
-
+    const success = await removeDesignElement(pageInfo.pageId);
+    if (success) {
       setPageInfo(prev => prev ? { ...prev, designIcon: null } : prev);
       setPendingDesignIcon(null);
-      toast.success("Design element removed");
       setIsDesignElementDialogOpen(false);
-    } catch (error) {
-      console.error("[handleRemoveDesignElement] Unexpected error:", error);
-      toast.error("Failed to remove design element");
     }
   };
 
+  // Save CTA config handler - uses extracted utility
   const handleSaveCtaConfig = async () => {
     if (!pageInfo) return;
 
-    try {
-      setIsSavingCta(true);
-
-      // If a group (your-solution/products) is selected, first clear that group from other pages
-      if (ctaGroup !== 'none') {
-        const { error: clearError } = await supabase
-          .from('page_registry')
-          .update({ cta_group: null, cta_label: null, cta_icon: null })
-          .eq('cta_group', ctaGroup)
-          .neq('page_id', pageInfo.pageId);
-
-        if (clearError) {
-          console.warn('[handleSaveCtaConfig] Warning clearing existing CTA group:', clearError);
-        }
-      }
-
-      let updates: any = {};
-
-      if (ctaGroup === 'none') {
-        updates = { cta_group: null, cta_label: null, cta_icon: null };
-      } else {
-        // Determine icon based on explicit selection or automatic default by group
-        let iconKey: string | null;
-        if (ctaIcon === 'auto') {
-          iconKey = ctaGroup === 'your-solution'
-            ? 'search'
-            : ctaGroup === 'products'
-              ? 'microscope'
-              : null;
-        } else if (ctaIcon === 'none') {
-          iconKey = null;
-        } else {
-          iconKey = ctaIcon;
-        }
-
-        const finalLabel = ctaLabel && ctaLabel.trim().length > 0 ? ctaLabel.trim() : pageInfo.pageTitle;
-
-        updates = {
-          cta_group: ctaGroup,
-          cta_label: finalLabel,
-          cta_icon: iconKey,
-        };
-      }
-
-      const { error } = await supabase
-        .from('page_registry')
-        .update(updates)
-        .eq('page_id', pageInfo.pageId);
-
-      if (error) {
-        console.error('[handleSaveCtaConfig] Error updating CTA config:', error);
-        toast.error('Failed to save navigation CTA');
-        return;
-      }
-
+    setIsSavingCta(true);
+    const result = await saveCtaConfig(pageInfo.pageId, pageInfo.pageTitle, ctaGroup, ctaLabel, ctaIcon);
+    if (result.success) {
       setPageInfo(prev => prev ? {
         ...prev,
         ctaGroup: ctaGroup === 'none' ? null : ctaGroup,
-        ctaLabel: ctaGroup === 'none' ? null : (updates.cta_label as string),
-        ctaIcon: ctaGroup === 'none' ? null : (updates.cta_icon as string | null),
+        ctaLabel: ctaGroup === 'none' ? null : (result.updates.cta_label as string),
+        ctaIcon: ctaGroup === 'none' ? null : (result.updates.cta_icon as string | null),
       } : prev);
-
-      toast.success('Navigation CTA saved');
       setIsCtaDialogOpen(false);
-    } catch (error) {
-      console.error('[handleSaveCtaConfig] Unexpected error:', error);
-      toast.error('Failed to save navigation CTA');
-    } finally {
-      setIsSavingCta(false);
     }
+    setIsSavingCta(false);
   };
   // IMPORTANT: Only load non-deleted segments (deleted=false or deleted IS NULL)
   // to prevent showing deleted segments, but keep their IDs in registry forever
