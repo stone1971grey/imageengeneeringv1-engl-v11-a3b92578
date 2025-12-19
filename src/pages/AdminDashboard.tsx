@@ -5988,11 +5988,18 @@ const AdminDashboard = () => {
                   return null;
                 })()}
 
-                {/* Version History Tab - Fixed Right (Admin only) */}
+                {/* Version History Tab - Fixed Right (Admin only) - Toggle behavior */}
                 {isAdmin && (
                   <TabsTrigger 
                     value="version-history"
                     className="text-base font-semibold py-3 data-[state=active]:bg-amber-500 data-[state=active]:text-white ml-auto"
+                    onClick={(e) => {
+                      // If already on history, go back to first segment
+                      if (activeTab === "version-history" && tabOrder.length > 0) {
+                        e.preventDefault();
+                        setActiveTab(tabOrder[0]);
+                      }
+                    }}
                   >
                     <HistoryIcon className="h-4 w-4 mr-2" />
                     History
