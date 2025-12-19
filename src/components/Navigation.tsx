@@ -537,9 +537,9 @@ const Navigation = () => {
               
               {/* CMS Protokoll - Direct Link */}
               <Link
-                to={`/${language}/backlog?tab=protocol`}
+                to={`/${language}/cms-protocol`}
                 className={`text-lg font-medium transition-colors whitespace-nowrap ${
-                  location.pathname.includes('/backlog') && location.search.includes('protocol') 
+                  location.pathname.includes('/cms-protocol') 
                     ? 'text-[#f9dc24]' 
                     : 'text-black hover:text-[#f9dc24]'
                 }`}
