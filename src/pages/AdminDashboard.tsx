@@ -112,6 +112,36 @@ import {
   calculateGlobalMaxSegmentId as calcGlobalMaxSegmentId,
   setGlobalReverseRegistry 
 } from '@/components/admin/dashboard/segmentRegistryUtils';
+import {
+  validateImageFile,
+  uploadImageToStorage,
+  handleHeroImageUpload,
+  handleTileImageUpload as handleTileImageUploadUtil,
+  handleSolutionImageUploadUtil,
+  handleImageTextHeroUpload,
+  handleImageTextItemUpload,
+  handleFooterTeamImageUploadUtil,
+  handleBannerImageUploadUtil,
+  UploadContext
+} from '@/components/admin/dashboard/imageUploadUtils';
+import {
+  addSegment,
+  deleteSegment,
+  saveSegments,
+  autoSaveSegmentDebounced,
+  SegmentContext,
+  checkSegmentConflicts
+} from '@/components/admin/dashboard/segmentManagementUtils';
+import {
+  saveHeroSection,
+  saveApplicationsSection,
+  saveFooterSection,
+  saveSEOSettings,
+  saveBannerSection,
+  saveSolutionsSection,
+  autoSaveTileImageUploadUtil,
+  SaveContext
+} from '@/components/admin/dashboard/saveContentUtils';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
 import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
@@ -1190,154 +1220,21 @@ const AdminDashboard = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setHeroUploading(true);
- 
-     try {
-       const fileExt = file.name.split('.').pop();
-       const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
-       const filePath = `${fileName}`;
- 
-       // Upload to storage
-       const { error: uploadError } = await supabase.storage
-         .from('page-images')
-         .upload(filePath, file, {
-           cacheControl: '3600',
-           upsert: false
-         });
- 
-       if (uploadError) throw uploadError;
- 
-       // Get public URL
-       const { data: { publicUrl } } = supabase.storage
-         .from('page-images')
-         .getPublicUrl(filePath);
- 
-       // Extract image metadata
-       const baseMetadata = await extractImageMetadata(file, publicUrl);
-       const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
-       
-       setHeroImageUrl(publicUrl);
-       setHeroImageMetadata(metadata);
-       
-       // Auto-sync to all languages
-       const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
-       
-       for (const lang of allLanguages) {
-         // Save URL to database for each language
-         const { error: dbError } = await supabase
-           .from("page_content")
-           .upsert({
-             page_slug: resolvedPageSlug || selectedPage,
-             section_key: "hero_image_url",
-             content_type: "image_url",
-             content_value: publicUrl,
-             language: lang,
-             updated_at: new Date().toISOString(),
-             updated_by: user?.id
-           }, {
-             onConflict: 'page_slug,section_key,language'
-           });
-   
-         if (dbError) throw dbError;
-   
-         // Save metadata to database for each language
-         const { error: metadataError } = await supabase
-           .from("page_content")
-           .upsert({
-             page_slug: resolvedPageSlug || selectedPage,
-             section_key: "hero_image_metadata",
-             content_type: "json",
-             content_value: JSON.stringify(metadata),
-             language: lang,
-             updated_at: new Date().toISOString(),
-             updated_by: user?.id
-           }, {
-             onConflict: 'page_slug,section_key,language'
-           });
-  
-         if (metadataError) throw metadataError;
-       }
- 
-       toast.success("Image uploaded and synced to all languages!");
-     } catch (error: any) {
-       toast.error("Error uploading image: " + error.message);
-     } finally {
-       setHeroUploading(false);
-     }
-   };
+    const ctx: UploadContext = { resolvedPageSlug: resolvedPageSlug || selectedPage, selectedPage, editorLanguage, userId: user?.id };
+    await handleHeroImageUpload(e.target.files[0], ctx, setHeroImageUrl, setHeroImageMetadata);
+    setHeroUploading(false);
+  };
 
   const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      // Update applications array with URL and metadata
-      const newApps = [...applications];
-      newApps[tileIndex].imageUrl = publicUrl;
-      newApps[tileIndex].metadata = { ...metadata, altText: '' };
-      setApplications(newApps);
-
-      // Auto-save after successful upload
+    const newApps = await handleTileImageUploadUtil(e.target.files[0], tileIndex, applications, setApplications);
+    if (newApps) {
       await autoSaveTileImageUpload(newApps);
-
       toast.success("Image uploaded and saved successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
     }
+    setUploading(false);
   };
 
   // Auto-save tiles segment content with debounce
