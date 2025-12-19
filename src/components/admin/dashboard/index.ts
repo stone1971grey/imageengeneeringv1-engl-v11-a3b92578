@@ -13,3 +13,4 @@ export * from './AdminConstants';
 export * from './segmentUtils';
 export * from './cmsPageUtils';
 export * from './pageRegistryUtils';
+export * from './segmentRegistryUtils';
