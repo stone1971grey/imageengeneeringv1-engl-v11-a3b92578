@@ -17,11 +17,11 @@ type AppRole = 'admin' | 'editor';
 type LanguageCode = 'en' | 'de' | 'ja' | 'ko' | 'zh';
 
 const AVAILABLE_LANGUAGES = [
-  { code: 'en' as LanguageCode, name: 'Englisch', flag: '🇬🇧' },
-  { code: 'de' as LanguageCode, name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'ja' as LanguageCode, name: 'Japanisch', flag: '🇯🇵' },
-  { code: 'ko' as LanguageCode, name: 'Koreanisch', flag: '🇰🇷' },
-  { code: 'zh' as LanguageCode, name: 'Chinesisch', flag: '🇨🇳' },
+  { code: 'en' as LanguageCode, name: 'English', flag: '🇬🇧' },
+  { code: 'de' as LanguageCode, name: 'German', flag: '🇩🇪' },
+  { code: 'ja' as LanguageCode, name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko' as LanguageCode, name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh' as LanguageCode, name: 'Chinese', flag: '🇨🇳' },
 ];
 
 interface ContentEditor {
@@ -44,7 +44,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'news',
     name: 'Manage News',
-    description: 'News-Artikel erstellen & bearbeiten',
+    description: 'Create & edit news articles',
     icon: <Newspaper className="h-6 w-6" />,
     color: 'hsl(var(--primary))',
     bgColor: 'bg-[hsl(var(--primary))]',
@@ -53,7 +53,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'events',
     name: 'Manage Events',
-    description: 'Events & Veranstaltungen verwalten',
+    description: 'Manage events & conferences',
     icon: <Calendar className="h-6 w-6" />,
     color: 'hsl(var(--events-button))',
     bgColor: 'bg-[hsl(var(--events-button))]',
@@ -62,7 +62,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'products',
     name: 'Manage Products',
-    description: 'Produkt-Katalog verwalten',
+    description: 'Manage product catalog',
     icon: <Target className="h-6 w-6" />,
     color: 'hsl(var(--accent-blue))',
     bgColor: 'bg-[hsl(var(--accent-blue))]',
@@ -71,7 +71,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'downloads',
     name: 'Manage Downloads',
-    description: 'Downloads & Ressourcen verwalten',
+    description: 'Manage downloads & resources',
     icon: <Download className="h-6 w-6" />,
     color: 'hsl(180 60% 45%)',
     bgColor: 'bg-[hsl(180_60%_45%)]',
@@ -80,7 +80,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'seo',
     name: 'SEO Settings',
-    description: 'SEO-Einstellungen bearbeiten',
+    description: 'Edit SEO settings',
     icon: <Eye className="h-6 w-6" />,
     color: 'hsl(var(--seo-button))',
     bgColor: 'bg-[hsl(var(--seo-button))]',
@@ -89,7 +89,7 @@ const CONTENT_EDITORS: ContentEditor[] = [
   {
     id: 'glossary',
     name: 'Translation Glossary',
-    description: 'Übersetzungs-Glossar verwalten',
+    description: 'Manage translation glossary',
     icon: <Book className="h-6 w-6" />,
     color: 'hsl(var(--accent-violet))',
     bgColor: 'bg-[hsl(var(--accent-violet))]',
@@ -302,12 +302,12 @@ export const UserManagement = () => {
 
   const handleInviteUser = async () => {
     if (!inviteEmail.trim() || !invitePassword.trim()) {
-      toast.error('Bitte E-Mail und Passwort eingeben');
+      toast.error('Please enter email and password');
       return;
     }
 
     if (invitePassword.length < 6) {
-      toast.error('Passwort muss mindestens 6 Zeichen lang sein');
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
@@ -319,7 +319,7 @@ export const UserManagement = () => {
       // Get current session for auth header
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Nicht autorisiert - bitte erneut anmelden');
+        toast.error('Not authorized - please sign in again');
         return;
       }
 
@@ -336,7 +336,7 @@ export const UserManagement = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        toast.error('Fehler beim Anlegen des Benutzers');
+        toast.error('Error creating user');
         return;
       }
 
@@ -346,7 +346,7 @@ export const UserManagement = () => {
       }
 
       if (!data?.user?.id) {
-        toast.error('Benutzer konnte nicht erstellt werden');
+        toast.error('Could not create user');
         return;
       }
 
@@ -391,7 +391,7 @@ export const UserManagement = () => {
         }
       }
 
-      toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${username || email}" wurde erfolgreich angelegt`);
+      toast.success(`${inviteRole === 'admin' ? 'Admin' : 'Editor'} "${username || email}" was created successfully`);
       setShowInviteDialog(false);
       setInviteUsername("");
       setInviteEmail("");
@@ -405,7 +405,7 @@ export const UserManagement = () => {
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
-      toast.error('Fehler beim Anlegen des Benutzers');
+      toast.error('Error creating user');
     } finally {
       setIsInviting(false);
     }
@@ -417,7 +417,7 @@ export const UserManagement = () => {
     // Prevent deleting the last admin
     const admins = users.filter(u => u.roles.includes('admin'));
     if (selectedUser.roles.includes('admin') && admins.length <= 1) {
-      toast.error('Der letzte Admin kann nicht gelöscht werden');
+      toast.error('Cannot delete the last admin');
       setShowDeleteConfirm(false);
       return;
     }
@@ -428,7 +428,7 @@ export const UserManagement = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        toast.error('Nicht authentifiziert');
+        toast.error('Not authenticated');
         setIsDeleting(false);
         return;
       }
@@ -440,7 +440,7 @@ export const UserManagement = () => {
 
       if (error) {
         console.error('Error calling delete user function:', error);
-        toast.error('Fehler beim Löschen: ' + error.message);
+        toast.error('Error deleting: ' + error.message);
         return;
       }
 
@@ -450,13 +450,13 @@ export const UserManagement = () => {
         return;
       }
 
-      toast.success(`Benutzer "${selectedUser.email}" wurde gelöscht`);
+      toast.success(`User "${selectedUser.email}" has been deleted`);
       setShowDeleteConfirm(false);
       setSelectedUser(null);
       loadUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error('Fehler beim Löschen des Benutzers');
+      toast.error('Error deleting user');
     } finally {
       setIsDeleting(false);
     }
@@ -486,7 +486,7 @@ export const UserManagement = () => {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('de-DE', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -511,7 +511,7 @@ export const UserManagement = () => {
         const token = sessionData?.session?.access_token;
         
         if (!token) {
-          toast.error('Nicht authentifiziert');
+          toast.error('Not authenticated');
           setIsSavingEdit(false);
           return;
         }
@@ -534,7 +534,7 @@ export const UserManagement = () => {
 
         if (updateError) {
           console.error('Error updating auth user:', updateError);
-          toast.error(`Fehler beim Aktualisieren: ${updateError.message}`);
+          toast.error(`Error updating: ${updateError.message}`);
           setIsSavingEdit(false);
           return;
         }
@@ -574,7 +574,7 @@ export const UserManagement = () => {
         if (profileError) {
           console.error('Profile update error:', profileError);
           if (profileError.code === '23505') {
-            toast.error('Dieser Benutzername ist bereits vergeben');
+            toast.error('This username is already taken');
             setIsSavingEdit(false);
             return;
           }
@@ -667,12 +667,12 @@ export const UserManagement = () => {
         }
       }
 
-      toast.success('Benutzer erfolgreich aktualisiert');
-      // Dialog bleibt offen - wird nur über X-Button geschlossen
+      toast.success('User updated successfully');
+      // Dialog stays open - only closed via X button
       loadUsers();
     } catch (error: any) {
       console.error('Error updating user:', error);
-      toast.error(`Fehler: ${error?.message || 'Unbekannter Fehler'}`);
+      toast.error(`Error: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsSavingEdit(false);
     }
@@ -711,12 +711,12 @@ export const UserManagement = () => {
         if (insertError) throw insertError;
       }
 
-      toast.success('Editor-Berechtigungen gespeichert');
+      toast.success('Editor permissions saved');
       setShowEditorAccessDialog(false);
       loadUsers();
     } catch (error) {
       console.error('Error saving editor access:', error);
-      toast.error('Fehler beim Speichern der Berechtigungen');
+      toast.error('Error saving permissions');
     } finally {
       setSavingAccess(false);
     }
@@ -725,11 +725,11 @@ export const UserManagement = () => {
   const getEditorAccessLabel = (access: 'all' | 'custom' | 'none' | undefined) => {
     switch (access) {
       case 'all':
-        return 'Alle Editoren';
+        return 'All Editors';
       case 'custom':
-        return 'Benutzerdefiniert';
+        return 'Custom';
       default:
-        return 'Keine Berechtigung';
+        return 'No Permission';
     }
   };
 
@@ -773,7 +773,7 @@ export const UserManagement = () => {
               <Users className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-green-600 font-medium">Gesamt</p>
+              <p className="text-sm text-green-600 font-medium">Total</p>
               <p className="text-2xl font-bold text-green-900">{users.length}</p>
             </div>
           </CardContent>
@@ -787,10 +787,10 @@ export const UserManagement = () => {
             <div>
               <CardTitle className="text-xl flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                Benutzer & Rollen
+                Users & Roles
               </CardTitle>
               <CardDescription>
-                Admins und Editoren verwalten
+                Manage admins and editors
               </CardDescription>
             </div>
             <Button 
@@ -798,7 +798,7 @@ export const UserManagement = () => {
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2 text-white" />
-              Neuer Benutzer
+              New User
             </Button>
           </div>
         </CardHeader>
@@ -811,11 +811,11 @@ export const UserManagement = () => {
                 <TableRow className="bg-muted/50 border-b border-border">
                   <TableHead className="font-semibold text-muted-foreground">User</TableHead>
                   <TableHead className="font-semibold text-muted-foreground">Email</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Rolle</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Sprachen</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Content-Editoren</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Erstellt</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground text-right">Aktionen</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Role</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Languages</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Content Editors</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">Created</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -828,7 +828,7 @@ export const UserManagement = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">
-                            {user.full_name || 'Kein Name'}
+                            {user.full_name || 'No name'}
                           </p>
                           {user.username && user.username !== user.email && (
                             <p className="text-xs text-gray-500">@{user.username}</p>
@@ -846,19 +846,19 @@ export const UserManagement = () => {
                               variant="outline"
                               className={`${getRoleBadgeVariant(role)} flex items-center gap-1`}
                             >
-                              {getRoleIcon(role)}
-                              {role === 'admin' ? 'Admin' : 'Redakteur'}
+                            {getRoleIcon(role)}
+                              {role === 'admin' ? 'Admin' : 'Editor'}
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-gray-600 text-sm">Keine Rolle</span>
+                          <span className="text-gray-600 text-sm">No role</span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
                         <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                          Alle Sprachen
+                          All languages
                         </Badge>
                       ) : user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
@@ -872,18 +872,18 @@ export const UserManagement = () => {
                           })}
                         </div>
                       ) : (
-                        <span className="text-gray-600 text-sm">Keine</span>
+                        <span className="text-gray-600 text-sm">None</span>
                       )}
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
                         <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                          Alle Editoren
+                          All Editors
                         </Badge>
                       ) : user.roles.includes('editor') ? (
                         user.editorAccess === 'all' ? (
                           <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                            Alle Editoren
+                            All Editors
                           </Badge>
                         ) : user.contentEditors && user.contentEditors.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
@@ -899,7 +899,7 @@ export const UserManagement = () => {
                             })}
                           </div>
                         ) : (
-                          <span className="text-gray-600 text-sm">Keine</span>
+                          <span className="text-gray-600 text-sm">None</span>
                         )
                       ) : (
                         <span className="text-gray-600 text-sm">—</span>
@@ -934,7 +934,7 @@ export const UserManagement = () => {
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors border border-gray-200 hover:border-yellow-300"
-                          title="Benutzer bearbeiten"
+                          title="Edit user"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
@@ -944,7 +944,7 @@ export const UserManagement = () => {
                             setShowDeleteConfirm(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors border border-gray-200 hover:border-red-300"
-                          title="Benutzer löschen"
+                          title="Delete user"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1006,16 +1006,16 @@ export const UserManagement = () => {
             <button
               onClick={() => setShowInviteDialog(false)}
               className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
-              title="Schließen"
+              title="Close"
             >
               ×
             </button>
             <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
               <UserPlus className="h-6 w-6" />
-              Neuen Benutzer anlegen
+              Create New User
             </DialogTitle>
             <DialogDescription className="text-base text-gray-700">
-              Legen Sie einen neuen Admin oder Editor an.
+              Create a new admin or editor.
             </DialogDescription>
           </DialogHeader>
 
@@ -1024,7 +1024,7 @@ export const UserManagement = () => {
               <Label htmlFor="invite-name" className="text-base font-semibold text-gray-900">Name</Label>
               <Input
                 id="invite-name"
-                placeholder="Max Mustermann"
+                placeholder="John Doe"
                 value={inviteFullName}
                 onChange={(e) => setInviteFullName(e.target.value)}
                 className="text-base h-12"
@@ -1032,7 +1032,7 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">E-Mail-Adresse *</Label>
+              <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">Email Address *</Label>
               <Input
                 id="invite-email"
                 type="email"
@@ -1041,16 +1041,16 @@ export const UserManagement = () => {
                 onChange={(e) => setInviteEmail(e.target.value)}
                 className={`text-base h-12 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-200' : ''}`}
               />
-              <p className="text-sm text-gray-600">Für Kommunikation und als Fallback für den Login.</p>
+              <p className="text-sm text-gray-600">For communication and as a fallback for login.</p>
               {existingUserMatch && (
                 <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mt-2">
                   <p className="text-base font-bold text-yellow-800 mb-2">
-                    ⚠️ Dieser Benutzer existiert bereits:
+                    ⚠️ This user already exists:
                   </p>
                   <div className="bg-white rounded-lg p-3 border border-yellow-300">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-base font-bold text-gray-900">{existingUserMatch.full_name || 'Kein Name'}</p>
+                        <p className="text-base font-bold text-gray-900">{existingUserMatch.full_name || 'No name'}</p>
                         <p className="text-sm text-gray-600">
                           {existingUserMatch.username && <span className="font-medium">Login: {existingUserMatch.username} | </span>}
                           {existingUserMatch.email}
@@ -1084,7 +1084,7 @@ export const UserManagement = () => {
                         }}
                       >
                         <Pencil className="h-4 w-4 mr-1" />
-                        Bearbeiten
+                        Edit
                       </Button>
                     </div>
                   </div>
@@ -1093,25 +1093,25 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-username" className="text-base font-semibold text-gray-900">Login (Benutzername)</Label>
+              <Label htmlFor="invite-username" className="text-base font-semibold text-gray-900">Login (Username)</Label>
               <Input
                 id="invite-username"
                 type="text"
-                placeholder="z.B. admin123 oder max.mustermann"
+                placeholder="e.g. admin123 or john.doe"
                 value={inviteUsername}
                 onChange={(e) => setInviteUsername(e.target.value)}
                 className="text-base h-12"
               />
-              <p className="text-sm text-gray-600">Der Benutzername für den Login. Kann frei gewählt werden.</p>
+              <p className="text-sm text-gray-600">The username for login. Can be freely chosen.</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-password" className="text-base font-semibold text-gray-900">Passwort *</Label>
+              <Label htmlFor="invite-password" className="text-base font-semibold text-gray-900">Password *</Label>
               <div className="relative">
                 <Input
                   id="invite-password"
                   type={showInvitePassword ? "text" : "password"}
-                  placeholder="Mindestens 6 Zeichen"
+                  placeholder="At least 6 characters"
                   value={invitePassword}
                   onChange={(e) => setInvitePassword(e.target.value)}
                   className="pr-12 text-base h-12"
@@ -1127,7 +1127,7 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-3">
-              <Label className="text-lg font-bold text-gray-900">Rolle *</Label>
+              <Label className="text-lg font-bold text-gray-900">Role *</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
@@ -1141,7 +1141,7 @@ export const UserManagement = () => {
                     <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
                     <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Can edit assigned content</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
@@ -1155,7 +1155,7 @@ export const UserManagement = () => {
                     <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
                     <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Full system access</p>
                 </div>
               </div>
             </div>
@@ -1166,11 +1166,11 @@ export const UserManagement = () => {
                 <div>
                   <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <Globe className="h-5 w-5 text-purple-600" />
-                    Sprachberechtigungen
+                    Language Permissions
                   </Label>
                   <p className="text-base text-gray-700 mt-2">
-                    Wählen Sie die Sprachen aus, die der Editor bearbeiten darf.
-                    Diese Berechtigung gilt für <strong>alle Bereiche</strong>: CMS-Segmente, News, Events, Products, Downloads.
+                    Select the languages the editor may edit.
+                    This permission applies to <strong>all areas</strong>: CMS segments, News, Events, Products, Downloads.
                   </p>
                 </div>
                 
@@ -1205,16 +1205,16 @@ export const UserManagement = () => {
                 {inviteGlobalSegmentLanguages.length > 0 ? (
                   <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
                     <p className="text-lg font-bold text-purple-800">
-                      ✓ {inviteGlobalSegmentLanguages.length} Sprache(n) ausgewählt
+                      ✓ {inviteGlobalSegmentLanguages.length} language(s) selected
                     </p>
                     <p className="text-sm text-purple-600 mt-1">
-                      Der Editor kann in allen Bereichen (CMS-Segmente, News, Events, Products, Downloads) Inhalte in diesen Sprachen bearbeiten.
+                      The editor can edit content in these languages across all areas (CMS segments, News, Events, Products, Downloads).
                     </p>
                   </div>
                 ) : (
                   <div className="bg-amber-50 border-2 border-amber-300 rounded-lg px-5 py-4">
                     <p className="text-base text-amber-800">
-                      ⚠️ Keine Sprachen ausgewählt - der Editor kann keine Inhalte bearbeiten.
+                      ⚠️ No languages selected - the editor cannot edit any content.
                     </p>
                   </div>
                 )}
@@ -1225,10 +1225,10 @@ export const UserManagement = () => {
             {inviteRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
                   <p className="text-base text-gray-700 mt-2">
-                    Klicken Sie auf die Editoren (News, Events, etc.), auf die der Benutzer Zugriff haben soll.
-                    Die Sprachberechtigung wird durch die obige Auswahl gesteuert.
+                    Click on the editors (News, Events, etc.) that the user should have access to.
+                    Language permissions are controlled by the selection above.
                   </p>
                 </div>
                 
@@ -1273,7 +1273,7 @@ export const UserManagement = () => {
                 {inviteSelectedEditors.length > 0 && (
                   <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
                     <p className="text-lg font-bold text-green-800">
-                      ✓ {inviteSelectedEditors.length} Editor(en) ausgewählt
+                      ✓ {inviteSelectedEditors.length} editor(s) selected
                     </p>
                   </div>
                 )}
@@ -1283,7 +1283,7 @@ export const UserManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
-              Abbrechen
+              Cancel
             </Button>
             <Button 
               onClick={handleInviteUser} 
@@ -1291,11 +1291,11 @@ export const UserManagement = () => {
               className="bg-green-600 hover:bg-green-700"
             >
               {isInviting ? (
-                <>Wird angelegt...</>
+                <>Creating...</>
               ) : (
                 <>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Benutzer anlegen
+                  Create User
                 </>
               )}
             </Button>
@@ -1309,21 +1309,21 @@ export const UserManagement = () => {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Trash2 className="h-5 w-5 text-red-600" />
-              Benutzer löschen
+              Delete User
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie den Benutzer <strong>{selectedUser?.full_name || selectedUser?.email}</strong> wirklich löschen? 
-              Diese Aktion kann nicht rückgängig gemacht werden.
+              Do you really want to delete user <strong>{selectedUser?.full_name || selectedUser?.email}</strong>? 
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteUser}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isDeleting ? 'Wird gelöscht...' : 'Löschen'}
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
