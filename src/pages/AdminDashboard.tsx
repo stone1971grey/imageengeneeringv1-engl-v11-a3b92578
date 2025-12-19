@@ -107,6 +107,11 @@ import {
   loadFlyoutTranslations,
   handleFlyoutImageSelection
 } from '@/components/admin/dashboard/pageRegistryUtils';
+import { 
+  loadSegmentRegistryData, 
+  calculateGlobalMaxSegmentId as calcGlobalMaxSegmentId,
+  setGlobalReverseRegistry 
+} from '@/components/admin/dashboard/segmentRegistryUtils';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
 import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
@@ -761,93 +766,18 @@ const AdminDashboard = () => {
     }
     setIsSavingCta(false);
   };
-  // IMPORTANT: Only load non-deleted segments (deleted=false or deleted IS NULL)
-  // to prevent showing deleted segments, but keep their IDs in registry forever
+  // Load segment registry - uses extracted utility
   const loadSegmentRegistry = async () => {
-    try {
-      const querySlug = await resolvePageSlug(selectedPage);
-      console.log('[loadSegmentRegistry] Querying for slug:', querySlug, 'original selectedPage:', selectedPage);
-      
-      // First try exact match
-      let { data, error } = await supabase
-        .from("segment_registry")
-        .select("*")
-        .eq("page_slug", querySlug)
-        .or("deleted.is.null,deleted.eq.false");
-
-      // If no results and querySlug doesn't contain '/', try finding by hierarchical pattern
-      if ((!data || data.length === 0) && !querySlug.includes('/')) {
-        console.log('[loadSegmentRegistry] No exact match, trying hierarchical search for:', querySlug);
-        const { data: hierarchicalData, error: hierarchicalError } = await supabase
-          .from("segment_registry")
-          .select("*")
-          .ilike("page_slug", `%/${querySlug}`)
-          .or("deleted.is.null,deleted.eq.false");
-        
-        if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
-          data = hierarchicalData;
-          console.log('[loadSegmentRegistry] Found hierarchical match:', hierarchicalData[0]?.page_slug);
-        }
-      }
-
-      if (error) {
-        console.error("Error loading segment registry:", error);
-        return;
-      }
-
-      // Create a map of segment_key to segment_id
-      const registry: Record<string, number> = {};
-      // Create a reverse map of segment_id to segment_key for dynamic labels
-      const reverseRegistry: Record<string, string> = {};
-      
-      console.log('[loadSegmentRegistry] Raw data from DB:', data);
-      
-      data?.forEach((item: any) => {
-        registry[item.segment_key] = item.segment_id;
-        reverseRegistry[String(item.segment_id)] = item.segment_key;
-        
-        // Register footer segments under 'footer' key for the Footer tab display
-        // Support multiple patterns: segment_type === 'footer', segment_key starts with 'footer-', or segment_key equals 'footer'
-        if (item.segment_type === 'footer') {
-          console.log('[loadSegmentRegistry] Found footer segment:', item.segment_id, item.segment_key, item.segment_type);
-          registry['footer'] = item.segment_id;
-        }
-      });
-
-      setSegmentRegistry(registry);
-      // Store reverse registry in a separate state or use it directly below
-      (window as any).__segmentKeyRegistry = reverseRegistry;
-      console.log("✅ Loaded segment registry for", querySlug, ":", registry, "Footer ID:", registry['footer']);
-    } catch (error) {
-      console.error("Error loading segment registry:", error);
-    }
+    const querySlug = await resolvePageSlug(selectedPage);
+    const { registry, reverseRegistry } = await loadSegmentRegistryData(querySlug);
+    setSegmentRegistry(registry);
+    setGlobalReverseRegistry(reverseRegistry);
   };
 
-  // Calculate the maximum segment ID across ALL pages to ensure global uniqueness
+  // Calculate global max segment ID - uses extracted utility
   const calculateGlobalMaxSegmentId = async () => {
-    try {
-      // Query segment_registry to get the highest segment_id
-      const { data, error } = await supabase
-        .from("segment_registry")
-        .select("segment_id")
-        .order("segment_id", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-        console.error("Error fetching global max segment ID:", error);
-        setNextSegmentId(18); // Default to 18 (after initial 17 segments)
-        return;
-      }
-
-      const globalMaxId = data?.segment_id || 17;
-      const nextId = globalMaxId + 1;
-      setNextSegmentId(nextId);
-      console.log("✅ Global max segment ID:", globalMaxId, "| Next available ID:", nextId);
-    } catch (error) {
-      console.error("Error calculating global max segment ID:", error);
-      setNextSegmentId(18); // Default to 18 if error
-    }
+    const nextId = await calcGlobalMaxSegmentId();
+    setNextSegmentId(nextId);
   };
 
   // CMS page creation wrapper functions - actual logic is in cmsPageUtils
