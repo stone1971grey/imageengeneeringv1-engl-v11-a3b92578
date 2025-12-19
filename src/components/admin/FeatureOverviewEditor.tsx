@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Trash2, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { createContentBackup } from '@/utils/createContentBackup';
 
 interface FeatureItem {
   title: string;
@@ -170,6 +171,9 @@ const FeatureOverviewEditorComponent = ({ pageSlug, segmentId, language, onSave 
   const handleSave = async () => {
     setLoading(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', language);
+      
       const segmentData = {
         title,
         subtext,

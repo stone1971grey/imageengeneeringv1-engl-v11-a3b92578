@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
+import { createContentBackup } from '@/utils/createContentBackup';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 
@@ -418,6 +419,9 @@ const BannerSegmentEditorComponent = ({
   const handleSaveEnglish = async () => {
     setIsSaving(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', 'en');
+      
       // Build current data with images derived from local state
       const dataToSave = { ...data, images: images };
       

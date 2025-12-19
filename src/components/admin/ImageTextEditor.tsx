@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
 import { SimpleRichTextEditor } from "./SimpleRichTextEditor";
 import { MediaSelector } from "./MediaSelector";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface ImageTextItem {
   title: string;
@@ -205,6 +206,9 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', language);
+      
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) throw new Error("User not authenticated");
 
