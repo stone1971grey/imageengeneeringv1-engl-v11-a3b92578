@@ -7225,6 +7225,12 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
+                      <SegmentHistoryButton
+                        pageSlug={resolvedPageSlug || selectedPage}
+                        sectionKey={`${segment.id}_title`}
+                        language={editorLanguage}
+                        onRestore={() => loadContent()}
+                      />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
