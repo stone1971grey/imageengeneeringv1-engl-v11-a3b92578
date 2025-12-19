@@ -94,40 +94,7 @@ import {
 } from '@/components/admin/dashboard/AdminConstants';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
-
-// Type definitions for CMS content structures
-interface TileItem {
-  title: string;
-  description: string;
-  ctaLink: string;
-  ctaStyle: string;
-  ctaText: string;
-  imageUrl: string;
-  icon: string;
-  metadata?: ImageMetadata;
-}
-
-interface BannerImage {
-  imageUrl: string;
-  altText: string;
-  metadata?: ImageMetadata;
-}
-
-interface SolutionItem {
-  imageUrl: string;
-  title: string;
-  description: string;
-  metadata?: ImageMetadata;
-}
-
-interface ContentItem {
-  id: string;
-  section_key: string;
-  content_type: string;
-  content_value: string;
-}
-
-// SortableTab and AdminDashboardErrorBoundary are imported from dashboard components
+import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
 
 const AdminDashboard = () => {
   // Authentication state from hook

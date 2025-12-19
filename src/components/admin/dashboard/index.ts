@@ -3,5 +3,8 @@ export { WelcomeTab } from './WelcomeTab';
 export { SortableTab } from './SortableTab';
 export { AdminDashboardErrorBoundary } from './AdminErrorBoundary';
 
+// Types
+export * from './types';
+
 // Constants
 export * from './AdminConstants';
