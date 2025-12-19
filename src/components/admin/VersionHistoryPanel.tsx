@@ -34,7 +34,7 @@ const LANGUAGE_LABELS: Record<string, string> = {
   ja: "日本語",
   ko: "한국어",
   zh: "中文",
-  all: "Alle Sprachen"
+  all: "All Languages"
 };
 
 export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: VersionHistoryPanelProps) => {
@@ -75,7 +75,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       if (error) {
         console.error("Error loading backups:", error);
-        toast.error("Fehler beim Laden der Versionshistorie");
+        toast.error("Failed to load version history");
         return;
       }
 
@@ -115,7 +115,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
     try {
       const currentUser = (await supabase.auth.getUser()).data.user;
       if (!currentUser) {
-        toast.error("Nicht authentifiziert");
+        toast.error("Not authenticated");
         return;
       }
 
@@ -134,16 +134,16 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       if (error) {
         console.error("Error restoring content:", error);
-        toast.error("Fehler beim Wiederherstellen");
+        toast.error("Failed to restore version");
         return;
       }
 
-      toast.success(`"${formatSegmentName(restoreEntry.section_key)}" wiederhergestellt auf Stand vom ${format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy, HH:mm", { locale: de })} Uhr`);
+      toast.success(`Restored "${formatSegmentName(restoreEntry.section_key)}" to version from ${format(parseISO(restoreEntry.backup_created_at), "MMM dd, yyyy 'at' HH:mm")}`);
       setRestoreEntry(null);
       onRestore?.();
     } catch (error) {
       console.error("Error restoring:", error);
-      toast.error("Fehler beim Wiederherstellen");
+      toast.error("Failed to restore version");
     } finally {
       setRestoring(false);
     }
@@ -157,11 +157,11 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       let key: string;
       
       if (isToday(date)) {
-        key = "Heute";
+        key = "Today";
       } else if (isYesterday(date)) {
-        key = "Gestern";
+        key = "Yesterday";
       } else {
-        key = format(date, "dd. MMMM yyyy", { locale: de });
+        key = format(date, "MMMM dd, yyyy");
       }
       
       if (!groups[key]) {
@@ -202,8 +202,8 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       // For page_segments
       if (Array.isArray(parsed)) {
         return {
-          type: "Seitenstruktur",
-          preview: `${parsed.length} Segmente`,
+          type: "Page Structure",
+          preview: `${parsed.length} segments`,
           detail: parsed.map((s: any) => s.type || "Unbekannt").slice(0, 3).join(", ") + (parsed.length > 3 ? "..." : "")
         };
       }
@@ -211,14 +211,14 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       // For other JSON with title/headline
       if (parsed.title) {
         return {
-          type: "Inhalt",
+          type: "Content",
           preview: parsed.title,
           detail: null
         };
       }
       if (parsed.headline) {
         return {
-          type: "Inhalt",
+          type: "Content",
           preview: parsed.headline,
           detail: null
         };
@@ -226,7 +226,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       
       // Fallback
       return {
-        type: "Inhalt",
+        type: "Content",
         preview: JSON.stringify(parsed).slice(0, 60) + "...",
         detail: null
       };
@@ -248,10 +248,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
           <div className="h-10 w-10 rounded-xl bg-[#f9dc24] flex items-center justify-center">
             <History className="h-5 w-5 text-gray-900" />
           </div>
-          Versionshistorie
+          Version History
         </CardTitle>
         <CardDescription className="text-gray-400">
-          Frühere Versionen anzeigen und wiederherstellen
+          View and restore previous versions of your content
         </CardDescription>
       </CardHeader>
       
@@ -262,10 +262,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
             <Layers className="h-4 w-4 text-white" />
             <Select value={selectedSegment} onValueChange={setSelectedSegment}>
               <SelectTrigger className="w-[200px] bg-gray-800 border-gray-600 text-white">
-                <SelectValue placeholder="Alle Segmente" />
+                <SelectValue placeholder="All Segments" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-600">
-                <SelectItem value="all" className="text-white hover:bg-gray-700">Alle Segmente</SelectItem>
+                <SelectItem value="all" className="text-white hover:bg-gray-700">All Segments</SelectItem>
                 {availableSegments.map(seg => (
                   <SelectItem key={seg} value={seg} className="text-white hover:bg-gray-700">
                     {formatSegmentName(seg)}
@@ -279,10 +279,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
             <Globe className="h-4 w-4 text-white" />
             <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
               <SelectTrigger className="w-[150px] bg-gray-800 border-gray-600 text-white">
-                <SelectValue placeholder="Sprache" />
+                <SelectValue placeholder="Language" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-600">
-                <SelectItem value="all" className="text-white hover:bg-gray-700">Alle Sprachen</SelectItem>
+                <SelectItem value="all" className="text-white hover:bg-gray-700">All Languages</SelectItem>
                 <SelectItem value="en" className="text-white hover:bg-gray-700">English</SelectItem>
                 <SelectItem value="de" className="text-white hover:bg-gray-700">Deutsch</SelectItem>
                 <SelectItem value="ja" className="text-white hover:bg-gray-700">日本語</SelectItem>
@@ -302,8 +302,8 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
           ) : Object.keys(groupedBackups).length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <History className="h-12 w-12 mx-auto mb-4 opacity-30" />
-              <p>Keine Versionshistorie für diese Seite gefunden</p>
-              <p className="text-sm mt-2">Änderungen werden nach dem nächsten Speichern protokolliert</p>
+              <p>No version history found for this page</p>
+              <p className="text-sm mt-2">Changes will be recorded after the next save</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -355,7 +355,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
                             {entry.original_updated_by && (
                               <div className="flex items-center gap-1 text-xs text-gray-500">
                                 <User className="h-3 w-3" />
-                                <span>Bearbeitet von: {userEmails[entry.original_updated_by] || "Unbekannt"}</span>
+                                <span>Edited by: {userEmails[entry.original_updated_by] || "Unknown"}</span>
                               </div>
                             )}
                           </div>
@@ -367,7 +367,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
                               size="sm"
                               onClick={() => setPreviewEntry(entry)}
                               className="h-8 w-8 p-0 text-white hover:bg-gray-700"
-                              title="Vorschau anzeigen"
+                              title="Show preview"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -376,10 +376,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
                               size="sm"
                               onClick={() => setRestoreEntry(entry)}
                               className="h-8 px-3 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24] hover:text-gray-900"
-                              title={`Zurück zu Version vom ${format(parseISO(entry.backup_created_at), "dd.MM.yyyy, HH:mm")} Uhr`}
+                              title={`Restore to version from ${format(parseISO(entry.backup_created_at), "MMM dd, yyyy 'at' HH:mm")}`}
                             >
                               <RotateCcw className="h-3 w-3 mr-1" />
-                              Zurücksetzen
+                              Restore
                             </Button>
                           </div>
                         </div>
@@ -399,10 +399,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
               <Eye className="h-5 w-5" />
-              Vorschau: {previewEntry && formatSegmentName(previewEntry.section_key)}
+              Preview: {previewEntry && formatSegmentName(previewEntry.section_key)}
             </DialogTitle>
             <DialogDescription className="text-gray-400">
-              Stand vom {previewEntry && format(parseISO(previewEntry.backup_created_at), "dd.MM.yyyy, HH:mm:ss", { locale: de })} Uhr
+              Version from {previewEntry && format(parseISO(previewEntry.backup_created_at), "MMM dd, yyyy 'at' HH:mm:ss")}
               {" • "}{previewEntry && (LANGUAGE_LABELS[previewEntry.language] || previewEntry.language)}
             </DialogDescription>
           </DialogHeader>
@@ -413,7 +413,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
           </ScrollArea>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPreviewEntry(null)} className="border-gray-600 text-white hover:bg-gray-800">
-              Schließen
+              Close
             </Button>
             <Button 
               onClick={() => {
@@ -423,7 +423,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
               className="bg-[#f9dc24] text-gray-900 hover:bg-[#e5c820]"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Diese Version wiederherstellen
+              Restore this version
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -435,16 +435,16 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-400">
               <RotateCcw className="h-5 w-5" />
-              Wiederherstellung bestätigen
+              Confirm Restore
             </DialogTitle>
             <DialogDescription className="text-gray-300 space-y-3">
               <p>
-                Der aktuelle Inhalt von <strong className="text-white">{restoreEntry && formatSegmentName(restoreEntry.section_key)}</strong> ({restoreEntry && (LANGUAGE_LABELS[restoreEntry.language] || restoreEntry.language)}) wird ersetzt durch:
+                The current content of <strong className="text-white">{restoreEntry && formatSegmentName(restoreEntry.section_key)}</strong> ({restoreEntry && (LANGUAGE_LABELS[restoreEntry.language] || restoreEntry.language)}) will be replaced with:
               </p>
               <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
-                <div className="text-xs text-gray-400 mb-1">Ziel-Version:</div>
+                <div className="text-xs text-gray-400 mb-1">Target version:</div>
                 <div className="text-white font-medium">
-                  {restoreEntry && format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy, HH:mm", { locale: de })} Uhr
+                  {restoreEntry && format(parseISO(restoreEntry.backup_created_at), "MMM dd, yyyy 'at' HH:mm")}
                 </div>
                 {restoreEntry && (
                   <div className="text-sm text-gray-400 mt-2">
@@ -453,20 +453,20 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
                 )}
               </div>
               <p className="text-sm text-gray-400">
-                💾 Der aktuelle Stand wird automatisch als Backup gespeichert.
+                💾 The current state will be automatically saved as a backup.
               </p>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRestoreEntry(null)} disabled={restoring} className="border-gray-600 text-white hover:bg-gray-800">
-              Abbrechen
+              Cancel
             </Button>
             <Button 
               onClick={handleRestore} 
               disabled={restoring}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
-              {restoring ? "Wird wiederhergestellt..." : "Ja, wiederherstellen"}
+              {restoring ? "Restoring..." : "Yes, restore"}
             </Button>
           </DialogFooter>
         </DialogContent>
