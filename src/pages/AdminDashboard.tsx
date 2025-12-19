@@ -5247,7 +5247,7 @@ const AdminDashboard = () => {
               {/* Version Badge - Top Right */}
               <div className="absolute top-6 right-6 z-10">
                 <span className="px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#f9dc24] via-yellow-300 to-[#f9dc24] text-gray-900 rounded-lg shadow-lg shadow-yellow-400/30 border border-yellow-400/50">
-                  Version 0.9.1
+                  Version 0.9.2
                 </span>
               </div>
               <CardContent className="p-12">
@@ -5323,6 +5323,10 @@ const AdminDashboard = () => {
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Shield className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">User Management</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <HistoryIcon className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Versionsmanagement</span>
                     </div>
                   </div>
                 </div>
