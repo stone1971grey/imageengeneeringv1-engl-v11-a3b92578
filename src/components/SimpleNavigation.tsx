@@ -26,7 +26,7 @@ export const SimpleDropdown = ({ trigger, children, className = "", disabled = f
 
   return (
     <div 
-      className={`relative pb-4 ${className}`}
+      className={`relative ${className}`}
       onMouseEnter={() => !disabled && setIsOpen(true)}
       onMouseLeave={() => !disabled && setIsOpen(false)}
     >
@@ -39,13 +39,17 @@ export const SimpleDropdown = ({ trigger, children, className = "", disabled = f
       )}
       
       {!disabled && isOpen && (
-        <div className={`absolute top-full left-0 pt-4 z-[9999] ${
-          isRightAligned ? 'left-auto right-0' : 'left-0'
-        }`}>
-          <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-[20px]">
-            {children}
+        <>
+          {/* Invisible hover bridge to prevent gap */}
+          <div className="absolute top-full left-0 right-0 h-4 z-[9998]" />
+          <div className={`absolute top-[calc(100%+16px)] z-[9999] ${
+            isRightAligned ? 'left-auto right-0' : 'left-0'
+          }`}>
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-[20px]">
+              {children}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
