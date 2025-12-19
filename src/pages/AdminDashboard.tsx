@@ -65,6 +65,7 @@ import { ImageTextEditor } from '@/components/admin/ImageTextEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
@@ -197,12 +198,9 @@ class AdminDashboardErrorBoundary extends Component<{ children: ReactNode }, { h
 }
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isEditor, setIsEditor] = useState(false);
-  const [allowedPages, setAllowedPages] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Authentication state from hook
+  const { user, session, isAdmin, isEditor, allowedPages, loading, handleLogout, addAllowedPage } = useAdminAuth();
+  
   const [content, setContent] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const location = useLocation();
@@ -326,19 +324,7 @@ const AdminDashboard = () => {
   const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   
-  const handleLogout = async () => {
-    try {
-      // Clear local storage first to prevent stale session issues
-      localStorage.removeItem('sb-afrcagkprhtvvucukubf-auth-token');
-      sessionStorage.removeItem('admin_selected_page');
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Always navigate to auth, even if signOut fails
-      navigate('/auth');
-    }
-  };
+  // handleLogout is now provided by useAdminAuth hook
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -582,35 +568,7 @@ const AdminDashboard = () => {
     enabled: !!user && (isAdmin || isEditor)
   });
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session?.user) {
-          navigate("/auth");
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (!session?.user) {
-        navigate("/auth");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (user) {
-      checkUserAccess();
-    }
-  }, [user]);
+  // Auth state change and checkUserAccess are now handled by useAdminAuth hook
 
   // Persist selected page to sessionStorage for navigation between admin views
   const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
@@ -805,65 +763,7 @@ const AdminDashboard = () => {
     }
   }, [pageSegments, selectedPage, user, tabOrder]);
 
-  const checkUserAccess = async () => {
-    if (!user) return;
-    
-    // Check if user is admin
-    const { data: adminData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-
-    if (adminData) {
-      setIsAdmin(true);
-      setIsEditor(false);
-      setAllowedPages([]); // Admins have access to all pages
-      setLoading(false);
-      return;
-    }
-
-    // Check if user is editor
-    const { data: editorData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "editor")
-      .maybeSingle();
-
-    if (editorData) {
-      // Get editor's allowed pages (content editors like 'news', 'products')
-      const { data: pageAccessData, error: pageAccessError } = await supabase
-        .from("editor_page_access")
-        .select("page_slug")
-        .eq("user_id", user.id);
-
-      if (pageAccessError || !pageAccessData || pageAccessData.length === 0) {
-        toast.error("You don't have access to any pages");
-        navigate("/");
-        return;
-      }
-
-      const pages = pageAccessData.map(p => p.page_slug);
-      console.log('[AdminDashboard] Editor allowedPages loaded:', pages);
-      
-      setIsEditor(true);
-      setIsAdmin(false);
-      setAllowedPages(pages);
-      
-      // For editors: don't redirect - let them see the Welcome page
-      // The Welcome page shows them which content editors (news, products, etc.) they can access
-      // Special page_slugs like '__global__', '__all__', 'news', 'products' are NOT CMS pages to navigate to
-      
-      setLoading(false);
-      return;
-    }
-
-    // No valid role found
-    toast.error("You don't have admin or editor access");
-    navigate("/");
-  };
+  // checkUserAccess is now handled by useAdminAuth hook
 
   const handleFlyoutImageSelect = async (url: string) => {
     setFlyoutImageUrl(url || null);
@@ -1578,7 +1478,7 @@ const AdminDashboard = () => {
           console.error("Error granting editor access to new page:", accessError);
         } else {
           // Update allowedPages state immediately so editor can access the new page
-          setAllowedPages(prev => [...prev, finalSlug]);
+          addAllowedPage(finalSlug);
         }
       }
 
@@ -1780,7 +1680,7 @@ const AdminDashboard = () => {
         await supabase
           .from("editor_page_access")
           .insert({ user_id: user.id, page_slug: slug });
-        setAllowedPages(prev => [...prev, slug]);
+        addAllowedPage(slug);
       }
 
       // Success notification

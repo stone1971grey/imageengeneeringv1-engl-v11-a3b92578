@@ -24,12 +24,14 @@ export const useAdminAuth = () => {
 
   const handleLogout = async () => {
     try {
+      // Clear local storage first to prevent stale session issues
       localStorage.removeItem('sb-afrcagkprhtvvucukubf-auth-token');
       sessionStorage.removeItem('admin_selected_page');
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      // Always navigate to auth, even if signOut fails
       navigate('/auth');
     }
   };
@@ -48,7 +50,7 @@ export const useAdminAuth = () => {
     if (adminData) {
       setIsAdmin(true);
       setIsEditor(false);
-      setAllowedPages([]);
+      setAllowedPages([]); // Admins have access to all pages
       setLoading(false);
       return;
     }
@@ -62,6 +64,7 @@ export const useAdminAuth = () => {
       .maybeSingle();
 
     if (editorData) {
+      // Get editor's allowed pages (content editors like 'news', 'products')
       const { data: pageAccessData, error: pageAccessError } = await supabase
         .from("editor_page_access")
         .select("page_slug")
@@ -74,11 +77,16 @@ export const useAdminAuth = () => {
       }
 
       const pages = pageAccessData.map(p => p.page_slug);
-      console.log('[useAdminAuth] Editor allowedPages loaded:', pages);
+      console.log('[AdminDashboard] Editor allowedPages loaded:', pages);
       
       setIsEditor(true);
       setIsAdmin(false);
       setAllowedPages(pages);
+      
+      // For editors: don't redirect - let them see the Welcome page
+      // The Welcome page shows them which content editors (news, products, etc.) they can access
+      // Special page_slugs like '__global__', '__all__', 'news', 'products' are NOT CMS pages to navigate to
+      
       setLoading(false);
       return;
     }
@@ -118,6 +126,14 @@ export const useAdminAuth = () => {
     }
   }, [user]);
 
+  // Function to add a page to allowedPages (e.g., when editor creates a new page)
+  const addAllowedPage = (pageSlug: string) => {
+    setAllowedPages(prev => {
+      if (prev.includes(pageSlug)) return prev;
+      return [...prev, pageSlug];
+    });
+  };
+
   return {
     user,
     session,
@@ -125,6 +141,7 @@ export const useAdminAuth = () => {
     isEditor,
     allowedPages,
     loading,
-    handleLogout
+    handleLogout,
+    addAllowedPage
   };
 };
