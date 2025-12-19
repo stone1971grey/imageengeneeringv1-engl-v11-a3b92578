@@ -5990,20 +5990,24 @@ const AdminDashboard = () => {
 
                 {/* Version History Tab - Fixed Right (Admin only) - Toggle behavior */}
                 {isAdmin && (
-                  <TabsTrigger 
-                    value="version-history"
-                    className="text-base font-semibold py-3 data-[state=active]:bg-amber-500 data-[state=active]:text-white ml-auto"
-                    onClick={(e) => {
-                      // If already on history, go back to first segment
+                  <div 
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-3 text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer ml-auto ${
+                      activeTab === "version-history" 
+                        ? "bg-amber-500 text-white shadow" 
+                        : "bg-transparent hover:bg-muted"
+                    }`}
+                    onClick={() => {
+                      // Toggle: if on history go back, otherwise go to history
                       if (activeTab === "version-history" && tabOrder.length > 0) {
-                        e.preventDefault();
                         setActiveTab(tabOrder[0]);
+                      } else {
+                        setActiveTab("version-history");
                       }
                     }}
                   >
                     <HistoryIcon className="h-4 w-4 mr-2" />
                     History
-                  </TabsTrigger>
+                  </div>
                 )}
               </TabsList>
             </DndContext>
