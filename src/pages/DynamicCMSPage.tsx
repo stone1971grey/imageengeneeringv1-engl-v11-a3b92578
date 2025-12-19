@@ -231,6 +231,8 @@ const DynamicCMSPage = () => {
             const isNumericKey = /^\d+$/.test(item.section_key);
             // Keys im Format {type}-{id} wie 'downloads-507', 'events-123', 'product-list-456'
             const typedKeyMatch = item.section_key.match(/^([a-z-]+)-(\d+)$/);
+            // Keys im Format {segmentId}_{fieldName} wie '497_title', '497_backgroundImage'
+            const fieldKeyMatch = item.section_key.match(/^(\d+)_(\w+)$/);
             
             if (isNumericKey) {
               try {
@@ -261,6 +263,18 @@ const DynamicCMSPage = () => {
               } catch (e) {
                 console.error('[DynamicCMSPage] Error parsing typed section content:', e);
               }
+            } else if (fieldKeyMatch) {
+              // Keys wie '497_title', '497_backgroundImage' -> zusammenführen zu Segment-Daten
+              const segmentId = fieldKeyMatch[1];
+              const fieldName = fieldKeyMatch[2];
+              
+              if (!segmentDataMap[segmentId]) {
+                segmentDataMap[segmentId] = {};
+              }
+              
+              // Mapping: subtitle -> description für ActionHero Kompatibilität
+              const mappedFieldName = fieldName === 'subtitle' ? 'description' : fieldName;
+              segmentDataMap[segmentId][mappedFieldName] = item.content_value;
             }
           }
         });
