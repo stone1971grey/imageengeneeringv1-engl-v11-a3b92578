@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Save, Calendar, Filter, Layout, Eye, SortAsc } from "lucide-react";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface EventsSegmentEditorProps {
   segmentId: string;
@@ -198,6 +199,9 @@ const EventsSegmentEditorComponent = ({
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, segmentId, normalizedLang);
+
       const contentValue = JSON.stringify({
         title,
         description,

@@ -11,6 +11,7 @@ import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface ProductHeroEditorProps {
   pageSlug: string;
@@ -352,6 +353,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, "page_segments", language);
+
       const { data: existingContent } = await supabase
         .from("page_content")
         .select("content_value")

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Languages } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface NewsSegmentEditorProps {
   pageSlug: string;
@@ -220,6 +221,9 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     setIsSaving(true);
     
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, configSectionKey, "en");
+
       const configJson = JSON.stringify(config);
       
       const { error } = await supabase
@@ -250,6 +254,9 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     setIsSavingTarget(true);
     
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, configSectionKey, targetLanguage.split('-')[0]);
+
       const configJson = JSON.stringify({
         ...targetConfig,
         articleLimit: config.articleLimit,
