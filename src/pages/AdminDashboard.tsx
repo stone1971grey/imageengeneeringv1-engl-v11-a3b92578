@@ -93,6 +93,7 @@ import {
   getSegmentTypeName
 } from '@/components/admin/dashboard/AdminConstants';
 import { getDefaultSegmentData, getLanguageIndependentFields } from '@/components/admin/dashboard/segmentUtils';
+import { createNewCMSPage, createNewCMSPageWithSlug } from '@/components/admin/dashboard/cmsPageUtils';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
 import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
@@ -1081,483 +1082,40 @@ const AdminDashboard = () => {
     }
   };
 
-  const createNewCMSPage = async () => {
-    if (!selectedPageForCMS || !user) {
-      toast.error("Please select a page");
-      return;
-    }
-
-    // For Sicherheit: Nur Admins dürfen neue CMS-Seiten anlegen (RLS erzwingt das ohnehin)
-    if (!isAdmin) {
-      toast.error("Only admins can create new CMS pages.");
-      return;
-    }
-
-    setIsCreatingCMS(true);
-    toast("Step 1: Start CMS page creation");
-    
-    try {
-      // 1. Ensure page exists in page_registry; create entry if missing
-      let { data: pageInfo } = await supabase
-        .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_id, parent_slug")
-        .or(`page_slug.eq.${selectedPageForCMS},page_slug.ilike.%/${selectedPageForCMS}`)
-        .maybeSingle();
-
-    if (!pageInfo) {
-      toast("Step 2: Page not in registry, creating entry");
-      console.log("Page not in registry, creating entry...");
-
-      // Get highest page_id to generate next ID
-      const { data: maxPage } = await supabase
-        .from("page_registry")
-        .select("page_id")
-        .order("page_id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const nextPageId = (maxPage?.page_id || 0) + 1;
-
-        // Infer parent info based on navigation structure first
-        let parent_id: number | null = null;
-        let parent_slug: string | null = null;
-
-        const inferParentFromNavigation = async (slug: string) => {
-          if (!navigationData) return { parent_id: null, parent_slug: null };
-
-          // Helper to find parent info from hierarchical URL
-          const findParentFromUrl = async (link: string) => {
-            if (!link || link === '#') return null;
-            
-            const parts = link.split('/').filter(Boolean);
-            if (parts.length < 2) return null;
-            const last = parts[parts.length - 1];
-            if (last !== slug) return null;
-
-            // Extract parent slug from URL path
-            // For /your-solution/automotive/adas → parent is 'automotive' 
-            // For /your-solution/automotive → parent is 'your-solution'
-            // For /products/test-charts/le7 → parent is 'test-charts'
-            if (parts.length === 2) {
-              // Direct child of top-level category (e.g., /your-solution/automotive)
-              const topLevel = parts[0];
-              const { data } = await supabase
-                .from('page_registry')
-                .select('page_id, page_slug')
-                .eq('page_slug', topLevel)
-                .maybeSingle();
-              return data ? { parent_id: data.page_id, parent_slug: data.page_slug } : null;
-            } else if (parts.length >= 3) {
-              // Multi-level hierarchy (e.g., /your-solution/automotive/adas)
-              // Parent could be hierarchical slug like 'your-solution/automotive' or just 'automotive'
-              const potentialParentSlugs = [
-                parts.slice(0, -1).join('/'),  // Full hierarchical: 'your-solution/automotive'
-                parts[parts.length - 2],        // Just immediate parent: 'automotive'
-              ];
-              
-              for (const potentialSlug of potentialParentSlugs) {
-                const { data } = await supabase
-                  .from('page_registry')
-                  .select('page_id, page_slug')
-                  .eq('page_slug', potentialSlug)
-                  .maybeSingle();
-                if (data) {
-                  return { parent_id: data.page_id, parent_slug: data.page_slug };
-                }
-              }
-            }
-            
-            return null;
-          };
-
-          // Search in all navigation categories
-          const allCategories = [
-            ...(Object.values(navigationData.industries || {}) as any[]),
-            ...(Object.values(navigationData.products || {}) as any[]),
-            ...(Object.values(navigationData.solutions || {}) as any[]),
-            ...(Object.values(navigationData.targetGroups || {}) as any[]),
-            ...(Object.values(navigationData.testServices || {}) as any[]),
-          ];
-
-          for (const category of allCategories) {
-            // Check main category link
-            if (category.link) {
-              const result = await findParentFromUrl(category.link);
-              if (result) return result;
-            }
-
-            // Check subgroups
-            const subgroups = category.subgroups || category.services || [];
-            for (const subgroup of subgroups) {
-              const result = await findParentFromUrl(subgroup.link);
-              if (result) return result;
-            }
-          }
-
-          return { parent_id: null, parent_slug: null };
-        };
-
-        const inferred = await inferParentFromNavigation(selectedPageForCMS);
-        parent_id = inferred.parent_id;
-        parent_slug = inferred.parent_slug;
-
-        // Fallback: attach under "your-solution" if nothing inferred
-        if (!parent_id) {
-          const { data: yourSolutionParent } = await supabase
-            .from("page_registry")
-            .select("page_id, page_slug")
-            .eq("page_slug", "your-solution")
-            .maybeSingle();
-
-          if (yourSolutionParent) {
-            parent_id = yourSolutionParent.page_id;
-            parent_slug = yourSolutionParent.page_slug;
-          }
-        }
-
-        const inferredTitle = selectedPageForCMS
-          .split('-')
-          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(' ');
-
-        // Generate hierarchical page_slug based on parent relationship
-        let hierarchicalSlug = selectedPageForCMS;
-        
-        if (parent_slug) {
-          // If parent_slug is already hierarchical (contains '/'), just append
-          if (parent_slug.includes('/')) {
-            hierarchicalSlug = `${parent_slug}/${selectedPageForCMS}`;
-          } else {
-            // Look up parent page to see if it has its own parent_slug (e.g. your-solution → automotive)
-            const { data: parentPage } = await supabase
-              .from('page_registry')
-              .select('page_slug, parent_slug')
-              .eq('page_slug', parent_slug)
-              .maybeSingle();
-
-            if (parentPage?.parent_slug && parentPage.parent_slug !== 'index') {
-              // Build full hierarchy, e.g. your-solution/automotive/geometric-calibration-automotive
-              // Skip 'index' as it's not part of URL structure
-              hierarchicalSlug = `${parentPage.parent_slug}/${parent_slug}/${selectedPageForCMS}`;
-            } else {
-              // Simple parent/child, e.g. products/test-charts OR your-solution/automotive
-              hierarchicalSlug = `${parent_slug}/${selectedPageForCMS}`;
-            }
-          }
-        }
-
-        const { data: newPageData, error: insertError } = await supabase
-          .from("page_registry")
-          .insert({
-            page_id: nextPageId,
-            page_slug: hierarchicalSlug,
-            page_title: inferredTitle,
-            parent_id,
-            parent_slug,
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error creating page_registry entry:", insertError);
-          toast.error("Failed to create page registry entry");
-          setIsCreatingCMS(false);
-          return;
-        }
-
-        pageInfo = newPageData;
-        toast.success("✅ Page registry entry created!");
-      }
-
-      // 2. Find highest segment_id
-      const { data: maxSegment } = await supabase
-        .from("segment_registry")
-        .select("segment_id")
-        .order("segment_id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const baseId = (maxSegment?.segment_id || 0) + 1;
-
-      // 3. Create segment_registry entry for footer only (UDA approach)
-      // Use hierarchical slug from pageInfo
-      const finalSlug = pageInfo.page_slug;
-      
-      const segmentEntries = [
-        { page_slug: finalSlug, segment_key: 'footer', segment_id: baseId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
-      ];
-
-      const { error: segmentError } = await supabase
-        .from("segment_registry")
-        .insert(segmentEntries);
-
-      if (segmentError) throw segmentError;
-
-      // 4. Create page_content entries (UDA structure: only tab_order, page_segments, seo_settings)
-      const contentEntries = [
-        { page_slug: finalSlug, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
-        { page_slug: finalSlug, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
-        { page_slug: finalSlug, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
-          title: `${pageInfo.page_title} | Image Engineering`,
-          description: '',
-          canonical: `https://www.image-engineering.de/${finalSlug}`,
-          robotsIndex: true,
-          robotsFollow: true
-        }) },
-      ];
-
-      const { error: contentError } = await supabase
-        .from("page_content")
-        .insert(contentEntries);
-
-      if (contentError) throw contentError;
-
-      // 5. If current user is an editor, automatically grant access to this new page
-      if (isEditor && !isAdmin && user) {
-        const { error: accessError } = await supabase
-          .from("editor_page_access")
-          .insert({
-            user_id: user.id,
-            page_slug: finalSlug,
-          });
-
-        if (accessError) {
-          console.error("Error granting editor access to new page:", accessError);
-        } else {
-          // Update allowedPages state immediately so editor can access the new page
-          addAllowedPage(finalSlug);
-        }
-      }
-
-      // 6. Build hierarchical URL from page_slug (which is now already hierarchical)
-      const hierarchicalUrl = `/${pageInfo.page_slug}`;
-
-      // Show success
-      toast.success(
-        <div className="space-y-2">
-          <p className="font-bold">🎉 Page Created Successfully ID {pageInfo.page_id}</p>
-          <p className="text-sm">Die Seite ist vollständig eingerichtet und sofort verfügbar.</p>
-          <p className="text-sm"><strong>URL:</strong> {hierarchicalUrl}</p>
-        </div>,
-        {
-          duration: 5000,
-        }
-      );
-
-      setIsCreateCMSDialogOpen(false);
-      setSelectedPageForCMS("");
-      
-      // Trigger refresh of page selector dropdown
-      window.dispatchEvent(new Event('refreshPageSelector'));
-      
-      // Use full hierarchical slug for navigation (URL encoded)
-      // Navigate using React Router (no full page reload)
-      navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(pageInfo.page_slug)}`);
-      
-    } catch (error: any) {
-      console.error("Error creating CMS page:", error);
-      toast.error(`Failed to create CMS page: ${error.message}`);
-    } finally {
-      setIsCreatingCMS(false);
-    }
+  // CMS page creation wrapper functions - actual logic is in cmsPageUtils
+  const handleCreateNewCMSPage = async () => {
+    if (!user) return;
+    await createNewCMSPage({
+      selectedPageForCMS,
+      userId: user.id,
+      isAdmin,
+      isEditor,
+      language,
+      navigationData,
+      addAllowedPage,
+      navigate,
+      setIsCreatingCMS,
+      setIsCreateCMSDialogOpen,
+      setSelectedPageForCMS,
+    });
   };
 
-  // New simplified slug-based CMS page creation
-  const createNewCMSPageWithSlug = async (slug: string, languages: string[]) => {
-    if (!slug || !user) {
-      toast.error("Please provide a valid slug");
-      return;
-    }
-
-    if (!isAdmin) {
-      toast.error("Only admins can create new CMS pages.");
-      return;
-    }
-
-    setIsCreatingCMS(true);
-    toast("Starting CMS page creation...");
-    
-    try {
-      // Parse slug to extract parent and child
-      const slugParts = slug.split('/').filter(Boolean);
-      const childSlug = slugParts[slugParts.length - 1];
-      const parentSlug = slugParts.length > 1 ? slugParts.slice(0, -1).join('/') : null;
-
-      // Get highest page_id
-      const { data: maxPage } = await supabase
-        .from("page_registry")
-        .select("page_id")
-        .order("page_id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const nextPageId = (maxPage?.page_id || 0) + 1;
-
-      let parent_id: number | null = null;
-      let parent_slug_value: string | null = null;
-
-      // If there's a parent, validate it exists
-      if (parentSlug) {
-        const { data: parentPage } = await supabase
-          .from('page_registry')
-          .select('page_id, page_slug')
-          .or(`page_slug.eq.${parentSlug},page_slug.ilike.%/${parentSlug}`)
-          .maybeSingle();
-
-        if (!parentPage) {
-          toast.error(`Parent page "${parentSlug}" not found. Create parent first.`);
-          setIsCreatingCMS(false);
-          return;
-        }
-
-        parent_id = parentPage.page_id;
-        // Skip 'index' as parent_slug - it's the root and should not be part of the hierarchy
-        parent_slug_value = (parentPage.page_slug !== 'index') ? parentPage.page_slug : null;
-      }
-
-      // Generate page title from child slug
-      const pageTitle = childSlug
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-
-      // Create page_registry entry
-      const { data: newPageData, error: insertError } = await supabase
-        .from("page_registry")
-        .insert({
-          page_id: nextPageId,
-          page_slug: slug,
-          page_title: pageTitle,
-          parent_id,
-          parent_slug: parent_slug_value,
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error("Error creating page_registry entry:", insertError);
-        toast.error("Failed to create page registry entry");
-        setIsCreatingCMS(false);
-        return;
-      }
-
-      toast.success("✅ Page registry entry created!");
-
-      // Get highest segment_id
-      const { data: maxSegment } = await supabase
-        .from("segment_registry")
-        .select("segment_id")
-        .order("segment_id", { ascending: false})
-        .limit(1)
-        .maybeSingle();
-
-      const baseSegmentId = (maxSegment?.segment_id || 0) + 1;
-
-      // Create segment_registry entry for footer
-      const segmentEntries = [
-        { page_slug: slug, segment_key: 'footer', segment_id: baseSegmentId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
-      ];
-
-      const { error: segmentError } = await supabase
-        .from("segment_registry")
-        .insert(segmentEntries);
-
-      if (segmentError) throw segmentError;
-
-      toast.success("✅ Segment registry created!");
-
-      // Create page_content entries
-      const contentEntries = [
-        { page_slug: slug, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
-        { page_slug: slug, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
-        { page_slug: slug, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
-          title: `${pageTitle} | Image Engineering`,
-          description: '',
-          canonical: `https://www.image-engineering.de/${slug}`,
-          robotsIndex: true,
-          robotsFollow: true
-        }) },
-      ];
-
-      const { error: contentError } = await supabase
-        .from("page_content")
-        .insert(contentEntries);
-
-      if (contentError) throw contentError;
-
-      toast.success("✅ Page content initialized!");
-
-      // Automatically create navigation_links entries so the new page
-      // appears in the Your Solution flyout (industries column)
-      const industryParentCategory = parent_slug_value
-        ? INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]
-        : undefined;
-
-      if (industryParentCategory) {
-        try {
-          const navigationRows = languages.map((lang) => ({
-            category: 'industries',
-            language: lang,
-            active: true,
-            position: 0,
-            slug: `/${slug}`,
-            label_key: `industries.${industryParentCategory}.${pageTitle}`,
-            parent_category: industryParentCategory,
-            parent_label: pageTitle,
-            description: '',
-            icon_key: null,
-          }));
-
-          const { error: navError } = await supabase
-            .from('navigation_links')
-            .insert(navigationRows as any);
-
-          if (navError) {
-            console.error('[createNewCMSPageWithSlug] Error creating navigation_links:', navError);
-          } else {
-            toast.success('✅ Navigation entry created – page is now visible in Your Solution flyout');
-          }
-        } catch (navErr) {
-          console.error('[createNewCMSPageWithSlug] Unexpected navigation_links error:', navErr);
-        }
-      }
-
-      // Grant editor access if needed
-      if (isEditor && !isAdmin) {
-        await supabase
-          .from("editor_page_access")
-          .insert({ user_id: user.id, page_slug: slug });
-        addAllowedPage(slug);
-      }
-
-      // Success notification
-      toast.success(
-        <div className="space-y-2">
-          <p className="font-bold">🎉 Page Created Successfully ID {nextPageId}</p>
-          <p className="text-sm">Page is fully configured and immediately available.</p>
-          <p className="text-sm"><strong>URL:</strong> /{slug}</p>
-          <p className="text-sm"><strong>Languages:</strong> {languages.join(', ')}</p>
-        </div>,
-        {
-          duration: 5000,
-        }
-      );
-
-      setIsCreateCMSDialogOpen(false);
-      setSelectedPageForCMS("");
-      
-    // Trigger refresh
-    window.dispatchEvent(new Event('refreshPageSelector'));
-    
-    // Navigate to new page in admin
-    navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(childSlug)}`);
-      
-    } catch (error: any) {
-      console.error("Error creating CMS page:", error);
-      toast.error(`Failed to create CMS page: ${error.message}`);
-    } finally {
-      setIsCreatingCMS(false);
-    }
+  const handleCreateNewCMSPageWithSlug = async (slug: string, languages: string[]) => {
+    if (!user) return;
+    await createNewCMSPageWithSlug({
+      slug,
+      languages,
+      userId: user.id,
+      isEditor,
+      isAdmin,
+      language,
+      navigationData,
+      addAllowedPage,
+      navigate,
+      setIsCreatingCMS,
+      setIsCreateCMSDialogOpen,
+      setSelectedPageForCMS,
+    });
   };
 
   const loadContent = async () => {
@@ -7143,7 +6701,7 @@ const AdminDashboard = () => {
       <CreateCMSPageDialog
         open={isCreateCMSDialogOpen}
         onOpenChange={setIsCreateCMSDialogOpen}
-        onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
+        onSuccess={(slug, languages) => handleCreateNewCMSPageWithSlug(slug, languages)}
       />
       </div>
     </AdminDashboardErrorBoundary>
