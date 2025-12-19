@@ -689,7 +689,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
 
   if (isLoading) {
     return (
-      <section className="pt-32 pb-16 bg-background">
+      <section className="pt-0 pb-16 bg-background min-h-screen">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f9dc24]"></div>
@@ -700,7 +700,7 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
   }
 
   return (
-    <section className="pt-32 pb-16 bg-background">
+    <section className="pt-0 pb-16 bg-background min-h-screen">
       <div className="container mx-auto px-6">
         {/* Header */}
         {(config?.title || config?.description) && (
