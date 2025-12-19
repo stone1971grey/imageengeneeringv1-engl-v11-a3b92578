@@ -83,6 +83,15 @@ import { createContentBackup, createMultipleBackups } from '@/utils/createConten
 import { UserManagement } from '@/components/admin/UserManagement';
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
+import { 
+  STATIC_SEGMENT_IDS, 
+  INDUSTRY_PARENT_CATEGORY_BY_SLUG, 
+  LANGUAGES, 
+  DESIGN_ICON_OPTIONS, 
+  CTA_GROUP_OPTIONS,
+  buildSegmentLabel,
+  getSegmentTypeName
+} from '@/components/admin/dashboard/AdminConstants';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -207,27 +216,7 @@ const AdminDashboard = () => {
   const { language } = useLanguage();
   const navigationData = useNavigationData();
   
-  // Static segment IDs - these are fixed and never change
-  const STATIC_SEGMENT_IDS = {
-    hero: 1,
-    tiles: 2, 
-    banner: 3,
-    solutions: 4
-  };
-
-  // Mapping from parent page slugs to navigation "industry" categories
-  // This is used to automatically create navigation_links entries for new CMS pages
-  // so that they immediately appear in the Your Solution flyout.
-  const INDUSTRY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
-    'your-solution/automotive': 'Automotive',
-    'your-solution/security-surveillance': 'Security & Surveillance',
-    'your-solution/mobile-phone': 'Mobile Phone',
-    'your-solution/web-camera': 'Web Camera',
-    'your-solution/machine-vision': 'Machine Vision',
-    'your-solution/medical-endoscopy': 'Medical & Endoscopy',
-    'your-solution/scanners-archiving': 'Scanners & Archiving',
-    'your-solution/photography': 'Photo & Video',
-  };
+  // STATIC_SEGMENT_IDS and INDUSTRY_PARENT_CATEGORY_BY_SLUG are imported from AdminConstants
   
   // Get selected page from URL parameter
   // Keep full hierarchical slug if provided, otherwise use the raw value
@@ -448,40 +437,7 @@ const AdminDashboard = () => {
   const [targetApplications, setTargetApplications] = useState<any[]>([]);
   const [isTranslatingTiles, setIsTranslatingTiles] = useState(false);
 
-  // Multilingual Rainbow - Languages Definition
-  const LANGUAGES = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'de', name: 'German', flag: '🇩🇪' },
-    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-  ];
-
-  const DESIGN_ICON_OPTIONS = [
-    { key: 'car', label: 'Automotive', Icon: Car },
-    { key: 'shield', label: 'Security', Icon: Shield },
-    { key: 'smartphone', label: 'Mobile / VCX', Icon: Smartphone },
-    { key: 'camera', label: 'Camera / Image Quality', Icon: Camera },
-    { key: 'cog', label: 'Machine Vision', Icon: Cog },
-    { key: 'stethoscope', label: 'Medical', Icon: Stethoscope },
-    { key: 'scanline', label: 'Scanners', Icon: ScanLine },
-    { key: 'monitor', label: 'Display / Monitor', Icon: Monitor },
-    { key: 'zap', label: 'Technology', Icon: Zap },
-    { key: 'target', label: 'Siemens', Icon: Target },
-    { key: 'file', label: 'Generic Page', Icon: FileText },
-    { key: 'flask', label: 'Test Lab / Overview', Icon: FlaskConical },
-    { key: 'check-circle', label: 'Standardized', Icon: CheckCircle },
-    { key: 'settings', label: 'Specialized / Custom', Icon: Settings },
-  ];
-
-  const CTA_GROUP_OPTIONS = [
-    { key: 'none', label: 'No CTA (disabled)' },
-    { key: 'your-solution', label: 'Your Solution flyout' },
-    { key: 'products', label: 'Products & Test Services flyout' },
-    { key: 'test-lab', label: 'Test Lab flyout' },
-    { key: 'training-events', label: 'Training & Events flyout' },
-    { key: 'info-hub', label: 'Info Hub flyout' },
-  ];
+  // LANGUAGES, DESIGN_ICON_OPTIONS and CTA_GROUP_OPTIONS are imported from AdminConstants
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -7194,32 +7150,7 @@ const AdminDashboard = () => {
                     // IMPORTANT: Use numeric segment_id from segmentRegistry, not string keys
                     const availableSegments: { id: string; title: string }[] = [];
                     
-                    // Helper: build label exactly like in the segment tab bar
-                    const buildSegmentLabel = (segType: string, displayNumber: number): string => {
-                      if (segType === 'hero') return `Produkt Hero - F ${displayNumber}`;
-                      if (segType === 'product-hero-gallery') return `Product Gallery - G ${displayNumber}`;
-                      if (segType === 'tiles') return `Tiles - H ${displayNumber}`;
-                      if (segType === 'banner') return `Banner - J ${displayNumber}`;
-                      if (segType === 'banner-p') return `Banner-P ${displayNumber}`;
-                      if (segType === 'image-text') return `Image & Text - I ${displayNumber}`;
-                      if (segType === 'feature-overview') return `Features - K ${displayNumber}`;
-                      if (segType === 'table') return `Table - L ${displayNumber}`;
-                      if (segType === 'faq') return `FAQ - O ${displayNumber}`;
-                      if (segType === 'video') return `Video - M ${displayNumber}`;
-                      if (segType === 'specification') return `Specification - N ${displayNumber}`;
-                      if (segType === 'news') return `Latest News - D ${displayNumber}`;
-                      if (segType === 'full-hero') return `Full Hero - A ${displayNumber}`;
-                      if (segType === 'intro') return `Intro - B ${displayNumber}`;
-                      if (segType === 'industries') return `Industries - C ${displayNumber}`;
-                      if (segType === 'debug') return `Debug ${displayNumber}`;
-                      if (segType === 'news-list') return `News List - P-${displayNumber}`;
-                      if (segType === 'action-hero') return `Action Hero - Q-${displayNumber}`;
-                      if (segType === 'events') return `Events List - R-${displayNumber}`;
-                      if (segType === 'product-list') return `Product List - S-${displayNumber}`;
-                      if (segType === 'downloads') return `Downloads - T-${displayNumber}`;
-                      if (segType === 'mini-footer') return `Mini Footer - U-${displayNumber}`;
-                      return segType;
-                    };
+                    // buildSegmentLabel is imported from AdminConstants
 
                     // Tiles segment (static tab)
                     if (segmentRegistry['tiles']) {
