@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, Search } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, Search, History as HistoryIcon } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -80,6 +80,8 @@ import { ProductListSegmentEditor } from '@/components/admin/ProductListSegmentE
 import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEditor';
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
+import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -281,6 +283,7 @@ const AdminDashboard = () => {
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Wrapper to persist activeTab to sessionStorage
@@ -5761,6 +5764,23 @@ const AdminDashboard = () => {
                         </div>
                         <h4 className="text-sm font-bold text-gray-900">User Management</h4>
                         <p className="text-xs text-gray-500">Roles & permissions</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Version History - Amber/Clock - Admin only */}
+                  {isAdmin && (
+                    <div 
+                      className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-500 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                      onClick={() => toast.info("Select a page first to view its version history")}
+                    >
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
+                      <div className="p-5 space-y-3 text-center">
+                        <div className="h-12 w-12 mx-auto rounded-xl bg-amber-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          <HistoryIcon className="h-6 w-6 text-white" />
+                        </div>
+                        <h4 className="text-sm font-bold text-gray-900">Version History</h4>
+                        <p className="text-xs text-gray-500">Rollback & restore</p>
                       </div>
                     </div>
                   )}
