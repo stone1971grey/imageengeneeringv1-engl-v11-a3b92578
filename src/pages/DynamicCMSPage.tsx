@@ -279,18 +279,26 @@ const DynamicCMSPage = () => {
           }
         });
 
-        // Segment-Daten aus section_keys haben VORRANG für sprachspezifische Inhalte
-        // Numerische Keys enthalten die übersetzten/sprachspezifischen Daten
+        // Segment-Daten aus page_segments haben VORRANG
+        // {id}_{field} Keys dienen nur als Fallback für fehlende Felder
         segments = segments.map((seg: any) => {
           const key = String(seg.id || seg.segment_key);
           
-          // Sprachspezifische Daten aus section_key haben immer Vorrang
+          // page_segments Daten haben Vorrang, {id}_{field} Keys nur als Fallback
           if (segmentDataMap[key]) {
+            // Filtere leere Strings aus segmentDataMap heraus
+            const fallbackData: Record<string, any> = {};
+            Object.entries(segmentDataMap[key]).forEach(([k, v]) => {
+              if (v !== '' && v !== null && v !== undefined) {
+                fallbackData[k] = v;
+              }
+            });
+            
             return {
               ...seg,
               data: {
-                ...(seg.data || {}), // Basis-Daten aus page_segments
-                ...segmentDataMap[key], // Überschreiben mit sprachspezifischen Daten
+                ...fallbackData, // Fallback-Daten aus {id}_{field} Keys
+                ...(seg.data || {}), // page_segments Daten haben VORRANG
               },
             };
           }
