@@ -963,7 +963,7 @@ export const UserManagement = () => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <ShieldCheck className="h-5 w-5" />
-            Rollen-Übersicht
+            Roles Overview
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -974,11 +974,11 @@ export const UserManagement = () => {
                 <h4 className="font-semibold text-red-900">Admin</h4>
               </div>
               <ul className="text-sm text-red-700 space-y-1">
-                <li>• Voller Systemzugriff</li>
-                <li>• Benutzer & Rollen verwalten</li>
-                <li>• Alle Seiten & Inhalte bearbeiten</li>
-                <li>• Zugriff auf alle Einstellungen</li>
-                <li>• Inhalte dauerhaft löschen</li>
+                <li>• Full system access</li>
+                <li>• Manage users & roles</li>
+                <li>• Edit all pages & content</li>
+                <li>• Access to all settings</li>
+                <li>• Permanently delete content</li>
               </ul>
             </div>
 
@@ -988,11 +988,11 @@ export const UserManagement = () => {
                 <h4 className="font-semibold text-blue-900">Editor</h4>
               </div>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Zugewiesene Seiten bearbeiten</li>
-                <li>• Inhalte erstellen & aktualisieren</li>
-                <li>• Mediendateien hochladen</li>
-                <li>• Übersetzungen verwalten</li>
-                <li>• Zugriff auf Glossar</li>
+                <li>• Edit assigned pages</li>
+                <li>• Create & update content</li>
+                <li>• Upload media files</li>
+                <li>• Manage translations</li>
+                <li>• Access to glossary</li>
               </ul>
             </div>
           </div>
@@ -1336,24 +1336,24 @@ export const UserManagement = () => {
             <button
               onClick={() => setShowEditorAccessDialog(false)}
               className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
-              title="Schließen"
+              title="Close"
             >
               ×
             </button>
             <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
               <Settings className="h-6 w-6 text-blue-600" />
-              Editor-Berechtigungen verwalten
+              Manage Editor Permissions
             </DialogTitle>
             <DialogDescription className="text-base text-gray-700">
-              Wählen Sie die Bereiche aus, die {selectedUser?.full_name || selectedUser?.email} bearbeiten darf.
+              Select the areas that {selectedUser?.full_name || selectedUser?.email} may edit.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
             {/* Access Type Selection */}
             <div>
-              <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
-              <p className="text-base text-gray-700 mt-2">Klicken Sie auf die Editoren, auf die der Benutzer Zugriff haben soll.</p>
+              <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
+              <p className="text-base text-gray-700 mt-2">Click on the editors the user should have access to.</p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1397,7 +1397,7 @@ export const UserManagement = () => {
             {selectedEditors.length > 0 && (
               <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
                 <p className="text-lg font-bold text-green-800">
-                  ✓ {selectedEditors.length} Editor(en) ausgewählt
+                  ✓ {selectedEditors.length} editor(s) selected
                 </p>
               </div>
             )}
@@ -1405,7 +1405,7 @@ export const UserManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditorAccessDialog(false)}>
-              Schließen
+              Close
             </Button>
             <Button 
               onClick={handleSaveEditorAccess} 
@@ -1413,9 +1413,9 @@ export const UserManagement = () => {
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               {savingAccess ? (
-                <>Wird gespeichert...</>
+                <>Saving...</>
               ) : (
-                <>Änderungen speichern</>
+                <>Save Changes</>
               )}
             </Button>
           </DialogFooter>
@@ -1428,16 +1428,16 @@ export const UserManagement = () => {
             <button
               onClick={() => setShowEditUserDialog(false)}
               className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
-              title="Schließen"
+              title="Close"
             >
               ×
             </button>
             <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
               <Pencil className="h-6 w-6 text-yellow-600" />
-              Benutzer bearbeiten
+              Edit User
             </DialogTitle>
             <DialogDescription className="text-base text-gray-700">
-              Bearbeiten Sie die Einstellungen für {selectedUser?.full_name || selectedUser?.email}
+              Edit settings for {selectedUser?.full_name || selectedUser?.email}
             </DialogDescription>
           </DialogHeader>
 
@@ -1448,29 +1448,29 @@ export const UserManagement = () => {
                 <Label htmlFor="edit-name" className="text-base font-semibold text-gray-900">Name</Label>
                 <Input
                   id="edit-name"
-                  placeholder="Name eingeben"
+                  placeholder="Enter name"
                   value={editUserName}
                   onChange={(e) => setEditUserName(e.target.value)}
                   className="text-base h-12"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-username" className="text-base font-semibold text-gray-900">Login (Benutzername)</Label>
+                <Label htmlFor="edit-username" className="text-base font-semibold text-gray-900">Login (Username)</Label>
                 <Input
                   id="edit-username"
                   type="text"
-                  placeholder="z.B. admin123"
+                  placeholder="e.g. admin123"
                   value={editUsername}
                   onChange={(e) => setEditUsername(e.target.value)}
                   className="text-base h-12"
                 />
-                <p className="text-sm text-gray-600">Der Benutzername für den Login</p>
+                <p className="text-sm text-gray-600">The username for login</p>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">E-Mail-Adresse</Label>
+                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">Email Address</Label>
                 <Input
                   id="edit-email"
                   type="email"
@@ -1479,15 +1479,15 @@ export const UserManagement = () => {
                   onChange={(e) => setEditUserEmail(e.target.value)}
                   className="text-base h-12"
                 />
-                <p className="text-sm text-gray-600">Für Kommunikation (Profil-E-Mail)</p>
+                <p className="text-sm text-gray-600">For communication (profile email)</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-password" className="text-base font-semibold text-gray-900">Neues Passwort</Label>
+                <Label htmlFor="edit-password" className="text-base font-semibold text-gray-900">New Password</Label>
                 <div className="relative">
                   <Input
                     id="edit-password"
                     type={showEditPassword ? "text" : "password"}
-                    placeholder="Leer lassen = unverändert"
+                    placeholder="Leave empty = unchanged"
                     value={editUserPassword}
                     onChange={(e) => setEditUserPassword(e.target.value)}
                     className="pr-12 text-base h-12"
@@ -1500,13 +1500,13 @@ export const UserManagement = () => {
                     {showEditPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                <p className="text-sm text-gray-600">Nur ausfüllen wenn Passwort geändert werden soll</p>
+                <p className="text-sm text-gray-600">Only fill in if password should be changed</p>
               </div>
             </div>
 
             {/* Role Selection */}
             <div className="space-y-3 pt-4 border-t border-gray-200">
-              <Label className="text-lg font-bold text-gray-900">Rolle</Label>
+              <Label className="text-lg font-bold text-gray-900">Role</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
@@ -1520,7 +1520,7 @@ export const UserManagement = () => {
                     <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
                     <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Kann zugewiesene Inhalte bearbeiten</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Can edit assigned content</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
@@ -1534,7 +1534,7 @@ export const UserManagement = () => {
                     <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
                     <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Voller Systemzugriff</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Full system access</p>
                 </div>
               </div>
             </div>
@@ -1545,11 +1545,11 @@ export const UserManagement = () => {
                 <div>
                   <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <Globe className="h-5 w-5 text-purple-600" />
-                    Sprachberechtigungen
+                    Language Permissions
                   </Label>
                   <p className="text-base text-gray-700 mt-2">
-                    Wählen Sie die Sprachen aus, die der Editor bearbeiten darf. 
-                    Diese Berechtigung gilt für <strong>alle Bereiche</strong>: CMS-Segmente, News, Events, Products, Downloads.
+                    Select the languages the editor may edit. 
+                    This permission applies to <strong>all areas</strong>: CMS segments, News, Events, Products, Downloads.
                   </p>
                 </div>
                 
@@ -1584,16 +1584,16 @@ export const UserManagement = () => {
                 {editGlobalSegmentLanguages.length > 0 ? (
                   <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
                     <p className="text-lg font-bold text-purple-800">
-                      ✓ {editGlobalSegmentLanguages.length} Sprache(n) ausgewählt
+                      ✓ {editGlobalSegmentLanguages.length} language(s) selected
                     </p>
                     <p className="text-sm text-purple-600 mt-1">
-                      Der Editor kann in allen Bereichen (CMS-Segmente, News, Events, Products, Downloads) Inhalte in diesen Sprachen bearbeiten.
+                      The editor can edit content in these languages across all areas (CMS segments, News, Events, Products, Downloads).
                     </p>
                   </div>
                 ) : (
                   <div className="bg-amber-50 border-2 border-amber-300 rounded-lg px-5 py-4">
                     <p className="text-base text-amber-800">
-                      ⚠️ Keine Sprachen ausgewählt - der Editor kann keine Inhalte bearbeiten.
+                      ⚠️ No languages selected - the editor cannot edit any content.
                     </p>
                   </div>
                 )}
@@ -1604,10 +1604,10 @@ export const UserManagement = () => {
             {editUserRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900">Content-Editoren auswählen</Label>
+                  <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
                   <p className="text-base text-gray-700 mt-2">
-                    Klicken Sie auf die Editoren (News, Events, etc.), auf die der Benutzer Zugriff haben soll.
-                    Die Sprachberechtigung wird durch die obige Auswahl gesteuert.
+                    Click on the editors (News, Events, etc.) that the user should have access to.
+                    Language permissions are controlled by the selection above.
                   </p>
                 </div>
                 
@@ -1651,7 +1651,7 @@ export const UserManagement = () => {
                 {editSelectedEditors.length > 0 && (
                   <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
                     <p className="text-lg font-bold text-green-800">
-                      ✓ {editSelectedEditors.length} Editor(en) ausgewählt
+                      ✓ {editSelectedEditors.length} editor(s) selected
                     </p>
                   </div>
                 )}
@@ -1661,7 +1661,7 @@ export const UserManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditUserDialog(false)}>
-              Schließen
+              Close
             </Button>
             <Button 
               onClick={handleSaveEditUser} 
@@ -1669,9 +1669,9 @@ export const UserManagement = () => {
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               {isSavingEdit ? (
-                <>Wird gespeichert...</>
+                <>Saving...</>
               ) : (
-                <>Änderungen speichern</>
+                <>Save Changes</>
               )}
             </Button>
           </DialogFooter>
