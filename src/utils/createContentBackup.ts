@@ -9,6 +9,8 @@ export async function createContentBackup(
   sectionKey: string,
   language: string = 'en'
 ): Promise<boolean> {
+  console.log('[Backup] 🚀 Starting backup for:', { pageSlug, sectionKey, language });
+  
   try {
     // Fetch current content that will be backed up
     const { data: currentContent, error: fetchError } = await supabase
@@ -19,19 +21,22 @@ export async function createContentBackup(
       .eq('language', language)
       .maybeSingle();
 
+    console.log('[Backup] 📋 Fetched current content:', { currentContent, fetchError });
+
     if (fetchError) {
-      console.error('[Backup] Error fetching current content:', fetchError);
+      console.error('[Backup] ❌ Error fetching current content:', fetchError);
       return false;
     }
 
     // If no current content exists, nothing to backup
     if (!currentContent) {
-      console.log('[Backup] No existing content to backup for:', pageSlug, sectionKey, language);
+      console.log('[Backup] ⚠️ No existing content to backup for:', pageSlug, sectionKey, language);
       return true;
     }
 
     // Create backup entry
-    const { error: backupError } = await supabase
+    console.log('[Backup] 💾 Inserting backup entry...');
+    const { data: insertData, error: backupError } = await supabase
       .from('page_content_backups')
       .insert({
         page_slug: pageSlug,
@@ -41,17 +46,20 @@ export async function createContentBackup(
         content_value: currentContent.content_value,
         original_updated_at: currentContent.updated_at,
         original_updated_by: currentContent.updated_by
-      });
+      })
+      .select();
+
+    console.log('[Backup] 📝 Insert result:', { insertData, backupError });
 
     if (backupError) {
-      console.error('[Backup] Error creating backup:', backupError);
+      console.error('[Backup] ❌ Error creating backup:', backupError);
       return false;
     }
 
-    console.log('[Backup] Successfully created backup for:', pageSlug, sectionKey, language);
+    console.log('[Backup] ✅ Successfully created backup for:', pageSlug, sectionKey, language);
     return true;
   } catch (error) {
-    console.error('[Backup] Unexpected error:', error);
+    console.error('[Backup] ❌ Unexpected error:', error);
     return false;
   }
 }
