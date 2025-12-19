@@ -5987,6 +5987,17 @@ const AdminDashboard = () => {
                   }
                   return null;
                 })()}
+
+                {/* Version History Tab - Fixed Right (Admin only) */}
+                {isAdmin && (
+                  <TabsTrigger 
+                    value="version-history"
+                    className="text-base font-semibold py-3 data-[state=active]:bg-amber-500 data-[state=active]:text-white ml-auto"
+                  >
+                    <HistoryIcon className="h-4 w-4 mr-2" />
+                    History
+                  </TabsTrigger>
+                )}
               </TabsList>
             </DndContext>
 
@@ -6003,6 +6014,12 @@ const AdminDashboard = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <SegmentHistoryButton
+                    pageSlug={resolvedPageSlug || selectedPage}
+                    sectionKey="hero_title"
+                    language={editorLanguage}
+                    onRestore={() => loadContent()}
+                  />
                   <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                     Produkt-Hero Template
                   </div>
@@ -6323,6 +6340,12 @@ const AdminDashboard = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <SegmentHistoryButton
+                    pageSlug={resolvedPageSlug || selectedPage}
+                    sectionKey="tiles"
+                    language={editorLanguage}
+                    onRestore={() => loadContent()}
+                  />
                   <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                     Tiles Template
                   </div>
@@ -6445,6 +6468,12 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
+                    <SegmentHistoryButton
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      sectionKey="banner_title"
+                      language={editorLanguage}
+                      onRestore={() => loadContent()}
+                    />
                     <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                       Banner Template
                     </div>
@@ -6775,6 +6804,12 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
+                    <SegmentHistoryButton
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      sectionKey="solutions_title"
+                      language={editorLanguage}
+                      onRestore={() => loadContent()}
+                    />
                     <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                       Image & Text Template
                     </div>
@@ -7093,6 +7128,14 @@ const AdminDashboard = () => {
                     <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                       ID: {segmentRegistry['footer'] || 7}
                     </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <SegmentHistoryButton
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      sectionKey="footer_cta_title"
+                      language={editorLanguage}
+                      onRestore={() => loadContent()}
+                    />
                   </div>
                 </div>
               </CardHeader>
@@ -7720,6 +7763,17 @@ const AdminDashboard = () => {
             </TabsContent>
             );
           })}
+
+          {/* Version History Tab Content */}
+          {isAdmin && (
+            <TabsContent value="version-history">
+              <VersionHistoryPanel 
+                pageSlug={resolvedPageSlug || selectedPage}
+                currentLanguage={editorLanguage}
+                onRestore={() => loadContent()}
+              />
+            </TabsContent>
+          )}
         </Tabs>
         )}
       </div>
