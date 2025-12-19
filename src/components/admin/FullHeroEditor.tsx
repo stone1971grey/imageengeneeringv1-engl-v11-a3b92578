@@ -16,6 +16,7 @@ import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate }
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -752,6 +753,9 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
     }
 
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, "page_segments", language);
+
       const segments = JSON.parse(pageContentData.content_value);
       const updatedSegments = segments.map((seg: any) => {
         if (seg.type === "full-hero" && String(seg.id) === String(segmentId)) {

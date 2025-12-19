@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface DownloadsSegmentEditorProps {
   segmentId: number | string;
@@ -174,6 +175,9 @@ const DownloadsSegmentEditorComponent = ({
   const handleSave = async () => {
     setIsLoading(true);
     try {
+      // Create backup before saving
+      await createContentBackup(pageSlug, `downloads-${segmentId}`, language);
+
       const config = {
         title,
         description,
