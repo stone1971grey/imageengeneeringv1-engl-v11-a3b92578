@@ -2,12 +2,14 @@ import Navigation from "@/components/Navigation";
 import EngineersSlider from "@/components/EngineersSlider";
 import Footer from "@/components/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ExternalLink, Printer, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
 const Backlog = () => {
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') === 'protocol' ? 'protocol' : 'pages';
   const backlogItems = [
     {
       id: "in-cabin",
@@ -283,7 +285,7 @@ interface Event {
 
       <section className="py-6 bg-white">
         <div className="container mx-auto px-6">
-          <Tabs defaultValue="pages" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
               <TabsTrigger value="pages" className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
@@ -378,17 +380,17 @@ interface Event {
                     <table className="min-w-full border border-gray-300 text-sm">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Schritt</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Aufwand</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Risiko</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Schritt</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Aufwand</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Risiko</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td className="border border-gray-300 px-4 py-2">Editors extrahieren</td><td className="border border-gray-300 px-4 py-2">Medium</td><td className="border border-gray-300 px-4 py-2">Niedrig</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">Shared Hooks erstellen</td><td className="border border-gray-300 px-4 py-2">Medium</td><td className="border border-gray-300 px-4 py-2">Niedrig</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">State-Management entkoppeln</td><td className="border border-gray-300 px-4 py-2">Hoch</td><td className="border border-gray-300 px-4 py-2">Mittel</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">AdminDashboard auf Router reduzieren</td><td className="border border-gray-300 px-4 py-2">Hoch</td><td className="border border-gray-300 px-4 py-2">Hoch</td></tr>
-                        <tr className="font-semibold"><td className="border border-gray-300 px-4 py-2">Gesamt</td><td className="border border-gray-300 px-4 py-2" colSpan={2}>15-25 Iterationen</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Editors extrahieren</td><td className="border border-gray-300 px-4 py-2 text-black">Medium</td><td className="border border-gray-300 px-4 py-2 text-black">Niedrig</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Shared Hooks erstellen</td><td className="border border-gray-300 px-4 py-2 text-black">Medium</td><td className="border border-gray-300 px-4 py-2 text-black">Niedrig</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">State-Management entkoppeln</td><td className="border border-gray-300 px-4 py-2 text-black">Hoch</td><td className="border border-gray-300 px-4 py-2 text-black">Mittel</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">AdminDashboard auf Router reduzieren</td><td className="border border-gray-300 px-4 py-2 text-black">Hoch</td><td className="border border-gray-300 px-4 py-2 text-black">Hoch</td></tr>
+                        <tr className="font-semibold"><td className="border border-gray-300 px-4 py-2 text-black">Gesamt</td><td className="border border-gray-300 px-4 py-2 text-black" colSpan={2}>15-25 Iterationen</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -451,15 +453,15 @@ interface Event {
                     <table className="min-w-full border border-gray-300 text-sm">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Vorteil</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Kernaussage</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Wertbeitrag</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Vorteil</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Kernaussage</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Wertbeitrag</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td className="border border-gray-300 px-4 py-2">80% schnellere Lieferung</td><td className="border border-gray-300 px-4 py-2">CMS kopieren statt bauen</td><td className="border border-gray-300 px-4 py-2">Zeit = Geld</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">Konsistente Qualität</td><td className="border border-gray-300 px-4 py-2">Ein Bug-Fix für alle</td><td className="border border-gray-300 px-4 py-2">Weniger Risiko</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">Niedrige Wartung</td><td className="border border-gray-300 px-4 py-2">Zentrale Pflege</td><td className="border border-gray-300 px-4 py-2">50% Kostenreduktion</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">80% schnellere Lieferung</td><td className="border border-gray-300 px-4 py-2 text-black">CMS kopieren statt bauen</td><td className="border border-gray-300 px-4 py-2 text-black">Zeit = Geld</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Konsistente Qualität</td><td className="border border-gray-300 px-4 py-2 text-black">Ein Bug-Fix für alle</td><td className="border border-gray-300 px-4 py-2 text-black">Weniger Risiko</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Niedrige Wartung</td><td className="border border-gray-300 px-4 py-2 text-black">Zentrale Pflege</td><td className="border border-gray-300 px-4 py-2 text-black">50% Kostenreduktion</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -469,15 +471,15 @@ interface Event {
                     <table className="min-w-full border border-gray-300 text-sm">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Vorteil</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Kernaussage</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Wertbeitrag</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Vorteil</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Kernaussage</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Wertbeitrag</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td className="border border-gray-300 px-4 py-2">Self-Service</td><td className="border border-gray-300 px-4 py-2">Kunden helfen sich selbst</td><td className="border border-gray-300 px-4 py-2">0€ Content-Kosten</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">No-Code-Anpassung</td><td className="border border-gray-300 px-4 py-2">Config statt Code</td><td className="border border-gray-300 px-4 py-2">Agilität</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2">Enterprise-ready</td><td className="border border-gray-300 px-4 py-2">Compliance-Features</td><td className="border border-gray-300 px-4 py-2">Größere Deals</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Self-Service</td><td className="border border-gray-300 px-4 py-2 text-black">Kunden helfen sich selbst</td><td className="border border-gray-300 px-4 py-2 text-black">0€ Content-Kosten</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">No-Code-Anpassung</td><td className="border border-gray-300 px-4 py-2 text-black">Config statt Code</td><td className="border border-gray-300 px-4 py-2 text-black">Agilität</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 text-black">Enterprise-ready</td><td className="border border-gray-300 px-4 py-2 text-black">Compliance-Features</td><td className="border border-gray-300 px-4 py-2 text-black">Größere Deals</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -496,17 +498,17 @@ interface Event {
                     <table className="min-w-full border border-gray-300 text-sm">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Dimension</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Bewertung</th>
-                          <th className="border border-gray-300 px-4 py-2 text-left">Score</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Dimension</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Bewertung</th>
+                          <th className="border border-gray-300 px-4 py-2 text-left text-black">Score</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td className="border border-gray-300 px-4 py-2 font-medium">Professionalität</td><td className="border border-gray-300 px-4 py-2">Sehr gut</td><td className="border border-gray-300 px-4 py-2">⭐⭐⭐⭐ (4/5)</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2 font-medium">Umsetzung</td><td className="border border-gray-300 px-4 py-2">Gut bis sehr gut</td><td className="border border-gray-300 px-4 py-2">⭐⭐⭐⭐ (4/5)</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2 font-medium">Innovation</td><td className="border border-gray-300 px-4 py-2">Gut</td><td className="border border-gray-300 px-4 py-2">⭐⭐⭐ (3/5)</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2 font-medium">Ausbaufähigkeit</td><td className="border border-gray-300 px-4 py-2">Exzellent</td><td className="border border-gray-300 px-4 py-2">⭐⭐⭐⭐⭐ (5/5)</td></tr>
-                        <tr><td className="border border-gray-300 px-4 py-2 font-medium">Business-Grundlage</td><td className="border border-gray-300 px-4 py-2">Exzellent</td><td className="border border-gray-300 px-4 py-2">⭐⭐⭐⭐⭐ (5/5)</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 font-medium text-black">Professionalität</td><td className="border border-gray-300 px-4 py-2 text-black">Sehr gut</td><td className="border border-gray-300 px-4 py-2 text-black">⭐⭐⭐⭐ (4/5)</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 font-medium text-black">Umsetzung</td><td className="border border-gray-300 px-4 py-2 text-black">Gut bis sehr gut</td><td className="border border-gray-300 px-4 py-2 text-black">⭐⭐⭐⭐ (4/5)</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 font-medium text-black">Innovation</td><td className="border border-gray-300 px-4 py-2 text-black">Gut</td><td className="border border-gray-300 px-4 py-2 text-black">⭐⭐⭐ (3/5)</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 font-medium text-black">Ausbaufähigkeit</td><td className="border border-gray-300 px-4 py-2 text-black">Exzellent</td><td className="border border-gray-300 px-4 py-2 text-black">⭐⭐⭐⭐⭐ (5/5)</td></tr>
+                        <tr><td className="border border-gray-300 px-4 py-2 font-medium text-black">Business-Grundlage</td><td className="border border-gray-300 px-4 py-2 text-black">Exzellent</td><td className="border border-gray-300 px-4 py-2 text-black">⭐⭐⭐⭐⭐ (5/5)</td></tr>
                       </tbody>
                     </table>
                   </div>
