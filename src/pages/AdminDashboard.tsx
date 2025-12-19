@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, Component, type ErrorInfo, type ReactNode } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -92,6 +92,8 @@ import {
   buildSegmentLabel,
   getSegmentTypeName
 } from '@/components/admin/dashboard/AdminConstants';
+import { SortableTab } from '@/components/admin/dashboard/SortableTab';
+import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -125,86 +127,7 @@ interface ContentItem {
   content_value: string;
 }
 
-interface SortableTabProps {
-  id: string;
-  value: string;
-  children: React.ReactNode;
-  isDraggable?: boolean;
-}
-
-const SortableTab = ({ id, value, children, isDraggable = true }: SortableTabProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id, disabled: !isDraggable });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    cursor: isDraggable ? 'grab' : 'default',
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} className="flex items-center">
-      <TabsTrigger 
-        value={value}
-        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex-1"
-      >
-        <div className="flex items-center gap-2">
-          {isDraggable && (
-            <div {...attributes} {...listeners}>
-              <GripVertical className="h-4 w-4 text-gray-500" />
-            </div>
-          )}
-          {children}
-        </div>
-      </TabsTrigger>
-    </div>
-  );
-};
-
-class AdminDashboardErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message?: string }> {
-  constructor(props: { children: ReactNode }) {
-    super(props);
-    this.state = { hasError: false, message: undefined };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, message: error.message };
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[AdminDashboard ErrorBoundary] Caught render error:', error, info);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center px-6">
-          <div className="max-w-xl text-center space-y-4">
-            <h1 className="text-2xl font-semibold">Editor error on this page</h1>
-            <p className="text-sm text-gray-600">
-              The CMS editor crashed while loading this page configuration.
-              You can switch to another page in the CMS-UP selector and continue working.
-            </p>
-            {this.state.message && (
-              <p className="text-xs text-gray-400 break-words">
-                Technical info: {this.state.message}
-              </p>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+// SortableTab and AdminDashboardErrorBoundary are imported from dashboard components
 
 const AdminDashboard = () => {
   // Authentication state from hook
