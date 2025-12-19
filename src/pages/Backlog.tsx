@@ -89,7 +89,7 @@ IEEE P2020, ISO Standards, EMVA 1288
       id: "le7",
       title: "LE7 – Test Chart Product Page",
       originalUrl: "/en/products/test-charts/le7",
-      backlogUrl: "/en/products/test-charts/le7",
+      backlogUrl: "/en/products/test-charts/le7", // CMS page - use original
       snapshot: `
 ## CMS-Seite (Page ID 17)
 
@@ -112,7 +112,7 @@ IEEE P2020, ISO Standards, EMVA 1288
       id: "arcturus",
       title: "Arcturus LED – Illumination Device",
       originalUrl: "/en/products/illumination-devices/arcturus-led",
-      backlogUrl: "/en/products/illumination-devices/arcturus-led",
+      backlogUrl: "/en/products/illumination-devices/arcturus-led", // CMS page - use original
       snapshot: `
 ## Hero
 - **Titel:** ARCTURUS LED
@@ -260,10 +260,6 @@ interface Event {
     },
   ];
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -275,15 +271,15 @@ interface Event {
             <p className="text-lg text-gray-600 mb-2">
               Snapshots of pages currently in focus for design and implementation work.
             </p>
+            <p className="text-sm text-gray-500">
+              Click on each item to view the content snapshot.
+            </p>
           </div>
         </div>
       </div>
 
       <section className="py-6 bg-white">
         <div className="container mx-auto px-6">
-          <p className="text-sm text-gray-500 text-center mb-6">
-            Click on each item to view the content snapshot.
-          </p>
           <Accordion type="single" collapsible className="space-y-4">
             {backlogItems.map((item) => (
               <AccordionItem
@@ -322,10 +318,8 @@ interface Event {
         </div>
       </section>
 
-      <div className="print:hidden">
-        <EngineersSlider />
-        <Footer />
-      </div>
+      <EngineersSlider />
+      <Footer />
     </div>
   );
 };

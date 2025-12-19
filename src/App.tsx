@@ -61,7 +61,6 @@ import AdminDownloads from "./pages/AdminDownloads";
 import DownloadDetail from "./pages/DownloadDetail";
 import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
-import CMSProtocol from "./pages/CMSProtocol";
 import NotFound from "./pages/NotFound";
 import { MauticTracker } from "./components/MauticTracker";
 
@@ -149,7 +148,6 @@ const App = () => (
             <Route path="/admin-dashboard" element={<Navigate to="/en/admin-dashboard" replace />} />
             <Route path="/full-hero-migration" element={<Navigate to="/en/full-hero-migration" replace />} />
             <Route path="/segment-debug" element={<Navigate to="/en/segment-debug" replace />} />
-            <Route path="/cms-protocol" element={<Navigate to="/en/cms-protocol" replace />} />
             {/* New redirect for static Test Charts page without language prefix */}
             <Route path="/products/test-charts" element={<Navigate to="/en/products/test-charts" replace />} />
             
@@ -258,7 +256,6 @@ const App = () => (
             <Route path="/:lang/admin-dashboard/downloads" element={<AdminDownloads />} />
             <Route path="/:lang/full-hero-migration" element={<FullHeroMigration />} />
             <Route path="/:lang/segment-debug" element={<SegmentDebugView />} />
-            <Route path="/:lang/cms-protocol" element={<CMSProtocol />} />
             
             {/* Company sub-pages - must be before PageIdRouter */}
             <Route path="/:lang/company/news" element={<DynamicCMSPage />} />

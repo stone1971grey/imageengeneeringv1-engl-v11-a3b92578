@@ -456,7 +456,6 @@ const Navigation = () => {
             <div className="hidden 2xl:flex items-center gap-6">
               {isStyleguideOrBacklog ? (
                 /* Styleguide-specific Navigation with Flyout */
-                <>
                 <SimpleDropdown trigger={t.nav.styleguide} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="w-[640px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
@@ -534,19 +533,6 @@ const Navigation = () => {
                   </div>
                 </div>
               </SimpleDropdown>
-              
-              {/* CMS Protokoll - Direct Link */}
-              <Link
-                to={`/${language}/cms-protocol`}
-                className={`text-lg font-medium transition-colors whitespace-nowrap ${
-                  location.pathname.includes('/cms-protocol') 
-                    ? 'text-[#f9dc24]' 
-                    : 'text-black hover:text-[#f9dc24]'
-                }`}
-              >
-                CMS Protokoll
-              </Link>
-              </>
             ) : (
               /* Regular Navigation */
               <>
