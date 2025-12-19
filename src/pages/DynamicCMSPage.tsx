@@ -1413,8 +1413,8 @@ const DynamicCMSPage = () => {
                String(s.segment_key) === String(firstContentSegmentId)
         ) : null;
         
-        // Hero segment types that don't need top padding
-        const heroTypes = ['full-hero', 'action-hero', 'events'];
+        // Hero segment types that don't need top padding (they handle their own spacing)
+        const heroTypes = ['full-hero', 'action-hero', 'events', 'downloads', 'news-list'];
         const hasHeroFirst = firstSegment && heroTypes.includes(firstSegment.type);
         
         return (
