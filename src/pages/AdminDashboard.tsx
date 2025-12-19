@@ -142,9 +142,23 @@ import {
   autoSaveTileImageUploadUtil,
   SaveContext
 } from '@/components/admin/dashboard/saveContentUtils';
+import {
+  parseContentItems,
+  filterTabOrder,
+  rebuildTabOrderFromSegments,
+  saveUpdatedSegments,
+  saveCleanedTabOrder
+} from '@/components/admin/dashboard/contentLoadingUtils';
+import {
+  addNewSegment,
+  deleteSegment as deleteSegmentFull,
+  saveAllSegments,
+  SegmentOperationContext
+} from '@/components/admin/dashboard/segmentOperationsUtils';
+import { ContentItem } from '@/components/admin/dashboard/contentLoadingUtils';
 import { SortableTab } from '@/components/admin/dashboard/SortableTab';
 import { AdminDashboardErrorBoundary } from '@/components/admin/dashboard/AdminErrorBoundary';
-import { TileItem, BannerImage, SolutionItem, ContentItem } from '@/components/admin/dashboard/types';
+import { TileItem, BannerImage, SolutionItem } from '@/components/admin/dashboard/types';
 
 const AdminDashboard = () => {
   // Authentication state from hook
@@ -1775,462 +1789,49 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
-    // Check for mutual exclusivity between Full Hero, Action Hero, Meta Navigation, and Product Hero Gallery
-    const hasFullHero = pageSegments.some(seg => seg.type === 'full-hero');
-    const hasMetaNav = pageSegments.some(seg => seg.type === 'meta-navigation');
-    const hasActionHero = pageSegments.some(seg => seg.type === 'action-hero');
-    const hasProductHeroGallery = pageSegments.some(seg => seg.type === 'product-hero-gallery');
-
-    // Full Hero exclusions
-    if (templateType === 'full-hero' && hasMetaNav) {
-      toast.error("Full Hero cannot be added when Meta Navigation is present. Please remove Meta Navigation first.");
-      return;
-    }
-    if (templateType === 'full-hero' && hasActionHero) {
-      toast.error("Full Hero cannot be added when Action Hero is present. Please remove Action Hero first.");
-      return;
-    }
-
-    // Meta Navigation exclusions
-    if (templateType === 'meta-navigation' && hasFullHero) {
-      toast.error("Meta Navigation cannot be added when Full Hero is present. Please remove Full Hero first.");
-      return;
-    }
-    if (templateType === 'meta-navigation' && hasActionHero) {
-      toast.error("Meta Navigation cannot be added when Action Hero is present. Please remove Action Hero first.");
-      return;
-    }
-
-    // Action Hero exclusions (excludes: Full Hero, Meta Navigation, Product Hero Gallery)
-    if (templateType === 'action-hero' && hasFullHero) {
-      toast.error("Action Hero cannot be added when Full Hero is present. Please remove Full Hero first.");
-      return;
-    }
-    if (templateType === 'action-hero' && hasMetaNav) {
-      toast.error("Action Hero cannot be added when Meta Navigation is present. Please remove Meta Navigation first.");
-      return;
-    }
-    if (templateType === 'action-hero' && hasProductHeroGallery) {
-      toast.error("Action Hero cannot be added when Product Hero Gallery is present. Please remove Product Hero Gallery first.");
-      return;
-    }
-
-    // Product Hero Gallery exclusions
-    if (templateType === 'product-hero-gallery' && hasActionHero) {
-      toast.error("Product Hero Gallery cannot be added when Action Hero is present. Please remove Action Hero first.");
-      return;
-    }
-
-    // Mini Footer handling: when adding mini-footer, mark the regular footer as deleted
-    if (templateType === 'mini-footer') {
-      // Find and deactivate regular footer
-      const footerSegment = pageSegments.find(seg => seg.type === 'footer');
-      if (footerSegment) {
-        // Mark regular footer as deleted in segment_registry
-        const { error: deactivateError } = await supabase
-          .from("segment_registry")
-          .update({ deleted: true })
-          .eq("page_slug", resolvedPageSlug || selectedPage)
-          .eq("segment_type", "footer");
-        
-        if (deactivateError) {
-          console.error("Error deactivating regular footer:", deactivateError);
-        } else {
-          console.log("Regular footer deactivated for page:", resolvedPageSlug || selectedPage);
-        }
-      }
-    }
-
-    // CRITICAL: Always fetch the latest max ID from database to avoid race conditions
-    const { data: maxIdData, error: maxIdError } = await supabase
-      .from("segment_registry")
-      .select("segment_id")
-      .order("segment_id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    
-    if (maxIdError) {
-      console.error("Error fetching max segment ID:", maxIdError);
-      toast.error("Failed to generate segment ID. Please try again.");
-      return;
-    }
-    
-    const segmentId = (maxIdData?.segment_id || 0) + 1;
-    console.log("Creating new segment with global ID:", segmentId, "(fetched live from DB)");
-    setNextSegmentId(segmentId + 1); // Update state for UI consistency
-    
-    const defaultData = getDefaultSegmentData(templateType);
-    const newSegment = {
-      id: String(segmentId),
-      type: templateType,
-      data: defaultData
+    const ctx: SegmentOperationContext = {
+      resolvedPageSlug: resolvedPageSlug || selectedPage,
+      selectedPage,
+      editorLanguage,
+      userId: user.id,
+      pageSegments,
+      tabOrder
     };
 
-    // Add new segment to tab order
-    // Meta-navigation is at start, full-hero/action-hero after meta-nav, mini-footer and footer are NOT in tab_order (fixed position tabs)
-    let updatedTabOrder: string[];
-    if (templateType === 'mini-footer') {
-      // Mini-footer is a fixed position tab, NOT added to tab_order
-      updatedTabOrder = [...tabOrder];
-    } else if (templateType === 'meta-navigation') {
-      // Meta-navigation always goes at the very start
-      updatedTabOrder = [String(segmentId), ...tabOrder];
-    } else if (templateType === 'full-hero' || templateType === 'action-hero') {
-      // Full-hero and action-hero go at start (after meta-nav if present)
-      const metaNavIndex = tabOrder.findIndex(id => {
-        const seg = pageSegments.find(s => String(s.id) === id);
-        return seg?.type === 'meta-navigation';
-      });
-      if (metaNavIndex >= 0) {
-        updatedTabOrder = [...tabOrder.slice(0, metaNavIndex + 1), String(segmentId), ...tabOrder.slice(metaNavIndex + 1)];
-      } else {
-        updatedTabOrder = [String(segmentId), ...tabOrder];
-      }
-    } else {
-      // Add all other segments to end
-      updatedTabOrder = [...tabOrder, String(segmentId)];
-    }
+    const success = await addNewSegment(
+      templateType,
+      ctx,
+      setPageSegments,
+      setTabOrder,
+      setNextSegmentId,
+      setActiveTab
+    );
 
-    try {
-      // CRITICAL: Register segment in segment_registry with global unique ID
-      const { error: registryError } = await supabase
-        .from("segment_registry")
-        .insert({
-          segment_id: segmentId,
-          page_slug: resolvedPageSlug || selectedPage,
-          segment_type: templateType,
-          segment_key: String(segmentId),
-          is_static: false,
-          deleted: false
-        });
-
-      if (registryError) {
-        console.error("Error registering segment in registry:", registryError);
-        throw registryError;
-      }
-
-      // Create segment for all languages
-      const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
-      
-      for (const lang of allLanguages) {
-        // Load existing segments for this language
-        const { data: existingContent } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", resolvedPageSlug || selectedPage)
-          .eq("section_key", "page_segments")
-          .eq("language", lang)
-          .single();
-
-        const existingSegments = existingContent?.content_value 
-          ? JSON.parse(existingContent.content_value) 
-          : [];
-
-        // For English: use full default data
-        // For other languages: use language-independent fields from English, leave text fields empty
-        const segmentData = lang === 'en' 
-          ? defaultData 
-          : getLanguageIndependentFields(templateType, defaultData);
-
-        const languageSegment = {
-          id: String(segmentId),
-          type: templateType,
-          data: segmentData
-        };
-
-        const updatedSegments = [...existingSegments, languageSegment];
-        
-        // Save segments for this language
-        const { error: segmentsError } = await supabase
-          .from("page_content")
-          .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
-            section_key: "page_segments",
-            content_type: "json",
-            content_value: JSON.stringify(updatedSegments),
-            language: lang,
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key,language'
-          });
-
-        if (segmentsError) throw segmentsError;
-
-        // Save tab order for this language
-        const { error: orderError } = await supabase
-          .from("page_content")
-          .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
-            section_key: "tab_order",
-            content_type: "json",
-            content_value: JSON.stringify(updatedTabOrder),
-            language: lang,
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key,language'
-          });
-
-        if (orderError) throw orderError;
-      }
-
-      // Update UI state with current language segment
-      const currentLanguageSegments = editorLanguage === 'en' 
-        ? [...pageSegments, newSegment]
-        : [...pageSegments, { ...newSegment, data: getLanguageIndependentFields(templateType, defaultData) }];
-
-      setPageSegments(currentLanguageSegments);
-      setTabOrder(updatedTabOrder);
+    if (success) {
       setIsTemplateDialogOpen(false);
-      
-      // Switch to the newly added segment tab
-      setActiveTab(String(segmentId));
-      
-      toast.success(`New segment added successfully with ID ${segmentId} for all languages!`);
-    } catch (error: any) {
-      toast.error("Error adding segment: " + error.message);
     }
   };
 
   const handleDeleteSegment = async (segmentId: string) => {
     if (!user) return;
 
-    // Check if we're deleting a mini-footer - if so, we need to restore the regular footer
-    const deletingSegment = pageSegments.find(seg => seg.id === segmentId);
-    const isDeletingMiniFooter = deletingSegment?.type === 'mini-footer';
+    const ctx: SegmentOperationContext = {
+      resolvedPageSlug: resolvedPageSlug || selectedPage,
+      selectedPage,
+      editorLanguage,
+      userId: user.id,
+      pageSegments,
+      tabOrder
+    };
 
-    // Remove the segment with this ID (no need to renumber positions)
-    const updatedSegments = pageSegments.filter(seg => seg.id !== segmentId);
-    
-    // Remove from tab order
-    const updatedTabOrder = tabOrder.filter(id => id !== segmentId);
-
-    try {
-      // CRITICAL: Mark segment as deleted in registry instead of removing it
-      // This ensures the segment_id is NEVER reused, even after deletion
-      const { error: registryError } = await supabase
-        .from("segment_registry")
-        .update({ deleted: true })
-        .eq("segment_key", segmentId)
-        .eq("page_slug", resolvedPageSlug || selectedPage);
-
-      if (registryError) {
-        console.error("Error marking segment as deleted in registry:", registryError);
-        throw registryError;
-      }
-
-      // If we're deleting a mini-footer, restore or create a regular footer
-      if (isDeletingMiniFooter) {
-        // Find the footer segment that was deactivated when mini-footer was added
-        const { data: footerData } = await supabase
-          .from("segment_registry")
-          .select("*")
-          .eq("page_slug", resolvedPageSlug || selectedPage)
-          .eq("segment_type", "footer")
-          .eq("deleted", true)
-          .maybeSingle();
-
-        let footerSegment: any;
-
-        if (footerData) {
-          // Restore the existing footer segment
-          await supabase
-            .from("segment_registry")
-            .update({ deleted: false })
-            .eq("id", footerData.id);
-
-          footerSegment = {
-            id: footerData.segment_key,
-            type: 'footer',
-            segment_key: footerData.segment_key,
-            position: 999
-          };
-        } else {
-          // No existing footer found - create a NEW footer segment
-          const { data: maxIdData } = await supabase
-            .from("segment_registry")
-            .select("segment_id")
-            .order("segment_id", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          const newFooterId = (maxIdData?.segment_id || 0) + 1;
-          const footerKey = `footer-${newFooterId}`;
-
-          // Create new footer in segment_registry
-          await supabase
-            .from("segment_registry")
-            .insert({
-              segment_id: newFooterId,
-              page_slug: resolvedPageSlug || selectedPage,
-              segment_type: "footer",
-              segment_key: footerKey,
-              is_static: false,
-              deleted: false,
-              position: 999
-            });
-
-          footerSegment = {
-            id: footerKey,
-            type: 'footer',
-            segment_key: footerKey,
-            position: 999
-          };
-
-          // Update segmentRegistry state
-          setSegmentRegistry(prev => ({ ...prev, [footerKey]: newFooterId, 'footer': newFooterId }));
-        }
-
-        // Add footer to page_segments for all languages
-        const languages = ['en', 'de', 'ja', 'ko', 'zh'];
-
-        for (const lang of languages) {
-          // Get current segments for this language
-          const { data: langContent } = await supabase
-            .from("page_content")
-            .select("content_value")
-            .eq("page_slug", resolvedPageSlug || selectedPage)
-            .eq("section_key", "page_segments")
-            .eq("language", lang)
-            .maybeSingle();
-
-          let langSegments = [];
-          if (langContent?.content_value) {
-            langSegments = JSON.parse(langContent.content_value);
-          }
-          // Remove mini-footer and add regular footer
-          langSegments = langSegments.filter((seg: any) => seg.type !== 'mini-footer');
-          langSegments.push(footerSegment);
-
-          await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: "page_segments",
-              content_type: "json",
-              content_value: JSON.stringify(langSegments),
-              language: lang,
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, { onConflict: 'page_slug,section_key,language' });
-
-          // Update tab_order - remove mini-footer (footer is fixed, not in tab_order)
-          const { data: langTabOrder } = await supabase
-            .from("page_content")
-            .select("content_value")
-            .eq("page_slug", resolvedPageSlug || selectedPage)
-            .eq("section_key", "tab_order")
-            .eq("language", lang)
-            .maybeSingle();
-
-          let langOrder = [];
-          if (langTabOrder?.content_value) {
-            langOrder = JSON.parse(langTabOrder.content_value);
-          }
-          langOrder = langOrder.filter((id: string) => id !== segmentId);
-
-          await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: "tab_order",
-              content_type: "json",
-              content_value: JSON.stringify(langOrder),
-              language: lang,
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, { onConflict: 'page_slug,section_key,language' });
-        }
-
-        // Update local state with footer
-        const newSegments = updatedSegments.filter(seg => seg.type !== 'mini-footer');
-        newSegments.push(footerSegment);
-        setPageSegments(newSegments);
-        setTabOrder(updatedTabOrder.filter(id => id !== segmentId));
-        setActiveTab('footer');
-        
-        toast.success("Mini-Footer deleted, Footer restored!");
-        return;
-      }
-
-      // CRITICAL: Remove segment from ALL language versions, not just current editor language
-      const languages = ['en', 'de', 'ja', 'ko', 'zh'];
-      
-      for (const lang of languages) {
-        // Load page_segments for this language
-        const { data: langContent } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", resolvedPageSlug || selectedPage)
-          .eq("section_key", "page_segments")
-          .eq("language", lang)
-          .maybeSingle();
-
-        if (langContent?.content_value) {
-          const langSegments = JSON.parse(langContent.content_value);
-          const cleanedSegments = langSegments.filter((seg: any) => seg.id !== segmentId);
-
-          // Update page_segments for this language
-          const { error: segmentsError } = await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: "page_segments",
-              content_type: "json",
-              content_value: JSON.stringify(cleanedSegments),
-              language: lang,
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, {
-              onConflict: 'page_slug,section_key,language'
-            });
-
-          if (segmentsError) throw segmentsError;
-        }
-
-        // Update tab_order for this language (remove deleted segment)
-        const { data: langTabOrder } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", resolvedPageSlug || selectedPage)
-          .eq("section_key", "tab_order")
-          .eq("language", lang)
-          .maybeSingle();
-
-        if (langTabOrder?.content_value) {
-          const langOrder = JSON.parse(langTabOrder.content_value);
-          const cleanedOrder = langOrder.filter((id: string) => id !== segmentId);
-
-          const { error: orderError } = await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: "tab_order",
-              content_type: "json",
-              content_value: JSON.stringify(cleanedOrder),
-              language: lang,
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, {
-              onConflict: 'page_slug,section_key,language'
-            });
-
-          if (orderError) throw orderError;
-        }
-      }
-
-      setPageSegments(updatedSegments);
-      setTabOrder(updatedTabOrder);
-      
-      // Switch to first available tab
-      const firstTab = updatedTabOrder[0] || 'tiles';
-      setActiveTab(firstTab);
-      
-      toast.success("Segment deleted from all languages! (ID will never be reused)");
-    } catch (error: any) {
-      toast.error("Error deleting segment: " + error.message);
-    }
+    await deleteSegmentFull(
+      segmentId,
+      ctx,
+      setPageSegments,
+      setTabOrder,
+      setActiveTab,
+      setSegmentRegistry
+    );
   };
 
   const handleSaveSegments = async () => {
@@ -2238,93 +1839,17 @@ const AdminDashboard = () => {
     
     setSaving(true);
 
-    try {
-      // CRITICAL SAFETY CHECK: Fetch current segments from database before saving
-      // This prevents accidental data loss from stale state
-      const currentPageSlug = resolvedPageSlug || selectedPage;
-      
-      const { data: existingData } = await supabase
-        .from("page_content")
-        .select("content_value")
-        .eq("page_slug", currentPageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", editorLanguage)
-        .single();
-      
-      let existingSegments: any[] = [];
-      if (existingData?.content_value) {
-        try {
-          existingSegments = JSON.parse(existingData.content_value);
-        } catch (e) {
-          console.warn('[SAVE GUARD] Could not parse existing segments');
-        }
-      }
-      
-      // SAFETY: If we're about to save significantly fewer segments than exist, warn and abort
-      // This prevents accidental mass deletion
-      const isLosingMultipleSegments = existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1;
-      const isLosingAllSegments = existingSegments.length > 0 && pageSegments.length === 0;
-      
-      if (isLosingAllSegments) {
-        console.error('[SAVE GUARD] BLOCKED: Attempted to save empty segments array when segments exist in DB');
-        setSaving(false);
-        toast.error("Speichern blockiert - leere Segment-Liste kann bestehende Segmente nicht überschreiben");
-        return;
-      }
-      
-      if (isLosingMultipleSegments) {
-        const confirmed = window.confirm(
-          `WARNUNG: Sie sind dabei, ${existingSegments.length - pageSegments.length} Segmente zu löschen. ` +
-          `Aktuell: ${existingSegments.length} Segmente, Neu: ${pageSegments.length} Segmente. ` +
-          `Fortfahren?`
-        );
-        if (!confirmed) {
-          setSaving(false);
-          toast.info("Speichern abgebrochen - Segmente wurden nicht geändert");
-          return;
-        }
-      }
-      
-      // 🔐 BACKUP: Create backup before saving (automatic versioning)
-      await createMultipleBackups(currentPageSlug, ['page_segments', 'tab_order'], editorLanguage);
-      console.log('[BACKUP] Created backup before saving segments');
-      
-      // CRITICAL: Ensure all segments have correct positions based on current order
-      const segmentsWithPositions = pageSegments.map((seg, idx) => ({
-        ...seg,
-        position: idx
-      }));
-      
-      console.log('[POSITION DEBUG] Saving segments with positions:', JSON.stringify(segmentsWithPositions.map(s => ({ id: s.id, type: s.type, position: s.position }))));
-      console.log('[SAVE GUARD] Existing segments:', existingSegments.length, 'New segments:', segmentsWithPositions.length);
-      
-      const { error } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: currentPageSlug,
-          section_key: "page_segments",
-          content_type: "json",
-          content_value: JSON.stringify(segmentsWithPositions),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+    const ctx: SegmentOperationContext = {
+      resolvedPageSlug: resolvedPageSlug || selectedPage,
+      selectedPage,
+      editorLanguage,
+      userId: user.id,
+      pageSegments,
+      tabOrder
+    };
 
-      if (error) throw error;
-      
-      // Update local state with new positions
-      setPageSegments(segmentsWithPositions);
-      
-      console.log('[POSITION DEBUG] Segments saved successfully');
-      
-      toast.success("Segment saved successfully!");
-    } catch (error: any) {
-      toast.error("Error saving segment: " + error.message);
-    } finally {
-      setSaving(false);
-    }
+    await saveAllSegments(ctx, setPageSegments);
+    setSaving(false);
   };
 
   const handleSaveSEO = async () => {
