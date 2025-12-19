@@ -7,9 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { History, RotateCcw, Eye, Calendar, User, Layers, Globe } from "lucide-react";
+import { History, RotateCcw, Eye, Calendar, User, Layers, Globe, GitCompare } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface BackupEntry {
   id: string;
@@ -47,6 +49,9 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
   const [restoreEntry, setRestoreEntry] = useState<BackupEntry | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [userEmails, setUserEmails] = useState<Record<string, string>>({});
+  const [showDiff, setShowDiff] = useState(false);
+  const [currentContent, setCurrentContent] = useState<string | null>(null);
+  const [loadingCurrent, setLoadingCurrent] = useState(false);
 
   useEffect(() => {
     if (pageSlug) {
@@ -119,6 +124,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
         return;
       }
 
+      // 🔐 BACKUP current state before restoring
+      console.log('[VersionHistory] Creating backup before restore...');
+      await createContentBackup(restoreEntry.page_slug, restoreEntry.section_key, restoreEntry.language);
+
       // Restore the content
       const { error } = await supabase
         .from("page_content")
@@ -146,6 +155,67 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       toast.error("Failed to restore version");
     } finally {
       setRestoring(false);
+    }
+  };
+
+  // Load current content for diff comparison
+  const loadCurrentContent = async (entry: BackupEntry) => {
+    setLoadingCurrent(true);
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", entry.page_slug)
+        .eq("section_key", entry.section_key)
+        .eq("language", entry.language)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading current content:", error);
+        return;
+      }
+
+      setCurrentContent(data?.content_value || null);
+    } catch (error) {
+      console.error("Error loading current content:", error);
+    } finally {
+      setLoadingCurrent(false);
+    }
+  };
+
+  // Handle preview open - also load current for comparison
+  const handlePreviewOpen = (entry: BackupEntry) => {
+    setPreviewEntry(entry);
+    setShowDiff(false);
+    setCurrentContent(null);
+    loadCurrentContent(entry);
+  };
+
+  // Simple diff helper - highlight changes
+  const renderDiff = (backupJson: string, currentJson: string) => {
+    try {
+      const backup = JSON.parse(backupJson);
+      const current = JSON.parse(currentJson);
+      
+      const backupFormatted = JSON.stringify(backup, null, 2).split('\n');
+      const currentFormatted = JSON.stringify(current, null, 2).split('\n');
+      
+      const maxLines = Math.max(backupFormatted.length, currentFormatted.length);
+      const diffLines: { backup: string; current: string; changed: boolean }[] = [];
+      
+      for (let i = 0; i < maxLines; i++) {
+        const backupLine = backupFormatted[i] || '';
+        const currentLine = currentFormatted[i] || '';
+        diffLines.push({
+          backup: backupLine,
+          current: currentLine,
+          changed: backupLine !== currentLine
+        });
+      }
+      
+      return diffLines;
+    } catch {
+      return [{ backup: backupJson, current: currentJson, changed: backupJson !== currentJson }];
     }
   };
 
@@ -365,9 +435,9 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setPreviewEntry(entry)}
+                              onClick={() => handlePreviewOpen(entry)}
                               className="h-8 w-8 p-0 text-white hover:bg-gray-700"
-                              title="Show preview"
+                              title="Show preview & compare"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -393,24 +463,78 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
         </ScrollArea>
       </CardContent>
 
-      {/* Preview Dialog */}
-      <Dialog open={!!previewEntry} onOpenChange={() => setPreviewEntry(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] bg-gray-900 border-gray-700 text-white">
+      {/* Preview Dialog with Diff */}
+      <Dialog open={!!previewEntry} onOpenChange={() => { setPreviewEntry(null); setShowDiff(false); }}>
+        <DialogContent className="max-w-4xl max-h-[85vh] bg-gray-900 border-gray-700 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
               <Eye className="h-5 w-5" />
-              Preview: {previewEntry && formatSegmentName(previewEntry.section_key)}
+              {previewEntry && formatSegmentName(previewEntry.section_key)}
             </DialogTitle>
             <DialogDescription className="text-gray-400">
-              Version from {previewEntry && format(parseISO(previewEntry.backup_created_at), "MMM dd, yyyy 'at' HH:mm:ss")}
+              Backup from {previewEntry && format(parseISO(previewEntry.backup_created_at), "MMM dd, yyyy 'at' HH:mm:ss")}
               {" • "}{previewEntry && (LANGUAGE_LABELS[previewEntry.language] || previewEntry.language)}
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[50vh]">
-            <pre className="p-4 bg-gray-800 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap text-gray-200 border border-gray-700">
-              {previewEntry && JSON.stringify(JSON.parse(previewEntry.content_value), null, 2)}
-            </pre>
-          </ScrollArea>
+          
+          <Tabs defaultValue="backup" className="w-full">
+            <TabsList className="bg-gray-800 border-gray-700">
+              <TabsTrigger value="backup" className="data-[state=active]:bg-gray-700 text-white">
+                <Eye className="h-4 w-4 mr-2" />
+                Backup Version
+              </TabsTrigger>
+              <TabsTrigger value="compare" className="data-[state=active]:bg-gray-700 text-white">
+                <GitCompare className="h-4 w-4 mr-2" />
+                Compare with Current
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="backup">
+              <ScrollArea className="max-h-[45vh]">
+                <pre className="p-4 bg-gray-800 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap text-gray-200 border border-gray-700">
+                  {previewEntry && JSON.stringify(JSON.parse(previewEntry.content_value), null, 2)}
+                </pre>
+              </ScrollArea>
+            </TabsContent>
+            
+            <TabsContent value="compare">
+              {loadingCurrent ? (
+                <div className="flex items-center justify-center h-40">
+                  <div className="animate-spin h-8 w-8 border-4 border-[#f9dc24] border-t-transparent rounded-full" />
+                </div>
+              ) : currentContent ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xs font-semibold text-amber-400 mb-2 flex items-center gap-1">
+                      <History className="h-3 w-3" />
+                      BACKUP ({previewEntry && format(parseISO(previewEntry.backup_created_at), "HH:mm")})
+                    </div>
+                    <ScrollArea className="max-h-[40vh]">
+                      <pre className="p-3 bg-amber-950/30 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap text-amber-200 border border-amber-800/50">
+                        {previewEntry && JSON.stringify(JSON.parse(previewEntry.content_value), null, 2)}
+                      </pre>
+                    </ScrollArea>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-green-400 mb-2 flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      CURRENT (Live)
+                    </div>
+                    <ScrollArea className="max-h-[40vh]">
+                      <pre className="p-3 bg-green-950/30 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap text-green-200 border border-green-800/50">
+                        {JSON.stringify(JSON.parse(currentContent), null, 2)}
+                      </pre>
+                    </ScrollArea>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  No current content found to compare
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => setPreviewEntry(null)} className="border-gray-600 text-white hover:bg-gray-800">
               Close

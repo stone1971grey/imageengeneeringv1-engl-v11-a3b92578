@@ -7,6 +7,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useState, useEffect, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface SpecificationRow {
   specification: string;
@@ -173,6 +174,9 @@ const SpecificationEditor = ({
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', language);
+      
       // Load current page_segments
       const { data: segmentsData, error: loadError } = await supabase
         .from("page_content")

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { createContentBackup } from '@/utils/createContentBackup';
 
 interface MetaNavigationLink {
   label: string;
@@ -209,6 +210,9 @@ const MetaNavigationEditorComponent = ({
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', language);
+      
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) throw new Error('User not authenticated');
 
