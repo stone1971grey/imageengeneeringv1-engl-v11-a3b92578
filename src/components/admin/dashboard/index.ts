@@ -8,3 +8,6 @@ export * from './types';
 
 // Constants
 export * from './AdminConstants';
+
+// Utilities
+export * from './segmentUtils';
