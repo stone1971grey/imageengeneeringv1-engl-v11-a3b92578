@@ -12,3 +12,4 @@ export * from './AdminConstants';
 // Utilities
 export * from './segmentUtils';
 export * from './cmsPageUtils';
+export * from './pageRegistryUtils';
