@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { History, RotateCcw, Eye, Calendar, User, Filter, Layers } from "lucide-react";
+import { History, RotateCcw, Eye, Calendar, User, Layers, Globe } from "lucide-react";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
 
@@ -27,6 +27,15 @@ interface VersionHistoryPanelProps {
   currentLanguage: string;
   onRestore?: () => void;
 }
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  en: "English",
+  de: "Deutsch",
+  ja: "日本語",
+  ko: "한국어",
+  zh: "中文",
+  all: "Alle Sprachen"
+};
 
 export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: VersionHistoryPanelProps) => {
   const [backups, setBackups] = useState<BackupEntry[]>([]);
@@ -66,7 +75,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       if (error) {
         console.error("Error loading backups:", error);
-        toast.error("Failed to load version history");
+        toast.error("Fehler beim Laden der Versionshistorie");
         return;
       }
 
@@ -77,7 +86,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       setAvailableSegments(segments);
 
       // Load user emails for display
-      const userIds = [...new Set((data || []).filter(b => b.original_updated_by).map(b => b.original_updated_by!))] ;
+      const userIds = [...new Set((data || []).filter(b => b.original_updated_by).map(b => b.original_updated_by!))];
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
@@ -106,7 +115,7 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
     try {
       const currentUser = (await supabase.auth.getUser()).data.user;
       if (!currentUser) {
-        toast.error("Not authenticated");
+        toast.error("Nicht authentifiziert");
         return;
       }
 
@@ -125,16 +134,16 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       if (error) {
         console.error("Error restoring content:", error);
-        toast.error("Failed to restore version");
+        toast.error("Fehler beim Wiederherstellen");
         return;
       }
 
-      toast.success(`Restored "${restoreEntry.section_key}" to version from ${format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy HH:mm")}`);
+      toast.success(`"${formatSegmentName(restoreEntry.section_key)}" wiederhergestellt auf Stand vom ${format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy, HH:mm", { locale: de })} Uhr`);
       setRestoreEntry(null);
       onRestore?.();
     } catch (error) {
       console.error("Error restoring:", error);
-      toast.error("Failed to restore version");
+      toast.error("Fehler beim Wiederherstellen");
     } finally {
       setRestoring(false);
     }
@@ -148,9 +157,9 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       let key: string;
       
       if (isToday(date)) {
-        key = "Today";
+        key = "Heute";
       } else if (isYesterday(date)) {
-        key = "Yesterday";
+        key = "Gestern";
       } else {
         key = format(date, "dd. MMMM yyyy", { locale: de });
       }
@@ -165,6 +174,10 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
   };
 
   const formatSegmentName = (key: string) => {
+    // Check if it's a numeric segment ID
+    if (/^\d+$/.test(key)) {
+      return `Segment #${key}`;
+    }
     return key
       .replace(/_/g, " ")
       .replace(/dynamic segment \d+/, match => `Segment ${match.split(" ")[2]}`)
@@ -173,32 +186,72 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       .join(" ");
   };
 
-  const getPreviewContent = (content: string) => {
+  const getContentSummary = (entry: BackupEntry) => {
     try {
-      const parsed = JSON.parse(content);
-      if (typeof parsed === "string") return parsed.slice(0, 200);
-      if (parsed.title) return parsed.title;
-      if (parsed.headline) return parsed.headline;
-      if (Array.isArray(parsed)) return `${parsed.length} items`;
-      return JSON.stringify(parsed).slice(0, 200);
+      const parsed = JSON.parse(entry.content_value);
+      
+      // For Intro segments
+      if (parsed.title && parsed.description) {
+        return {
+          type: "Intro",
+          preview: parsed.title,
+          detail: parsed.description?.slice(0, 80) + (parsed.description?.length > 80 ? "..." : "")
+        };
+      }
+      
+      // For page_segments
+      if (Array.isArray(parsed)) {
+        return {
+          type: "Seitenstruktur",
+          preview: `${parsed.length} Segmente`,
+          detail: parsed.map((s: any) => s.type || "Unbekannt").slice(0, 3).join(", ") + (parsed.length > 3 ? "..." : "")
+        };
+      }
+      
+      // For other JSON with title/headline
+      if (parsed.title) {
+        return {
+          type: "Inhalt",
+          preview: parsed.title,
+          detail: null
+        };
+      }
+      if (parsed.headline) {
+        return {
+          type: "Inhalt",
+          preview: parsed.headline,
+          detail: null
+        };
+      }
+      
+      // Fallback
+      return {
+        type: "Inhalt",
+        preview: JSON.stringify(parsed).slice(0, 60) + "...",
+        detail: null
+      };
     } catch {
-      return content.slice(0, 200);
+      return {
+        type: "Text",
+        preview: entry.content_value.slice(0, 60) + "...",
+        detail: null
+      };
     }
   };
 
   const groupedBackups = groupBackupsByDate(backups);
 
   return (
-    <Card className="border-gray-200">
-      <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-        <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
+    <Card className="border-gray-700 bg-gray-900">
+      <CardHeader className="border-b border-gray-700 bg-gray-800">
+        <CardTitle className="text-xl font-bold text-white flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-[#f9dc24] flex items-center justify-center">
             <History className="h-5 w-5 text-gray-900" />
           </div>
-          Version History
+          Versionshistorie
         </CardTitle>
-        <CardDescription className="text-gray-600">
-          View and restore previous versions of your content
+        <CardDescription className="text-gray-400">
+          Frühere Versionen anzeigen und wiederherstellen
         </CardDescription>
       </CardHeader>
       
@@ -206,33 +259,35 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-gray-500" />
+            <Layers className="h-4 w-4 text-white" />
             <Select value={selectedSegment} onValueChange={setSelectedSegment}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="All Segments" />
+              <SelectTrigger className="w-[200px] bg-gray-800 border-gray-600 text-white">
+                <SelectValue placeholder="Alle Segmente" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Segments</SelectItem>
+              <SelectContent className="bg-gray-800 border-gray-600">
+                <SelectItem value="all" className="text-white hover:bg-gray-700">Alle Segmente</SelectItem>
                 {availableSegments.map(seg => (
-                  <SelectItem key={seg} value={seg}>{formatSegmentName(seg)}</SelectItem>
+                  <SelectItem key={seg} value={seg} className="text-white hover:bg-gray-700">
+                    {formatSegmentName(seg)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-500" />
+            <Globe className="h-4 w-4 text-white" />
             <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Language" />
+              <SelectTrigger className="w-[150px] bg-gray-800 border-gray-600 text-white">
+                <SelectValue placeholder="Sprache" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="de">Deutsch</SelectItem>
-                <SelectItem value="ja">日本語</SelectItem>
-                <SelectItem value="ko">한국어</SelectItem>
-                <SelectItem value="zh">中文</SelectItem>
+              <SelectContent className="bg-gray-800 border-gray-600">
+                <SelectItem value="all" className="text-white hover:bg-gray-700">Alle Sprachen</SelectItem>
+                <SelectItem value="en" className="text-white hover:bg-gray-700">English</SelectItem>
+                <SelectItem value="de" className="text-white hover:bg-gray-700">Deutsch</SelectItem>
+                <SelectItem value="ja" className="text-white hover:bg-gray-700">日本語</SelectItem>
+                <SelectItem value="ko" className="text-white hover:bg-gray-700">한국어</SelectItem>
+                <SelectItem value="zh" className="text-white hover:bg-gray-700">中文</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -245,71 +300,91 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
               <div className="animate-spin h-8 w-8 border-4 border-[#f9dc24] border-t-transparent rounded-full" />
             </div>
           ) : Object.keys(groupedBackups).length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-gray-400">
               <History className="h-12 w-12 mx-auto mb-4 opacity-30" />
-              <p>No version history found for this page</p>
+              <p>Keine Versionshistorie für diese Seite gefunden</p>
+              <p className="text-sm mt-2">Änderungen werden nach dem nächsten Speichern protokolliert</p>
             </div>
           ) : (
             <div className="space-y-6">
               {Object.entries(groupedBackups).map(([dateGroup, entries]) => (
                 <div key={dateGroup}>
                   <div className="flex items-center gap-2 mb-3">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <h3 className="text-sm font-semibold text-gray-700">{dateGroup}</h3>
+                    <Calendar className="h-4 w-4 text-white" />
+                    <h3 className="text-sm font-semibold text-white">{dateGroup}</h3>
                   </div>
                   
-                  <div className="space-y-2 ml-6 border-l-2 border-gray-200 pl-4">
-                    {entries.map((entry) => (
-                      <div 
-                        key={entry.id}
-                        className="flex items-start justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-gray-900">
-                              {format(parseISO(entry.backup_created_at), "HH:mm")}
-                            </span>
-                            <Badge variant="outline" className="text-xs">
-                              {formatSegmentName(entry.section_key)}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs uppercase">
-                              {entry.language}
-                            </Badge>
+                  <div className="space-y-2 ml-6 border-l-2 border-gray-600 pl-4">
+                    {entries.map((entry) => {
+                      const summary = getContentSummary(entry);
+                      return (
+                        <div 
+                          key={entry.id}
+                          className="flex items-start justify-between p-4 rounded-lg bg-gray-800 hover:bg-gray-750 transition-colors border border-gray-700"
+                        >
+                          <div className="flex-1 min-w-0">
+                            {/* Time and badges */}
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <span className="text-sm font-bold text-[#f9dc24]">
+                                {format(parseISO(entry.backup_created_at), "HH:mm")} Uhr
+                              </span>
+                              <Badge className="bg-blue-600 text-white text-xs">
+                                {formatSegmentName(entry.section_key)}
+                              </Badge>
+                              <Badge className="bg-gray-600 text-white text-xs uppercase">
+                                {LANGUAGE_LABELS[entry.language] || entry.language}
+                              </Badge>
+                            </div>
+                            
+                            {/* Content type and preview */}
+                            <div className="mb-2">
+                              <span className="text-xs text-gray-400 uppercase tracking-wide">
+                                {summary.type}:
+                              </span>
+                              <p className="text-sm text-white font-medium mt-1">
+                                {summary.preview}
+                              </p>
+                              {summary.detail && (
+                                <p className="text-xs text-gray-400 mt-1 truncate">
+                                  {summary.detail}
+                                </p>
+                              )}
+                            </div>
+                            
+                            {/* User info */}
+                            {entry.original_updated_by && (
+                              <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <User className="h-3 w-3" />
+                                <span>Bearbeitet von: {userEmails[entry.original_updated_by] || "Unbekannt"}</span>
+                              </div>
+                            )}
                           </div>
                           
-                          <p className="text-xs text-gray-500 truncate">
-                            {getPreviewContent(entry.content_value)}
-                          </p>
-                          
-                          {entry.original_updated_by && (
-                            <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
-                              <User className="h-3 w-3" />
-                              {userEmails[entry.original_updated_by] || "Unknown"}
-                            </div>
-                          )}
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 ml-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setPreviewEntry(entry)}
+                              className="h-8 w-8 p-0 text-white hover:bg-gray-700"
+                              title="Vorschau anzeigen"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setRestoreEntry(entry)}
+                              className="h-8 px-3 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24] hover:text-gray-900"
+                              title={`Zurück zu Version vom ${format(parseISO(entry.backup_created_at), "dd.MM.yyyy, HH:mm")} Uhr`}
+                            >
+                              <RotateCcw className="h-3 w-3 mr-1" />
+                              Zurücksetzen
+                            </Button>
+                          </div>
                         </div>
-                        
-                        <div className="flex items-center gap-2 ml-4">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setPreviewEntry(entry)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setRestoreEntry(entry)}
-                            className="h-8 px-3"
-                          >
-                            <RotateCcw className="h-3 w-3 mr-1" />
-                            Restore
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -320,31 +395,35 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       {/* Preview Dialog */}
       <Dialog open={!!previewEntry} onOpenChange={() => setPreviewEntry(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogContent className="max-w-2xl max-h-[80vh] bg-gray-900 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-white">
               <Eye className="h-5 w-5" />
-              Preview: {previewEntry && formatSegmentName(previewEntry.section_key)}
+              Vorschau: {previewEntry && formatSegmentName(previewEntry.section_key)}
             </DialogTitle>
-            <DialogDescription>
-              {previewEntry && format(parseISO(previewEntry.backup_created_at), "dd.MM.yyyy HH:mm:ss")}
+            <DialogDescription className="text-gray-400">
+              Stand vom {previewEntry && format(parseISO(previewEntry.backup_created_at), "dd.MM.yyyy, HH:mm:ss", { locale: de })} Uhr
+              {" • "}{previewEntry && (LANGUAGE_LABELS[previewEntry.language] || previewEntry.language)}
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[50vh]">
-            <pre className="p-4 bg-gray-100 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap">
+            <pre className="p-4 bg-gray-800 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap text-gray-200 border border-gray-700">
               {previewEntry && JSON.stringify(JSON.parse(previewEntry.content_value), null, 2)}
             </pre>
           </ScrollArea>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPreviewEntry(null)}>
-              Close
+            <Button variant="outline" onClick={() => setPreviewEntry(null)} className="border-gray-600 text-white hover:bg-gray-800">
+              Schließen
             </Button>
-            <Button onClick={() => {
-              setRestoreEntry(previewEntry);
-              setPreviewEntry(null);
-            }}>
+            <Button 
+              onClick={() => {
+                setRestoreEntry(previewEntry);
+                setPreviewEntry(null);
+              }}
+              className="bg-[#f9dc24] text-gray-900 hover:bg-[#e5c820]"
+            >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Restore this version
+              Diese Version wiederherstellen
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -352,29 +431,42 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
 
       {/* Restore Confirmation Dialog */}
       <Dialog open={!!restoreEntry} onOpenChange={() => setRestoreEntry(null)}>
-        <DialogContent>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-600">
+            <DialogTitle className="flex items-center gap-2 text-amber-400">
               <RotateCcw className="h-5 w-5" />
-              Confirm Restore
+              Wiederherstellung bestätigen
             </DialogTitle>
-            <DialogDescription>
-              This will replace the current content of <strong>{restoreEntry && formatSegmentName(restoreEntry.section_key)}</strong> with the version from{" "}
-              <strong>{restoreEntry && format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy HH:mm")}</strong>.
-              <br /><br />
-              A backup of the current content will be created automatically.
+            <DialogDescription className="text-gray-300 space-y-3">
+              <p>
+                Der aktuelle Inhalt von <strong className="text-white">{restoreEntry && formatSegmentName(restoreEntry.section_key)}</strong> ({restoreEntry && (LANGUAGE_LABELS[restoreEntry.language] || restoreEntry.language)}) wird ersetzt durch:
+              </p>
+              <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                <div className="text-xs text-gray-400 mb-1">Ziel-Version:</div>
+                <div className="text-white font-medium">
+                  {restoreEntry && format(parseISO(restoreEntry.backup_created_at), "dd.MM.yyyy, HH:mm", { locale: de })} Uhr
+                </div>
+                {restoreEntry && (
+                  <div className="text-sm text-gray-400 mt-2">
+                    {getContentSummary(restoreEntry).preview}
+                  </div>
+                )}
+              </div>
+              <p className="text-sm text-gray-400">
+                💾 Der aktuelle Stand wird automatisch als Backup gespeichert.
+              </p>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRestoreEntry(null)} disabled={restoring}>
-              Cancel
+            <Button variant="outline" onClick={() => setRestoreEntry(null)} disabled={restoring} className="border-gray-600 text-white hover:bg-gray-800">
+              Abbrechen
             </Button>
             <Button 
               onClick={handleRestore} 
               disabled={restoring}
-              className="bg-amber-600 hover:bg-amber-700"
+              className="bg-amber-600 hover:bg-amber-700 text-white"
             >
-              {restoring ? "Restoring..." : "Yes, restore"}
+              {restoring ? "Wird wiederhergestellt..." : "Ja, wiederherstellen"}
             </Button>
           </DialogFooter>
         </DialogContent>
