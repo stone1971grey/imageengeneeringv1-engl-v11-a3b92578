@@ -84,9 +84,12 @@ import { UserManagement } from '@/components/admin/UserManagement';
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
 import { TemplateSelectionDialog } from '@/components/admin/dashboard/TemplateSelectionDialog';
+import { DesignElementDialog } from '@/components/admin/dashboard/DesignElementDialog';
+import { NavigationCtaDialog } from '@/components/admin/dashboard/NavigationCtaDialog';
+import { FlyoutContentDialog } from '@/components/admin/dashboard/FlyoutContentDialog';
 import { 
   STATIC_SEGMENT_IDS, 
-  INDUSTRY_PARENT_CATEGORY_BY_SLUG, 
+  INDUSTRY_PARENT_CATEGORY_BY_SLUG,
   LANGUAGES, 
   DESIGN_ICON_OPTIONS, 
   CTA_GROUP_OPTIONS,
@@ -1686,428 +1689,47 @@ const AdminDashboard = () => {
           pageSegments={pageSegments}
         />
 
-              {/* Design Element Dialog */}
-              <Dialog open={isDesignElementDialogOpen} onOpenChange={setIsDesignElementDialogOpen}>
-                <DialogContent className="max-w-xl">
-                  <DialogHeader>
-                    <DialogTitle>Select design element</DialogTitle>
-                    <DialogDescription>
-                      Choose an icon that will appear in the segment bar and navigation for this page.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <p className="text-xs text-gray-500">
-                      Design elements can only be selected for second-level navigation pages (direct children of main sections like "Your Solution" or "Products").
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {DESIGN_ICON_OPTIONS.map((option) => {
-                        const IconComp = option.Icon;
-                        const isActive = (pendingDesignIcon ?? pageInfo?.designIcon) === option.key;
-                        return (
-                          <button
-                            key={option.key}
-                            type="button"
-                            onClick={() => setPendingDesignIcon(option.key)}
-                            className={`flex flex-col items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors ${
-                              isActive
-                                ? 'border-primary bg-primary/10 text-primary-foreground'
-                                : 'border-border bg-card text-foreground hover:border-primary hover:bg-muted'
-                            }`}
-                          >
-                            <IconComp className="h-5 w-5 mb-1" />
-                            <span>{option.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div className="flex justify-between items-center pt-2 border-t mt-2">
-                      <div className="text-xs text-gray-500">
-                        {pageInfo?.designIcon
-                          ? `Current: ${pageInfo.designIcon}`
-                          : 'No design element selected yet'}
-                      </div>
-                      <div className="flex gap-2">
-                        {pageInfo?.designIcon && (
-                          <Button variant="outline" size="sm" onClick={handleRemoveDesignElement}>
-                            <Trash2 className="h-3 w-3 mr-1" />
-                            Remove
-                          </Button>
-                        )}
-                        <Button size="sm" onClick={handleSaveDesignElement} disabled={!pendingDesignIcon}>
-                          <Save className="h-3 w-3 mr-1" />
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+        {/* Design Element Dialog */}
+        <DesignElementDialog
+          open={isDesignElementDialogOpen}
+          onOpenChange={setIsDesignElementDialogOpen}
+          pageInfo={pageInfo}
+          pendingDesignIcon={pendingDesignIcon}
+          setPendingDesignIcon={setPendingDesignIcon}
+          onSave={handleSaveDesignElement}
+          onRemove={handleRemoveDesignElement}
+        />
 
-              {/* Navigation CTA Dialog */}
-              <Dialog open={isCtaDialogOpen} onOpenChange={setIsCtaDialogOpen}>
-                <DialogContent className="max-w-xl bg-[hsl(var(--background))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))]">
-                  <DialogHeader>
-                    <DialogTitle>Navigation CTA for this page</DialogTitle>
-                    <DialogDescription className="text-[hsl(var(--muted-foreground))]">
-                      Define whether this page should be used as a call-to-action button in the main navigation flyouts.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))] mb-2">
-                        Only one page can be assigned per CTA group. Saving here will replace any existing CTA for the selected group.
-                      </p>
-                      <Label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">CTA Group</Label>
-                      <select
-                        className="w-full rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm text-[hsl(var(--foreground))]"
-                        value={ctaGroup}
-                        onChange={(e) => setCtaGroup(e.target.value)}
-                      >
-                        {CTA_GROUP_OPTIONS.map((opt) => (
-                          <option key={opt.key} value={opt.key}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+        {/* Navigation CTA Dialog */}
+        <NavigationCtaDialog
+          open={isCtaDialogOpen}
+          onOpenChange={setIsCtaDialogOpen}
+          pageInfo={pageInfo}
+          ctaGroup={ctaGroup}
+          setCtaGroup={setCtaGroup}
+          ctaIcon={ctaIcon}
+          setCtaIcon={setCtaIcon}
+          ctaLabel={ctaLabel}
+          setCtaLabel={setCtaLabel}
+          isSaving={isSavingCta}
+          onSave={handleSaveCtaConfig}
+        />
 
-                    <div>
-                      <Label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">CTA Icon</Label>
-                      <select
-                        className="w-full rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm text-[hsl(var(--foreground))]"
-                        value={ctaIcon}
-                        onChange={(e) => setCtaIcon(e.target.value)}
-                      >
-                        <option value="auto">Automatic (recommended)</option>
-                        <option value="search">Search icon (magnifier)</option>
-                        <option value="microscope">Microscope icon</option>
-                        <option value="none">No icon</option>
-                      </select>
-                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                        The selected icon appears left of the CTA label in the navigation flyout.
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">Button label</label>
-                      <Input
-                        type="text"
-                        value={ctaLabel}
-                        onChange={(e) => setCtaLabel(e.target.value)}
-                        placeholder={pageInfo?.pageTitle || 'Button label'}
-                        className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))] border-[hsl(var(--border))]"
-                      />
-                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                        If left empty, the page title "{pageInfo?.pageTitle}" will be used.
-                      </p>
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-2 border-t mt-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setCtaGroup('none');
-                          setCtaLabel('');
-                        }}
-                      >
-                        Clear CTA
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleSaveCtaConfig}
-                        disabled={isSavingCta}
-                      >
-                        {isSavingCta ? 'Saving...' : (
-                          <>
-                            <Save className="h-3 w-3 mr-1" />
-                            Save CTA
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              {/* Flyout Content Dialog (triggered by clicking the design element badge) */}
-              <Dialog open={isFlyoutDialogOpen} onOpenChange={setIsFlyoutDialogOpen}>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Flyout teaser for this navigation item</DialogTitle>
-                    <DialogDescription>
-                      Configure the image and description that appear in the lower flyout area for this second-level navigation item.
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  {!hasDesignButtons && (
-                    <p className="text-xs text-red-600 mb-3">
-                      Flyout content is only available for navigation pages with design buttons enabled.
-                    </p>
-                  )}
-
-                  <div className="space-y-4 mt-2">
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1 flex items-center gap-2">
-                        <span>
-                          Current page: <span className="font-semibold">{pageInfo?.pageTitle}</span> ({pageInfo?.pageSlug})
-                        </span>
-                        {pageInfo?.ctaGroup && pageInfo.ctaGroup !== 'none' && (
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${
-                              pageInfo.ctaGroup === 'your-solution'
-                                ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
-                                : 'bg-black text-white border-gray-600'
-                            }`}
-                          >
-                            {pageInfo.ctaIcon === 'microscope' ? (
-                              <span className="inline-flex items-center">🔬</span>
-                            ) : (
-                              <span className="inline-flex items-center">🔍</span>
-                            )}
-                            <span>
-                              {(() => {
-                                const labelMap: Record<string, string> = {
-                                  'your-solution': 'Navigation CTA: Your Solution',
-                                  'products': 'Navigation CTA: Products',
-                                  'test-lab': 'Navigation CTA: Test Lab',
-                                  'training-events': 'Navigation CTA: Training & Events',
-                                  'info-hub': 'Navigation CTA: Info Hub',
-                                };
-                                return labelMap[pageInfo.ctaGroup] || `Navigation CTA: ${pageInfo.ctaGroup}`;
-                              })()}
-                            </span>
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        This teaser is used in the main navigation flyout below the list of items.
-                      </p>
-                    </div>
-
-                    {/* Image selection via Media Management */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Flyout image</label>
-
-                      {flyoutImageUrl ? (
-                        <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border bg-black mb-2">
-                          <img
-                            src={flyoutImageUrl}
-                            alt={flyoutDescriptionTranslations['en'] || 'Flyout teaser image'}
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setFlyoutImageUrl(null)}
-                            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10 text-xs"
-                            title="Remove flyout image"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-gray-500 mb-1">No image selected yet.</p>
-                      )}
-
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="flex-1 flex items-center justify-center gap-2"
-                          onClick={() => setIsFlyoutMediaDialogOpen(true)}
-                          disabled={!hasDesignButtons}
-                        >
-                          <FolderOpen className="h-4 w-4" />
-                          <span>Select from Media Management</span>
-                        </Button>
-                      </div>
-
-                      {isFlyoutMediaDialogOpen && (
-                        <DataHubDialog
-                          isOpen={isFlyoutMediaDialogOpen}
-                          onClose={() => setIsFlyoutMediaDialogOpen(false)}
-                          selectionMode={true}
-                          onSelect={(url) => {
-                            handleFlyoutImageSelect(url);
-                            setIsFlyoutMediaDialogOpen(false);
-                          }}
-                        />
-                      )}
-
-                      <p className="text-[11px] text-gray-500 mt-1">
-                        When you select an image, the system will try to use its alt text as an initial description.
-                      </p>
-                    </div>
-
-                    {/* Description text with language selector */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Flyout description</label>
-                        <div className="flex items-center gap-2">
-                          <Select value={flyoutDescriptionLanguage} onValueChange={setFlyoutDescriptionLanguage}>
-                            <SelectTrigger className="w-[120px] h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="en">🇺🇸 English</SelectItem>
-                              <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
-                              <SelectItem value="ja">🇯🇵 日本語</SelectItem>
-                              <SelectItem value="ko">🇰🇷 한국어</SelectItem>
-                              <SelectItem value="zh">🇨🇳 中文</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <Textarea
-                        value={flyoutDescriptionTranslations[flyoutDescriptionLanguage] || ''}
-                        onChange={(e) => setFlyoutDescriptionTranslations(prev => ({
-                          ...prev,
-                          [flyoutDescriptionLanguage]: e.target.value
-                        }))}
-                        rows={3}
-                        placeholder={flyoutDescriptionLanguage === 'en' 
-                          ? "Short description that appears under the title in the flyout..." 
-                          : `Translation for ${flyoutDescriptionLanguage.toUpperCase()}...`
-                        }
-                      />
-                      
-                      {/* Auto-translate buttons */}
-                      <div className="flex gap-2">
-                        {flyoutDescriptionLanguage !== 'en' && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="text-xs border-purple-500 text-purple-600 hover:bg-purple-50"
-                            disabled={isTranslatingFlyout || !flyoutDescriptionTranslations['en']}
-                            onClick={async () => {
-                              const englishText = flyoutDescriptionTranslations['en'];
-                              if (!englishText) {
-                                toast.error('Please enter English description first');
-                                return;
-                              }
-                              setIsTranslatingFlyout(true);
-                              try {
-                                const { data, error } = await supabase.functions.invoke('translate-content', {
-                                  body: {
-                                    texts: { description: englishText },
-                                    targetLanguage: flyoutDescriptionLanguage
-                                  }
-                                });
-                                if (error) throw error;
-                                if (data?.translatedTexts?.description) {
-                                  setFlyoutDescriptionTranslations(prev => ({
-                                    ...prev,
-                                    [flyoutDescriptionLanguage]: data.translatedTexts.description
-                                  }));
-                                  toast.success('Translation complete');
-                                }
-                              } catch (err) {
-                                console.error('Translation error:', err);
-                                toast.error('Translation failed');
-                              } finally {
-                                setIsTranslatingFlyout(false);
-                              }
-                            }}
-                          >
-                            <Sparkles className="h-3 w-3 mr-1" />
-                            {isTranslatingFlyout ? 'Translating...' : 'Auto-Translate'}
-                          </Button>
-                        )}
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          className="text-xs border-purple-500 text-purple-600 hover:bg-purple-50"
-                          disabled={isTranslatingFlyout || !flyoutDescriptionTranslations['en']}
-                          onClick={async () => {
-                            const englishText = flyoutDescriptionTranslations['en'];
-                            if (!englishText) {
-                              toast.error('Please enter English description first');
-                              return;
-                            }
-                            setIsTranslatingFlyout(true);
-                            const targetLangs = ['de', 'ja', 'ko', 'zh'];
-                            try {
-                              const results = await Promise.all(
-                                targetLangs.map(async (lang) => {
-                                  const { data, error } = await supabase.functions.invoke('translate-content', {
-                                    body: {
-                                      texts: { description: englishText },
-                                      targetLanguage: lang
-                                    }
-                                  });
-                                  if (error) throw error;
-                                  return { lang, text: data?.translatedTexts?.description || '' };
-                                })
-                              );
-                              const newTranslations = { ...flyoutDescriptionTranslations };
-                              results.forEach(({ lang, text }) => {
-                                if (text) newTranslations[lang] = text;
-                              });
-                              setFlyoutDescriptionTranslations(newTranslations);
-                              toast.success('All translations complete');
-                            } catch (err) {
-                              console.error('Translation error:', err);
-                              toast.error('Some translations failed');
-                            } finally {
-                              setIsTranslatingFlyout(false);
-                            }
-                          }}
-                        >
-                          <Languages className="h-3 w-3 mr-1" />
-                          {isTranslatingFlyout ? 'Translating...' : 'Translate All'}
-                        </Button>
-                      </div>
-                      
-                      {isTranslatingFlyout && (
-                        <div className="h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded animate-pulse" />
-                      )}
-                      
-                      <p className="text-[11px] text-gray-500">
-                        Enter English first, then translate to other languages.
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t mt-2">
-                      <div className="text-xs text-gray-500">
-                        {flyoutImageUrl ? 'Flyout image selected' : 'No flyout image selected yet'}
-                      </div>
-                      <div className="flex gap-2">
-                        {flyoutImageUrl || Object.keys(flyoutDescriptionTranslations).some(k => flyoutDescriptionTranslations[k]) ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleClearFlyoutInfo}
-                            disabled={isSavingFlyout}
-                          >
-                            <Trash2 className="h-3 w-3 mr-1" />
-                            Clear
-                          </Button>
-                        ) : null}
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={handleSaveFlyoutInfo}
-                          disabled={isSavingFlyout || !hasDesignButtons}
-                        >
-                          {isSavingFlyout ? (
-                            'Saving...'
-                          ) : (
-                            <>
-                              <Save className="h-3 w-3 mr-1" />
-                              Save
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+        {/* Flyout Content Dialog */}
+        <FlyoutContentDialog
+          open={isFlyoutDialogOpen}
+          onOpenChange={setIsFlyoutDialogOpen}
+          pageInfo={pageInfo}
+          hasDesignButtons={hasDesignButtons}
+          flyoutImageUrl={flyoutImageUrl}
+          setFlyoutImageUrl={setFlyoutImageUrl}
+          flyoutDescriptionTranslations={flyoutDescriptionTranslations}
+          setFlyoutDescriptionTranslations={setFlyoutDescriptionTranslations}
+          isSaving={isSavingFlyout}
+          onSave={handleSaveFlyoutInfo}
+          onClear={handleClearFlyoutInfo}
+          onImageSelect={handleFlyoutImageSelect}
+        />
 
         {/* SEO Editor - Conditional Rendering */}
         {isSEOEditorOpen && selectedPage && (
