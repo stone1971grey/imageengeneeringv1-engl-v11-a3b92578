@@ -862,8 +862,7 @@ const AdminDashboard = () => {
 
   const loadContent = async () => {
     let querySlug = await resolvePageSlug(selectedPage);
-    
-    console.log('[AdminDashboard] Loading content for page:', querySlug, 'original:', selectedPage, 'language:', editorLanguage);
+    console.log('[AdminDashboard] Loading content for page:', querySlug, 'language:', editorLanguage);
     
     // First try with resolved slug
     let { data, error } = await supabase
@@ -874,19 +873,16 @@ const AdminDashboard = () => {
 
     // If no results and querySlug doesn't contain '/', try hierarchical search
     if ((!data || data.length === 0) && !querySlug.includes('/')) {
-      console.log('[loadContent] No exact match, trying hierarchical search for:', querySlug);
-      const { data: hierarchicalData, error: hierarchicalError } = await supabase
+      const { data: hierarchicalData } = await supabase
         .from("page_content")
         .select("*")
         .ilike("page_slug", `%/${querySlug}`)
         .eq("language", editorLanguage);
       
-      if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
+      if (hierarchicalData && hierarchicalData.length > 0) {
         data = hierarchicalData;
-        // Update resolved slug for future operations
         const foundSlug = hierarchicalData[0]?.page_slug;
         if (foundSlug) {
-          console.log('[loadContent] Found hierarchical match:', foundSlug);
           setResolvedPageSlug(foundSlug);
           querySlug = foundSlug;
         }
@@ -898,278 +894,81 @@ const AdminDashboard = () => {
       return;
     }
 
-    const contentMap: Record<string, string> = {};
-    let apps: any[] = [];
-
-    data?.forEach((item: ContentItem) => {
-      if (item.section_key === "applications_items") {
-        apps = JSON.parse(item.content_value);
-      } else if (item.section_key === "tiles_columns") {
-        setTilesColumns(item.content_value || "3");
-      } else if (item.section_key === "solutions_title") {
-        setSolutionsTitle(item.content_value);
-      } else if (item.section_key === "solutions_subtext") {
-        setSolutionsSubtext(item.content_value);
-      } else if (item.section_key === "solutions_layout") {
-        setSolutionsLayout(item.content_value || "2-col");
-      } else if (item.section_key === "solutions_items") {
-        setSolutionsItems(JSON.parse(item.content_value));
-      } else if (item.section_key === "banner_images") {
-        setBannerImages(JSON.parse(item.content_value));
-      } else if (item.section_key === "banner_title") {
-        setBannerTitle(item.content_value);
-      } else if (item.section_key === "banner_subtext") {
-        setBannerSubtext(item.content_value);
-      } else if (item.section_key === "banner_button_text") {
-        setBannerButtonText(item.content_value);
-      } else if (item.section_key === "banner_button_link") {
-        setBannerButtonLink(item.content_value);
-      } else if (item.section_key === "banner_button_style") {
-        setBannerButtonStyle(item.content_value || "standard");
-      } else if (item.section_key === "hero_image_url") {
-        setHeroImageUrl(item.content_value);
-      } else if (item.section_key === "hero_image_metadata") {
-        try {
-          const metadata = JSON.parse(item.content_value);
-          setHeroImageMetadata(metadata);
-        } catch (e) {
-          console.error("Error parsing hero image metadata:", e);
-        }
-      } else if (item.section_key === "hero_image_position") {
-        setHeroImagePosition(item.content_value || "right");
-      } else if (item.section_key === "hero_layout") {
-        setHeroLayout(item.content_value || "2-5");
-      } else if (item.section_key === "hero_top_padding") {
-        setHeroTopPadding(item.content_value || "medium");
-      } else if (item.section_key === "hero_cta_link") {
-        setHeroCtaLink(item.content_value || "#applications-start");
-      } else if (item.section_key === "hero_cta_style") {
-        setHeroCtaStyle(item.content_value || "standard");
-      } else if (item.section_key === "page_segments") {
-        try {
-          const segments = JSON.parse(item.content_value);
-          console.log('Loading page_segments for', selectedPage, ':', segments);
-          
-          let needsUpdate = false;
-          let segmentsWithIds: any[] = [];
-          
-          // Only process non-empty segments array
-          if (segments && segments.length > 0) {
-            // CRITICAL: Log raw segments before sorting
-            console.log('[POSITION DEBUG] Raw segments before sorting:', JSON.stringify(segments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
-            
-            // CRITICAL: Robust sort by position with fallback to original array order
-            const sortedSegments = [...segments].sort((a, b) => {
-              const posA = typeof a.position === 'number' ? a.position : 999;
-              const posB = typeof b.position === 'number' ? b.position : 999;
-              
-              // If positions are equal or both undefined, maintain original order by using array index
-              if (posA === posB) {
-                return segments.indexOf(a) - segments.indexOf(b);
-              }
-              return posA - posB;
-            });
-            
-            console.log('[POSITION DEBUG] Sorted segments:', JSON.stringify(sortedSegments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
-            
-            // Ensure all segments have numeric IDs from segment_registry
-            segmentsWithIds = sortedSegments.map((seg: any, idx: number) => {
-              console.log('Processing segment:', seg);
-              if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
-                needsUpdate = true;
-                // Find this segment's ID from segmentRegistry
-                const registryKey = `${selectedPage}-${seg.type || 'unknown'}`;
-                const registryId = segmentRegistry[registryKey];
-                return {
-                  ...seg,
-                  id: registryId || String(nextSegmentId + idx),
-                  position: idx // ALWAYS use sorted array index for stable positions
-                };
-              }
-              return {
-                ...seg,
-                position: idx // ALWAYS use sorted array index for stable positions
-              };
-            });
-            
-            console.log('[POSITION DEBUG] Final segments with positions:', JSON.stringify(segmentsWithIds.map(s => ({ id: s.id, type: s.type, position: s.position }))));
-            
-            console.log('Final segmentsWithIds (sorted):', segmentsWithIds);
-            setPageSegments(segmentsWithIds);
-          } else {
-            // Empty segments array - this is normal for pages with only static segments
-            console.log('No dynamic segments for', selectedPage);
-            setPageSegments([]);
-          }
-          
-          // If we added IDs, save back to database immediately
-          if (needsUpdate && user) {
-            console.log("Updating segments with numeric IDs:", segmentsWithIds);
-            supabase
-              .from("page_content")
-              .upsert({
-                page_slug: resolvedPageSlug || selectedPage,
-                section_key: "page_segments",
-                content_type: "json",
-                content_value: JSON.stringify(segmentsWithIds),
-                updated_at: new Date().toISOString(),
-                updated_by: user.id
-              }, {
-                onConflict: 'page_slug,section_key,language'
-              })
-              .then(({ error }) => {
-                if (error) {
-                  console.error("Error updating segment IDs:", error);
-                } else {
-                  console.log("Segment IDs updated successfully");
-                }
-              });
-          }
-          
-          // Note: Global max ID is already calculated in calculateGlobalMaxSegmentId()
-        } catch {
-          setPageSegments([]);
-        }
-      } else if (item.section_key === "tab_order") {
-        try {
-          const order = JSON.parse(item.content_value);
-          
-          // Get valid segment IDs from segment_registry (excluding deleted)
-          const reverseRegistry = (window as any).__segmentKeyRegistry || {};
-          const validSegmentIds = Object.keys(reverseRegistry);
-          
-          // IMPORTANT: Only filter if registry is populated - otherwise keep all segments
-          // This prevents the bug where segments disappear when registry isn't loaded yet
-          let validOrder = order || [];
-          
-          if (validSegmentIds.length > 0) {
-            // Filter out deleted segments - tabId is a segment_id string like "197"
-            validOrder = (order || []).filter((tabId: string) => {
-              return validSegmentIds.includes(tabId);
-            });
-            
-            // If we filtered anything out, save the cleaned tab_order back to database
-            if (validOrder.length !== order.length && user) {
-              console.log("🧹 Cleaning tab_order: Removed deleted segments", {
-                original: order,
-                cleaned: validOrder,
-                validSegmentIds
-              });
-              supabase
-                .from("page_content")
-                .upsert({
-                  page_slug: resolvedPageSlug || selectedPage,
-                  section_key: "tab_order",
-                  content_type: "json",
-                  content_value: JSON.stringify(validOrder),
-                  updated_at: new Date().toISOString(),
-                  updated_by: user.id
-                }, {
-                  onConflict: 'page_slug,section_key,language'
-                });
-            }
-          }
-          
-          setTabOrder(validOrder.length > 0 ? validOrder : []);
-          
-          // Set activeTab: First check sessionStorage for saved tab, otherwise use first available
-          if (validOrder.length > 0) {
-            const pageKey = selectedPage || 'index';
-            const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
-            console.log("[AdminDashboard] loadContent - pageKey:", pageKey, "savedTab:", savedTab, "validOrder:", validOrder);
-            
-            // Check if savedTab is valid: either in validOrder OR is "footer" (special static tab)
-            const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || savedTab === "footer");
-            
-            if (isValidSavedTab) {
-              console.log("[AdminDashboard] loadContent - Using saved tab:", savedTab);
-              setActiveTabState(savedTab);
-            } else {
-              console.log("[AdminDashboard] loadContent - No valid saved tab, using first:", validOrder[0]);
-              setActiveTabState(validOrder[0]);
-              // Also save this as the default
-              sessionStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
-            }
-          }
-        } catch {
-          setTabOrder([]);
-        }
-      } else if (item.section_key === "footer_cta_title") {
-        setFooterCtaTitle(item.content_value);
-      } else if (item.section_key === "footer_cta_description") {
-        setFooterCtaDescription(item.content_value);
-      } else if (item.section_key === "footer_contact_headline") {
-        setFooterContactHeadline(item.content_value);
-      } else if (item.section_key === "footer_contact_subline") {
-        setFooterContactSubline(item.content_value);
-      } else if (item.section_key === "footer_contact_description") {
-        setFooterContactDescription(item.content_value);
-      } else if (item.section_key === "footer_team_image_url") {
-        setFooterTeamImageUrl(item.content_value);
-      } else if (item.section_key === "footer_team_quote") {
-        setFooterTeamQuote(item.content_value);
-      } else if (item.section_key === "footer_team_name") {
-        setFooterTeamName(item.content_value);
-      } else if (item.section_key === "footer_team_title") {
-        setFooterTeamTitle(item.content_value);
-      } else if (item.section_key === "footer_button_text") {
-        setFooterButtonText(item.content_value);
-      } else if (item.section_key === "seo_settings") {
-        try {
-          const seoSettings = JSON.parse(item.content_value);
-          setSeoData({
-            ...seoData,
-            ...seoSettings,
-            slug: seoSettings.slug || selectedPage
-          });
-        } catch {
-          // Keep default SEO data
-        }
-      } else {
-        contentMap[item.section_key] = item.content_value;
-      }
-    });
-
-    setContent(contentMap);
-    setApplications(apps);
+    // Parse all content items using extracted utility
+    const result = parseContentItems(data || [], selectedPage, segmentRegistry, seoData);
     
-    // SAFETY CHECK: If tab_order is empty but page_segments exist, rebuild tab_order
-    // This prevents the "empty page" bug when segments are accidentally removed from tab_order
-    if (tabOrder.length === 0 && pageSegments.length > 0) {
-      console.log("🚨 SAFETY CHECK: tab_order is empty but segments exist. Rebuilding tab_order...");
-      
-      // Build tab_order from existing segments (exclude meta-navigation and full-hero)
-      const rebuiltTabOrder = pageSegments
-        .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
-        .map(seg => seg.id);
-      
-      if (rebuiltTabOrder.length > 0 && user) {
-        // Save the rebuilt tab_order to database
-        supabase
-           .from("page_content")
-           .upsert({
-             page_slug: resolvedPageSlug || selectedPage,
-             section_key: "tab_order",
-             content_type: "json",
-             content_value: JSON.stringify(rebuiltTabOrder),
-             updated_at: new Date().toISOString(),
-             updated_by: user.id
-           }, {
-             onConflict: 'page_slug,section_key,language'
-           })
-          .then(({ error }) => {
-            if (!error) {
-              console.log("✅ tab_order successfully rebuilt:", rebuiltTabOrder);
-              setTabOrder(rebuiltTabOrder);
-            }
-          });
+    // Apply parsed content to state
+    setContent(result.contentMap);
+    setApplications(result.applications);
+    setTilesColumns(result.tilesColumns);
+    setHeroImageUrl(result.heroImageUrl);
+    setHeroImageMetadata(result.heroImageMetadata);
+    setHeroImagePosition(result.heroImagePosition);
+    setHeroLayout(result.heroLayout);
+    setHeroTopPadding(result.heroTopPadding);
+    setHeroCtaLink(result.heroCtaLink);
+    setHeroCtaStyle(result.heroCtaStyle);
+    setBannerTitle(result.bannerTitle);
+    setBannerSubtext(result.bannerSubtext);
+    setBannerImages(result.bannerImages);
+    setBannerButtonText(result.bannerButtonText);
+    setBannerButtonLink(result.bannerButtonLink);
+    setBannerButtonStyle(result.bannerButtonStyle);
+    setSolutionsTitle(result.solutionsTitle);
+    setSolutionsSubtext(result.solutionsSubtext);
+    setSolutionsLayout(result.solutionsLayout);
+    setSolutionsItems(result.solutionsItems);
+    setPageSegments(result.pageSegments);
+    setFooterCtaTitle(result.footerCtaTitle);
+    setFooterCtaDescription(result.footerCtaDescription);
+    setFooterContactHeadline(result.footerContactHeadline);
+    setFooterContactSubline(result.footerContactSubline);
+    setFooterContactDescription(result.footerContactDescription);
+    setFooterTeamImageUrl(result.footerTeamImageUrl);
+    setFooterTeamQuote(result.footerTeamQuote);
+    setFooterTeamName(result.footerTeamName);
+    setFooterTeamTitle(result.footerTeamTitle);
+    setFooterButtonText(result.footerButtonText);
+    setSeoData(result.seoData);
+    
+    // Process tab order with filtering
+    const reverseRegistry = (window as any).__segmentKeyRegistry || {};
+    const { validOrder, wasFiltered } = filterTabOrder(result.tabOrder, reverseRegistry);
+    
+    if (wasFiltered && user) {
+      await saveCleanedTabOrder(resolvedPageSlug || selectedPage, validOrder, user.id);
+    }
+    setTabOrder(validOrder);
+    
+    // Set active tab
+    if (validOrder.length > 0) {
+      const pageKey = selectedPage || 'index';
+      const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+      const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || savedTab === "footer");
+      if (isValidSavedTab) {
+        setActiveTabState(savedTab);
+      } else {
+        setActiveTabState(validOrder[0]);
+        sessionStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
       }
     }
     
-    // Check for autosaved data and restore if available
-    setTimeout(() => {
-      restoreAutosavedDataIfAvailable();
-    }, 100);
+    // Save segment IDs if needed
+    if (result.needsSegmentUpdate && user) {
+      await saveUpdatedSegments(resolvedPageSlug || selectedPage, result.segmentsWithIds, user.id);
+    }
+    
+    // SAFETY CHECK: Rebuild tab_order if empty but segments exist
+    if (validOrder.length === 0 && result.pageSegments.length > 0 && user) {
+      const rebuiltTabOrder = rebuildTabOrderFromSegments(result.pageSegments);
+      if (rebuiltTabOrder.length > 0) {
+        await saveCleanedTabOrder(resolvedPageSlug || selectedPage, rebuiltTabOrder, user.id);
+        setTabOrder(rebuiltTabOrder);
+      }
+    }
+    
+    // Check for autosaved data
+    setTimeout(() => restoreAutosavedDataIfAvailable(), 100);
   };
   
   const restoreAutosavedDataIfAvailable = () => {
@@ -1468,168 +1267,41 @@ const AdminDashboard = () => {
 
   const handleSolutionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      const newItems = [...solutionsItems];
-      newItems[index].imageUrl = publicUrl;
-      newItems[index].metadata = { ...metadata, altText: '' };
-      setSolutionsItems(newItems);
-
-      toast.success("Solution image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
+    await handleSolutionImageUploadUtil(e.target.files[0], index, solutionsItems, setSolutionsItems);
+    setUploading(false);
   };
 
   const handleImageTextHeroImageUpload = async (segmentIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `image-text-hero-${segmentIndex}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      const newSegments = [...pageSegments];
-      newSegments[segmentIndex].data.heroImageUrl = publicUrl;
-      newSegments[segmentIndex].data.heroImageMetadata = { ...metadata, altText: '' };
-      setPageSegments(newSegments);
-
-      // Auto-save after upload
+    const newSegments = await handleImageTextHeroUpload(file, segmentIndex, pageSegments, setPageSegments);
+    if (newSegments) {
       await autoSaveImageTextSegment(newSegments);
-
       toast.success("Hero image uploaded and saved successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
     }
+    setUploading(false);
   };
 
   const handleImageTextItemImageUpload = async (segmentIndex: number, itemIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      const newSegments = [...pageSegments];
-      newSegments[segmentIndex].data.items[itemIndex].imageUrl = publicUrl;
-      newSegments[segmentIndex].data.items[itemIndex].metadata = { ...metadata, altText: '' };
-      setPageSegments(newSegments);
-
-      // Auto-save after upload
+    const newSegments = await handleImageTextItemUpload(file, segmentIndex, itemIndex, pageSegments, setPageSegments);
+    if (newSegments) {
       await autoSaveImageTextSegment(newSegments);
-
       toast.success("Item image uploaded and saved successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
     }
+    setUploading(false);
   };
 
   const autoSaveImageTextSegment = async (updatedSegments: any[]) => {
     if (!user) return;
-    
     try {
-      // 🔐 BACKUP before auto-save
       const currentSlug = resolvedPageSlug || selectedPage;
       await createContentBackup(currentSlug, 'page_segments', 'en');
-      
-      const { error } = await supabase
+      await supabase
         .from("page_content")
         .upsert({
           page_slug: currentSlug,
@@ -1638,15 +1310,8 @@ const AdminDashboard = () => {
           content_value: JSON.stringify(updatedSegments),
           updated_at: new Date().toISOString(),
           updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
-
-      if (error) {
-        console.error("Auto-save error:", error);
-      } else {
-        console.log("✅ Image & Text segment auto-saved to database");
-      }
+        }, { onConflict: 'page_slug,section_key,language' });
+      console.log("✅ Image & Text segment auto-saved");
     } catch (error: any) {
       console.error("Auto-save error:", error);
     }
@@ -1654,134 +1319,28 @@ const AdminDashboard = () => {
 
   const handleFooterTeamImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `footer-team-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      setFooterTeamImageUrl(publicUrl);
-      setFooterTeamImageMetadata({ ...metadata, altText: '' });
-      
-      // Save to database
-      const { error: dbError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "footer_team_image_url",
-          content_type: "image_url",
-          content_value: publicUrl,
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
-
-      if (dbError) throw dbError;
-
-      toast.success("Team image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
+    const ctx: UploadContext = { resolvedPageSlug: resolvedPageSlug || selectedPage, selectedPage, editorLanguage, userId: user?.id };
+    await handleFooterTeamImageUploadUtil(e.target.files[0], ctx, setFooterTeamImageUrl, setFooterTeamImageMetadata);
+    setUploading(false);
   };
 
   const handleAddBannerImage = () => {
-    const newImage = {
-      url: "",
-      alt: `Banner image ${bannerImages.length + 1}`
-    };
+    const newImage = { url: "", alt: `Banner image ${bannerImages.length + 1}` };
     setBannerImages([...bannerImages, newImage]);
     toast.success("New banner image slot added! Upload an image.");
   };
 
   const handleDeleteBannerImage = (index: number) => {
-    const newImages = bannerImages.filter((_, i) => i !== index);
-    setBannerImages(newImages);
+    setBannerImages(bannerImages.filter((_, i) => i !== index));
     toast.success("Banner image deleted! Don't forget to save changes.");
   };
 
   const handleBannerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
     setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      const newImages = [...bannerImages];
-      newImages[index].url = publicUrl;
-      newImages[index].metadata = { ...metadata, altText: newImages[index].alt || '' };
-      setBannerImages(newImages);
-
-      toast.success("Banner image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
+    await handleBannerImageUploadUtil(e.target.files[0], index, bannerImages, setBannerImages);
+    setUploading(false);
   };
 
   // getDefaultSegmentData and getLanguageIndependentFields are now imported from segmentUtils
@@ -1854,150 +1413,36 @@ const AdminDashboard = () => {
 
   const handleSaveSEO = async () => {
     if (!user) return;
-    
     setSaving(true);
-
-    try {
-      const { error } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "seo_settings",
-          content_type: "json",
-          content_value: JSON.stringify(seoData),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
-
-      if (error) throw error;
-      toast.success("SEO Settings saved successfully!");
-      
-      // Clear autosaved data after successful save
-      clearAutosavedData(`${selectedPage}_seo`);
-    } catch (error: any) {
-      toast.error("Error saving SEO settings: " + error.message);
-    } finally {
-      setSaving(false);
-    }
+    const ctx: SaveContext = { userId: user.id, resolvedPageSlug: resolvedPageSlug || selectedPage, selectedPage, editorLanguage };
+    await saveSEOSettings(ctx, seoData);
+    setSaving(false);
   };
 
   const handleSaveApplications = async () => {
     if (!user) return;
-    
     setSaving(true);
-
-    try {
-      // Update applications title and description using upsert
-      const appFields = ['applications_title', 'applications_description'];
-      
-      for (const key of appFields) {
-        if (content[key] !== undefined) {
-          const { error } = await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: key,
-              content_type: "text",
-              content_value: content[key],
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, {
-              onConflict: 'page_slug,section_key,language'
-            });
-
-          if (error) throw error;
-        }
-      }
-
-      // Update applications items using upsert
-      const { error: appsError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "applications_items",
-          content_type: "json",
-          content_value: JSON.stringify(applications),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
-
-      if (appsError) throw appsError;
-
-      // Save tiles columns setting
-      const { error: columnsError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tiles_columns",
-          content_type: "text",
-          content_value: tilesColumns,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
-
-      if (columnsError) throw columnsError;
-
-      toast.success("Applications section saved successfully!");
-      
-      // Clear autosaved data after successful save
-      clearAutosavedData(`${selectedPage}_tiles`);
-    } catch (error: any) {
-      toast.error("Error saving applications section: " + error.message);
-    } finally {
-      setSaving(false);
-    }
+    const ctx: SaveContext = { userId: user.id, resolvedPageSlug: resolvedPageSlug || selectedPage, selectedPage, editorLanguage };
+    await saveApplicationsSection(ctx, content, applications, tilesColumns);
+    setSaving(false);
   };
 
   const handleSaveFooter = async () => {
     if (!user) return;
-    
     setSaving(true);
-
-    try {
-      const footerFields = {
-        'footer_cta_title': footerCtaTitle,
-        'footer_cta_description': footerCtaDescription,
-        'footer_contact_headline': footerContactHeadline,
-        'footer_contact_subline': footerContactSubline,
-        'footer_contact_description': footerContactDescription,
-        'footer_team_quote': footerTeamQuote,
-        'footer_team_name': footerTeamName,
-        'footer_team_title': footerTeamTitle,
-        'footer_button_text': footerButtonText
-      };
-
-      for (const [key, value] of Object.entries(footerFields)) {
-        await supabase
-          .from("page_content")
-          .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
-            section_key: key,
-            content_type: "text",
-            content_value: value,
-            language: editorLanguage,
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key,language'
-          });
-      }
-
-      toast.success("Footer section saved successfully!");
-      
-      // Clear autosaved data after successful save
-      clearAutosavedData(`${selectedPage}_footer`);
-    } catch (error: any) {
-      toast.error("Error saving footer section: " + error.message);
-    } finally {
-      setSaving(false);
-    }
+    const ctx: SaveContext = { userId: user.id, resolvedPageSlug: resolvedPageSlug || selectedPage, selectedPage, editorLanguage };
+    await saveFooterSection(ctx, {
+      ctaTitle: footerCtaTitle,
+      ctaDescription: footerCtaDescription,
+      contactHeadline: footerContactHeadline,
+      contactSubline: footerContactSubline,
+      contactDescription: footerContactDescription,
+      teamQuote: footerTeamQuote,
+      teamName: footerTeamName,
+      teamTitle: footerTeamTitle,
+      buttonText: footerButtonText
+    });
+    setSaving(false);
   };
 
   if (loading) {
