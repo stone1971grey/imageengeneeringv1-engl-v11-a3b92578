@@ -290,7 +290,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         onClose();
       }
     }}>
-      <DialogContent className="max-w-2xl bg-gray-900 border-gray-700 text-white">
+      <DialogContent className="max-w-2xl max-h-[calc(100vh-120px)] overflow-y-auto bg-gray-900 border-gray-700 text-white mt-16">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
             <FileText className="h-6 w-6" />
