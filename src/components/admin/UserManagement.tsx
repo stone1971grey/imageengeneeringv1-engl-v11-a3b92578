@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book, History } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -94,6 +94,15 @@ const CONTENT_EDITORS: ContentEditor[] = [
     color: 'hsl(var(--accent-violet))',
     bgColor: 'bg-[hsl(var(--accent-violet))]',
     borderColor: 'border-[hsl(var(--accent-violet))]'
+  },
+  {
+    id: 'version-history',
+    name: 'Version Management',
+    description: 'View & restore content versions',
+    icon: <History className="h-6 w-6" />,
+    color: 'hsl(280 60% 50%)',
+    bgColor: 'bg-[hsl(280_60%_50%)]',
+    borderColor: 'border-[hsl(280_60%_50%)]'
   }
 ];
 
