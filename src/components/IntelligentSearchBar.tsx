@@ -176,42 +176,50 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
         )}
       </div>
 
-      {/* Autocomplete Dropdown */}
+      {/* Autocomplete Dropdown - styled based on variant */}
       {isOpen && query.length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto min-w-[320px]">
+        <div 
+          className={`absolute top-full left-0 right-0 mt-2 rounded-xl shadow-xl z-[100] max-h-80 overflow-y-auto ${
+            variant === 'mobile' 
+              ? 'bg-[#f5f5f5] border-2 border-white' 
+              : 'bg-white border border-border min-w-[320px]'
+          }`}
+        >
           {isLoading ? (
             <div className="px-4 py-6 text-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary mx-auto" />
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600 mx-auto" />
             </div>
           ) : results.length > 0 ? (
-            <div className="py-1">
+            <div className={variant === 'mobile' ? 'p-2' : 'py-1'}>
               {results.map((result, index) => (
                 <div
                   key={result.id}
-                  className={`px-3 py-2.5 cursor-pointer transition-colors ${
-                    index === selectedIndex ? 'bg-muted' : 'hover:bg-muted/50'
+                  className={`px-3 py-2.5 cursor-pointer transition-colors rounded-lg ${
+                    variant === 'mobile'
+                      ? (index === selectedIndex ? 'bg-white shadow-sm' : 'hover:bg-white/60')
+                      : (index === selectedIndex ? 'bg-muted' : 'hover:bg-muted/50')
                   }`}
                   onClick={() => handleResultClick(result)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {/* Category Badge */}
                     <Badge 
                       variant="outline" 
-                      className={`text-xs font-medium px-2 py-0.5 ${getCategoryColor(result.category)}`}
+                      className={`text-xs font-medium px-1.5 py-0.5 flex-shrink-0 ${getCategoryColor(result.category)}`}
                     >
                       {getCategoryLabel(result.category)}
                     </Badge>
                     
                     {/* Title */}
-                    <span className="font-medium text-foreground flex-1 truncate">
+                    <span className="font-medium text-gray-900 flex-1 truncate text-sm">
                       {result.title}
                     </span>
                     
-                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   </div>
                   
-                  {/* Meta line (date, location, page type) */}
-                  {result.meta && (
+                  {/* Meta line (date, location, page type) - hidden on mobile for compactness */}
+                  {result.meta && variant !== 'mobile' && (
                     <p className="text-xs text-muted-foreground mt-1 ml-[72px] truncate">
                       {result.meta}
                     </p>
@@ -221,10 +229,14 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
               
               {/* "Show all results" link */}
               <div 
-                className="px-3 py-2.5 border-t border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                className={`px-3 py-2.5 cursor-pointer transition-colors rounded-lg ${
+                  variant === 'mobile' 
+                    ? 'mt-1 border-t border-gray-200 hover:bg-white/60' 
+                    : 'border-t border-border hover:bg-muted/50'
+                }`}
                 onClick={handleGoToSearchResults}
               >
-                <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium">
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-700 font-medium">
                   <Search className="h-4 w-4" />
                   {language === 'de' ? 'Alle Ergebnisse anzeigen' : language === 'zh' ? '显示所有结果' : language === 'ja' ? 'すべての結果を表示' : language === 'ko' ? '모든 결과 보기' : 'Show all results'}
                 </div>
@@ -232,17 +244,16 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
             </div>
           ) : (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-sm text-gray-500 mb-2">
                 {language === 'de' ? 'Keine direkten Treffer' : language === 'zh' ? '没有直接匹配' : language === 'ja' ? '直接一致なし' : language === 'ko' ? '직접 일치 없음' : 'No direct matches'}
               </p>
-              <Button 
-                variant="link" 
-                size="sm" 
+              <button 
+                type="button"
                 onClick={handleGoToSearchResults}
-                className="text-primary"
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
               >
                 {language === 'de' ? 'Alle Ergebnisse anzeigen →' : language === 'zh' ? '显示所有结果 →' : language === 'ja' ? 'すべての結果を表示 →' : language === 'ko' ? '모든 결과 보기 →' : 'Show all results →'}
-              </Button>
+              </button>
             </div>
           )}
         </div>
