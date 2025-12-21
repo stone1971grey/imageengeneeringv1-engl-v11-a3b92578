@@ -93,6 +93,7 @@ export function DataHubDialog({
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [batchDeleting, setBatchDeleting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pageRegistry, setPageRegistry] = useState<Map<string, number>>(new Map());
   
   // Debounced localStorage write
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
@@ -143,6 +144,17 @@ export function DataHubDialog({
           rootFolders.push(folderNode);
         }
       });
+
+      // Load page registry for page_id display
+      const { data: pageRegistryData } = await supabase
+        .from('page_registry')
+        .select('page_id, page_slug');
+      
+      const pageIdMap = new Map<string, number>();
+      pageRegistryData?.forEach(page => {
+        pageIdMap.set(page.page_slug, page.page_id);
+      });
+      setPageRegistry(pageIdMap);
 
       // Load segment mappings from database (including visibility)
       const { data: segmentMappings } = await supabase
@@ -695,6 +707,9 @@ export function DataHubDialog({
     const isOpen = openFolders.includes(folder.id);
     const folderFiles = getFilteredFiles(folder.files);
     const isRootFolder = folder.parent_id === null;
+    
+    // Check if this folder corresponds to a page and get page_id
+    const pageId = pageRegistry.get(folder.storage_path);
 
     return (
       <Collapsible
@@ -717,6 +732,11 @@ export function DataHubDialog({
               )}
               <span className="font-semibold text-white text-lg">
                 {folder.name}
+                {pageId && (
+                  <span className="ml-2 text-xs font-normal text-[#f9dc24] bg-[#f9dc24]/10 px-2 py-0.5 rounded">
+                    Page-ID: {pageId}
+                  </span>
+                )}
               </span>
               <span className="text-sm text-gray-400 bg-gray-700/50 px-2 py-1 rounded-full">
                 {folderFiles.length} files
@@ -1254,7 +1274,7 @@ export function DataHubDialog({
         </div>
       </Collapsible>
     );
-  }, [openFolders, getFilteredFiles, getFileUrl, isImage, isVideo, toggleFolder, selectionMode, onSelect, selectedFiles, uploading, selectedFolder, creatingFolderFor, newFolderName, editingFolder, deletingFolder, batchDeleting]);
+  }, [openFolders, getFilteredFiles, getFileUrl, isImage, isVideo, toggleFolder, selectionMode, onSelect, selectedFiles, uploading, selectedFolder, creatingFolderFor, newFolderName, editingFolder, deletingFolder, batchDeleting, pageRegistry]);
 
   return (
     <>
