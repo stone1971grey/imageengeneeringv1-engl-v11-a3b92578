@@ -9,36 +9,95 @@ export { NavigationCtaDialog } from './NavigationCtaDialog';
 export { FlyoutContentDialog } from './FlyoutContentDialog';
 export { DynamicSegmentRenderer } from './DynamicSegmentRenderer';
 
-// Types
-export * from './types';
+// Types (explicit exports to avoid conflicts)
+export { 
+  type TileItem, 
+  type BannerImage, 
+  type SolutionItem, 
+  type ContentItem,
+  type PageInfo,
+  type PageSegment,
+  type SegmentType,
+  type SupportedLanguage,
+  type LanguageOption,
+  type UploadContext,
+  type SaveContext,
+  type SegmentContext,
+  type SegmentOperationContext,
+  type SegmentRegistry,
+  type ReverseRegistry,
+  type SegmentRegistryResult,
+  type SEOData,
+  type HeroState,
+  type BannerState,
+  type SolutionsState,
+  type FooterState
+} from './types';
 
-// Constants
-export * from './AdminConstants';
+// Constants (explicit exports to avoid conflicts with config.ts)
+export { 
+  LANGUAGES,
+  buildSegmentLabel,
+  getSegmentTypeName
+} from './AdminConstants';
 
-// Utilities
-export * from './segmentUtils';
-export * from './cmsPageUtils';
-export * from './pageRegistryUtils';
-export * from './segmentRegistryUtils';
-export * from './imageUploadUtils';
-export * from './segmentManagementUtils';
-export * from './saveContentUtils';
-
-// Content loading utilities (explicit exports to avoid conflicts)
+// Utilities (explicit exports to avoid conflicts)
+export { getDefaultSegmentData, getLanguageIndependentFields } from './segmentUtils';
+export { createNewCMSPage, createNewCMSPageWithSlug } from './cmsPageUtils';
+export { 
+  isAllowedPageLevel, 
+  resolvePageSlug,
+  loadPageInfo,
+  saveFlyoutInfo,
+  clearFlyoutInfo,
+  saveDesignElement,
+  removeDesignElement,
+  saveCtaConfig,
+  loadFlyoutTranslations,
+  handleFlyoutImageSelection
+} from './pageRegistryUtils';
+export { 
+  loadSegmentRegistryData, 
+  calculateGlobalMaxSegmentId,
+  setGlobalReverseRegistry,
+  getGlobalReverseRegistry
+} from './segmentRegistryUtils';
+export {
+  validateImageFile,
+  uploadImageToStorage,
+  handleHeroImageUpload,
+  handleTileImageUpload,
+  handleSolutionImageUploadUtil,
+  handleImageTextHeroUpload,
+  handleImageTextItemUpload,
+  handleFooterTeamImageUploadUtil,
+  handleBannerImageUploadUtil
+} from './imageUploadUtils';
+export {
+  addSegment,
+  deleteSegment,
+  saveSegments,
+  autoSaveSegmentDebounced,
+  checkSegmentConflicts
+} from './segmentManagementUtils';
+export {
+  saveHeroSection,
+  saveApplicationsSection,
+  saveFooterSection,
+  saveSEOSettings,
+  saveBannerSection,
+  saveSolutionsSection,
+  autoSaveTileImageUploadUtil
+} from './saveContentUtils';
 export { 
   parseContentItems, 
   filterTabOrder, 
   rebuildTabOrderFromSegments,
   saveUpdatedSegments,
-  saveCleanedTabOrder,
-  type ContentLoadResult,
-  type ContentState
+  saveCleanedTabOrder
 } from './contentLoadingUtils';
-
-// Segment operations utilities (explicit exports to avoid conflicts with segmentManagementUtils)
 export { 
   addNewSegment,
   deleteSegment as deleteSegmentFull,
-  saveAllSegments,
-  type SegmentOperationContext
+  saveAllSegments
 } from './segmentOperationsUtils';
