@@ -936,11 +936,11 @@ const DynamicCMSPage = () => {
                     <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden">
                       <CardContent className="p-0">
                         {hasImage ? (
-                          <div className="w-full aspect-square overflow-hidden">
+                          <div className="w-full max-h-[200px] overflow-hidden">
                             <img 
                               src={tile.imageUrl} 
                               alt={tile.metadata?.altText || tile.title}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              className="w-full h-full max-h-[200px] object-cover hover:scale-105 transition-transform duration-300"
                             />
                           </div>
                         ) : (

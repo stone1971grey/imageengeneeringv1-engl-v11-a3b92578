@@ -461,7 +461,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         <img 
                           src={tile.imageUrl} 
                           alt={`Tile ${index + 1} image`}
-                          className="w-32 h-32 object-cover rounded-lg border-2 border-gray-500"
+                          className="w-full max-w-[200px] max-h-[100px] object-cover rounded-lg border-2 border-gray-500"
                         />
                         <button
                           type="button"
