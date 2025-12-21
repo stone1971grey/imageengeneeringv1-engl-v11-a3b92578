@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter } from 'lucide-react';
+import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
-type FilterType = 'all' | 'page' | 'news' | 'event';
+type FilterType = 'all' | 'page' | 'news' | 'event' | 'download';
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,16 +61,17 @@ const SearchResults = () => {
       case 'page': return <FileText className="h-5 w-5" />;
       case 'news': return <Newspaper className="h-5 w-5" />;
       case 'event': return <Calendar className="h-5 w-5" />;
+      case 'download': return <Download className="h-5 w-5" />;
     }
   };
 
   const getCategoryLabel = (category: SearchResultCategory) => {
     const labels: Record<string, Record<SearchResultCategory, string>> = {
-      de: { page: 'Seite', news: 'News', event: 'Event' },
-      en: { page: 'Page', news: 'News', event: 'Event' },
-      zh: { page: '页面', news: '新闻', event: '活动' },
-      ja: { page: 'ページ', news: 'ニュース', event: 'イベント' },
-      ko: { page: '페이지', news: '뉴스', event: '이벤트' },
+      de: { page: 'Seite', news: 'News', event: 'Event', download: 'Download' },
+      en: { page: 'Page', news: 'News', event: 'Event', download: 'Download' },
+      zh: { page: '页面', news: '新闻', event: '活动', download: '下载' },
+      ja: { page: 'ページ', news: 'ニュース', event: 'イベント', download: 'ダウンロード' },
+      ko: { page: '페이지', news: '뉴스', event: '이벤트', download: '다운로드' },
     };
     return labels[language]?.[category] || labels['en'][category];
   };
@@ -80,6 +81,7 @@ const SearchResults = () => {
       case 'page': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'news': return 'bg-green-100 text-green-800 border-green-200';
       case 'event': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'download': return 'bg-orange-100 text-orange-800 border-orange-200';
     }
   };
 
@@ -94,6 +96,7 @@ const SearchResults = () => {
     page: results.filter(r => r.category === 'page').length,
     news: results.filter(r => r.category === 'news').length,
     event: results.filter(r => r.category === 'event').length,
+    download: results.filter(r => r.category === 'download').length,
   };
 
   // Translated UI texts
@@ -110,6 +113,7 @@ const SearchResults = () => {
       pages: 'Seiten',
       news: 'News',
       events: 'Events',
+      downloads: 'Downloads',
     },
     en: {
       title: 'Search Results',
@@ -123,6 +127,7 @@ const SearchResults = () => {
       pages: 'Pages',
       news: 'News',
       events: 'Events',
+      downloads: 'Downloads',
     },
     zh: {
       title: '搜索结果',
@@ -136,6 +141,7 @@ const SearchResults = () => {
       pages: '页面',
       news: '新闻',
       events: '活动',
+      downloads: '下载',
     },
     ja: {
       title: '検索結果',
@@ -149,6 +155,7 @@ const SearchResults = () => {
       pages: 'ページ',
       news: 'ニュース',
       events: 'イベント',
+      downloads: 'ダウンロード',
     },
     ko: {
       title: '검색 결과',
@@ -162,6 +169,7 @@ const SearchResults = () => {
       pages: '페이지',
       news: '뉴스',
       events: '이벤트',
+      downloads: '다운로드',
     },
   };
 
@@ -172,6 +180,7 @@ const SearchResults = () => {
     { key: 'page', label: texts.pages },
     { key: 'news', label: texts.news },
     { key: 'event', label: texts.events },
+    { key: 'download', label: texts.downloads },
   ];
 
   return (
