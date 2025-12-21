@@ -65,11 +65,14 @@ const SearchResults = () => {
   };
 
   const getCategoryLabel = (category: SearchResultCategory) => {
-    switch (category) {
-      case 'page': return 'Seite';
-      case 'news': return 'News';
-      case 'event': return 'Event';
-    }
+    const labels: Record<string, Record<SearchResultCategory, string>> = {
+      de: { page: 'Seite', news: 'News', event: 'Event' },
+      en: { page: 'Page', news: 'News', event: 'Event' },
+      zh: { page: '页面', news: '新闻', event: '活动' },
+      ja: { page: 'ページ', news: 'ニュース', event: 'イベント' },
+      ko: { page: '페이지', news: '뉴스', event: '이벤트' },
+    };
+    return labels[language]?.[category] || labels['en'][category];
   };
 
   const getCategoryColor = (category: SearchResultCategory) => {
@@ -93,11 +96,82 @@ const SearchResults = () => {
     event: results.filter(r => r.category === 'event').length,
   };
 
+  // Translated UI texts
+  const t = {
+    de: {
+      title: 'Suchergebnisse',
+      placeholder: 'Suchen...',
+      searchButton: 'Suchen',
+      searching: 'Suche läuft...',
+      noResults: 'Keine Ergebnisse für',
+      tryOther: 'Versuchen Sie einen anderen Suchbegriff.',
+      minChars: 'Geben Sie mindestens 2 Zeichen ein, um zu suchen.',
+      all: 'Alle',
+      pages: 'Seiten',
+      news: 'News',
+      events: 'Events',
+    },
+    en: {
+      title: 'Search Results',
+      placeholder: 'Search...',
+      searchButton: 'Search',
+      searching: 'Searching...',
+      noResults: 'No results for',
+      tryOther: 'Try a different search term.',
+      minChars: 'Enter at least 2 characters to search.',
+      all: 'All',
+      pages: 'Pages',
+      news: 'News',
+      events: 'Events',
+    },
+    zh: {
+      title: '搜索结果',
+      placeholder: '搜索...',
+      searchButton: '搜索',
+      searching: '搜索中...',
+      noResults: '没有找到结果',
+      tryOther: '请尝试其他搜索词。',
+      minChars: '请输入至少2个字符进行搜索。',
+      all: '全部',
+      pages: '页面',
+      news: '新闻',
+      events: '活动',
+    },
+    ja: {
+      title: '検索結果',
+      placeholder: '検索...',
+      searchButton: '検索',
+      searching: '検索中...',
+      noResults: '結果が見つかりません',
+      tryOther: '別の検索語をお試しください。',
+      minChars: '検索するには2文字以上入力してください。',
+      all: 'すべて',
+      pages: 'ページ',
+      news: 'ニュース',
+      events: 'イベント',
+    },
+    ko: {
+      title: '검색 결과',
+      placeholder: '검색...',
+      searchButton: '검색',
+      searching: '검색 중...',
+      noResults: '결과 없음',
+      tryOther: '다른 검색어를 시도해 보세요.',
+      minChars: '검색하려면 2자 이상 입력하세요.',
+      all: '전체',
+      pages: '페이지',
+      news: '뉴스',
+      events: '이벤트',
+    },
+  };
+
+  const texts = t[language as keyof typeof t] || t.en;
+
   const filterButtons: { key: FilterType; label: string }[] = [
-    { key: 'all', label: 'Alle' },
-    { key: 'page', label: 'Seiten' },
-    { key: 'news', label: 'News' },
-    { key: 'event', label: 'Events' },
+    { key: 'all', label: texts.all },
+    { key: 'page', label: texts.pages },
+    { key: 'news', label: texts.news },
+    { key: 'event', label: texts.events },
   ];
 
   return (
@@ -108,7 +182,7 @@ const SearchResults = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Search Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-4">Suchergebnisse</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-4">{texts.title}</h1>
             
             {/* Search Input */}
             <form onSubmit={handleSubmit} className="relative">
@@ -117,7 +191,7 @@ const SearchResults = () => {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Suchen..."
+                placeholder={texts.placeholder}
                 className="pl-12 pr-4 h-14 text-lg border-2 border-border focus-visible:ring-2 focus-visible:ring-primary"
               />
               <Button 
@@ -125,7 +199,7 @@ const SearchResults = () => {
                 className="absolute right-2 top-1/2 -translate-y-1/2"
                 disabled={isLoading}
               >
-                Suchen
+                {texts.searchButton}
               </Button>
             </form>
           </div>
@@ -157,7 +231,7 @@ const SearchResults = () => {
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">Suche läuft...</p>
+              <p className="text-muted-foreground">{texts.searching}</p>
             </div>
           ) : hasSearched ? (
             filteredResults.length > 0 ? (
@@ -214,17 +288,17 @@ const SearchResults = () => {
               <div className="text-center py-12">
                 <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
                 <h2 className="text-xl font-semibold text-foreground mb-2">
-                  Keine Ergebnisse für „{query}"
+                  {texts.noResults} „{query}"
                 </h2>
                 <p className="text-muted-foreground">
-                  Versuchen Sie einen anderen Suchbegriff.
+                  {texts.tryOther}
                 </p>
               </div>
             )
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <Search className="h-12 w-12 mx-auto opacity-50 mb-4" />
-              <p>Geben Sie mindestens 2 Zeichen ein, um zu suchen.</p>
+              <p>{texts.minChars}</p>
             </div>
           )}
         </div>

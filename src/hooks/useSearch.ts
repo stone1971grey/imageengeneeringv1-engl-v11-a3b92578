@@ -80,13 +80,13 @@ export const useSearch = (): UseSearchReturn => {
         }
       }
 
-      // 2. Search in news_articles (only published and public visibility)
+      // 2. Search in news_articles (only published, public visibility, and current language)
       const { data: news, error: newsError } = await supabase
         .from('news_articles')
-        .select('id, slug, title, teaser, date, visibility')
+        .select('id, slug, title, teaser, date, visibility, language')
         .eq('published', true)
         .eq('visibility', 'public')
-        .or(`language.eq.${language},language.eq.en`)
+        .eq('language', language)
         .or(`title.ilike.%${searchTerm}%,teaser.ilike.%${searchTerm}%`)
         .order('date', { ascending: false })
         .limit(10);
@@ -111,14 +111,14 @@ export const useSearch = (): UseSearchReturn => {
         }
       }
 
-      // 3. Search in events (only published and public visibility, future events first)
+      // 3. Search in events (only published, public visibility, current language, future events first)
       const today = new Date().toISOString().split('T')[0];
       const { data: events, error: eventsError } = await supabase
         .from('events')
-        .select('id, slug, title, teaser, date, location_city, location_country, visibility')
+        .select('id, slug, title, teaser, date, location_city, location_country, visibility, language_code')
         .eq('published', true)
         .eq('visibility', 'public')
-        .or(`language_code.eq.${language.toUpperCase()},language_code.eq.EN`)
+        .eq('language_code', language.toUpperCase())
         .or(`title.ilike.%${searchTerm}%,teaser.ilike.%${searchTerm}%,location_city.ilike.%${searchTerm}%`)
         .gte('date', today)
         .order('date', { ascending: true })
