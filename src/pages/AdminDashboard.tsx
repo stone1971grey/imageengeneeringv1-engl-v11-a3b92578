@@ -1137,10 +1137,11 @@ const AdminDashboard = () => {
     toast.success("Solution item deleted! Don't forget to save changes.");
   };
 
-  const handleSolutionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleSolutionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number, segmentId?: string | number) => {
     if (!e.target.files || !e.target.files[0]) return;
     setUploading(true);
-    await handleSolutionImageUploadUtil(e.target.files[0], index, solutionsItems, setSolutionsItems);
+    const currentSlug = resolvedPageSlug || selectedPage;
+    await handleSolutionImageUploadUtil(e.target.files[0], index, solutionsItems, setSolutionsItems, currentSlug, segmentId);
     setUploading(false);
   };
 
@@ -1148,7 +1149,9 @@ const AdminDashboard = () => {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const newSegments = await handleImageTextHeroUpload(file, segmentIndex, pageSegments, setPageSegments);
+    const currentSlug = resolvedPageSlug || selectedPage;
+    const segmentId = pageSegments[segmentIndex]?.id;
+    const newSegments = await handleImageTextHeroUpload(file, segmentIndex, pageSegments, setPageSegments, currentSlug, segmentId);
     if (newSegments) {
       await autoSaveImageTextSegment(newSegments);
       toast.success("Hero image uploaded and saved successfully!");
@@ -1160,7 +1163,9 @@ const AdminDashboard = () => {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const newSegments = await handleImageTextItemUpload(file, segmentIndex, itemIndex, pageSegments, setPageSegments);
+    const currentSlug = resolvedPageSlug || selectedPage;
+    const segmentId = pageSegments[segmentIndex]?.id;
+    const newSegments = await handleImageTextItemUpload(file, segmentIndex, itemIndex, pageSegments, setPageSegments, currentSlug, segmentId);
     if (newSegments) {
       await autoSaveImageTextSegment(newSegments);
       toast.success("Item image uploaded and saved successfully!");

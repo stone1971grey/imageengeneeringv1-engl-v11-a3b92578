@@ -280,19 +280,19 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
-      const shortId = Math.random().toString(36).slice(2, 6);
-      const fileName = `${baseName}-${shortId}.${fileExt}`;
+      const fileName = `segment-${segmentId}-hero-${Date.now()}.${fileExt}`;
+      // Use pageSlug as folder path for proper organization
+      const filePath = `${pageSlug}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('page-images')
-        .upload(fileName, file);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
       // Get image dimensions
       const img = new Image();
@@ -311,6 +311,20 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
 
       setHeroImageUrl(publicUrl);
       setHeroImageMetadata(metadata);
+      
+      // Create file segment mapping
+      const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
+      if (numericSegmentId > 0) {
+        await supabase
+          .from('file_segment_mappings')
+          .upsert({
+            file_path: filePath,
+            segment_ids: [String(numericSegmentId)],
+            alt_text: '',
+            visibility: 'public'
+          }, { onConflict: 'file_path' });
+      }
+      
       toast.success('Image uploaded successfully!');
     } catch (error: any) {
       console.error('Upload error:', error);

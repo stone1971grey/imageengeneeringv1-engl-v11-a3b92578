@@ -477,10 +477,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         label=""
                         currentImageUrl={tile.imageUrl}
                         onFileSelect={async (file) => {
-                          // Upload file to storage
+                          // Upload file to storage using page slug as folder
                           const fileExt = file.name.split('.').pop();
                           const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
-                          const filePath = `tiles/${pageSlug}/${fileName}`;
+                          const filePath = `${pageSlug}/${fileName}`;
                           
                           const { error: uploadError } = await supabase.storage
                             .from('page-images')
