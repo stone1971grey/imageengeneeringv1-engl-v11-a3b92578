@@ -1663,8 +1663,8 @@ const AdminDashboard = () => {
                   return null;
                 })()}
 
-                {/* Version History Tab - Fixed Right (Admin only) - Toggle behavior */}
-                {isAdmin && (
+                {/* Version History Tab - Fixed Right (Admin or Editor with version-history access) - Toggle behavior */}
+                {(isAdmin || (isEditor && allowedPages.includes('version-history'))) && (
                   <div 
                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-3 text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer ml-auto ${
                       activeTab === "version-history" 
@@ -2856,7 +2856,7 @@ const AdminDashboard = () => {
           />
 
           {/* Version History Tab Content */}
-          {isAdmin && (
+          {(isAdmin || (isEditor && allowedPages.includes('version-history'))) && (
             <TabsContent value="version-history">
               <VersionHistoryPanel 
                 pageSlug={resolvedPageSlug || selectedPage}
