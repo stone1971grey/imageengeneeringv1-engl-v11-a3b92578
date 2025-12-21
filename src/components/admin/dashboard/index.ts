@@ -3,6 +3,8 @@ export { WelcomeTab } from './WelcomeTab';
 export { SortableTab } from './SortableTab';
 export { AdminDashboardErrorBoundary } from './AdminErrorBoundary';
 export { AdminHeader } from './AdminHeader';
+export { useAdminDashboardState } from '@/hooks/useAdminDashboardState';
+export type { AdminDashboardState, UploadingStates, DialogStates } from '@/hooks/useAdminDashboardState';
 export { TemplateSelectionDialog } from './TemplateSelectionDialog';
 export { DesignElementDialog } from './DesignElementDialog';
 export { NavigationCtaDialog } from './NavigationCtaDialog';
