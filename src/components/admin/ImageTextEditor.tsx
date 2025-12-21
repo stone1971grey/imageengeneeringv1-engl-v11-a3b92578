@@ -14,6 +14,7 @@ import { MediaSelector } from "./MediaSelector";
 import { createContentBackup } from "@/utils/createContentBackup";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { syncAltTextToMediaManagement } from "@/utils/syncAltTextToMediaManagement";
 
 interface ImageTextItem {
   title: string;
@@ -300,30 +301,37 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       // Extract numeric segment ID for mapping
       const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
       
-      // Update segment mappings for all images (only for English to avoid duplicate mappings)
+      // Update segment mappings and sync alt-texts bidirectionally (only for English to avoid duplicates)
       if (numericSegmentId > 0 && language === 'en') {
-        const imageUrls: string[] = [];
-        
-        // Collect hero image
-        if (heroImageUrl) {
-          imageUrls.push(heroImageUrl);
+        // Sync hero image alt-text
+        if (heroImageUrl && heroImageMetadata?.altText) {
+          await syncAltTextToMediaManagement(
+            heroImageUrl,
+            String(numericSegmentId),
+            heroImageMetadata.altText,
+            'page-images',
+            false
+          );
+        } else if (heroImageUrl) {
+          await updateSegmentMapping(heroImageUrl, numericSegmentId, 'page-images', false);
         }
         
-        // Collect item images
-        items.forEach(item => {
-          if (item.imageUrl) {
-            imageUrls.push(item.imageUrl);
+        // Sync item images alt-texts
+        for (const item of items) {
+          if (item.imageUrl && item.metadata?.altText) {
+            await syncAltTextToMediaManagement(
+              item.imageUrl,
+              String(numericSegmentId),
+              item.metadata.altText,
+              'page-images',
+              false
+            );
+          } else if (item.imageUrl) {
+            await updateSegmentMapping(item.imageUrl, numericSegmentId, 'page-images', false);
           }
-        });
-        
-        // Update mappings for all images
-        for (const url of imageUrls) {
-          await updateSegmentMapping(url, numericSegmentId, 'page-images', false);
         }
         
-        if (imageUrls.length > 0) {
-          console.log(`[ImageTextEditor] Updated segment mappings for ${imageUrls.length} image(s) to segment #${numericSegmentId}`);
-        }
+        console.log(`[ImageTextEditor] Synced alt-texts and segment mappings for segment #${numericSegmentId}`);
       }
 
       toast.success(`Image & Text saved for ${language.toUpperCase()}!`);

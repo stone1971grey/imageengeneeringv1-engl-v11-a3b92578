@@ -16,6 +16,7 @@ import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate }
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { syncAltTextToMediaManagement } from "@/utils/syncAltTextToMediaManagement";
 import { createContentBackup } from "@/utils/createContentBackup";
 
 interface FullHeroEditorProps {
@@ -780,9 +781,19 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         return;
       }
 
-      // Update segment mapping if image is present (with alt text)
-      if (backgroundType === 'image' && imageUrl) {
-        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageAlt || undefined);
+      // Sync alt text bidirectionally to Media Management (only for English)
+      if (backgroundType === 'image' && imageUrl && language === 'en') {
+        if (imageAlt) {
+          await syncAltTextToMediaManagement(
+            imageUrl,
+            String(segmentId),
+            imageAlt,
+            'page-images',
+            false
+          );
+        } else {
+          await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+        }
       }
 
       // After successful EN save, sync to other languages
