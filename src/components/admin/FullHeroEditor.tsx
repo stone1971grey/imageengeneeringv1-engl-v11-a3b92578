@@ -41,6 +41,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
   const [imageAlt, setImageAlt] = useState("");
   const [imageMetadata, setImageMetadata] = useState<Omit<ImageMetadata, 'altText'> | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoAlt, setVideoAlt] = useState("");
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
@@ -153,6 +154,18 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
             }
           } else {
             setImageAlt(content.imageAlt || "");
+          }
+          
+          // Load video description from Media Management with language support
+          if (content.videoUrl) {
+            const videoAltFromMapping = await loadAltTextFromMapping(content.videoUrl, 'page-images', language);
+            if (videoAltFromMapping) {
+              setVideoAlt(videoAltFromMapping);
+            } else {
+              setVideoAlt(content.videoAlt || "");
+            }
+          } else {
+            setVideoAlt(content.videoAlt || "");
           }
         }
       } catch (e) {
@@ -326,6 +339,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       imageAlt,
       imageMetadata,
       videoUrl: uploadedVideoUrl,
+      videoAlt,
       imagePosition,
       layoutRatio,
       topSpacing,
@@ -551,6 +565,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       imageAlt,
       imageMetadata: metadata,
       videoUrl,
+      videoAlt,
       imagePosition,
       layoutRatio,
       topSpacing,
@@ -730,6 +745,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       imageAlt,
       imageMetadata,
       videoUrl,
+      videoAlt,
       imagePosition,
       layoutRatio,
       topSpacing,
@@ -793,6 +809,21 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
           );
         } else {
           await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+        }
+      }
+      
+      // Sync video description bidirectionally to Media Management (only for English)
+      if (backgroundType === 'video' && videoUrl && language === 'en') {
+        if (videoAlt) {
+          await syncAltTextToMediaManagement(
+            videoUrl,
+            String(segmentId),
+            videoAlt,
+            'page-images',
+            false
+          );
+        } else {
+          await updateSegmentMapping(videoUrl, segmentId, 'page-images', false);
         }
       }
 
@@ -1077,34 +1108,53 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
                 </div>
 
                 {videoUrl && (
-                  <div className="space-y-2">
-                    <Label>Video Preview</Label>
-                    <div className="relative w-full aspect-video rounded-md bg-black overflow-hidden">
-                      {/* Direct video preview - more reliable than canvas extraction */}
-                      <video
-                        src={videoUrl}
-                        className="w-full h-full object-cover"
-                        muted
-                        preload="metadata"
-                        onLoadedData={(e) => {
-                          const video = e.currentTarget;
-                          video.currentTime = 0.1; // Show first frame
-                        }}
-                      />
-                      {/* Play icon overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center shadow-lg">
-                          <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
+                  <>
+                    <div className="space-y-2">
+                      <Label>Video Preview</Label>
+                      <div className="relative w-full aspect-video rounded-md bg-black overflow-hidden">
+                        {/* Direct video preview - more reliable than canvas extraction */}
+                        <video
+                          src={videoUrl}
+                          className="w-full h-full object-cover"
+                          muted
+                          preload="metadata"
+                          onLoadedData={(e) => {
+                            const video = e.currentTarget;
+                            video.currentTime = 0.1; // Show first frame
+                          }}
+                        />
+                        {/* Play icon overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center shadow-lg">
+                            <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                        </div>
+                        {/* Video badge */}
+                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
+                          VIDEO
                         </div>
                       </div>
-                      {/* Video badge */}
-                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
-                        VIDEO
-                      </div>
                     </div>
-                  </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="videoAlt">
+                        Video Description (for SEO & Accessibility)
+                      </Label>
+                      <Textarea
+                        id="videoAlt"
+                        value={videoAlt}
+                        onChange={(e) => setVideoAlt(e.target.value)}
+                        placeholder="Describe the video content for screen readers and search engines..."
+                        className="min-h-[80px]"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        This description is used as title/aria-label for accessibility and SEO. 
+                        It syncs bidirectionally with Media Management.
+                      </p>
+                    </div>
+                  </>
                 )}
               </>
             )}
