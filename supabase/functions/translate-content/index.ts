@@ -119,14 +119,19 @@ serve(async (req) => {
     }
 
     // Create translation prompt with enhanced glossary rules
-    const systemPrompt = `You are a professional translator. Translate the provided English texts to ${targetLangName}.
-Maintain the tone, style, and formatting of the original text.
-Return ONLY a JSON object with the same keys as the input, containing the translated texts.
-Do not add any explanations or additional text.${glossaryInstructions}
+    const systemPrompt = `You are a professional translator specializing in ${targetLangName} translation.
 
-CRITICAL: Terms marked as "DO NOT TRANSLATE" must appear EXACTLY as in the source text (same spelling, same case). Never translate, modify, or replace them.`;
+YOUR TASK: Translate the provided English texts into ${targetLangName}. 
+- You MUST translate the meaning of each text into natural, fluent ${targetLangName}.
+- Do NOT simply return the English text unchanged.
+- For product names like "IE7 Testproduct", translate the descriptive parts (e.g., "Testproduct" → appropriate ${targetLangName} word for "test product") while keeping proper nouns/brand identifiers if they are marked as non-translatable.
 
-    const userPrompt = `Translate these texts to ${targetLangName}:\n\n${JSON.stringify(textsToTranslate, null, 2)}`;
+OUTPUT FORMAT: Return ONLY a valid JSON object with the same keys as the input, containing the ${targetLangName} translations.
+Do not add any explanations, markdown formatting, or additional text outside the JSON.${glossaryInstructions}
+
+CRITICAL: Terms marked as "DO NOT TRANSLATE" must appear EXACTLY as in the source text (same spelling, same case). Never translate, modify, or replace them. Everything else MUST be translated.`;
+
+    const userPrompt = `Translate these English texts to ${targetLangName}. Every value must be translated to ${targetLangName} (not left in English):\n\n${JSON.stringify(textsToTranslate, null, 2)}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
