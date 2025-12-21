@@ -5,10 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, FolderOpen, Trash2 } from "lucide-react";
+import { Upload, FolderOpen, Trash2, AlertTriangle } from "lucide-react";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { syncAltTextToMediaManagement, getSegmentCountForImage } from "@/utils/syncAltTextToMediaManagement";
 
 interface ActionHeroEditorProps {
   segmentId: string;
@@ -39,6 +40,7 @@ const ActionHeroEditorComponent = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [segmentCount, setSegmentCount] = useState<number>(0);
 
   // Normalize language code
   const normalizedLang = language?.split('-')[0] || 'en';
@@ -69,8 +71,13 @@ const ActionHeroEditorComponent = ({
             if (segment.data.backgroundImage) {
               const altFromMapping = await loadAltTextFromMapping(segment.data.backgroundImage, 'page-images', normalizedLang);
               setAltText(altFromMapping || segment.data.altText || "");
+              
+              // Check how many segments use this image
+              const { count } = await getSegmentCountForImage(segment.data.backgroundImage, 'page-images');
+              setSegmentCount(count);
             } else {
               setAltText(segment.data.altText || "");
+              setSegmentCount(0);
             }
             
             setIsLoading(false);
@@ -243,9 +250,12 @@ const ActionHeroEditorComponent = ({
 
       if (error) throw error;
 
-      // Sync image to Media Management with alt text
-      if (backgroundImage) {
-        await updateSegmentMapping(backgroundImage, parseInt(segmentId), 'page-images', false, altText || undefined);
+      // Sync image to Media Management with alt text (bidirectional sync)
+      if (backgroundImage && altText) {
+        await syncAltTextToMediaManagement(backgroundImage, altText, normalizedLang, 'page-images', false);
+        await updateSegmentMapping(backgroundImage, parseInt(segmentId), 'page-images', false);
+      } else if (backgroundImage) {
+        await updateSegmentMapping(backgroundImage, parseInt(segmentId), 'page-images', false);
       }
 
       toast.success(`Action Hero saved (${normalizedLang.toUpperCase()})`);
@@ -310,8 +320,18 @@ const ActionHeroEditorComponent = ({
     }
   };
 
-  const handleMediaSelect = (url: string) => {
+  const handleMediaSelect = async (url: string) => {
     setBackgroundImage(url);
+    
+    // Load alt text from Media Management for the selected image
+    const altFromMapping = await loadAltTextFromMapping(url, 'page-images', normalizedLang);
+    if (altFromMapping) {
+      setAltText(altFromMapping);
+    }
+    
+    // Check how many segments use this image
+    const { count } = await getSegmentCountForImage(url, 'page-images');
+    setSegmentCount(count);
   };
 
   if (isLoading) {
@@ -428,16 +448,30 @@ const ActionHeroEditorComponent = ({
       {/* Alt-Text */}
       {backgroundImage && (
         <div className="space-y-2">
-          <Label htmlFor="altText">Alt-Text (for SEO & Accessibility)</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="altText">Alt-Text (for SEO & Accessibility)</Label>
+            {segmentCount > 1 && (
+              <div className="flex items-center gap-1 text-amber-600 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full text-xs">
+                <AlertTriangle className="h-3 w-3" />
+                <span>In {segmentCount} Segmenten verwendet</span>
+              </div>
+            )}
+          </div>
           <Input
             id="altText"
             value={altText}
             onChange={(e) => setAltText(e.target.value)}
             placeholder="Describe the image for screen readers..."
           />
-          <p className="text-xs text-muted-foreground">
-            This text is used by screen readers and search engines to understand the image content.
-          </p>
+          {segmentCount > 1 ? (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              ⚠️ Änderungen am Alt-Text werden im Media Management und allen verknüpften Segmenten synchronisiert.
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              This text is used by screen readers and search engines to understand the image content.
+            </p>
+          )}
         </div>
       )}
 
