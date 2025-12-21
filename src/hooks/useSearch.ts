@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export type SearchResultCategory = 'page' | 'news' | 'event';
+export type SearchResultCategory = 'page' | 'news' | 'event' | 'download';
 
 export interface SearchResult {
   id: string;
@@ -144,7 +144,43 @@ export const useSearch = (): UseSearchReturn => {
         }
       }
 
-      // Sort results: title matches first, then by category priority (pages, news, events)
+      // 4. Search in downloads (published, public visibility, current language)
+      const { data: downloads, error: downloadsError } = await supabase
+        .from('downloads')
+        .select('id, slug, title, teaser, description, download_type, category, language_code, visibility')
+        .eq('published', true)
+        .eq('visibility', 'public')
+        .eq('language_code', language.toUpperCase())
+        .or(`title.ilike.%${searchTerm}%,teaser.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
+        .order('position', { ascending: true })
+        .limit(10);
+
+      if (!downloadsError && downloads) {
+        for (const download of downloads) {
+          // Map download_type to readable label
+          const typeLabels: Record<string, string> = {
+            whitepaper: 'Whitepaper',
+            datasheet: 'Datenblatt',
+            brochure: 'Broschüre',
+            manual: 'Handbuch',
+            video: 'Video',
+            software: 'Software',
+          };
+          const typeLabel = typeLabels[download.download_type] || download.download_type;
+          const categoryLabel = download.category || '';
+
+          results.push({
+            id: `download-${download.id}`,
+            title: download.title,
+            category: 'download',
+            url: `/${language}/info-hub/downloads/${download.slug}`,
+            meta: [typeLabel, categoryLabel].filter(Boolean).join(' · '),
+            description: download.teaser,
+          });
+        }
+      }
+
+      // Sort results: title matches first, then by category priority
       const sortedResults = results.sort((a, b) => {
         const aTitle = a.title.toLowerCase();
         const bTitle = b.title.toLowerCase();
@@ -156,7 +192,7 @@ export const useSearch = (): UseSearchReturn => {
         if (!aStartsWith && bStartsWith) return 1;
         
         // Then by category priority
-        const categoryOrder: Record<SearchResultCategory, number> = { page: 1, news: 2, event: 3 };
+        const categoryOrder: Record<SearchResultCategory, number> = { page: 1, news: 2, event: 3, download: 4 };
         return categoryOrder[a.category] - categoryOrder[b.category];
       });
 

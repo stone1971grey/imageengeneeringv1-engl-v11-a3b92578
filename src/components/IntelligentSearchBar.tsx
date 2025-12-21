@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, FileText, Newspaper, Calendar, ChevronRight } from "lucide-react";
+import { Search, X, FileText, Newspaper, Calendar, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -121,16 +121,17 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
       case 'page': return <FileText className="h-4 w-4" />;
       case 'news': return <Newspaper className="h-4 w-4" />;
       case 'event': return <Calendar className="h-4 w-4" />;
+      case 'download': return <Download className="h-4 w-4" />;
     }
   };
 
   const getCategoryLabel = (category: SearchResultCategory) => {
     const labels: Record<string, Record<SearchResultCategory, string>> = {
-      de: { page: 'Seite', news: 'News', event: 'Event' },
-      en: { page: 'Page', news: 'News', event: 'Event' },
-      zh: { page: '页面', news: '新闻', event: '活动' },
-      ja: { page: 'ページ', news: 'ニュース', event: 'イベント' },
-      ko: { page: '페이지', news: '뉴스', event: '이벤트' },
+      de: { page: 'Seite', news: 'News', event: 'Event', download: 'Download' },
+      en: { page: 'Page', news: 'News', event: 'Event', download: 'Download' },
+      zh: { page: '页面', news: '新闻', event: '活动', download: '下载' },
+      ja: { page: 'ページ', news: 'ニュース', event: 'イベント', download: 'ダウンロード' },
+      ko: { page: '페이지', news: '뉴스', event: '이벤트', download: '다운로드' },
     };
     return labels[language]?.[category] || labels['en'][category];
   };
@@ -140,6 +141,7 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
       case 'page': return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'news': return 'bg-green-50 text-green-700 border-green-200';
       case 'event': return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'download': return 'bg-orange-50 text-orange-700 border-orange-200';
     }
   };
 
