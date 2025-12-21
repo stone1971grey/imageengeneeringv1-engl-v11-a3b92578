@@ -66,6 +66,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
+import { CopyPageDialog } from '@/components/admin/CopyPageDialog';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { FooterEditor } from '@/components/admin/FooterEditor';
@@ -351,6 +352,7 @@ const AdminDashboard = () => {
     twitterCard: 'summary_large_image'
   });
   const [isCreateCMSDialogOpen, setIsCreateCMSDialogOpen] = useState(false);
+  const [isCopyPageDialogOpen, setIsCopyPageDialogOpen] = useState(false);
   const [selectedPageForCMS, setSelectedPageForCMS] = useState<string>("");
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
@@ -1359,6 +1361,7 @@ const AdminDashboard = () => {
           onCtaClick={() => setIsCtaDialogOpen(true)}
           onFlyoutClick={() => setIsFlyoutDialogOpen(true)}
           onCreatePageClick={() => setIsCreateCMSDialogOpen(true)}
+          onCopyPageClick={() => setIsCopyPageDialogOpen(true)}
           isSEOEditorOpen={isSEOEditorOpen}
           setIsSEOEditorOpen={setIsSEOEditorOpen}
           isGlossaryOpen={isGlossaryOpen}
@@ -1414,6 +1417,18 @@ const AdminDashboard = () => {
           onSave={handleSaveFlyoutInfo}
           onClear={handleClearFlyoutInfo}
           onImageSelect={handleFlyoutImageSelect}
+        />
+
+        {/* Copy Page Dialog */}
+        <CopyPageDialog
+          open={isCopyPageDialogOpen}
+          onOpenChange={setIsCopyPageDialogOpen}
+          sourcePageSlug={pageInfo?.pageSlug || selectedPage}
+          sourcePageTitle={pageInfo?.pageTitle || selectedPage}
+          onSuccess={(newSlug) => {
+            // Navigate to the newly created page
+            navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(newSlug)}`);
+          }}
         />
 
         {/* SEO Editor - Conditional Rendering */}
