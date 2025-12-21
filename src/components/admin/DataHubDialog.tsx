@@ -156,16 +156,18 @@ export function DataHubDialog({
       });
       setPageRegistry(pageIdMap);
 
-      // Load segment mappings from database (including visibility)
+      // Load segment mappings from database (including visibility and alt_text)
       const { data: segmentMappings } = await supabase
         .from('file_segment_mappings')
-        .select('file_path, segment_ids, visibility');
+        .select('file_path, segment_ids, visibility, alt_text, alt_text_translations');
       
-      const mappingsMap = new Map<string, { segment_ids: string[]; visibility: string }>();
+      const mappingsMap = new Map<string, { segment_ids: string[]; visibility: string; alt_text: string; alt_text_translations: Record<string, string> | null }>();
       segmentMappings?.forEach(mapping => {
         mappingsMap.set(mapping.file_path, { 
           segment_ids: mapping.segment_ids, 
-          visibility: mapping.visibility || 'public' 
+          visibility: mapping.visibility || 'public',
+          alt_text: mapping.alt_text || '',
+          alt_text_translations: mapping.alt_text_translations as Record<string, string> | null
         });
       });
 
@@ -191,7 +193,7 @@ export function DataHubDialog({
             }
             return true;
           }).map(file => {
-            // Enrich file with segment IDs and visibility from database
+            // Enrich file with segment IDs, visibility, and alt_text from database
             // Handle empty storage_path (root folder) - don't add leading slash
             const filePath = folder.storage_path 
               ? `${folder.storage_path}/${file.name}` 
@@ -199,13 +201,17 @@ export function DataHubDialog({
             const mapping = mappingsMap.get(filePath);
             const segmentIds = mapping?.segment_ids || [];
             const visibility = mapping?.visibility || 'public';
-            console.log(`[DataHub] File ${file.name} path: ${filePath}, segmentIds:`, segmentIds);
+            const alt_text = mapping?.alt_text || '';
+            const alt_text_translations = mapping?.alt_text_translations || null;
+            console.log(`[DataHub] File ${file.name} path: ${filePath}, segmentIds:`, segmentIds, 'alt_text:', alt_text);
             return {
               ...file,
               metadata: {
                 ...file.metadata,
                 segmentIds,
-                visibility
+                visibility,
+                alt_text,
+                alt_text_translations
               }
             };
           });
@@ -233,6 +239,8 @@ export function DataHubDialog({
                   const mapping = mappingsMap.get(fullPath);
                   const dbSegmentIds = mapping?.segment_ids || [segmentId];
                   const visibility = mapping?.visibility || 'public';
+                  const alt_text = mapping?.alt_text || '';
+                  const alt_text_translations = mapping?.alt_text_translations || null;
                   
                   actualFiles.push({
                     ...file,
@@ -240,7 +248,9 @@ export function DataHubDialog({
                     metadata: {
                       ...file.metadata,
                       segmentIds: dbSegmentIds,
-                      visibility
+                      visibility,
+                      alt_text,
+                      alt_text_translations
                     }
                   });
                 }
@@ -1030,7 +1040,9 @@ export function DataHubDialog({
                                   onSelect(fileUrl, {
                                     name: file.name,
                                     folder: folder.storage_path,
-                                    created_at: file.created_at
+                                    created_at: file.created_at,
+                                    alt_text: file.metadata?.alt_text || '',
+                                    alt_text_translations: file.metadata?.alt_text_translations || null
                                   });
                                 }
                               }}
@@ -1079,7 +1091,9 @@ export function DataHubDialog({
                                   name: file.name,
                                   folder: folder.storage_path,
                                   created_at: file.created_at,
-                                  isVideo: true
+                                  isVideo: true,
+                                  alt_text: file.metadata?.alt_text || '',
+                                  alt_text_translations: file.metadata?.alt_text_translations || null
                                 });
                               }
                             }}

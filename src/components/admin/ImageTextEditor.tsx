@@ -471,6 +471,8 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       return;
     }
     setHeroImageUrl(url);
+    // Use alt_text from file_segment_mappings if available
+    const altTextFromMapping = metadata?.alt_text || '';
     if (metadata) {
       setHeroImageMetadata({
         originalFileName: metadata.name || 'Media file',
@@ -479,10 +481,13 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
         fileSizeKB: metadata.size ? Math.round(metadata.size / 1024) : 0,
         format: metadata.contentType?.split('/')[1] || 'unknown',
         uploadDate: metadata.created_at || new Date().toISOString(),
-        altText: metadata.alt_text || ''
+        altText: altTextFromMapping
       });
     }
     toast.success('Image selected from Media Management!');
+    if (altTextFromMapping) {
+      console.log('[ImageTextEditor] Hero alt-text loaded from Media Management:', altTextFromMapping);
+    }
   };
 
   // Handler for item image file upload
@@ -544,6 +549,8 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
         metadata: null
       };
     } else {
+      // Use alt_text from file_segment_mappings if available
+      const altTextFromMapping = metadata?.alt_text || '';
       newItems[itemIndex] = {
         ...newItems[itemIndex],
         imageUrl: url,
@@ -554,10 +561,13 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
           fileSizeKB: metadata.size ? Math.round(metadata.size / 1024) : 0,
           format: metadata.contentType?.split('/')[1] || 'unknown',
           uploadDate: metadata.created_at || new Date().toISOString(),
-          altText: metadata.alt_text || ''
+          altText: altTextFromMapping
         } : null
       };
       toast.success('Item image selected from Media Management!');
+      if (altTextFromMapping) {
+        console.log('[ImageTextEditor] Alt-text loaded from Media Management:', altTextFromMapping);
+      }
     }
     setItems(newItems);
   };
