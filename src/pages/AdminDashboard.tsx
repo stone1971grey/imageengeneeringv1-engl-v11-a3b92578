@@ -93,6 +93,7 @@ import {
   buildSegmentLabel,
   getSegmentTypeName
 } from '@/components/admin/dashboard/AdminConstants';
+import { CMS_VERSION } from '@/components/admin/dashboard/config';
 import { getDefaultSegmentData, getLanguageIndependentFields } from '@/components/admin/dashboard/segmentUtils';
 import { createNewCMSPage, createNewCMSPageWithSlug } from '@/components/admin/dashboard/cmsPageUtils';
 import { 
@@ -1462,7 +1463,7 @@ const AdminDashboard = () => {
         {/* Welcome Screen - Show when no page is selected */}
         {/* Note: Only show welcome when no page selected. If a page is selected but has no segments, still show tab UI */}
         {!selectedPage ? (
-          <WelcomeTab version="0.9.2" />
+          <WelcomeTab version={CMS_VERSION} />
         ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
