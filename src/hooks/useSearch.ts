@@ -144,12 +144,11 @@ export const useSearch = (): UseSearchReturn => {
         }
       }
 
-      // 4. Search in downloads (published, public visibility, current language)
+      // 4. Search in downloads (published, any visibility - users get led to download form)
       const { data: downloads, error: downloadsError } = await supabase
         .from('downloads')
         .select('id, slug, title, teaser, description, download_type, category, language_code, visibility')
         .eq('published', true)
-        .eq('visibility', 'public')
         .eq('language_code', language.toUpperCase())
         .or(`title.ilike.%${searchTerm}%,teaser.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
         .order('position', { ascending: true })
