@@ -61,6 +61,7 @@ import AdminDownloads from "./pages/AdminDownloads";
 import DownloadDetail from "./pages/DownloadDetail";
 import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
+import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import { MauticTracker } from "./components/MauticTracker";
 
@@ -256,6 +257,7 @@ const App = () => (
             <Route path="/:lang/admin-dashboard/downloads" element={<AdminDownloads />} />
             <Route path="/:lang/full-hero-migration" element={<FullHeroMigration />} />
             <Route path="/:lang/segment-debug" element={<SegmentDebugView />} />
+            <Route path="/:lang/search" element={<SearchResults />} />
             
             {/* Company sub-pages - must be before PageIdRouter */}
             <Route path="/:lang/company/news" element={<DynamicCMSPage />} />
