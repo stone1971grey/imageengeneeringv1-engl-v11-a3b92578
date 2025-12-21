@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor
 import { PageInfo } from '@/components/admin/dashboard/pageRegistryUtils';
 import { DESIGN_ICON_OPTIONS } from '@/components/admin/dashboard/AdminConstants';
 import { LucideIcon } from "lucide-react";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface AdminHeaderProps {
   isAdmin: boolean;
@@ -34,6 +35,7 @@ interface AdminHeaderProps {
   isGlossaryOpen: boolean;
   setIsGlossaryOpen: (open: boolean) => void;
   loadPageInfo: () => void;
+  currentUser?: SupabaseUser | null;
 }
 
 export const AdminHeader = ({
@@ -57,6 +59,7 @@ export const AdminHeader = ({
   isGlossaryOpen,
   setIsGlossaryOpen,
   loadPageInfo,
+  currentUser,
 }: AdminHeaderProps) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -107,6 +110,21 @@ export const AdminHeader = ({
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
           <div className="flex items-center gap-3">
+            {/* Current User Display */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
+              <User className="h-4 w-4 text-gray-600" />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-gray-900 leading-tight">
+                  {currentUser?.email || 'Unknown User'}
+                </span>
+                <span className={`text-xs font-semibold leading-tight ${
+                  isAdmin ? 'text-red-600' : isEditor ? 'text-blue-600' : 'text-gray-500'
+                }`}>
+                  {isAdmin ? 'Admin' : isEditor ? 'Editor' : 'User'}
+                </span>
+              </div>
+            </div>
+            
             {isAdmin && (
               <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
                 <DialogTrigger asChild>

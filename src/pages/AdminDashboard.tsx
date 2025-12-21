@@ -1373,6 +1373,7 @@ const AdminDashboard = () => {
           isGlossaryOpen={isGlossaryOpen}
           setIsGlossaryOpen={setIsGlossaryOpen}
           loadPageInfo={loadPageInfo}
+          currentUser={user}
         />
 
         {/* Segment Template Dialog */}
