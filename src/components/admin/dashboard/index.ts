@@ -2,6 +2,11 @@
 export { WelcomeTab } from './WelcomeTab';
 export { SortableTab } from './SortableTab';
 export { AdminDashboardErrorBoundary } from './AdminErrorBoundary';
+export { AdminHeader } from './AdminHeader';
+export { TemplateSelectionDialog } from './TemplateSelectionDialog';
+export { DesignElementDialog } from './DesignElementDialog';
+export { NavigationCtaDialog } from './NavigationCtaDialog';
+export { FlyoutContentDialog } from './FlyoutContentDialog';
 
 // Types
 export * from './types';

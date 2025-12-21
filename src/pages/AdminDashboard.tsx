@@ -8,14 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 // User and Session types are now handled by useAdminAuth hook
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, Search, History as HistoryIcon } from "lucide-react";
+import { Save, Plus, Trash2, GripVertical, Eye, Copy, PlayCircle, Upload, FileText, Zap, Shield, Monitor, Camera, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, History as HistoryIcon } from "lucide-react";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import lovableIcon from "@/assets/lovable-icon.png";
-import lovableLogo from "@/assets/lovable-logo.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Select,
@@ -69,18 +66,14 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
-import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
-import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { FooterEditor } from '@/components/admin/FooterEditor';
-import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
 import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
 import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
 import { ProductListSegmentEditor } from '@/components/admin/ProductListSegmentEditor';
 import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEditor';
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
-import { UserManagement } from '@/components/admin/UserManagement';
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
 import { TemplateSelectionDialog } from '@/components/admin/dashboard/TemplateSelectionDialog';
