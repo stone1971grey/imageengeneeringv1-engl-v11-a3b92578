@@ -123,17 +123,45 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
         setTitle(translated["title"] || enTitle);
         setSubtext(translated["subtext"] || enSubtext);
 
-        const translatedItems = enItems.map((item: ImageTextItem, index: number) => ({
-          ...item,
-          title: translated[`item_title_${index}`] || item.title,
-          description: translated[`item_desc_${index}`] || item.description
-        }));
+        // Keep layout and images from English
+        const enHeroUrl = enImageTextSegment.data.heroImageUrl || '';
+        const enHeroMetadata = enImageTextSegment.data.heroImageMetadata || null;
+        setLayout(enImageTextSegment.data.layout || '2-col');
+        setHeroImageUrl(enHeroUrl);
+
+        // Load language-specific alt-text for hero image from Media Management
+        let heroMetadataWithAltText = enHeroMetadata;
+        if (enHeroUrl) {
+          const heroAltText = await loadAltTextFromMapping(enHeroUrl, 'page-images', language);
+          if (heroAltText && enHeroMetadata) {
+            heroMetadataWithAltText = { ...enHeroMetadata, altText: heroAltText };
+          }
+        }
+        setHeroImageMetadata(heroMetadataWithAltText);
+
+        // Translate items and load language-specific alt-texts for images
+        const translatedItems = await Promise.all(
+          enItems.map(async (item: ImageTextItem, index: number) => {
+            let itemMetadata = item.metadata;
+            
+            // Load language-specific alt-text from Media Management
+            if (item.imageUrl) {
+              const itemAltText = await loadAltTextFromMapping(item.imageUrl, 'page-images', language);
+              if (itemAltText) {
+                itemMetadata = { ...item.metadata, altText: itemAltText };
+              }
+            }
+            
+            return {
+              ...item,
+              title: translated[`item_title_${index}`] || item.title,
+              description: translated[`item_desc_${index}`] || item.description,
+              metadata: itemMetadata
+            };
+          })
+        );
 
         setItems(translatedItems);
-        // Keep layout and images from English
-        setLayout(enImageTextSegment.data.layout || '2-col');
-        setHeroImageUrl(enImageTextSegment.data.heroImageUrl || '');
-        setHeroImageMetadata(enImageTextSegment.data.heroImageMetadata || null);
         toast.success("Content translated successfully!");
       }
     } catch (error: any) {
