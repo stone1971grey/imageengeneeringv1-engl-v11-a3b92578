@@ -24,6 +24,7 @@ import ProductListSegment from "@/components/segments/ProductListSegment";
 import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -500,7 +501,113 @@ const DynamicCMSPage = () => {
         });
       }
 
-      setPageSegments(finalSegments);
+      // Enrich segments with alt texts from file_segment_mappings
+      // This ensures alt texts updated in Media Management are reflected in segments
+      const enrichSegmentsWithAltTexts = async (segments: any[], language: string): Promise<any[]> => {
+        // Collect all image URLs from segments
+        const imageUrls: string[] = [];
+        const collectImageUrls = (obj: any) => {
+          if (!obj || typeof obj !== 'object') return;
+          if (Array.isArray(obj)) {
+            obj.forEach(item => collectImageUrls(item));
+            return;
+          }
+          // Check for image URL fields
+          if (obj.imageUrl && typeof obj.imageUrl === 'string') {
+            imageUrls.push(obj.imageUrl);
+          }
+          if (obj.url && typeof obj.url === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(obj.url)) {
+            imageUrls.push(obj.url);
+          }
+          // Recursively check nested objects
+          Object.values(obj).forEach(val => collectImageUrls(val));
+        };
+        
+        segments.forEach(seg => collectImageUrls(seg.data));
+        
+        if (imageUrls.length === 0) return segments;
+        
+        // Extract file paths from URLs
+        const filePaths = imageUrls
+          .map(url => extractFilePathFromUrl(url))
+          .filter((path): path is string => path !== null);
+        
+        if (filePaths.length === 0) return segments;
+        
+        // Load alt texts from database
+        const { data: mappings } = await supabase
+          .from('file_segment_mappings')
+          .select('file_path, alt_text, alt_text_translations')
+          .in('file_path', filePaths);
+        
+        if (!mappings || mappings.length === 0) return segments;
+        
+        // Build lookup map: file_path -> alt text for language
+        const altTextMap = new Map<string, string>();
+        const normalizedLang = language.split('-')[0];
+        
+        mappings.forEach(mapping => {
+          const translations = mapping.alt_text_translations as Record<string, string> | null;
+          let altText = '';
+          if (translations) {
+            altText = translations[normalizedLang] || translations['en'] || '';
+          }
+          if (!altText && mapping.alt_text) {
+            altText = mapping.alt_text;
+          }
+          if (altText) {
+            altTextMap.set(mapping.file_path, altText);
+          }
+        });
+        
+        // Update segments with alt texts
+        const updateAltTexts = (obj: any): any => {
+          if (!obj || typeof obj !== 'object') return obj;
+          if (Array.isArray(obj)) {
+            return obj.map(item => updateAltTexts(item));
+          }
+          
+          const updated = { ...obj };
+          
+          // Update metadata.altText for imageUrl
+          if (updated.imageUrl && typeof updated.imageUrl === 'string') {
+            const filePath = extractFilePathFromUrl(updated.imageUrl);
+            if (filePath && altTextMap.has(filePath)) {
+              updated.metadata = {
+                ...updated.metadata,
+                altText: altTextMap.get(filePath)
+              };
+            }
+          }
+          
+          // Update alt for url (banner images etc.)
+          if (updated.url && typeof updated.url === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(updated.url)) {
+            const filePath = extractFilePathFromUrl(updated.url);
+            if (filePath && altTextMap.has(filePath)) {
+              updated.alt = altTextMap.get(filePath);
+            }
+          }
+          
+          // Recursively update nested objects
+          Object.keys(updated).forEach(key => {
+            if (typeof updated[key] === 'object' && updated[key] !== null && key !== 'metadata') {
+              updated[key] = updateAltTexts(updated[key]);
+            }
+          });
+          
+          return updated;
+        };
+        
+        return segments.map(seg => ({
+          ...seg,
+          data: updateAltTexts(seg.data)
+        }));
+      };
+      
+      // Apply alt text enrichment
+      const enrichedSegments = await enrichSegmentsWithAltTexts(finalSegments, urlLanguage);
+      
+      setPageSegments(enrichedSegments);
       setTabOrder(loadedTabOrder);
 
       console.log('[DynamicCMSPage] Loaded content', {
