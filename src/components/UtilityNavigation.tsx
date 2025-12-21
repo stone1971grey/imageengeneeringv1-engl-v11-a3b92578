@@ -116,11 +116,14 @@ const UtilityNavigation = () => {
   };
 
   const getCategoryLabel = (category: SearchResultCategory) => {
-    switch (category) {
-      case 'page': return 'Seite';
-      case 'news': return 'News';
-      case 'event': return 'Event';
-    }
+    const labels: Record<string, Record<SearchResultCategory, string>> = {
+      de: { page: 'Seite', news: 'News', event: 'Event', download: 'Download' },
+      en: { page: 'Page', news: 'News', event: 'Event', download: 'Download' },
+      zh: { page: '页面', news: '新闻', event: '活动', download: '下载' },
+      ja: { page: 'ページ', news: 'ニュース', event: 'イベント', download: 'ダウンロード' },
+      ko: { page: '페이지', news: '뉴스', event: '이벤트', download: '다운로드' },
+    };
+    return labels[language]?.[category] || labels['en'][category];
   };
 
   const getCategoryColor = (category: SearchResultCategory) => {
@@ -128,8 +131,19 @@ const UtilityNavigation = () => {
       case 'page': return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'news': return 'bg-green-50 text-green-700 border-green-200';
       case 'event': return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'download': return 'bg-orange-50 text-orange-700 border-orange-200';
     }
   };
+
+  // Translated UI texts
+  const searchTexts = {
+    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer' },
+    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches' },
+    zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配' },
+    ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし' },
+    ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음' },
+  };
+  const st = searchTexts[language as keyof typeof searchTexts] || searchTexts.en;
 
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
@@ -175,7 +189,7 @@ const UtilityNavigation = () => {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Suchen..."
+                placeholder={st.placeholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowDropdown(true)}
@@ -213,20 +227,28 @@ const UtilityNavigation = () => {
           </div>
         </form>
 
-        {/* Autocomplete Dropdown */}
+        {/* Autocomplete Dropdown - styled like navigation flyouts */}
         {isSearchOpen && showDropdown && searchQuery.length >= 2 && (
-          <div className="absolute top-full right-0 mt-2 w-[360px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+          <div 
+            className="fixed mt-4 w-[400px] bg-[#f5f5f5] border-2 border-white rounded-xl shadow-2xl z-50 max-h-[480px] overflow-y-auto"
+            style={{
+              top: '72px',
+              right: 'auto',
+              left: '50%',
+              transform: 'translateX(-70%)',
+            }}
+          >
             {isLoading ? (
-              <div className="px-4 py-6 text-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600 mx-auto" />
+              <div className="px-6 py-8 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600 mx-auto" />
               </div>
             ) : results.length > 0 ? (
-              <div className="py-1">
+              <div className="p-3">
                 {results.map((result, index) => (
                   <div
                     key={result.id}
-                    className={`px-3 py-2.5 cursor-pointer transition-colors ${
-                      index === selectedIndex ? 'bg-gray-100' : 'hover:bg-gray-50'
+                    className={`px-4 py-3 cursor-pointer rounded-lg transition-colors ${
+                      index === selectedIndex ? 'bg-white shadow-sm' : 'hover:bg-white/60'
                     }`}
                     onClick={() => handleResultClick(result)}
                   >
@@ -243,7 +265,7 @@ const UtilityNavigation = () => {
                       <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                     </div>
                     {result.meta && (
-                      <p className="text-xs text-gray-500 mt-1 ml-[72px] truncate">
+                      <p className="text-xs text-gray-500 mt-1.5 ml-[72px] truncate">
                         {result.meta}
                       </p>
                     )}
@@ -251,24 +273,24 @@ const UtilityNavigation = () => {
                 ))}
                 
                 <div 
-                  className="px-3 py-2.5 border-t border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="mt-2 px-4 py-3 border-t border-gray-200 cursor-pointer hover:bg-white/60 rounded-lg transition-colors"
                   onClick={handleGoToSearchResults}
                 >
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-700 font-medium">
                     <Search className="h-4 w-4" />
-                    Alle Ergebnisse anzeigen
+                    {st.showAll}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="px-4 py-6 text-center">
-                <p className="text-sm text-gray-500 mb-2">Keine direkten Treffer</p>
+              <div className="px-6 py-8 text-center">
+                <p className="text-sm text-gray-500 mb-3">{st.noResults}</p>
                 <button 
                   type="button"
                   onClick={handleGoToSearchResults}
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  Alle Ergebnisse anzeigen →
+                  {st.showAll} →
                 </button>
               </div>
             )}
