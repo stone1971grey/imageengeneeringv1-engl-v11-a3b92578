@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
+import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
+import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
 
 interface BannerPImage {
   id: string;
@@ -229,9 +231,25 @@ const BannerPEditorComponent = ({
 
       if (updateError) throw updateError;
       
-      const imageUrls = images.map(img => img.url).filter(Boolean);
-      if (imageUrls.length > 0) {
-        await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
+      // Sync alt-texts bidirectionally and update segment mappings
+      const segmentIdNum = parseInt(segmentId);
+      if (language === 'en') {
+        for (const image of images) {
+          if (image.url) {
+            if (image.alt) {
+              await syncAltTextToMediaManagement(
+                image.url,
+                segmentId,
+                image.alt,
+                'page-images',
+                false
+              );
+            } else {
+              // Just update segment mapping without alt text
+              await updateMultipleSegmentMappings([image.url], segmentIdNum, 'page-images', false);
+            }
+          }
+        }
       }
       
       toast.success('Banner-P saved successfully');
