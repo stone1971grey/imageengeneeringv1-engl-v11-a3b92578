@@ -7,6 +7,7 @@ export { TemplateSelectionDialog } from './TemplateSelectionDialog';
 export { DesignElementDialog } from './DesignElementDialog';
 export { NavigationCtaDialog } from './NavigationCtaDialog';
 export { FlyoutContentDialog } from './FlyoutContentDialog';
+export { DynamicSegmentRenderer } from './DynamicSegmentRenderer';
 
 // Types
 export * from './types';
