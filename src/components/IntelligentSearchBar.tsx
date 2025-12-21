@@ -125,11 +125,14 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
   };
 
   const getCategoryLabel = (category: SearchResultCategory) => {
-    switch (category) {
-      case 'page': return 'Seite';
-      case 'news': return 'News';
-      case 'event': return 'Event';
-    }
+    const labels: Record<string, Record<SearchResultCategory, string>> = {
+      de: { page: 'Seite', news: 'News', event: 'Event' },
+      en: { page: 'Page', news: 'News', event: 'Event' },
+      zh: { page: '页面', news: '新闻', event: '活动' },
+      ja: { page: 'ページ', news: 'ニュース', event: 'イベント' },
+      ko: { page: '페이지', news: '뉴스', event: '이벤트' },
+    };
+    return labels[language]?.[category] || labels['en'][category];
   };
 
   const getCategoryColor = (category: SearchResultCategory) => {
@@ -147,7 +150,7 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Suchen..."
+          placeholder={language === 'de' ? 'Suchen...' : language === 'zh' ? '搜索...' : language === 'ja' ? '検索...' : language === 'ko' ? '검색...' : 'Search...'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
@@ -221,14 +224,14 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
               >
                 <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium">
                   <Search className="h-4 w-4" />
-                  Alle Ergebnisse anzeigen
+                  {language === 'de' ? 'Alle Ergebnisse anzeigen' : language === 'zh' ? '显示所有结果' : language === 'ja' ? 'すべての結果を表示' : language === 'ko' ? '모든 결과 보기' : 'Show all results'}
                 </div>
               </div>
             </div>
           ) : (
             <div className="px-4 py-6 text-center">
               <p className="text-sm text-muted-foreground mb-2">
-                Keine direkten Treffer
+                {language === 'de' ? 'Keine direkten Treffer' : language === 'zh' ? '没有直接匹配' : language === 'ja' ? '直接一致なし' : language === 'ko' ? '직접 일치 없음' : 'No direct matches'}
               </p>
               <Button 
                 variant="link" 
@@ -236,7 +239,7 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
                 onClick={handleGoToSearchResults}
                 className="text-primary"
               >
-                Alle Ergebnisse anzeigen →
+                {language === 'de' ? 'Alle Ergebnisse anzeigen →' : language === 'zh' ? '显示所有结果 →' : language === 'ja' ? 'すべての結果を表示 →' : language === 'ko' ? '모든 결과 보기 →' : 'Show all results →'}
               </Button>
             </div>
           )}
