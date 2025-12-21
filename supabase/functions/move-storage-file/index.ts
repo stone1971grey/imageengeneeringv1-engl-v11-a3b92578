@@ -11,7 +11,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { sourcePath, destPath, bucketId } = await req.json();
+    const body = await req.json();
+    // Support both parameter names for flexibility
+    const sourcePath = body.sourcePath;
+    const destPath = body.destPath || body.destinationPath;
+    const bucketId = body.bucketId || 'page-images';
+    
+    if (!sourcePath || !destPath) {
+      return new Response(
+        JSON.stringify({ error: "sourcePath and destPath/destinationPath are required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || Deno.env.get("VITE_SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
