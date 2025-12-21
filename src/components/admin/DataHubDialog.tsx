@@ -192,10 +192,14 @@ export function DataHubDialog({
             return true;
           }).map(file => {
             // Enrich file with segment IDs and visibility from database
-            const filePath = `${folder.storage_path}/${file.name}`;
+            // Handle empty storage_path (root folder) - don't add leading slash
+            const filePath = folder.storage_path 
+              ? `${folder.storage_path}/${file.name}` 
+              : file.name;
             const mapping = mappingsMap.get(filePath);
             const segmentIds = mapping?.segment_ids || [];
             const visibility = mapping?.visibility || 'public';
+            console.log(`[DataHub] File ${file.name} path: ${filePath}, segmentIds:`, segmentIds);
             return {
               ...file,
               metadata: {
