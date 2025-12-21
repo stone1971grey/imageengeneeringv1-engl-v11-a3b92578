@@ -8,24 +8,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Trash2, Plus, Image as ImageIcon, Upload } from "lucide-react";
+import { Trash2, Plus, Image as ImageIcon, Upload, AlertTriangle } from "lucide-react";
 import { 
   FileText, Download, BarChart3, Zap, Shield, Eye, Car, 
   Smartphone, Heart, CheckCircle, Lightbulb, Monitor 
 } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { syncAltTextToMediaManagement, getSegmentCountForImage } from "@/utils/syncAltTextToMediaManagement";
 
 interface TileItem {
   title: string;
   description: string;
   imageUrl?: string;
+  altText?: string;
   icon?: string;
   metadata?: any;
   showButton?: boolean;
   ctaText?: string;
   ctaLink?: string;
   ctaStyle?: string;
+  segmentCount?: number;
 }
 
 interface TilesSegmentEditorProps {
@@ -168,7 +172,24 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
             setTitle(tilesSegment.data.title || '');
             setDescription(tilesSegment.data.description || '');
             setColumns(tilesSegment.data.columns || '3');
-            setTiles(tilesSegment.data.items || []);
+            
+            // Load alt texts from Media Management for each tile with an image
+            const tilesWithAltTexts = await Promise.all(
+              (tilesSegment.data.items || []).map(async (tile: TileItem) => {
+                if (tile.imageUrl) {
+                  const altFromMapping = await loadAltTextFromMapping(tile.imageUrl, 'page-images', language);
+                  const { count } = await getSegmentCountForImage(tile.imageUrl, 'page-images');
+                  return {
+                    ...tile,
+                    altText: altFromMapping || tile.altText || '',
+                    segmentCount: count
+                  };
+                }
+                return tile;
+              })
+            );
+            
+            setTiles(tilesWithAltTexts);
             loadedContent = true;
           }
         }
@@ -258,6 +279,17 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         }, { onConflict: 'page_slug,section_key,language' });
 
       if (error) throw error;
+
+      // Sync alt texts to Media Management (bidirectional sync)
+      const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
+      for (const tile of tiles) {
+        if (tile.imageUrl && tile.altText) {
+          await syncAltTextToMediaManagement(tile.imageUrl, tile.altText, language, 'page-images', false);
+          if (numericSegmentId > 0) {
+            await updateSegmentMapping(tile.imageUrl, numericSegmentId, 'page-images', false);
+          }
+        }
+      }
 
       toast.success(`Tiles saved for ${language.toUpperCase()}!`);
       onSave?.();
@@ -505,17 +537,51 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                           
                           toast.success('Image uploaded successfully');
                         }}
-                        onMediaSelect={(url, metadata) => {
+                        onMediaSelect={async (url, metadata) => {
                           handleTileChange(index, 'imageUrl', url);
                           if (metadata) {
                             handleTileChange(index, 'metadata', metadata);
                           }
+                          // Load alt text from Media Management for selected image
+                          const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
+                          if (altFromMapping) {
+                            handleTileChange(index, 'altText', altFromMapping);
+                          }
+                          // Check segment count
+                          const { count } = await getSegmentCountForImage(url, 'page-images');
+                          handleTileChange(index, 'segmentCount', count);
                         }}
                       />
                     )}
                   </>
                 )}
               </div>
+
+              {/* Alt-Text Field - only show when image is set */}
+              {tile.imageUrl && !tile.icon && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-white">Alt-Text (SEO & Accessibility)</Label>
+                    {(tile.segmentCount || 0) > 1 && (
+                      <div className="flex items-center gap-1 text-amber-500 bg-amber-900/30 px-2 py-0.5 rounded-full text-xs">
+                        <AlertTriangle className="h-3 w-3" />
+                        <span>In {tile.segmentCount} Segmenten</span>
+                      </div>
+                    )}
+                  </div>
+                  <Input
+                    value={tile.altText || ''}
+                    onChange={(e) => handleTileChange(index, 'altText', e.target.value)}
+                    placeholder="Describe this image for screen readers..."
+                    className="border-2 border-gray-600 bg-gray-800 text-white"
+                  />
+                  {(tile.segmentCount || 0) > 1 && (
+                    <p className="text-xs text-amber-500">
+                      ⚠️ Änderungen werden im Media Management und allen verknüpften Segmenten synchronisiert.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <Label className="text-white">Title</Label>
