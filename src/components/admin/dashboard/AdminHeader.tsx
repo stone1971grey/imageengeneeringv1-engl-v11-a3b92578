@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +28,7 @@ interface AdminHeaderProps {
   onCtaClick: () => void;
   onFlyoutClick: () => void;
   onCreatePageClick: () => void;
+  onCopyPageClick: () => void;
   isSEOEditorOpen: boolean;
   setIsSEOEditorOpen: (open: boolean) => void;
   isGlossaryOpen: boolean;
@@ -50,6 +51,7 @@ export const AdminHeader = ({
   onCtaClick,
   onFlyoutClick,
   onCreatePageClick,
+  onCopyPageClick,
   isSEOEditorOpen,
   setIsSEOEditorOpen,
   isGlossaryOpen,
@@ -181,6 +183,16 @@ export const AdminHeader = ({
             <Plus className="h-4 w-4" />
             Create Page
           </Button>
+          
+          {selectedPage && pageInfo && (
+            <Button
+              onClick={onCopyPageClick}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+            >
+              <Copy className="h-4 w-4" />
+              Copy Page
+            </Button>
+          )}
         </div>
 
         {/* Page Info Display */}
