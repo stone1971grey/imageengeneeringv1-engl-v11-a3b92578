@@ -703,9 +703,17 @@ export function DataHubDialog({
     return files.filter(file => file.name.includes('.'));
   }, []);
 
+  // Calculate total files including all subfolders recursively
+  const getTotalFileCount = useCallback((folder: MediaFolder): number => {
+    const directFiles = getFilteredFiles(folder.files).length;
+    const childrenFiles = folder.children.reduce((sum, child) => sum + getTotalFileCount(child), 0);
+    return directFiles + childrenFiles;
+  }, [getFilteredFiles]);
+
   const renderFolder = useCallback((folder: MediaFolder, level: number = 0) => {
     const isOpen = openFolders.includes(folder.id);
     const folderFiles = getFilteredFiles(folder.files);
+    const totalFileCount = getTotalFileCount(folder);
     const isRootFolder = folder.parent_id === null;
     
     // Check if this folder corresponds to a page and get page_id
@@ -740,6 +748,11 @@ export function DataHubDialog({
               </span>
               <span className="text-sm text-gray-400 bg-gray-700/50 px-2 py-1 rounded-full">
                 {folderFiles.length} files
+                {folder.children.length > 0 && totalFileCount > folderFiles.length && (
+                  <span className="ml-1 text-[#f9dc24]">
+                    (Σ {totalFileCount})
+                  </span>
+                )}
               </span>
             </CollapsibleTrigger>
 
@@ -1274,7 +1287,7 @@ export function DataHubDialog({
         </div>
       </Collapsible>
     );
-  }, [openFolders, getFilteredFiles, getFileUrl, isImage, isVideo, toggleFolder, selectionMode, onSelect, selectedFiles, uploading, selectedFolder, creatingFolderFor, newFolderName, editingFolder, deletingFolder, batchDeleting, pageRegistry]);
+  }, [openFolders, getFilteredFiles, getTotalFileCount, getFileUrl, isImage, isVideo, toggleFolder, selectionMode, onSelect, selectedFiles, uploading, selectedFolder, creatingFolderFor, newFolderName, editingFolder, deletingFolder, batchDeleting, pageRegistry]);
 
   return (
     <>
