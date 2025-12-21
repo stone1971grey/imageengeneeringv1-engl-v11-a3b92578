@@ -12,6 +12,8 @@ import { Trash2, Plus } from "lucide-react";
 import { SimpleRichTextEditor } from "./SimpleRichTextEditor";
 import { MediaSelector } from "./MediaSelector";
 import { createContentBackup } from "@/utils/createContentBackup";
+import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 
 interface ImageTextItem {
   title: string;
@@ -156,6 +158,10 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       if (error && error.code !== 'PGRST116') throw error;
 
       let foundContent = false;
+      let loadedItems: ImageTextItem[] = [];
+      let loadedHeroUrl = '';
+      let loadedHeroMetadata: any = null;
+
       if (data?.content_value) {
         const segments = JSON.parse(data.content_value);
         const imageTextSegment = segments.find((seg: any) => seg.id === segmentId);
@@ -164,9 +170,9 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
           setTitle(imageTextSegment.data.title || '');
           setSubtext(imageTextSegment.data.subtext || '');
           setLayout(imageTextSegment.data.layout || '2-col');
-          setHeroImageUrl(imageTextSegment.data.heroImageUrl || '');
-          setHeroImageMetadata(imageTextSegment.data.heroImageMetadata || null);
-          setItems(imageTextSegment.data.items || []);
+          loadedHeroUrl = imageTextSegment.data.heroImageUrl || '';
+          loadedHeroMetadata = imageTextSegment.data.heroImageMetadata || null;
+          loadedItems = imageTextSegment.data.items || [];
           foundContent = true;
         }
       }
@@ -189,12 +195,40 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
             setTitle(enImageTextSegment.data.title || '');
             setSubtext(enImageTextSegment.data.subtext || '');
             setLayout(enImageTextSegment.data.layout || '2-col');
-            setHeroImageUrl(enImageTextSegment.data.heroImageUrl || '');
-            setHeroImageMetadata(enImageTextSegment.data.heroImageMetadata || null);
-            setItems(enImageTextSegment.data.items || []);
+            loadedHeroUrl = enImageTextSegment.data.heroImageUrl || '';
+            loadedHeroMetadata = enImageTextSegment.data.heroImageMetadata || null;
+            loadedItems = enImageTextSegment.data.items || [];
           }
         }
       }
+
+      // Load current alt-texts from file_segment_mappings for all images
+      if (loadedHeroUrl) {
+        const heroAltText = await loadAltTextFromMapping(loadedHeroUrl, 'page-images', language);
+        if (heroAltText && loadedHeroMetadata) {
+          loadedHeroMetadata = { ...loadedHeroMetadata, altText: heroAltText };
+        }
+      }
+
+      // Load alt-texts for all item images
+      const itemsWithAltText = await Promise.all(
+        loadedItems.map(async (item) => {
+          if (item.imageUrl) {
+            const altText = await loadAltTextFromMapping(item.imageUrl, 'page-images', language);
+            if (altText) {
+              return {
+                ...item,
+                metadata: { ...item.metadata, altText }
+              };
+            }
+          }
+          return item;
+        })
+      );
+
+      setHeroImageUrl(loadedHeroUrl);
+      setHeroImageMetadata(loadedHeroMetadata);
+      setItems(itemsWithAltText);
     } catch (error: any) {
       console.error('Error loading image-text content:', error);
       toast.error('Failed to load content');
@@ -262,6 +296,35 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
         }, { onConflict: 'page_slug,section_key,language' });
 
       if (error) throw error;
+
+      // Extract numeric segment ID for mapping
+      const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
+      
+      // Update segment mappings for all images (only for English to avoid duplicate mappings)
+      if (numericSegmentId > 0 && language === 'en') {
+        const imageUrls: string[] = [];
+        
+        // Collect hero image
+        if (heroImageUrl) {
+          imageUrls.push(heroImageUrl);
+        }
+        
+        // Collect item images
+        items.forEach(item => {
+          if (item.imageUrl) {
+            imageUrls.push(item.imageUrl);
+          }
+        });
+        
+        // Update mappings for all images
+        for (const url of imageUrls) {
+          await updateSegmentMapping(url, numericSegmentId, 'page-images', false);
+        }
+        
+        if (imageUrls.length > 0) {
+          console.log(`[ImageTextEditor] Updated segment mappings for ${imageUrls.length} image(s) to segment #${numericSegmentId}`);
+        }
+      }
 
       toast.success(`Image & Text saved for ${language.toUpperCase()}!`);
       onSave?.();
