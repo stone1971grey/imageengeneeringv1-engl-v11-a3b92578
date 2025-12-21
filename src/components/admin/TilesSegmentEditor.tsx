@@ -442,72 +442,80 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               </div>
 
               {/* Image Upload - Alternative to Icon */}
-              {!tile.icon && (
-                <div className="space-y-3">
-                  <Label className="text-white flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4" />
-                    Image (Alternative to Icon)
-                  </Label>
-                  
-                  {tile.imageUrl ? (
-                    <div className="relative">
-                      <img 
-                        src={tile.imageUrl} 
-                        alt={`Tile ${index + 1} image`}
-                        className="w-32 h-32 object-cover rounded-lg border-2 border-gray-500"
+              <div className="space-y-3">
+                <Label className="text-white flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Image (Alternative to Icon)
+                </Label>
+                
+                {tile.icon && (
+                  <p className="text-sm text-gray-400 italic">
+                    Deaktivieren Sie das Icon oben, um ein Bild hochzuladen.
+                  </p>
+                )}
+                
+                {!tile.icon && (
+                  <>
+                    {tile.imageUrl ? (
+                      <div className="relative inline-block">
+                        <img 
+                          src={tile.imageUrl} 
+                          alt={`Tile ${index + 1} image`}
+                          className="w-32 h-32 object-cover rounded-lg border-2 border-gray-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleTileChange(index, 'imageUrl', '')}
+                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                          title="Remove Image"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <MediaSelector
+                        label=""
+                        currentImageUrl={tile.imageUrl}
+                        onFileSelect={async (file) => {
+                          // Upload file to storage
+                          const fileExt = file.name.split('.').pop();
+                          const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
+                          const filePath = `tiles/${pageSlug}/${fileName}`;
+                          
+                          const { error: uploadError } = await supabase.storage
+                            .from('page-images')
+                            .upload(filePath, file);
+                          
+                          if (uploadError) {
+                            toast.error('Failed to upload image');
+                            return;
+                          }
+                          
+                          const { data: { publicUrl } } = supabase.storage
+                            .from('page-images')
+                            .getPublicUrl(filePath);
+                          
+                          handleTileChange(index, 'imageUrl', publicUrl);
+                          
+                          // Update segment mapping - extract numeric ID from segmentId string
+                          const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
+                          if (numericSegmentId > 0) {
+                            await updateSegmentMapping(publicUrl, numericSegmentId, 'page-images', true, `Tile ${index + 1} image`);
+                          }
+                          
+                          toast.success('Image uploaded successfully');
+                        }}
+                        onMediaSelect={(url, metadata) => {
+                          handleTileChange(index, 'imageUrl', url);
+                          if (metadata) {
+                            handleTileChange(index, 'metadata', metadata);
+                          }
+                        }}
                       />
-                      <button
-                        type="button"
-                        onClick={() => handleTileChange(index, 'imageUrl', '')}
-                        className="absolute -top-2 -right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-                        title="Remove Image"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <MediaSelector
-                      label=""
-                      currentImageUrl={tile.imageUrl}
-                      onFileSelect={async (file) => {
-                        // Upload file to storage
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
-                        const filePath = `tiles/${pageSlug}/${fileName}`;
-                        
-                        const { error: uploadError } = await supabase.storage
-                          .from('page-images')
-                          .upload(filePath, file);
-                        
-                        if (uploadError) {
-                          toast.error('Failed to upload image');
-                          return;
-                        }
-                        
-                        const { data: { publicUrl } } = supabase.storage
-                          .from('page-images')
-                          .getPublicUrl(filePath);
-                        
-                        handleTileChange(index, 'imageUrl', publicUrl);
-                        
-                        // Update segment mapping - extract numeric ID from segmentId string
-                        const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
-                        if (numericSegmentId > 0) {
-                          await updateSegmentMapping(publicUrl, numericSegmentId, 'page-images', true, `Tile ${index + 1} image`);
-                        }
-                        
-                        toast.success('Image uploaded successfully');
-                      }}
-                      onMediaSelect={(url, metadata) => {
-                        handleTileChange(index, 'imageUrl', url);
-                        if (metadata) {
-                          handleTileChange(index, 'metadata', metadata);
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              )}
+                    )}
+                  </>
+                )}
+              </div>
 
               <div>
                 <Label className="text-white">Title</Label>
