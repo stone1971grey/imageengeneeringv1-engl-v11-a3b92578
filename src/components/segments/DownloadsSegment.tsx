@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -361,10 +361,12 @@ const DownloadDescription = ({ description }: { description: string }) => {
 
 const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: DownloadsSegmentProps) => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { language } = useLanguage();
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const hasProcessedOpenParam = useRef(false);
 
   // Load segment configuration from database
   const { data: segmentConfig } = useQuery({
@@ -473,6 +475,31 @@ const DownloadsSegment = ({ segmentId, pageSlug, config: initialConfig }: Downlo
       return (data as Download[]).slice(0, maxItems);
     },
   });
+
+  // Handle ?open=slug query parameter to auto-expand a download
+  useEffect(() => {
+    const openSlug = searchParams.get('open');
+    if (openSlug && downloads.length > 0 && !hasProcessedOpenParam.current) {
+      const downloadToOpen = downloads.find(d => d.slug === openSlug);
+      if (downloadToOpen) {
+        hasProcessedOpenParam.current = true;
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          setExpandedItemId(downloadToOpen.id);
+          // Scroll to the expanded item
+          setTimeout(() => {
+            const element = document.getElementById(`download-detail-${downloadToOpen.id}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
+        }, 200);
+        // Clear the query parameter to avoid re-opening on navigation
+        searchParams.delete('open');
+        setSearchParams(searchParams, { replace: true });
+      }
+    }
+  }, [downloads, searchParams, setSearchParams]);
 
   const form = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadFormSchema),
