@@ -158,12 +158,13 @@ const UtilityNavigation = () => {
       {/* Expandable Search with Autocomplete */}
       <div 
         ref={containerRef} 
-        className="relative transition-all duration-500 ease-in-out"
-        style={{ width: isSearchOpen ? '280px' : '40px' }}
+        className="relative"
+        style={{ width: '40px' }}
       >
         <form 
           onSubmit={handleSearchSubmit} 
-          className="flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 w-full"
+          className="absolute right-0 top-0 flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out origin-right"
+          style={{ width: isSearchOpen ? '280px' : '40px' }}
         >
           <div className="flex items-center w-full h-full">
             {/* Search Icon Button - only visible when closed */}
