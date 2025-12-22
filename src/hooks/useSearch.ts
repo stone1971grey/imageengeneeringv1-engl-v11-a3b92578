@@ -11,6 +11,7 @@ export interface SearchResult {
   url: string;
   meta?: string; // Date, location, or page type
   description?: string; // For search results page
+  requiresRegistration?: boolean; // For private downloads that need form submission
 }
 
 interface UseSearchReturn {
@@ -167,6 +168,7 @@ export const useSearch = (): UseSearchReturn => {
           };
           const typeLabel = typeLabels[download.download_type] || download.download_type;
           const categoryLabel = download.category || '';
+          const isPrivate = download.visibility === 'private';
 
           results.push({
             id: `download-${download.id}`,
@@ -175,6 +177,7 @@ export const useSearch = (): UseSearchReturn => {
             url: `/${language}/info-hub/downloads/${download.slug}`,
             meta: [typeLabel, categoryLabel].filter(Boolean).join(' · '),
             description: download.teaser,
+            requiresRegistration: isPrivate,
           });
         }
       }

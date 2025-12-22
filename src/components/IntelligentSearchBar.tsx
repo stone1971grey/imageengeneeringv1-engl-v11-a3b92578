@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, FileText, Newspaper, Calendar, ChevronRight, Download } from "lucide-react";
+import { Search, X, FileText, Newspaper, Calendar, ChevronRight, Download, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,17 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
     return labels[language]?.[category] || labels['en'][category];
   };
 
+  const getRegistrationLabel = () => {
+    const labels: Record<string, string> = {
+      de: 'Registrierung erforderlich',
+      en: 'Registration required',
+      zh: '需要注册',
+      ja: '登録が必要',
+      ko: '등록 필요',
+    };
+    return labels[language] || labels['en'];
+  };
+
   const getCategoryColor = (category: SearchResultCategory) => {
     switch (category) {
       case 'page': return 'bg-blue-50 text-blue-700 border-blue-200';
@@ -214,6 +225,14 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
                     <span className="font-medium text-gray-900 flex-1 truncate text-sm">
                       {result.title}
                     </span>
+                    
+                    {/* Registration required badge for private downloads */}
+                    {result.requiresRegistration && (
+                      <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                        <Lock className="h-3 w-3" />
+                        {variant !== 'mobile' && <span>{getRegistrationLabel()}</span>}
+                      </span>
+                    )}
                     
                     <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   </div>
