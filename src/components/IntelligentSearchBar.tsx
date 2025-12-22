@@ -138,11 +138,11 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
 
   const getRegistrationLabel = () => {
     const labels: Record<string, string> = {
-      de: 'Kostenlos mit Anmeldung',
-      en: 'Free with signup',
-      zh: '免费注册获取',
-      ja: '無料登録で入手',
-      ko: '무료 가입으로 이용',
+      de: '✓ Gratis Download',
+      en: '✓ Free download',
+      zh: '✓ 免费下载',
+      ja: '✓ 無料ダウンロード',
+      ko: '✓ 무료 다운로드',
     };
     return labels[language] || labels['en'];
   };
@@ -226,9 +226,9 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
                       {result.title}
                     </span>
                     
-                    {/* Free with signup badge for private downloads */}
+                    {/* Free download badge for private downloads */}
                     {result.requiresRegistration && (
-                      <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                      <span className="text-xs text-emerald-700 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
                         {getRegistrationLabel()}
                       </span>
                     )}

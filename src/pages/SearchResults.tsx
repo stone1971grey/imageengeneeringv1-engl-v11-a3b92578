@@ -114,7 +114,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: 'Kostenlos mit Anmeldung',
+      registration: '✓ Gratis Download',
     },
     en: {
       title: 'Search Results',
@@ -129,7 +129,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: 'Free with signup',
+      registration: '✓ Free download',
     },
     zh: {
       title: '搜索结果',
@@ -144,7 +144,7 @@ const SearchResults = () => {
       news: '新闻',
       events: '活动',
       downloads: '下载',
-      registration: '免费注册获取',
+      registration: '✓ 免费下载',
     },
     ja: {
       title: '検索結果',
@@ -159,7 +159,7 @@ const SearchResults = () => {
       news: 'ニュース',
       events: 'イベント',
       downloads: 'ダウンロード',
-      registration: '無料登録で入手',
+      registration: '✓ 無料ダウンロード',
     },
     ko: {
       title: '검색 결과',
@@ -174,7 +174,7 @@ const SearchResults = () => {
       news: '뉴스',
       events: '이벤트',
       downloads: '다운로드',
-      registration: '무료 가입으로 이용',
+      registration: '✓ 무료 다운로드',
     },
   };
 
@@ -273,7 +273,7 @@ const SearchResults = () => {
                               {getCategoryLabel(result.category)}
                             </Badge>
                             {result.requiresRegistration && (
-                              <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                              <span className="text-xs text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
                                 {texts.registration}
                               </span>
                             )}
