@@ -114,7 +114,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: '✓ Gratis Download',
+      registration: '✓ Gratis nach Registrierung',
     },
     en: {
       title: 'Search Results',
@@ -129,7 +129,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: '✓ Free download',
+      registration: '✓ Free after registration',
     },
     zh: {
       title: '搜索结果',
@@ -144,7 +144,7 @@ const SearchResults = () => {
       news: '新闻',
       events: '活动',
       downloads: '下载',
-      registration: '✓ 免费下载',
+      registration: '✓ 注册后免费',
     },
     ja: {
       title: '検索結果',
@@ -159,7 +159,7 @@ const SearchResults = () => {
       news: 'ニュース',
       events: 'イベント',
       downloads: 'ダウンロード',
-      registration: '✓ 無料ダウンロード',
+      registration: '✓ 登録後無料',
     },
     ko: {
       title: '검색 결과',
@@ -174,7 +174,7 @@ const SearchResults = () => {
       news: '뉴스',
       events: '이벤트',
       downloads: '다운로드',
-      registration: '✓ 무료 다운로드',
+      registration: '✓ 등록 후 무료',
     },
   };
 
@@ -279,7 +279,7 @@ const SearchResults = () => {
                             )}
                           </div>
                           
-                          <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          <h2 className="text-lg font-semibold text-foreground group-hover:text-[#f9dc24] transition-colors line-clamp-1">
                             {result.title}
                           </h2>
                           

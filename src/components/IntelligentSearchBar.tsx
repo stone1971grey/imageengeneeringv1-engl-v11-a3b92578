@@ -138,11 +138,11 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
 
   const getRegistrationLabel = () => {
     const labels: Record<string, string> = {
-      de: '✓ Gratis Download',
-      en: '✓ Free download',
-      zh: '✓ 免费下载',
-      ja: '✓ 無料ダウンロード',
-      ko: '✓ 무료 다운로드',
+      de: '✓ Gratis nach Registrierung',
+      en: '✓ Free after registration',
+      zh: '✓ 注册后免费',
+      ja: '✓ 登録後無料',
+      ko: '✓ 등록 후 무료',
     };
     return labels[language] || labels['en'];
   };

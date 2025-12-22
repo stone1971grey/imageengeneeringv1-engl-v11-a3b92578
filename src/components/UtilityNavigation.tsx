@@ -137,11 +137,11 @@ const UtilityNavigation = () => {
 
   // Translated UI texts
   const searchTexts = {
-    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: '✓ Gratis Download' },
-    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: '✓ Free download' },
-    zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配', registration: '✓ 免费下载' },
-    ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし', registration: '✓ 無料ダウンロード' },
-    ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음', registration: '✓ 무료 다운로드' },
+    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: '✓ Gratis nach Registrierung' },
+    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: '✓ Free after registration' },
+    zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配', registration: '✓ 注册后免费' },
+    ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし', registration: '✓ 登録後無料' },
+    ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음', registration: '✓ 등록 후 무료' },
   };
   const st = searchTexts[language as keyof typeof searchTexts] || searchTexts.en;
 
