@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download } from 'lucide-react';
+import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -26,8 +26,18 @@ const SearchResults = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>(initialFilter);
   const [hasSearched, setHasSearched] = useState(false);
+  
+  // Autocomplete state
+  const [autocompleteResults, setAutocompleteResults] = useState<SearchResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isAutocompleteLoading, setIsAutocompleteLoading] = useState(false);
+  
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Perform search when query changes
+  // Perform main search when query changes
   useEffect(() => {
     const performSearch = async () => {
       if (query.trim().length >= 2) {
@@ -51,9 +61,87 @@ const SearchResults = () => {
     setSearchParams(params, { replace: true });
   }, [query, activeFilter, setSearchParams]);
 
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced autocomplete search
+  const performAutocomplete = useCallback(async (searchTerm: string) => {
+    if (searchTerm.length < 2) {
+      setAutocompleteResults([]);
+      setShowDropdown(false);
+      return;
+    }
+    
+    setIsAutocompleteLoading(true);
+    try {
+      const searchResults = await search(searchTerm);
+      setAutocompleteResults(searchResults.slice(0, 6));
+      setShowDropdown(true);
+    } catch (error) {
+      console.error('Autocomplete error:', error);
+    } finally {
+      setIsAutocompleteLoading(false);
+    }
+  }, [search]);
+
+  // Handle input change with debounce
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setSelectedIndex(-1);
+    
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    
+    debounceRef.current = setTimeout(() => {
+      performAutocomplete(value);
+    }, 300);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setQuery(inputValue);
+    setShowDropdown(false);
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    setShowDropdown(false);
+    navigate(result.url);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showDropdown || autocompleteResults.length === 0) return;
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => 
+        prev < autocompleteResults.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      handleResultClick(autocompleteResults[selectedIndex]);
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
+    }
+  };
+
+  const clearInput = () => {
+    setInputValue('');
+    setAutocompleteResults([]);
+    setShowDropdown(false);
+    inputRef.current?.focus();
   };
 
   const getCategoryIcon = (category: SearchResultCategory) => {
@@ -194,28 +282,90 @@ const SearchResults = () => {
       
       <main className="pt-32 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Search Header */}
+          {/* Search Header with Autocomplete */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-4">{texts.title}</h1>
             
-            {/* Search Input */}
-            <form onSubmit={handleSubmit} className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={texts.placeholder}
-                className="pl-12 pr-4 h-14 text-lg border-2 border-border focus-visible:ring-2 focus-visible:ring-primary"
-              />
-              <Button 
-                type="submit" 
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-                disabled={isLoading}
-              >
-                {texts.searchButton}
-              </Button>
-            </form>
+            {/* Search Input with Autocomplete */}
+            <div ref={containerRef} className="relative">
+              <form onSubmit={handleSubmit} className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => inputValue.length >= 2 && setShowDropdown(true)}
+                  placeholder={texts.placeholder}
+                  className="pl-12 pr-24 h-14 text-lg border-2 border-border focus-visible:ring-2 focus-visible:ring-primary"
+                />
+                {inputValue && (
+                  <button
+                    type="button"
+                    onClick={clearInput}
+                    className="absolute right-24 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                )}
+                <Button 
+                  type="submit" 
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  disabled={isLoading}
+                >
+                  {texts.searchButton}
+                </Button>
+              </form>
+
+              {/* Autocomplete Dropdown */}
+              {showDropdown && inputValue.length >= 2 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#f5f5f5] border-2 border-white rounded-xl shadow-2xl z-50 max-h-[400px] overflow-y-auto">
+                  {isAutocompleteLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  ) : autocompleteResults.length > 0 ? (
+                    <div className="py-2">
+                      {autocompleteResults.map((result, index) => (
+                        <button
+                          key={`${result.category}-${result.id}`}
+                          onClick={() => handleResultClick(result)}
+                          className={`w-full px-4 py-3 text-left flex items-start gap-3 hover:bg-white/60 transition-colors ${
+                            index === selectedIndex ? 'bg-white/60' : ''
+                          }`}
+                        >
+                          <span className={`flex-shrink-0 p-2 rounded-lg ${getCategoryColor(result.category)}`}>
+                            {getCategoryIcon(result.category)}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground truncate">{result.title}</p>
+                            {result.description && (
+                              <p className="text-sm text-muted-foreground line-clamp-1">{result.description}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-muted-foreground">
+                                {getCategoryLabel(result.category)}
+                              </span>
+                              {result.requiresRegistration && (
+                                <span className="text-xs text-emerald-700">
+                                  {texts.registration}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-2" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center text-muted-foreground">
+                      {texts.noResults} „{inputValue}"
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Filter Tabs */}
