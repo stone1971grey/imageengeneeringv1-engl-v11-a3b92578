@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download } from 'lucide-react';
+import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -114,6 +114,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
+      registration: 'Registrierung erforderlich',
     },
     en: {
       title: 'Search Results',
@@ -128,6 +129,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
+      registration: 'Registration required',
     },
     zh: {
       title: '搜索结果',
@@ -142,6 +144,7 @@ const SearchResults = () => {
       news: '新闻',
       events: '活动',
       downloads: '下载',
+      registration: '需要注册',
     },
     ja: {
       title: '検索結果',
@@ -156,6 +159,7 @@ const SearchResults = () => {
       news: 'ニュース',
       events: 'イベント',
       downloads: 'ダウンロード',
+      registration: '登録が必要',
     },
     ko: {
       title: '검색 결과',
@@ -170,6 +174,7 @@ const SearchResults = () => {
       news: '뉴스',
       events: '이벤트',
       downloads: '다운로드',
+      registration: '등록 필요',
     },
   };
 
@@ -260,13 +265,19 @@ const SearchResults = () => {
                         
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <Badge 
                               variant="outline" 
                               className={`text-xs font-medium ${getCategoryColor(result.category)}`}
                             >
                               {getCategoryLabel(result.category)}
                             </Badge>
+                            {result.requiresRegistration && (
+                              <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                <Lock className="h-3 w-3" />
+                                {texts.registration}
+                              </span>
+                            )}
                           </div>
                           
                           <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
