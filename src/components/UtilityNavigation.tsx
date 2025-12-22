@@ -163,7 +163,7 @@ const UtilityNavigation = () => {
       >
         <form 
           onSubmit={handleSearchSubmit} 
-          className="absolute right-0 top-0 flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out origin-right"
+          className={`absolute right-0 top-0 flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out origin-right ${isSearchOpen ? 'z-[60] shadow-lg' : ''}`}
           style={{ width: isSearchOpen ? '280px' : '40px' }}
         >
           <div className="flex items-center w-full h-full">
