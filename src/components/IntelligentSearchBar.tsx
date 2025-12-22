@@ -96,11 +96,16 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleResultClick = (result: SearchResult) => {
+  const handleResultClick = (result: SearchResult, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setIsOpen(false);
     setQuery("");
     onClose?.();
-    navigate(result.url);
+    // Use setTimeout to ensure navigation happens after state updates
+    setTimeout(() => {
+      navigate(result.url);
+    }, 0);
   };
 
   const handleGoToSearchResults = () => {
@@ -203,46 +208,49 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
           ) : results.length > 0 ? (
             <div className={variant === 'mobile' ? 'p-2' : 'py-1'}>
               {results.map((result, index) => (
-                <div
+                <button
                   key={result.id}
-                  className={`px-3 py-2.5 cursor-pointer transition-colors rounded-lg ${
+                  type="button"
+                  className={`w-full text-left px-3 py-2.5 cursor-pointer transition-colors rounded-lg ${
                     variant === 'mobile'
                       ? (index === selectedIndex ? 'bg-white shadow-sm' : 'hover:bg-white/60')
                       : (index === selectedIndex ? 'bg-muted' : 'hover:bg-muted/50')
                   }`}
-                  onClick={() => handleResultClick(result)}
+                  onClick={(e) => handleResultClick(result, e)}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     {/* Category Badge */}
                     <Badge 
                       variant="outline" 
-                      className={`text-xs font-medium px-1.5 py-0.5 flex-shrink-0 ${getCategoryColor(result.category)}`}
+                      className={`text-xs font-medium px-1.5 py-0.5 flex-shrink-0 mt-0.5 ${getCategoryColor(result.category)}`}
                     >
                       {getCategoryLabel(result.category)}
                     </Badge>
                     
-                    {/* Title */}
-                    <span className="font-medium text-gray-900 flex-1 truncate text-sm">
-                      {result.title}
-                    </span>
-                    
-                    {/* Free download badge for private downloads */}
-                    {result.requiresRegistration && (
-                      <span className="text-xs text-emerald-700 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                        {getRegistrationLabel()}
+                    {/* Title and Meta - allow multi-line */}
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium text-gray-900 text-sm block">
+                        {result.title}
                       </span>
-                    )}
+                      
+                      {/* Free download badge for private downloads */}
+                      {result.requiresRegistration && (
+                        <span className="text-xs text-emerald-700 mt-1 inline-block">
+                          {getRegistrationLabel()}
+                        </span>
+                      )}
+                      
+                      {/* Meta line (date, location, page type) */}
+                      {result.meta && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {result.meta}
+                        </p>
+                      )}
+                    </div>
                     
-                    <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                   </div>
-                  
-                  {/* Meta line (date, location, page type) - hidden on mobile for compactness */}
-                  {result.meta && variant !== 'mobile' && (
-                    <p className="text-xs text-muted-foreground mt-1 ml-[72px] truncate">
-                      {result.meta}
-                    </p>
-                  )}
-                </div>
+                </button>
               ))}
               
               {/* "Show all results" link */}

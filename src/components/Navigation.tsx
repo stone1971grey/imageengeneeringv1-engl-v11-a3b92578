@@ -1384,7 +1384,6 @@ const Navigation = () => {
                         variant="default" 
                         className="w-full h-10 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black border border-[#f9dc24] hover:border-[#f9dc24]/90 transition-all duration-300 flex items-center justify-center px-6"
                       >
-                        <MessageCircle className="h-4 w-4 mr-2" />
                         {t.nav.contact}
                       </Button>
                     </Link>
