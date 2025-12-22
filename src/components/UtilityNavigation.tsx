@@ -156,10 +156,10 @@ const UtilityNavigation = () => {
   return (
     <div className="flex items-center gap-4 relative">
       {/* Expandable Search with Autocomplete */}
-      <div ref={containerRef} className="relative">
+      <div ref={containerRef} className="relative" style={{ width: '280px' }}>
         <form 
           onSubmit={handleSearchSubmit} 
-          className="relative flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out"
+          className="absolute right-0 flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out"
           style={{
             width: isSearchOpen ? '280px' : '40px',
           }}
