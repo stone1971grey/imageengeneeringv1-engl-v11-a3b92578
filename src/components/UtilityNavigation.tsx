@@ -137,11 +137,11 @@ const UtilityNavigation = () => {
 
   // Translated UI texts
   const searchTexts = {
-    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: 'Kostenlos mit Anmeldung' },
-    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: 'Free with signup' },
-    zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配', registration: '需要注册' },
-    ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし', registration: '登録が必要' },
-    ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음', registration: '등록 필요' },
+    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: '✓ Gratis Download' },
+    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: '✓ Free download' },
+    zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配', registration: '✓ 免费下载' },
+    ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし', registration: '✓ 無料ダウンロード' },
+    ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음', registration: '✓ 무료 다운로드' },
   };
   const st = searchTexts[language as keyof typeof searchTexts] || searchTexts.en;
 
@@ -262,7 +262,7 @@ const UtilityNavigation = () => {
                         {result.title}
                       </span>
                       {result.requiresRegistration && (
-                        <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full flex-shrink-0">
+                        <span className="text-xs text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full flex-shrink-0">
                           {st.registration}
                         </span>
                       )}
