@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, X, ArrowRight, Lock } from "lucide-react";
+import { Search, X, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -137,8 +137,8 @@ const UtilityNavigation = () => {
 
   // Translated UI texts
   const searchTexts = {
-    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: 'Registrierung erforderlich' },
-    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: 'Registration required' },
+    de: { placeholder: 'Suchen...', showAll: 'Alle Ergebnisse anzeigen', noResults: 'Keine direkten Treffer', registration: 'Kostenlos mit Anmeldung' },
+    en: { placeholder: 'Search...', showAll: 'Show all results', noResults: 'No direct matches', registration: 'Free with signup' },
     zh: { placeholder: '搜索...', showAll: '显示所有结果', noResults: '没有直接匹配', registration: '需要注册' },
     ja: { placeholder: '検索...', showAll: 'すべての結果を表示', noResults: '直接一致なし', registration: '登録が必要' },
     ko: { placeholder: '검색...', showAll: '모든 결과 보기', noResults: '직접 일치 없음', registration: '등록 필요' },
@@ -262,9 +262,8 @@ const UtilityNavigation = () => {
                         {result.title}
                       </span>
                       {result.requiresRegistration && (
-                        <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex-shrink-0">
-                          <Lock className="h-3 w-3" />
-                          <span className="hidden sm:inline">{st.registration}</span>
+                        <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full flex-shrink-0">
+                          {st.registration}
                         </span>
                       )}
                       <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />

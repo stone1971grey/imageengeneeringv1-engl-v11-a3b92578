@@ -170,11 +170,16 @@ export const useSearch = (): UseSearchReturn => {
           const categoryLabel = download.category || '';
           const isPrivate = download.visibility === 'private';
 
+          // Private downloads link to downloads overview with modal opened
+          const downloadUrl = isPrivate 
+            ? `/${language}/info-hub/explore-info-hub-resources?open=${download.slug}`
+            : `/${language}/info-hub/downloads/${download.slug}`;
+
           results.push({
             id: `download-${download.id}`,
             title: download.title,
             category: 'download',
-            url: `/${language}/info-hub/downloads/${download.slug}`,
+            url: downloadUrl,
             meta: [typeLabel, categoryLabel].filter(Boolean).join(' · '),
             description: download.teaser,
             requiresRegistration: isPrivate,
