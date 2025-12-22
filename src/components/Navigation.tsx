@@ -441,14 +441,21 @@ const Navigation = () => {
         {/* Single row - logo left, main nav center, utility right */}
         <div className="flex items-center w-full gap-2 sm:gap-8">
           {/* Logo on the left - integrated for proper vertical centering */}
-          <Link to={isAdminDashboard ? "/en/admin-dashboard" : `/${language}`} className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0 pl-2 md:pl-6 lg:pl-8">
-            <img 
-              src={logoIE} 
-              alt="Image Engineering" 
-              className="h-[36px] sm:h-[54px] w-auto max-w-[180px] sm:max-w-[270px] object-contain"
-              style={{ width: 'auto' }}
-            />
-          </Link>
+          {/* Get language directly from URL path for more reliable logo link */}
+          {(() => {
+            const pathParts = location.pathname.split('/').filter(Boolean);
+            const urlLang = ['en', 'de', 'zh', 'ja', 'ko'].includes(pathParts[0]) ? pathParts[0] : 'en';
+            return (
+              <Link to={isAdminDashboard ? "/en/admin-dashboard" : `/${urlLang}`} className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0 pl-2 md:pl-6 lg:pl-8">
+                <img 
+                  src={logoIE} 
+                  alt="Image Engineering" 
+                  className="h-[36px] sm:h-[54px] w-auto max-w-[180px] sm:max-w-[270px] object-contain"
+                  style={{ width: 'auto' }}
+                />
+              </Link>
+            );
+          })()}
           
           <div className="flex-1"></div>
           {/* Main Navigation - aligned with search - Hide in Admin Dashboard */}
