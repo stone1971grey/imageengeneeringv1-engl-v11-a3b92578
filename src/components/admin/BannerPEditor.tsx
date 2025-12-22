@@ -233,22 +233,20 @@ const BannerPEditorComponent = ({
       
       // Sync alt-texts bidirectionally and update segment mappings
       const segmentIdNum = parseInt(segmentId);
-      if (language === 'en') {
-        for (const image of images) {
-          if (image.url) {
-            if (image.alt) {
-              await syncAltTextToMediaManagement(
-                image.url,
-                segmentId,
-                image.alt,
-                'page-images',
-                false
-              );
-            } else {
-              // Just update segment mapping without alt text
-              await updateMultipleSegmentMappings([image.url], segmentIdNum, 'page-images', false);
-            }
+      // Sync alt texts for all languages (not just English)
+      for (const image of images) {
+        if (image.url) {
+          if (image.alt) {
+            await syncAltTextToMediaManagement(
+              image.url,
+              image.alt,
+              language,
+              'page-images',
+              false
+            );
           }
+          // Always update segment mapping
+          await updateMultipleSegmentMappings([image.url], segmentIdNum, 'page-images', false, image.alt ? [image.alt] : undefined);
         }
       }
       
