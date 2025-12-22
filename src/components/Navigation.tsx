@@ -1301,8 +1301,16 @@ const Navigation = () => {
           )}
           
           {/* Utility Navigation - aligned with main nav - Hide in Admin Dashboard */}
+          {/* Show on 2xl+ (full desktop) */}
           {!isAdminDashboard && (
             <div className="hidden 2xl:flex">
+              <UtilityNavigation />
+            </div>
+          )}
+          
+          {/* Utility Navigation for Tablets (md to 2xl) - outside mobile menu */}
+          {!isAdminDashboard && (
+            <div className="hidden md:flex 2xl:hidden items-center gap-3 ml-auto mr-4">
               <UtilityNavigation />
             </div>
           )}
@@ -2333,8 +2341,8 @@ const Navigation = () => {
 
                   </Accordion>
 
-                  {/* Bottom section with Search, Language Picker and Contact Button */}
-                  <div className="mt-8 pt-6 border-t border-gray-200 hidden sm:block">
+                   {/* Bottom section with Search, Language Picker and Contact Button - only for small mobile, NOT tablets */}
+                   <div className="mt-8 pt-6 border-t border-gray-200 hidden sm:block md:hidden">
                     <div className="flex items-center gap-4">
                       {/* Search Bar */}
                       <div className="flex-1">
