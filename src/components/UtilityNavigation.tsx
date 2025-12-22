@@ -155,16 +155,15 @@ const UtilityNavigation = () => {
 
   return (
     <div className="flex items-center gap-4 relative">
-      {/* Expandable Search with Autocomplete */}
+      {/* Expandable Search with Autocomplete - container width animates to push nav left */}
       <div 
         ref={containerRef} 
-        className="relative h-10"
-        style={{ width: '40px' }}
+        className="relative h-10 transition-all duration-500 ease-in-out"
+        style={{ width: isSearchOpen ? '280px' : '40px' }}
       >
         <form 
           onSubmit={handleSearchSubmit} 
-          className={`absolute right-0 top-0 flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 transition-all duration-500 ease-in-out origin-right ${isSearchOpen ? 'z-[60] shadow-lg' : ''}`}
-          style={{ width: isSearchOpen ? '280px' : '40px' }}
+          className={`flex items-center bg-white rounded-md shadow-sm overflow-visible h-10 w-full transition-all duration-500 ease-in-out ${isSearchOpen ? 'shadow-lg' : ''}`}
         >
           <div className="flex items-center w-full h-full">
             {/* Search Icon Button - only visible when closed */}
@@ -229,14 +228,13 @@ const UtilityNavigation = () => {
           </div>
         </form>
 
-        {/* Autocomplete Dropdown - styled like navigation flyouts */}
+        {/* Autocomplete Dropdown - left-aligned with search field */}
         {isSearchOpen && showDropdown && searchQuery.length >= 2 && (
           <div 
             className="absolute w-[340px] bg-[#f5f5f5] border-2 border-white rounded-xl shadow-2xl z-[100] max-h-[480px] overflow-y-auto"
             style={{
               top: 'calc(100% + 20px)',
               left: '0',
-              transform: 'none',
             }}
           >
             {isLoading ? (
