@@ -44,7 +44,8 @@ export async function updateSegmentMapping(
   segmentId: number,
   bucketId: string = 'page-images',
   showToast: boolean = true,
-  altText?: string
+  altText?: string,
+  language: string = 'en'
 ): Promise<boolean> {
   if (!imageUrl || !segmentId) {
     return false;
@@ -58,11 +59,14 @@ export async function updateSegmentMapping(
     return false;
   }
   
+  // Normalize language code (e.g., 'en-US' -> 'en')
+  const normalizedLang = language.split('-')[0];
+  
   try {
     // Check if mapping exists
     const { data: existing, error: fetchError } = await supabase
       .from('file_segment_mappings')
-      .select('segment_ids')
+      .select('segment_ids, alt_text_translations')
       .eq('file_path', filePath)
       .eq('bucket_id', bucketId)
       .maybeSingle();
@@ -90,9 +94,19 @@ export async function updateSegmentMapping(
           updated_at: new Date().toISOString()
         };
         
-        // Update alt_text if explicitly provided
+        // Update alt_text and alt_text_translations if explicitly provided
         if (altText !== undefined) {
-          updateData.alt_text = altText;
+          // Always update alt_text_translations with the language-specific value
+          const existingTranslations = (existing.alt_text_translations as Record<string, string>) || {};
+          updateData.alt_text_translations = {
+            ...existingTranslations,
+            [normalizedLang]: altText
+          };
+          
+          // Also update legacy alt_text field if language is English
+          if (normalizedLang === 'en') {
+            updateData.alt_text = altText;
+          }
         }
         
         const { error: updateError } = await supabase
@@ -121,12 +135,18 @@ export async function updateSegmentMapping(
       const insertData: any = {
         file_path: filePath,
         bucket_id: bucketId,
-        segment_ids: [segmentIdStr]
+        segment_ids: [segmentIdStr],
+        alt_text_translations: {}
       };
       
       // Include alt_text if provided
       if (altText !== undefined) {
-        insertData.alt_text = altText;
+        insertData.alt_text_translations = { [normalizedLang]: altText };
+        
+        // Also set legacy alt_text field if English
+        if (normalizedLang === 'en') {
+          insertData.alt_text = altText;
+        }
       }
       
       const { error: insertError } = await supabase
