@@ -24,6 +24,7 @@ import {
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
+import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
 
 interface ProductImage {
   imageUrl: string;
@@ -554,11 +555,24 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
       if (error) throw error;
 
+      // Sync alt texts bidirectionally to Media Management
+      for (const img of localData.images) {
+        if (img.imageUrl && img.metadata?.altText) {
+          await syncAltTextToMediaManagement(
+            img.imageUrl,
+            img.metadata.altText,
+            language,
+            'page-images',
+            false
+          );
+        }
+      }
+      
       // Update segment mappings for all gallery images with alt text
       const imageUrls = localData.images.map(img => img.imageUrl).filter(Boolean);
       const altTexts = localData.images.map(img => img.metadata?.altText || '');
       if (imageUrls.length > 0) {
-        await updateMultipleSegmentMappings(imageUrls, segmentId, 'page-images', true, altTexts);
+        await updateMultipleSegmentMappings(imageUrls, segmentId, 'page-images', false, altTexts);
       }
 
       // Also update tab_order if needed

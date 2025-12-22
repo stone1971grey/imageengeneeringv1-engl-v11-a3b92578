@@ -329,19 +329,20 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       // Extract numeric segment ID for mapping
       const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
       
-      // Update segment mappings and sync alt-texts bidirectionally (only for English to avoid duplicates)
-      if (numericSegmentId > 0 && language === 'en') {
+      // Update segment mappings and sync alt-texts bidirectionally
+      if (numericSegmentId > 0) {
         // Sync hero image alt-text
         if (heroImageUrl && heroImageMetadata?.altText) {
           await syncAltTextToMediaManagement(
             heroImageUrl,
-            String(numericSegmentId),
             heroImageMetadata.altText,
+            language,
             'page-images',
             false
           );
-        } else if (heroImageUrl) {
-          await updateSegmentMapping(heroImageUrl, numericSegmentId, 'page-images', false);
+        }
+        if (heroImageUrl) {
+          await updateSegmentMapping(heroImageUrl, numericSegmentId, 'page-images', false, heroImageMetadata?.altText, language);
         }
         
         // Sync item images alt-texts
@@ -349,17 +350,18 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
           if (item.imageUrl && item.metadata?.altText) {
             await syncAltTextToMediaManagement(
               item.imageUrl,
-              String(numericSegmentId),
               item.metadata.altText,
+              language,
               'page-images',
               false
             );
-          } else if (item.imageUrl) {
-            await updateSegmentMapping(item.imageUrl, numericSegmentId, 'page-images', false);
+          }
+          if (item.imageUrl) {
+            await updateSegmentMapping(item.imageUrl, numericSegmentId, 'page-images', false, item.metadata?.altText, language);
           }
         }
         
-        console.log(`[ImageTextEditor] Synced alt-texts and segment mappings for segment #${numericSegmentId}`);
+        console.log(`[ImageTextEditor] Synced alt-texts and segment mappings for segment #${numericSegmentId} (${language})`);
       }
 
       toast.success(`Image & Text saved for ${language.toUpperCase()}!`);

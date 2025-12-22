@@ -11,6 +11,7 @@ import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { syncAltTextToMediaManagement } from "@/utils/syncAltTextToMediaManagement";
 import { createContentBackup } from "@/utils/createContentBackup";
 
 interface ProductHeroEditorProps {
@@ -409,9 +410,18 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       if (error) throw error;
 
-      // Update segment mapping if image is present (with alt text)
+      // Update segment mapping and sync alt text bidirectionally
       if (imageUrl) {
-        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageMetadata?.altText || undefined);
+        if (imageMetadata?.altText) {
+          await syncAltTextToMediaManagement(
+            imageUrl,
+            imageMetadata.altText,
+            language,
+            'page-images',
+            false
+          );
+        }
+        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageMetadata?.altText, language);
       }
 
       // Also update tab_order if needed
