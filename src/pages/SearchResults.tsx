@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download, Lock } from 'lucide-react';
+import { Search, FileText, Newspaper, Calendar, ChevronRight, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -114,7 +114,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: 'Registrierung erforderlich',
+      registration: 'Kostenlos mit Anmeldung',
     },
     en: {
       title: 'Search Results',
@@ -129,7 +129,7 @@ const SearchResults = () => {
       news: 'News',
       events: 'Events',
       downloads: 'Downloads',
-      registration: 'Registration required',
+      registration: 'Free with signup',
     },
     zh: {
       title: '搜索结果',
@@ -144,7 +144,7 @@ const SearchResults = () => {
       news: '新闻',
       events: '活动',
       downloads: '下载',
-      registration: '需要注册',
+      registration: '免费注册获取',
     },
     ja: {
       title: '検索結果',
@@ -159,7 +159,7 @@ const SearchResults = () => {
       news: 'ニュース',
       events: 'イベント',
       downloads: 'ダウンロード',
-      registration: '登録が必要',
+      registration: '無料登録で入手',
     },
     ko: {
       title: '검색 결과',
@@ -174,7 +174,7 @@ const SearchResults = () => {
       news: '뉴스',
       events: '이벤트',
       downloads: '다운로드',
-      registration: '등록 필요',
+      registration: '무료 가입으로 이용',
     },
   };
 
@@ -273,8 +273,7 @@ const SearchResults = () => {
                               {getCategoryLabel(result.category)}
                             </Badge>
                             {result.requiresRegistration && (
-                              <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                                <Lock className="h-3 w-3" />
+                              <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
                                 {texts.registration}
                               </span>
                             )}

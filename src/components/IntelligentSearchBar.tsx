@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, FileText, Newspaper, Calendar, ChevronRight, Download, Lock } from "lucide-react";
+import { Search, X, FileText, Newspaper, Calendar, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -138,11 +138,11 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
 
   const getRegistrationLabel = () => {
     const labels: Record<string, string> = {
-      de: 'Registrierung erforderlich',
-      en: 'Registration required',
-      zh: '需要注册',
-      ja: '登録が必要',
-      ko: '등록 필요',
+      de: 'Kostenlos mit Anmeldung',
+      en: 'Free with signup',
+      zh: '免费注册获取',
+      ja: '無料登録で入手',
+      ko: '무료 가입으로 이용',
     };
     return labels[language] || labels['en'];
   };
@@ -226,11 +226,10 @@ const IntelligentSearchBar = ({ variant = 'desktop', onClose }: SearchBarProps) 
                       {result.title}
                     </span>
                     
-                    {/* Registration required badge for private downloads */}
+                    {/* Free with signup badge for private downloads */}
                     {result.requiresRegistration && (
-                      <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                        <Lock className="h-3 w-3" />
-                        {variant !== 'mobile' && <span>{getRegistrationLabel()}</span>}
+                      <span className="text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                        {getRegistrationLabel()}
                       </span>
                     )}
                     
