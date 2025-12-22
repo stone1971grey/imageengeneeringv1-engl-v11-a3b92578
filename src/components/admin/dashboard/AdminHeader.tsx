@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +15,40 @@ import { PageInfo } from '@/components/admin/dashboard/pageRegistryUtils';
 import { DESIGN_ICON_OPTIONS } from '@/components/admin/dashboard/AdminConstants';
 import { LucideIcon } from "lucide-react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+
+// Collapsible Section Component for grouped buttons
+interface CollapsibleSectionProps {
+  title: string;
+  icon: LucideIcon;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  colorClass?: string;
+}
+
+const CollapsibleSection = ({ title, icon: Icon, children, defaultOpen = false, colorClass = "bg-gray-800" }: CollapsibleSectionProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      <CollapsibleTrigger asChild>
+        <button
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-lg ${colorClass} text-white font-medium transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500`}
+        >
+          <div className="flex items-center gap-3">
+            <Icon className="h-5 w-5" />
+            <span>{title}</span>
+          </div>
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="pt-3 pb-1 px-2">
+        <div className="flex flex-wrap gap-2">
+          {children}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 interface AdminHeaderProps {
   isAdmin: boolean;
@@ -174,15 +210,6 @@ export const AdminHeader = ({
           <DataHubDialog />
           
           <Button
-            variant="default"
-            onClick={handlePreview}
-            className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
-          >
-            <Eye className="h-4 w-4" />
-            Preview
-          </Button>
-          
-          <Button
             onClick={() => navigate(`/${language}/admin-dashboard`)}
             variant="outline"
             size="icon"
@@ -193,24 +220,6 @@ export const AdminHeader = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
           </Button>
-          
-          <Button
-            onClick={onCreatePageClick}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Create Page
-          </Button>
-          
-          {selectedPage && pageInfo && (
-            <Button
-              onClick={onCopyPageClick}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-            >
-              <Copy className="h-4 w-4" />
-              Copy Page
-            </Button>
-          )}
         </div>
 
         {/* Page Info Display */}
@@ -286,113 +295,196 @@ export const AdminHeader = ({
               )}
             </div>
 
-            {selectedPage && pageInfo && (
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <Button
-                  variant="decision"
-                  className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
-                  onClick={onAddSegmentClick}
-                >
-                  <Layers className="h-4 w-4" />
-                  Add New Segment
-                </Button>
-
-                <Button
-                  variant="decision"
-                  className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
-                  disabled={!hasDesignButtons}
-                  title={!hasDesignButtons ? 'Design elements are only available for second and third-level navigation pages' : undefined}
-                  onClick={onDesignElementClick}
-                >
-                  <Palette className="h-4 w-4" />
-                  Navigation Design
-                </Button>
-
-                <Button
-                  variant="decision"
-                  className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
-                  disabled={!hasDesignButtons}
-                  title={!hasDesignButtons ? 'Navigation CTAs are only available for second and third-level navigation pages' : undefined}
-                  onClick={onCtaClick}
-                >
-                  <Zap className="h-4 w-4" />
-                  Navigation CTA
-                </Button>
-
-                <ShortcutEditor
-                  pageId={pageInfo.pageId}
-                  pageSlug={pageInfo.pageSlug}
-                  pageTitle={pageInfo.pageTitle}
-                  currentTargetSlug={pageInfo.targetPageSlug || null}
-                  onShortcutUpdated={loadPageInfo}
-                />
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Management Buttons */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          {(isAdmin || allowedPages.includes('news') || allowedPages.includes('__all__')) && (
-            <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90 shadow-soft hover:shadow-lg"
-              onClick={() => navigate(`/${language}/admin-dashboard/news`)}
+        {/* Collapsible Sections for organized button groups */}
+        <div className="mt-6 space-y-3">
+          {/* 1. Unified Smart Search */}
+          <CollapsibleSection 
+            title="Unified Smart Search" 
+            icon={Search} 
+            colorClass="bg-gradient-to-r from-blue-600 to-cyan-600"
+            defaultOpen={false}
+          >
+            <div className="w-full p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800 mb-3">
+                <strong>Unified Smart Search</strong> durchsucht alle CMS-Inhalte in Echtzeit:
+              </p>
+              <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+                <li>CMS-Seiten (page_registry)</li>
+                <li>Produkte (products table)</li>
+                <li>News-Artikel (news_articles)</li>
+                <li>Events (events table)</li>
+                <li>Downloads (downloads table)</li>
+              </ul>
+              <p className="text-xs text-blue-600 mt-3 italic">
+                Die Suche ist in der Navigation und auf der Suchergebnisseite verfügbar.
+              </p>
+            </div>
+          </CollapsibleSection>
+
+          {/* 2. Page Actions */}
+          {selectedPage && pageInfo && (
+            <CollapsibleSection 
+              title="Page Actions" 
+              icon={Layers} 
+              colorClass="bg-gradient-to-r from-orange-500 to-amber-500"
+              defaultOpen={true}
             >
-              <Newspaper className="h-4 w-4" />
-              Manage News
-            </Button>
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
+                onClick={onAddSegmentClick}
+              >
+                <Layers className="h-4 w-4" />
+                Add Segment
+              </Button>
+
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
+                disabled={!hasDesignButtons}
+                title={!hasDesignButtons ? 'Design elements are only available for second and third-level navigation pages' : undefined}
+                onClick={onDesignElementClick}
+              >
+                <Palette className="h-4 w-4" />
+                Navigation Design
+              </Button>
+
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
+                disabled={!hasDesignButtons}
+                title={!hasDesignButtons ? 'Navigation CTAs are only available for second and third-level navigation pages' : undefined}
+                onClick={onCtaClick}
+              >
+                <Zap className="h-4 w-4" />
+                Navigation CTA
+              </Button>
+
+              <ShortcutEditor
+                pageId={pageInfo.pageId}
+                pageSlug={pageInfo.pageSlug}
+                pageTitle={pageInfo.pageTitle}
+                currentTargetSlug={pageInfo.targetPageSlug || null}
+                onShortcutUpdated={loadPageInfo}
+              />
+            </CollapsibleSection>
           )}
-          {(isAdmin || allowedPages.includes('events') || allowedPages.includes('__all__')) && (
+
+          {/* 3. Content Management */}
+          <CollapsibleSection 
+            title="Content Management" 
+            icon={Database} 
+            colorClass="bg-gradient-to-r from-emerald-600 to-teal-600"
+            defaultOpen={false}
+          >
+            {(isAdmin || allowedPages.includes('news') || allowedPages.includes('__all__')) && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => navigate(`/${language}/admin-dashboard/news`)}
+              >
+                <Newspaper className="h-4 w-4" />
+                News
+              </Button>
+            )}
+            {(isAdmin || allowedPages.includes('events') || allowedPages.includes('__all__')) && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--events-button))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--events-button))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => navigate(`/${language}/admin-dashboard/events`)}
+              >
+                <Calendar className="h-4 w-4" />
+                Events
+              </Button>
+            )}
+            {(isAdmin || allowedPages.includes('products') || allowedPages.includes('__all__')) && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--accent-blue))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-blue))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => navigate(`/${language}/admin-dashboard/products`)}
+              >
+                <Target className="h-4 w-4" />
+                Products
+              </Button>
+            )}
+            {(isAdmin || allowedPages.includes('downloads') || allowedPages.includes('__all__')) && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(180_60%_45%)] text-white hover:bg-[hsl(180_60%_40%)] shadow-soft hover:shadow-lg"
+                onClick={() => navigate(`/${language}/admin-dashboard/downloads`)}
+              >
+                <Download className="h-4 w-4" />
+                Downloads
+              </Button>
+            )}
+          </CollapsibleSection>
+
+          {/* 4. Settings */}
+          <CollapsibleSection 
+            title="Settings" 
+            icon={Settings} 
+            colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
+            defaultOpen={false}
+          >
+            {isAdmin && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+              >
+                <Eye className="h-4 w-4" />
+                SEO Settings
+              </Button>
+            )}
+            {(isAdmin || allowedPages.includes('glossary')) && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--accent-violet))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent-violet))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
+              >
+                <Book className="h-4 w-4" />
+                Glossary
+              </Button>
+            )}
+          </CollapsibleSection>
+
+          {/* 5. Page Tools */}
+          <CollapsibleSection 
+            title="Page Tools" 
+            icon={FileText} 
+            colorClass="bg-gradient-to-r from-purple-600 to-pink-600"
+            defaultOpen={false}
+          >
             <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(var(--events-button))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--events-button))]/90 shadow-soft hover:shadow-lg"
-              onClick={() => navigate(`/${language}/admin-dashboard/events`)}
-            >
-              <Calendar className="h-4 w-4" />
-              Manage Events
-            </Button>
-          )}
-          {(isAdmin || allowedPages.includes('products') || allowedPages.includes('__all__')) && (
-            <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(var(--accent-blue))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-blue))]/90 shadow-soft hover:shadow-lg"
-              onClick={() => navigate(`/${language}/admin-dashboard/products`)}
-            >
-              <Target className="h-4 w-4" />
-              Manage Products
-            </Button>
-          )}
-          {(isAdmin || allowedPages.includes('downloads') || allowedPages.includes('__all__')) && (
-            <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(180_60%_45%)] text-white hover:bg-[hsl(180_60%_40%)] shadow-soft hover:shadow-lg"
-              onClick={() => navigate(`/${language}/admin-dashboard/downloads`)}
-            >
-              <Download className="h-4 w-4" />
-              Manage Downloads
-            </Button>
-          )}
-          {isAdmin && (
-            <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
-              onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+              variant="default"
+              onClick={handlePreview}
+              className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              SEO Settings
+              Preview
             </Button>
-          )}
-          {(isAdmin || allowedPages.includes('glossary')) && (
+            
             <Button
-              variant="decision"
-              className="flex items-center gap-2 bg-[hsl(var(--accent-violet))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent-violet))]/90 shadow-soft hover:shadow-lg"
-              onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
+              onClick={onCreatePageClick}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
             >
-              <Book className="h-4 w-4" />
-              Translation Glossary
+              <Plus className="h-4 w-4" />
+              Create Page
             </Button>
-          )}
+            
+            {selectedPage && pageInfo && (
+              <Button
+                onClick={onCopyPageClick}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copy Page
+              </Button>
+            )}
+          </CollapsibleSection>
         </div>
       </div>
     </div>
