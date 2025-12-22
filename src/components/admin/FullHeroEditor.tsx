@@ -836,34 +836,45 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         console.log(`✅ Added segment ${segmentIdStr} to tab_order`);
       }
 
-      // Sync alt text bidirectionally to Media Management (only for English)
-      if (backgroundType === 'image' && imageUrl && language === 'en') {
+      // Sync alt text bidirectionally to Media Management
+      // The function signature is: syncAltTextToMediaManagement(imageUrl, altText, language, bucketId, showToast)
+      if (backgroundType === 'image' && imageUrl) {
         if (imageAlt) {
-          await syncAltTextToMediaManagement(
+          console.log(`🔄 Syncing image alt text to Media Management: "${imageAlt}" for language "${language}"`);
+          const success = await syncAltTextToMediaManagement(
             imageUrl,
-            String(segmentId),
             imageAlt,
+            language, // Pass the current language
             'page-images',
             false
           );
-        } else {
-          await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+          if (success) {
+            console.log(`✅ Alt text synced successfully for ${imageUrl}`);
+          } else {
+            console.warn(`⚠️ Failed to sync alt text for ${imageUrl}`);
+          }
         }
+        // Always update segment mapping to track which segments use this image
+        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageAlt, language);
       }
       
-      // Sync video description bidirectionally to Media Management (only for English)
-      if (backgroundType === 'video' && videoUrl && language === 'en') {
+      // Sync video description bidirectionally to Media Management
+      if (backgroundType === 'video' && videoUrl) {
         if (videoAlt) {
-          await syncAltTextToMediaManagement(
+          console.log(`🔄 Syncing video alt text to Media Management: "${videoAlt}" for language "${language}"`);
+          const success = await syncAltTextToMediaManagement(
             videoUrl,
-            String(segmentId),
             videoAlt,
+            language, // Pass the current language
             'page-images',
             false
           );
-        } else {
-          await updateSegmentMapping(videoUrl, segmentId, 'page-images', false);
+          if (success) {
+            console.log(`✅ Video alt text synced successfully for ${videoUrl}`);
+          }
         }
+        // Always update segment mapping
+        await updateSegmentMapping(videoUrl, segmentId, 'page-images', false, videoAlt, language);
       }
 
       // After successful EN save, sync to other languages
