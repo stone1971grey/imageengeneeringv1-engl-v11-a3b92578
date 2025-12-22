@@ -797,6 +797,45 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         return;
       }
 
+      // CRITICAL: Ensure this segment's ID is in tab_order so it gets rendered
+      const { data: tabOrderData } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "tab_order")
+        .eq("language", language)
+        .maybeSingle();
+
+      let currentTabOrder: string[] = [];
+      if (tabOrderData?.content_value) {
+        try {
+          currentTabOrder = JSON.parse(tabOrderData.content_value);
+        } catch (e) {
+          console.error("Error parsing tab_order:", e);
+          currentTabOrder = [];
+        }
+      }
+
+      // Check if this segment's ID is in the tab_order
+      const segmentIdStr = String(segmentId);
+      if (!currentTabOrder.includes(segmentIdStr)) {
+        // Add this segment to the beginning of tab_order (Full Hero should be first)
+        const newTabOrder = [segmentIdStr, ...currentTabOrder];
+        
+        await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: pageSlug,
+            section_key: "tab_order",
+            content_type: "json",
+            content_value: JSON.stringify(newTabOrder),
+            language: language,
+            updated_by: (await supabase.auth.getUser()).data.user?.id,
+          }, { onConflict: 'page_slug,section_key,language' });
+        
+        console.log(`✅ Added segment ${segmentIdStr} to tab_order`);
+      }
+
       // Sync alt text bidirectionally to Media Management (only for English)
       if (backgroundType === 'image' && imageUrl && language === 'en') {
         if (imageAlt) {
