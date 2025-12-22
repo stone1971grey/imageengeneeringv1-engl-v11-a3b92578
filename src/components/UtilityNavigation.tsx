@@ -158,7 +158,7 @@ const UtilityNavigation = () => {
       {/* Expandable Search with Autocomplete */}
       <div 
         ref={containerRef} 
-        className="relative"
+        className="relative h-10"
         style={{ width: '40px' }}
       >
         <form 
