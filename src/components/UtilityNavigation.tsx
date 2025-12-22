@@ -232,9 +232,9 @@ const UtilityNavigation = () => {
           <div 
             className="absolute w-[420px] bg-[#f5f5f5] border-2 border-white rounded-xl shadow-2xl z-[100] max-h-[480px] overflow-y-auto"
             style={{
-              top: 'calc(100% + 16px)',
-              right: '0',
-              left: 'auto',
+              top: 'calc(100% + 20px)',
+              left: '0',
+              right: 'auto',
             }}
           >
             {isLoading ? (
