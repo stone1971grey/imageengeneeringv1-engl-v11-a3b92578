@@ -1,7 +1,14 @@
 // CMS Page Creation Utilities
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { INDUSTRY_PARENT_CATEGORY_BY_SLUG, PRODUCTS_PARENT_CATEGORY_BY_SLUG, COMPANY_PARENT_CATEGORY_BY_SLUG } from './AdminConstants';
+import { 
+  INDUSTRY_PARENT_CATEGORY_BY_SLUG, 
+  PRODUCTS_PARENT_CATEGORY_BY_SLUG, 
+  COMPANY_PARENT_CATEGORY_BY_SLUG,
+  TEST_LAB_PARENT_CATEGORY_BY_SLUG,
+  TRAINING_EVENTS_PARENT_CATEGORY_BY_SLUG,
+  INFO_HUB_PARENT_CATEGORY_BY_SLUG
+} from './AdminConstants';
 
 interface CreateCMSPageParams {
   slug: string;
@@ -236,6 +243,18 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
         navCategory = 'products';
         navParentCategory = PRODUCTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
         flyoutName = 'Products';
+      } else if (TEST_LAB_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'testServices';
+        navParentCategory = TEST_LAB_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Test Lab';
+      } else if (TRAINING_EVENTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'training-events';
+        navParentCategory = TRAINING_EVENTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Training & Events';
+      } else if (INFO_HUB_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'info-hub';
+        navParentCategory = INFO_HUB_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Info Hub';
       } else if (COMPANY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
         navCategory = 'company';
         navParentCategory = COMPANY_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
