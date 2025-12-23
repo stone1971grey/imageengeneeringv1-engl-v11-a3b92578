@@ -739,7 +739,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       <Card className="bg-gray-700 border-gray-600">
         <CardContent className="pt-6 space-y-4">
           <div>
-            <Label htmlFor={`imagetext-title-${language}`} className="text-white">Section Title</Label>
+            <Label htmlFor={`imagetext-title-${language}`} className="text-white">Section Title (H2)</Label>
             <Input
               id={`imagetext-title-${language}`}
               value={title}

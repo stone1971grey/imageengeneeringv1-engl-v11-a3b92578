@@ -297,7 +297,7 @@ const VideoSegmentEditorComponent = ({
       )}
 
       <div>
-        <Label htmlFor="video-title">Section Title</Label>
+        <Label htmlFor="video-title">Section Title (H2)</Label>
         <Input
           id="video-title"
           value={localData.title || ''}

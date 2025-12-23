@@ -275,7 +275,7 @@ const BannerPEditorComponent = ({
       <div className="space-y-6 bg-white p-6 rounded-lg border border-purple-200">
         {/* Title */}
         <div>
-          <Label className="font-medium">Banner Title</Label>
+          <Label className="font-medium">Banner Title (H2)</Label>
           <Input
             value={data.title || ''}
             onChange={(e) => onChange({ ...data, title: e.target.value })}
