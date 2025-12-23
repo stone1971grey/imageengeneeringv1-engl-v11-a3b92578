@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { X, Trash2, Loader2 } from "lucide-react";
@@ -37,7 +37,6 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'xlarge'>('medium');
   const [imageMaxWidth, setImageMaxWidth] = useState<number | null>(null);
   const [imageMaxHeight, setImageMaxHeight] = useState<number | null>(null);
-  const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(false);
   const [isRemovingBackground, setIsRemovingBackground] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -758,65 +757,53 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
           </div>
 
           <div className="mt-6">
-            {/* Background Removal Toggle - Only show for EN since images are shared */}
-            {language === 'en' && (
-              <Button
-                type="button"
-                onClick={() => setRemoveBackgroundEnabled(!removeBackgroundEnabled)}
-                className={`w-full justify-start gap-3 h-auto py-4 px-5 mb-4 text-left ${
-                  removeBackgroundEnabled 
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30' 
-                    : 'bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-gray-300'
-                }`}
-              >
-                <Checkbox
-                  checked={removeBackgroundEnabled}
-                  onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-purple-600 h-5 w-5 pointer-events-none"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 text-base font-semibold">
-                    <GeminiIcon className="w-5 h-5" /> Auto-Remove Background (AI)
-                  </div>
-                  <p className={`text-sm mt-1 ${removeBackgroundEnabled ? 'text-white/80' : 'text-gray-400'}`}>
-                    Automatically removes the background when uploading a new image
-                  </p>
-                </div>
-                {isRemovingBackground && (
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                )}
-              </Button>
-            )}
-
             <MediaSelector
-              onFileSelect={async (file) => {
-                if (removeBackgroundEnabled) {
-                  setIsRemovingBackground(true);
-                  try {
-                    toast.info("Loading AI model for background removal...");
-                    const imgElement = await loadImageFromFile(file);
-                    const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
-                    // Create a new file from the blob with PNG extension
-                    const newFileName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
-                    const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
-                    toast.success("Background removed successfully!");
-                    await handleImageUpload(newFile);
-                  } catch (error: any) {
-                    console.error('Background removal failed:', error);
-                    toast.error("Background removal failed. Uploading original image...");
-                    await handleImageUpload(file);
-                  } finally {
-                    setIsRemovingBackground(false);
-                  }
-                } else {
-                  await handleImageUpload(file);
-                }
-              }}
+              onFileSelect={async (file) => await handleImageUpload(file)}
               onMediaSelect={handleMediaSelect}
               acceptedFileTypes="image/*"
               label="Hero Image"
               currentImageUrl={imageUrl}
             />
+            
+            {/* AI Background Removal Button - Only show when image exists and in EN */}
+            {imageUrl && language === 'en' && (
+              <Button
+                type="button"
+                onClick={async () => {
+                  setIsRemovingBackground(true);
+                  try {
+                    toast.info("Loading AI model for background removal...");
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+                    const imgElement = await loadImageFromUrl(imageUrl);
+                    const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
+                    const newFileName = 'hero_image_nobg.png';
+                    const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
+                    toast.success("Background removed successfully!");
+                    await handleImageUpload(newFile);
+                  } catch (error: any) {
+                    console.error('Background removal failed:', error);
+                    toast.error("Background removal failed: " + error.message);
+                  } finally {
+                    setIsRemovingBackground(false);
+                  }
+                }}
+                disabled={isRemovingBackground}
+                className="w-full mt-3 justify-center gap-3 h-auto py-3 px-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30 text-base font-semibold"
+              >
+                {isRemovingBackground ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Removing Background...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="w-5 h-5" />
+                    Remove Background (AI)
+                  </>
+                )}
+              </Button>
+            )}
             
             {imageMetadata && (
               <div className="mt-3 text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">

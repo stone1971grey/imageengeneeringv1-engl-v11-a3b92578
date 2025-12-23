@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { Plus, Trash2, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -26,7 +26,7 @@ import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate }
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
-import { removeBackground, loadImageFromFile } from "@/utils/removeImageBackground";
+import { removeBackground, loadImageFromFile, loadImageFromUrl } from "@/utils/removeImageBackground";
 
 interface ProductImage {
   imageUrl: string;
@@ -69,8 +69,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(false);
-  const [isRemovingBackground, setIsRemovingBackground] = useState(false);
+  const [removingBackgroundIndex, setRemovingBackgroundIndex] = useState<number | null>(null);
   
   // Initialize with default data structure - do NOT use data prop to avoid shared state
   const [localData, setLocalData] = useState<ProductHeroGalleryData>({
@@ -915,36 +914,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Button>
             </div>
 
-            {/* Background Removal Toggle - Only show for EN since images are shared */}
-            {language === 'en' && (
-              <Button
-                type="button"
-                onClick={() => setRemoveBackgroundEnabled(!removeBackgroundEnabled)}
-                className={`w-full justify-start gap-3 h-auto py-4 px-5 text-left ${
-                  removeBackgroundEnabled 
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30' 
-                    : 'bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-gray-300'
-                }`}
-              >
-                <Checkbox
-                  checked={removeBackgroundEnabled}
-                  onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-purple-600 h-5 w-5 pointer-events-none"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 text-base font-semibold">
-                    <GeminiIcon className="w-5 h-5" /> Auto-Remove Background (AI)
-                  </div>
-                  <p className={`text-sm mt-1 ${removeBackgroundEnabled ? 'text-white/80' : 'text-gray-400'}`}>
-                    Automatically removes the background when uploading new images
-                  </p>
-                </div>
-                {isRemovingBackground && (
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                )}
-              </Button>
-            )}
-
             {localData.images.map((image, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
@@ -959,33 +928,50 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 </div>
 
                 <MediaSelector
-                  onFileSelect={async (file) => {
-                    if (removeBackgroundEnabled) {
-                      setIsRemovingBackground(true);
-                      try {
-                        toast.info("Loading AI model for background removal...");
-                        const imgElement = await loadImageFromFile(file);
-                        const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
-                        const newFileName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
-                        const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
-                        toast.success("Background removed successfully!");
-                        await handleImageUpload(index, newFile);
-                      } catch (error: any) {
-                        console.error('Background removal failed:', error);
-                        toast.error("Background removal failed. Uploading original image...");
-                        await handleImageUpload(index, file);
-                      } finally {
-                        setIsRemovingBackground(false);
-                      }
-                    } else {
-                      await handleImageUpload(index, file);
-                    }
-                  }}
+                  onFileSelect={async (file) => await handleImageUpload(index, file)}
                   onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
                   acceptedFileTypes="image/*"
                   label={`Gallery Image ${index + 1}`}
                   currentImageUrl={image.imageUrl}
                 />
+
+                {/* AI Background Removal Button - Individual per image, only in EN */}
+                {image.imageUrl && language === 'en' && (
+                  <Button
+                    type="button"
+                    onClick={async () => {
+                      setRemovingBackgroundIndex(index);
+                      try {
+                        toast.info("Loading AI model for background removal...");
+                        const imgElement = await loadImageFromUrl(image.imageUrl);
+                        const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
+                        const newFileName = `gallery_image_${index + 1}_nobg.png`;
+                        const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
+                        toast.success("Background removed successfully!");
+                        await handleImageUpload(index, newFile);
+                      } catch (error: any) {
+                        console.error('Background removal failed:', error);
+                        toast.error("Background removal failed: " + error.message);
+                      } finally {
+                        setRemovingBackgroundIndex(null);
+                      }
+                    }}
+                    disabled={removingBackgroundIndex !== null}
+                    className="w-full justify-center gap-3 h-auto py-3 px-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30 text-base font-semibold"
+                  >
+                    {removingBackgroundIndex === index ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Removing Background...
+                      </>
+                    ) : (
+                      <>
+                        <GeminiIcon className="w-5 h-5" />
+                        Remove Background (AI)
+                      </>
+                    )}
+                  </Button>
+                )}
 
                 {/* Image Metadata Display */}
                 {image.metadata && (
