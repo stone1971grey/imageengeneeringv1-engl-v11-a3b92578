@@ -424,7 +424,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             onClick={() => setHealthCheckView('basic')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               healthCheckView === 'basic' 
-                ? 'bg-training-button text-black' 
+                ? 'bg-[#f9dc24] text-black' 
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -434,7 +434,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             onClick={() => setHealthCheckView('advanced')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               healthCheckView === 'advanced' 
-                ? 'bg-training-button text-black' 
+                ? 'bg-[#f9dc24] text-black' 
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -527,9 +527,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted">
-          <TabsTrigger value="basics" className="data-[state=active]:bg-training-button data-[state=active]:text-black">Basics</TabsTrigger>
-          <TabsTrigger value="social" className="data-[state=active]:bg-training-button data-[state=active]:text-black">Social Media</TabsTrigger>
-          <TabsTrigger value="advanced" className="data-[state=active]:bg-training-button data-[state=active]:text-black">Advanced</TabsTrigger>
+          <TabsTrigger value="basics" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
+          <TabsTrigger value="social" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
+          <TabsTrigger value="advanced" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Advanced</TabsTrigger>
         </TabsList>
 
         {/* Basics Tab */}
