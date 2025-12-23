@@ -182,25 +182,16 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   const imageGallery = (
     <div className="relative">
       <div 
-        className="relative rounded-lg shadow-soft group cursor-pointer" 
+        className="relative group cursor-pointer" 
         onClick={() => setIsModalOpen(true)}
         style={imageMaxWidth || imageMaxHeight ? { display: 'flex', justifyContent: 'center' } : {}}
       >
-        {/* Animated glow effect behind image */}
-        <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
-        
         <img 
           src={data.images[currentImageIndex]?.imageUrl} 
           alt={data.images[currentImageIndex]?.title || data.title}
           className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
           style={imageStyle}
         />
-        
-        {/* Subtle overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
-        
-        {/* Moving light beam effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
         
         {/* Expand Icon Overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
@@ -254,13 +245,8 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   return (
     <section
       id={id}
-      className={`min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden ${getTopPaddingClass()} pb-4`}
+      className={`min-h-[60vh] bg-white font-roboto relative overflow-hidden ${getTopPaddingClass()} pb-4`}
     >
-      {/* Animated background light effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-      </div>
       
       <div className="container mx-auto px-6 relative z-10">
         <div className={`grid ${getLayoutClasses()} gap-16 items-center`}>
