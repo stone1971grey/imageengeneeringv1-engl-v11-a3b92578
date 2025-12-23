@@ -6,7 +6,8 @@ import {
   GripVertical, Shield, Type, LayoutGrid, PlayCircle,
   ListChecks, Table2, HelpCircle, FileText, Building2,
   Navigation2, Images, Monitor, Zap, Image as ImageIcon,
-  SplitSquareVertical, List, PanelBottom, History as HistoryIcon
+  SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
+  Search
 } from "lucide-react";
 import lovableIcon from "@/assets/lovable-icon.png";
 
@@ -61,6 +62,7 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               <FeatureItem icon={Eye} label="SEO Suite" />
               <FeatureItem icon={Shield} label="User Management" />
               <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
+              <FeatureItem icon={Search} label="Smart Search" />
             </div>
           </div>
         </CardContent>
