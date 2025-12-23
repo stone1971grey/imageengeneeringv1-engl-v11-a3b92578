@@ -245,10 +245,11 @@ const AdminDashboard = () => {
   // This runs after tabOrder is loaded
   useEffect(() => {
     const pageKey = selectedPage || 'index';
-    if (tabOrder.length > 0) {
+    const safeTabOrder = tabOrder || [];
+    if (safeTabOrder.length > 0) {
       const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
       console.log("[AdminDashboard] Restore check - pageKey:", pageKey, "savedTab:", savedTab, "currentActiveTab:", activeTab);
-      if (savedTab && tabOrder.includes(savedTab)) {
+      if (savedTab && safeTabOrder.includes(savedTab)) {
         console.log("[AdminDashboard] Restoring tab from sessionStorage:", savedTab);
         setActiveTabState(savedTab);
       }
@@ -275,12 +276,13 @@ const AdminDashboard = () => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
+    const safeTabOrder = tabOrder || [];
     // Calculate new order
-    const oldIndex = tabOrder.indexOf(String(active.id));
-    const newIndex = tabOrder.indexOf(String(over.id));
+    const oldIndex = safeTabOrder.indexOf(String(active.id));
+    const newIndex = safeTabOrder.indexOf(String(over.id));
     if (oldIndex === -1 || newIndex === -1) return;
     
-    const newOrder = arrayMove(tabOrder, oldIndex, newIndex);
+    const newOrder = arrayMove(safeTabOrder, oldIndex, newIndex);
     
     // Update local state immediately for responsive UI
     setTabOrder(newOrder);
@@ -638,31 +640,33 @@ const AdminDashboard = () => {
 
   // Sync tabOrder with pageSegments - ensure consistency
   useEffect(() => {
-    if (!user || !selectedPage || pageSegments.length === 0) return;
+    const safePageSegments = pageSegments || [];
+    const safeTabOrder = tabOrder || [];
+    if (!user || !selectedPage || safePageSegments.length === 0) return;
     
     // Get all current segment IDs from pageSegments (excluding ONLY meta-navigation which is fixed-position)
     // IMPORTANT: full-hero MUST be included in tab_order to be rendered!
-    const segmentIds = pageSegments
-      .filter(seg => seg.type !== 'meta-navigation')
+    const segmentIds = safePageSegments
+      .filter(seg => seg && seg.type !== 'meta-navigation')
       .map(seg => seg.id);
     
     // Remove deleted/non-existent segments from tabOrder
-    const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
+    const validTabOrder = safeTabOrder.filter(id => segmentIds.includes(id));
     
     // Add any new segments that aren't in tabOrder yet (append to end)
     const missingSegments = segmentIds.filter(id => !validTabOrder.includes(id));
     
     // Only update if there are actual changes needed
-    const hasChanges = missingSegments.length > 0 || validTabOrder.length !== tabOrder.length;
+    const hasChanges = missingSegments.length > 0 || validTabOrder.length !== safeTabOrder.length;
     
     if (hasChanges) {
       const newOrder = [...validTabOrder, ...missingSegments];
       
       // Check if the order is actually different before updating
-      const isDifferent = JSON.stringify(newOrder) !== JSON.stringify(tabOrder);
+      const isDifferent = JSON.stringify(newOrder) !== JSON.stringify(safeTabOrder);
       
       if (isDifferent) {
-        console.log("Updating tabOrder due to segment changes:", { old: tabOrder, new: newOrder });
+        console.log("Updating tabOrder due to segment changes:", { old: safeTabOrder, new: newOrder });
         setTabOrder(newOrder);
         
         // Save to database
@@ -1483,11 +1487,11 @@ const AdminDashboard = () => {
             >
               <TabsList className="flex flex-wrap justify-start items-start w-full h-auto p-2 bg-gray-200 pl-3 gap-1">
                 {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
-                {pageSegments
-                  .filter(segment => segment.type === 'meta-navigation')
+                {(pageSegments || [])
+                  .filter(segment => segment && segment.type === 'meta-navigation')
                   .map((segment) => {
-                    const segmentIndex = pageSegments.indexOf(segment);
-                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
+                    const segmentIndex = (pageSegments || []).indexOf(segment);
+                    const sameTypeBefore = (pageSegments || []).slice(0, segmentIndex).filter(s => s && s.type === 'meta-navigation').length;
                     const displayNumber = sameTypeBefore + 1;
                     const segmentId = segmentRegistry[segment.id] || segment.id;
                     
@@ -1503,11 +1507,11 @@ const AdminDashboard = () => {
                   })}
 
                 {/* Full Hero - Fixed Position (After Meta Nav if exists, otherwise first) */}
-                {pageSegments
-                  .filter(segment => segment.type === 'full-hero')
+                {(pageSegments || [])
+                  .filter(segment => segment && segment.type === 'full-hero')
                   .map((segment) => {
-                    const segmentIndex = pageSegments.indexOf(segment);
-                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'full-hero').length;
+                    const segmentIndex = (pageSegments || []).indexOf(segment);
+                    const sameTypeBefore = (pageSegments || []).slice(0, segmentIndex).filter(s => s && s.type === 'full-hero').length;
                     const displayNumber = sameTypeBefore + 1;
                     const segmentId = segmentRegistry[segment.id] || segment.id;
                     
@@ -1523,11 +1527,11 @@ const AdminDashboard = () => {
                   })}
 
                 {/* Action Hero - Fixed Position (After Meta Nav / Full Hero, before other segments) */}
-                {pageSegments
-                  .filter(segment => segment.type === 'action-hero')
+                {(pageSegments || [])
+                  .filter(segment => segment && segment.type === 'action-hero')
                   .map((segment) => {
-                    const segmentIndex = pageSegments.indexOf(segment);
-                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'action-hero').length;
+                    const segmentIndex = (pageSegments || []).indexOf(segment);
+                    const sameTypeBefore = (pageSegments || []).slice(0, segmentIndex).filter(s => s && s.type === 'action-hero').length;
                     const displayNumber = sameTypeBefore + 1;
                     const segmentId = segmentRegistry[segment.id] || segment.id;
                     
@@ -1554,16 +1558,16 @@ const AdminDashboard = () => {
 
                 {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Action Hero, Hero, Footer, and Mini-Footer */}
                 <SortableContext
-                  items={tabOrder.filter(tabId => {
-                    const segment = pageSegments.find(s => s.id === tabId);
+                  items={(tabOrder || []).filter(tabId => {
+                    const segment = (pageSegments || []).find(s => s && s.id === tabId);
                     // Exclude meta-navigation, full-hero, action-hero, footer, and mini-footer from draggable section
                     return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer' && segment.type !== 'mini-footer');
                   })}
                   strategy={horizontalListSortingStrategy}
                 >
-                  {tabOrder
+                  {(tabOrder || [])
                     .filter(tabId => {
-                      const segment = pageSegments.find(s => s.id === tabId);
+                      const segment = (pageSegments || []).find(s => s && s.id === tabId);
                       // Exclude meta-navigation, full-hero, action-hero, footer, and mini-footer from draggable section
                       return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer' && segment.type !== 'mini-footer');
                     })
@@ -1592,10 +1596,10 @@ const AdminDashboard = () => {
                     }
                     
                     // Dynamic segment tabs (excluding meta-navigation which is already shown)
-                    const segment = pageSegments.find(s => s.id === tabId);
+                    const segment = (pageSegments || []).find(s => s && s.id === tabId);
                     if (segment) {
-                      const segmentIndex = pageSegments.indexOf(segment);
-                      const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
+                      const segmentIndex = (pageSegments || []).indexOf(segment);
+                      const sameTypeBefore = (pageSegments || []).slice(0, segmentIndex).filter(s => s && s.type === segment.type).length;
                       const displayNumber = sameTypeBefore + 1;
                       
                       const segmentId = segmentRegistry[tabId] || tabId;
@@ -1639,8 +1643,8 @@ const AdminDashboard = () => {
 
                 {/* Footer Tab - Fixed Right (show if footer exists AND mini-footer NOT active) */}
                 {(() => {
-                  const hasMiniFooter = pageSegments.some(s => s.type === 'mini-footer');
-                  const footerSegment = pageSegments.find(s => s.type === 'footer');
+                  const hasMiniFooter = (pageSegments || []).some(s => s && s.type === 'mini-footer');
+                  const footerSegment = (pageSegments || []).find(s => s && s.type === 'footer');
                   const footerId = segmentRegistry['footer'] || (footerSegment ? segmentRegistry[footerSegment.id] : null) || footerSegment?.id;
                   
                   // Only show regular footer tab if mini-footer is not active
@@ -1659,7 +1663,7 @@ const AdminDashboard = () => {
 
                 {/* Mini Footer Tab - Fixed Right (show if mini-footer is active) */}
                 {(() => {
-                  const miniFooterSegment = pageSegments.find(s => s.type === 'mini-footer');
+                  const miniFooterSegment = (pageSegments || []).find(s => s && s.type === 'mini-footer');
                   if (miniFooterSegment) {
                     const miniFooterId = segmentRegistry[miniFooterSegment.id] || miniFooterSegment.id;
                     return (
@@ -1684,8 +1688,8 @@ const AdminDashboard = () => {
                     }`}
                     onClick={() => {
                       // Toggle: if on history go back, otherwise go to history
-                      if (activeTab === "version-history" && tabOrder.length > 0) {
-                        setActiveTab(tabOrder[0]);
+                      if (activeTab === "version-history" && (tabOrder || []).length > 0) {
+                        setActiveTab((tabOrder || [])[0]);
                       } else {
                         setActiveTab("version-history");
                       }
