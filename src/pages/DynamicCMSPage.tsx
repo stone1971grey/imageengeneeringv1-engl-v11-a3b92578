@@ -773,11 +773,15 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
                 {segment.data?.hero_image_url && (
-                  <div className={segment.data?.hero_image_position === 'left' ? 'order-1 lg:order-1' : 'order-2 lg:order-2'}>
+                  <div className={`${segment.data?.hero_image_position === 'left' ? 'order-1 lg:order-1' : 'order-2 lg:order-2'} ${
+                    (segment.data.hero_image_max_width || segment.data.hero_image_max_height) 
+                      ? (segment.data?.hero_image_position === 'left' ? 'flex justify-start' : 'flex justify-end')
+                      : ''
+                  }`}>
                     <img
                       src={segment.data.hero_image_url}
                       alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
-                      className="w-full h-auto object-cover shadow-2xl"
+                      className={`h-auto object-contain ${(segment.data.hero_image_max_width || segment.data.hero_image_max_height) ? '' : 'w-full'}`}
                       style={{
                         ...(segment.data.hero_image_max_width ? { maxWidth: `${segment.data.hero_image_max_width}px` } : {}),
                         ...(segment.data.hero_image_max_height ? { maxHeight: `${segment.data.hero_image_max_height}px` } : {}),
