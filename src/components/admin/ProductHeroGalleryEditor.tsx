@@ -957,7 +957,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                       }
                     }}
                     disabled={removingBackgroundIndex !== null}
-                    className="w-full justify-center gap-3 h-auto py-3 px-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30 text-base font-semibold"
+                    className={`w-full justify-center gap-3 h-auto py-3 px-5 text-white text-base font-semibold ${
+                      removingBackgroundIndex !== null && removingBackgroundIndex !== index
+                        ? 'bg-gradient-to-r from-purple-600/50 to-pink-600/50 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/30'
+                    }`}
                   >
                     {removingBackgroundIndex === index ? (
                       <>

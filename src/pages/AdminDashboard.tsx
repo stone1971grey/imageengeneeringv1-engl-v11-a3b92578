@@ -241,8 +241,23 @@ const AdminDashboard = () => {
     }
   };
   
-  // Note: activeTab restoration from localStorage is handled in processLoadedContent (lines ~956-967)
-  // after tab_order is fully loaded from the database, not in a separate useEffect
+  // Restore activeTab from localStorage when tabOrder changes (e.g., after page load)
+  // This ensures the saved tab is restored even when navigating back to the page
+  useEffect(() => {
+    if (tabOrder.length > 0 && selectedPage) {
+      const pageKey = selectedPage || 'index';
+      const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
+      console.log("[AdminDashboard] Tab restore check - pageKey:", pageKey, "savedTab:", savedTab, "tabOrder:", tabOrder.slice(0, 3));
+      
+      if (savedTab && (tabOrder.includes(savedTab) || savedTab === "footer" || savedTab === "seo" || savedTab === "version-history")) {
+        // Only restore if current tab is different and is the default (first tab)
+        if (activeTab !== savedTab && (activeTab === tabOrder[0] || !activeTab)) {
+          console.log("[AdminDashboard] Restoring saved tab:", savedTab);
+          setActiveTabState(savedTab);
+        }
+      }
+    }
+  }, [tabOrder, selectedPage]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
