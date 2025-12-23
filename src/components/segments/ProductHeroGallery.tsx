@@ -66,15 +66,14 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
 
   // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
   // Meta Navigation (wenn vorhanden) ist ~60px hoch
-  // Dazu kommt der gewünschte Abstand: small(30px), medium(50px), large(70px), extra-large(90px)
+  // Reduziertes Top-Spacing: small = 40px, medium = 60px, large = 80px, extra-large = 100px
   const getTopPaddingClass = () => {
-    const metaNavOffset = hasMetaNavigation ? 60 : 0;
     switch (topSpacing) {
-      case 'small': return hasMetaNavigation ? 'pt-[180px]' : 'pt-[120px]';        // +60px wenn Meta Nav
-      case 'medium': return hasMetaNavigation ? 'pt-[200px]' : 'pt-[140px]';       // +60px wenn Meta Nav
-      case 'large': return hasMetaNavigation ? 'pt-[220px]' : 'pt-[160px]';        // +60px wenn Meta Nav
-      case 'extra-large': return hasMetaNavigation ? 'pt-[240px]' : 'pt-[180px]';  // +60px wenn Meta Nav
-      default: return hasMetaNavigation ? 'pt-[200px]' : 'pt-[140px]';             // medium als default
+      case 'small': return hasMetaNavigation ? 'pt-[100px]' : 'pt-[40px]';         // 80px weniger
+      case 'medium': return hasMetaNavigation ? 'pt-[120px]' : 'pt-[60px]';        // 80px weniger
+      case 'large': return hasMetaNavigation ? 'pt-[140px]' : 'pt-[80px]';         // 80px weniger
+      case 'extra-large': return hasMetaNavigation ? 'pt-[160px]' : 'pt-[100px]';  // 80px weniger
+      default: return hasMetaNavigation ? 'pt-[120px]' : 'pt-[60px]';              // medium als default
     }
   };
 
@@ -216,9 +215,18 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
         </div>
       </div>
       
+      {/* Image Title - zwischen Bild und Thumbnails */}
+      {data.images[currentImageIndex]?.title && (
+        <div className="text-center mt-3">
+          <h4 className="font-medium text-light-foreground text-sm lg:text-base">
+            {data.images[currentImageIndex].title}
+          </h4>
+        </div>
+      )}
+      
       {/* Thumbnail Navigation */}
       {data.images.length > 1 && (
-        <div className="flex justify-center gap-3 mt-4">
+        <div className="flex justify-center gap-3 mt-3">
           {data.images.map((image, index) => (
             <button
               key={index}
@@ -236,22 +244,6 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
               />
             </button>
           ))}
-        </div>
-      )}
-      
-      {/* Image Description */}
-      {(data.images[currentImageIndex]?.title || data.images[currentImageIndex]?.description) && (
-        <div className="text-center mt-4">
-          {data.images[currentImageIndex].title && (
-            <h4 className="font-medium text-light-foreground mb-1 text-sm lg:text-base">
-              {data.images[currentImageIndex].title}
-            </h4>
-          )}
-          {data.images[currentImageIndex].description && (
-            <p className="text-xs lg:text-sm text-scandi-grey">
-              {data.images[currentImageIndex].description}
-            </p>
-          )}
         </div>
       )}
     </div>
