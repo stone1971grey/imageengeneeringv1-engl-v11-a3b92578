@@ -48,9 +48,27 @@ serve(async (req) => {
       contextParts.push(`Focus Keyword: ${focusKeyword}`);
     }
 
-    // Add available segments for placement suggestion
-    const segmentsList = segments && Array.isArray(segments) && segments.length > 0
-      ? `Available Segments (for placement): ${segments.map((s: any) => `${s.type} (${s.key})`).join(', ')}`
+    // Normalize segment types and add available segments for placement suggestion
+    const normalizeSegmentType = (type: string): string => {
+      const typeMap: Record<string, string> = {
+        'hero': 'product-hero',
+        'full_hero': 'full-hero',
+        'product_hero': 'product-hero',
+        'action_hero': 'action-hero',
+      };
+      return typeMap[type] || type;
+    };
+    
+    const normalizedSegments = segments && Array.isArray(segments) 
+      ? segments.map((s: any) => ({
+          ...s,
+          type: normalizeSegmentType(s.type),
+          originalType: s.type
+        }))
+      : [];
+    
+    const segmentsList = normalizedSegments.length > 0
+      ? `Available Segments (for placement): ${normalizedSegments.map((s: any) => `${s.type} (Key: ${s.key}, ID: ${s.id})`).join(', ')}`
       : 'No segments available';
     contextParts.push(segmentsList);
 
@@ -148,8 +166,8 @@ FOR EACH HEADLINE, provide 2-3 placement options ranked from best to acceptable:
 - Always include suggestedTabPosition (1 = first position, 2 = second, etc.)
 
 Available segments on this page:
-${segments && Array.isArray(segments) && segments.length > 0
-  ? segments.map((s: any) => `- Type: ${s.type}, Key: ${s.key}, ID: ${s.id}`).join('\n')
+${normalizedSegments.length > 0
+  ? normalizedSegments.map((s: any) => `- Type: ${s.type}, Key: ${s.key}, ID: ${s.id}`).join('\n')
   : 'No segments exist yet - suggest creating new segments!'}
 
 ${pageContext}
