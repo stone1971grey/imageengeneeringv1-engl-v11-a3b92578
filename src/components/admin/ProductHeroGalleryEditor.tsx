@@ -916,7 +916,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             </div>
 
             {/* Background Removal Checkbox */}
-            <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg border border-purple-300">
+            <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-500/30">
               <Checkbox
                 id="remove-background-gallery"
                 checked={removeBackgroundEnabled}
@@ -924,15 +924,15 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 className="border-purple-400 data-[state=checked]:bg-purple-600"
               />
               <div className="flex-1">
-                <Label htmlFor="remove-background-gallery" className="cursor-pointer flex items-center gap-2">
-                  <span>🪄</span> Auto-Remove Background (AI)
+                <Label htmlFor="remove-background-gallery" className="text-white cursor-pointer flex items-center gap-2">
+                  <GeminiIcon className="w-4 h-4" /> Auto-Remove Background (AI)
                 </Label>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Automatically removes the background when uploading new images
                 </p>
               </div>
               {isRemovingBackground && (
-                <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
               )}
             </div>
 
