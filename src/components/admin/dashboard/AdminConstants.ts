@@ -8,7 +8,7 @@ export const STATIC_SEGMENT_IDS = {
   solutions: 4
 };
 
-// Mapping from parent page slugs to navigation "industry" categories
+// Mapping from parent page slugs to navigation "industry" categories (Your Solution)
 export const INDUSTRY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
   'your-solution/automotive': 'Automotive',
   'your-solution/security-surveillance': 'Security & Surveillance',
@@ -26,6 +26,30 @@ export const PRODUCTS_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
   'products/illumination-devices': 'Illumination Devices',
   'products/software': 'Software',
   'products/camera-test-systems': 'Camera Test Systems',
+  'products/bundles-services': 'Bundles & Services',
+};
+
+// Mapping from parent page slugs to navigation "testServices" categories (Test Lab)
+export const TEST_LAB_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+  'test-lab': 'Overview',
+  'test-lab/automotive': 'Automotive',
+  'test-lab/image-quality': 'Image Quality',
+  'test-lab/standardized': 'Standardized',
+  'test-lab/specialized': 'Specialized',
+  'test-lab/vcx': 'VCX',
+};
+
+// Mapping from parent page slugs to navigation "training-events" categories
+export const TRAINING_EVENTS_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+  'training-events': 'Training & Events',
+};
+
+// Mapping from parent page slugs to navigation "info-hub" categories
+export const INFO_HUB_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+  'info-hub': 'Info Hub',
+  'info-hub/standards': 'Standards',
+  'info-hub/resources': 'Resources',
+  'info-hub/support': 'Support',
 };
 
 // Mapping from parent page slugs to navigation "company" categories
@@ -33,6 +57,8 @@ export const COMPANY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
   'company': 'Company',
   'company/news': 'News',
   'company/about': 'About',
+  'company/careers': 'Careers',
+  'company/contact': 'Contact',
 };
 
 // Multilingual Rainbow - Languages Definition
