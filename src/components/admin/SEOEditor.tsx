@@ -390,13 +390,21 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     return parts.length > 0 ? parts : text;
   };
 
+  const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
+
+  // Calculate basic and advanced check counts
+  const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
+  const advancedChecks = [checks.keywordInTitle, checks.keywordInDescription, checks.keywordInSlug, checks.keywordInH1, checks.keywordInIntroduction];
+  const basicPassedCount = basicChecks.filter(Boolean).length;
+  const advancedPassedCount = advancedChecks.filter(Boolean).length;
+
   return (
     <div className="space-y-6">
       {/* SEO Health Check - Split into Basic and Advanced */}
       <div className="p-6 bg-background border rounded-lg">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-primary" />
+            <AlertTriangle className="h-5 w-5 text-yellow-500" />
             SEO Health Check
           </h3>
           <div className="flex items-center gap-2">
@@ -409,9 +417,33 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </span>
           </div>
         </div>
+
+        {/* Toggle Buttons for Basic/Advanced */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setHealthCheckView('basic')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              healthCheckView === 'basic' 
+                ? 'bg-yellow-500 text-white' 
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            Basic ({basicPassedCount}/5)
+          </button>
+          <button
+            onClick={() => setHealthCheckView('advanced')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              healthCheckView === 'advanced' 
+                ? 'bg-yellow-500 text-white' 
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            Advanced ({advancedPassedCount}/5)
+          </button>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Health Check - Left Column */}
+          {/* Basic Health Check - Always visible */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic</h4>
             <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
@@ -446,40 +478,42 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </div>
           </div>
 
-          {/* Advanced Health Check - Right Column */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.keywordInTitle)}
-              <span className="text-sm font-medium">FKW in Title</span>
+          {/* Advanced Health Check - Only visible when Advanced is selected */}
+          {healthCheckView === 'advanced' && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
+              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+                {getStatusIcon(checks.keywordInTitle)}
+                <span className="text-sm font-medium">FKW in Title</span>
+              </div>
+              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+                {getStatusIcon(checks.keywordInDescription)}
+                <span className="text-sm font-medium">FKW in Description</span>
+              </div>
+              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+                {getStatusIcon(checks.keywordInSlug)}
+                <span className="text-sm font-medium">FKW in Slug</span>
+              </div>
+              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+                {getStatusIcon(checks.keywordInH1)}
+                <span className="text-sm font-medium">FKW in H1</span>
+              </div>
+              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+                {getStatusIcon(checks.keywordInIntroduction)}
+                <span className="text-sm font-medium">FKW in Introduction</span>
+              </div>
             </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.keywordInDescription)}
-              <span className="text-sm font-medium">FKW in Description</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.keywordInSlug)}
-              <span className="text-sm font-medium">FKW in Slug</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.keywordInH1)}
-              <span className="text-sm font-medium">FKW in H1</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.keywordInIntroduction)}
-              <span className="text-sm font-medium">FKW in Introduction</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -492,10 +526,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="basics">Basics</TabsTrigger>
-          <TabsTrigger value="social">Social Media</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted">
+          <TabsTrigger value="basics" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-white">Basics</TabsTrigger>
+          <TabsTrigger value="social" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-white">Social Media</TabsTrigger>
+          <TabsTrigger value="advanced" className="data-[state=active]:bg-yellow-500 data-[state=active]:text-white">Advanced</TabsTrigger>
         </TabsList>
 
         {/* Basics Tab */}
