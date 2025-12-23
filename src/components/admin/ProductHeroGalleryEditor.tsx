@@ -33,6 +33,8 @@ interface ProductImage {
   title: string;
   description: string;
   metadata?: ImageMetadata;
+  maxWidth?: number | null;
+  maxHeight?: number | null;
 }
 
 interface ProductHeroGalleryData {
@@ -1061,6 +1063,52 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                     }}
                     placeholder="Describe this image for accessibility and SEO"
                   />
+                </div>
+
+                {/* Individual Image Size Settings */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
+                  <Label className="font-medium text-blue-800">Image Size (individual)</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs text-blue-600">Max Width (px)</Label>
+                      <Input
+                        type="number"
+                        value={image.maxWidth || ''}
+                        onChange={(e) => {
+                          const updatedImages = [...localData.images];
+                          updatedImages[index] = {
+                            ...updatedImages[index],
+                            maxWidth: e.target.value ? parseInt(e.target.value) : null
+                          };
+                          const updatedData = { ...localData, images: updatedImages };
+                          setLocalData(updatedData);
+                          onChange(updatedData);
+                        }}
+                        placeholder="e.g. 450"
+                        className="h-8"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-blue-600">Max Height (px)</Label>
+                      <Input
+                        type="number"
+                        value={image.maxHeight || ''}
+                        onChange={(e) => {
+                          const updatedImages = [...localData.images];
+                          updatedImages[index] = {
+                            ...updatedImages[index],
+                            maxHeight: e.target.value ? parseInt(e.target.value) : null
+                          };
+                          const updatedData = { ...localData, images: updatedImages };
+                          setLocalData(updatedData);
+                          onChange(updatedData);
+                        }}
+                        placeholder="e.g. 400"
+                        className="h-8"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-500">Leave empty to use global settings or auto-sizing.</p>
                 </div>
 
                 <div>
