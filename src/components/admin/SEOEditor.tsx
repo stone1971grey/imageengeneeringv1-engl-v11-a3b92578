@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { supabase } from "@/integrations/supabase/client";
@@ -1212,6 +1213,8 @@ export const SEOEditor = ({
   };
 
   const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
+  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(true);
+  const [isSerpPreviewOpen, setIsSerpPreviewOpen] = useState(true);
 
   // Calculate basic and advanced check counts
   const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
@@ -1221,141 +1224,159 @@ export const SEOEditor = ({
 
   return (
     <div className="space-y-6">
-      {/* SEO Health Check - Split into Basic and Advanced */}
-      <div className="p-6 bg-background border rounded-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-500" />
-            SEO Health Check
-          </h3>
-          <div className="flex items-center gap-2">
-            {/* Show appropriate total based on access level */}
-            <div className={`h-2.5 w-2.5 rounded-full ${
-              isAdvancedMode
-                ? (Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
-                   Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500')
-                : (basicPassedCount >= 4 ? 'bg-green-500' : 
-                   basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
-            }`} />
-            <span className="text-sm font-medium">
-              {isAdvancedMode 
-                ? `${Object.values(checks).filter(Boolean).length}/10 Checks`
-                : `${basicPassedCount}/5 Checks`
-              }
-            </span>
+      {/* SEO Health Check - Collapsible */}
+      <Collapsible open={isHealthCheckOpen} onOpenChange={setIsHealthCheckOpen}>
+        <div className="p-4 bg-background border rounded-lg">
+          <CollapsibleTrigger asChild>
+            <button className="flex items-center justify-between w-full text-left">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                <h3 className="text-xl font-semibold">SEO Health Check</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className={`h-2.5 w-2.5 rounded-full ${
+                  isAdvancedMode
+                    ? (Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
+                       Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500')
+                    : (basicPassedCount >= 4 ? 'bg-green-500' : 
+                       basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
+                }`} />
+                <span className="text-sm font-medium">
+                  {isAdvancedMode 
+                    ? `${Object.values(checks).filter(Boolean).length}/10 Checks`
+                    : `${basicPassedCount}/5 Checks`
+                  }
+                </span>
+                {isAdvancedMode && (
+                  <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
+                )}
+                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isHealthCheckOpen ? 'rotate-180' : ''}`} />
+              </div>
+            </button>
+          </CollapsibleTrigger>
+
+          <CollapsibleContent className="pt-4">
+            {/* Toggle Buttons for Basic/Advanced - Only show in Advanced mode */}
             {isAdvancedMode && (
-              <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setHealthCheckView('basic')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    healthCheckView === 'basic' 
+                      ? 'bg-[#f9dc24] text-black' 
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Basic ({basicPassedCount}/5)
+                </button>
+                <button
+                  onClick={() => setHealthCheckView('advanced')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    healthCheckView === 'advanced' 
+                      ? 'bg-[#f9dc24] text-black' 
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Advanced ({advancedPassedCount}/5)
+                </button>
+              </div>
             )}
-          </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Basic Health Check - Always visible */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic</h4>
+                <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                  checks.titleLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                }`}>
+                  {getStatusIcon(checks.titleLength)}
+                  <span className="text-sm font-medium">Title Length</span>
+                </div>
+                <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                  checks.descriptionLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                }`}>
+                  {getStatusIcon(checks.descriptionLength)}
+                  <span className="text-sm font-medium">Description Length</span>
+                </div>
+                <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                  checks.hasH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                }`}>
+                  {getStatusIcon(checks.hasH1)}
+                  <span className="text-sm font-medium">H1 Present</span>
+                </div>
+                <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                  checks.hasInternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                }`}>
+                  {getStatusIcon(checks.hasInternalLinks)}
+                  <span className="text-sm font-medium">Internal Links</span>
+                </div>
+                <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                  checks.hasExternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                }`}>
+                  {getStatusIcon(checks.hasExternalLinks)}
+                  <span className="text-sm font-medium">External Links</span>
+                </div>
+              </div>
+
+              {/* Advanced Health Check - Only visible in Advanced mode when Advanced tab is selected */}
+              {isAdvancedMode && healthCheckView === 'advanced' && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(checks.keywordInTitle)}
+                    <span className="text-sm font-medium">FKW in Title</span>
+                  </div>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(checks.keywordInDescription)}
+                    <span className="text-sm font-medium">FKW in Description</span>
+                  </div>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(checks.keywordInSlug)}
+                    <span className="text-sm font-medium">FKW in Slug</span>
+                  </div>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(checks.keywordInH1)}
+                    <span className="text-sm font-medium">FKW in H1</span>
+                  </div>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(checks.keywordInIntroduction)}
+                    <span className="text-sm font-medium">FKW in Introduction</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
         </div>
+      </Collapsible>
 
-        {/* Toggle Buttons for Basic/Advanced - Only show in Advanced mode */}
-        {isAdvancedMode && (
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setHealthCheckView('basic')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                healthCheckView === 'basic' 
-                  ? 'bg-[#f9dc24] text-black' 
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              Basic ({basicPassedCount}/5)
+      {/* SERP Preview - Collapsible */}
+      <Collapsible open={isSerpPreviewOpen} onOpenChange={setIsSerpPreviewOpen}>
+        <div className="border rounded-lg overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button className="flex items-center justify-between w-full text-left p-4 bg-background hover:bg-muted/30 transition-colors">
+              <span className="font-semibold">SERP Preview</span>
+              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isSerpPreviewOpen ? 'rotate-180' : ''}`} />
             </button>
-            <button
-              onClick={() => setHealthCheckView('advanced')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                healthCheckView === 'advanced' 
-                  ? 'bg-[#f9dc24] text-black' 
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              Advanced ({advancedPassedCount}/5)
-            </button>
-          </div>
-        )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Health Check - Always visible */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic</h4>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.titleLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.titleLength)}
-              <span className="text-sm font-medium">Title Length</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.descriptionLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.descriptionLength)}
-              <span className="text-sm font-medium">Description Length</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.hasH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.hasH1)}
-              <span className="text-sm font-medium">H1 Present</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.hasInternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.hasInternalLinks)}
-              <span className="text-sm font-medium">Internal Links</span>
-            </div>
-            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-              checks.hasExternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-            }`}>
-              {getStatusIcon(checks.hasExternalLinks)}
-              <span className="text-sm font-medium">External Links</span>
-            </div>
-          </div>
-
-          {/* Advanced Health Check - Only visible in Advanced mode when Advanced tab is selected */}
-          {isAdvancedMode && healthCheckView === 'advanced' && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
-              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-              }`}>
-                {getStatusIcon(checks.keywordInTitle)}
-                <span className="text-sm font-medium">FKW in Title</span>
-              </div>
-              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-              }`}>
-                {getStatusIcon(checks.keywordInDescription)}
-                <span className="text-sm font-medium">FKW in Description</span>
-              </div>
-              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-              }`}>
-                {getStatusIcon(checks.keywordInSlug)}
-                <span className="text-sm font-medium">FKW in Slug</span>
-              </div>
-              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-              }`}>
-                {getStatusIcon(checks.keywordInH1)}
-                <span className="text-sm font-medium">FKW in H1</span>
-              </div>
-              <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-              }`}>
-                {getStatusIcon(checks.keywordInIntroduction)}
-                <span className="text-sm font-medium">FKW in Introduction</span>
-              </div>
-            </div>
-          )}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SERPPreview
+              title={data.title || ''}
+              description={data.metaDescription || ''}
+              url={data.slug ? `www.image-engineering.de › ${data.slug}` : 'www.image-engineering.de › your-page-slug'}
+            />
+          </CollapsibleContent>
         </div>
-      </div>
-
-      {/* SERP Preview - Always visible */}
-      <SERPPreview
-        title={data.title || ''}
-        description={data.metaDescription || ''}
-        url={data.slug ? `www.image-engineering.de › ${data.slug}` : 'www.image-engineering.de › your-page-slug'}
-      />
+      </Collapsible>
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
