@@ -1083,9 +1083,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             
             {/* Keyword Suggestions */}
             {showKeywordSuggestions && keywordSuggestions.length > 0 && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-foreground">KI-Vorschläge:</p>
+                  <p className="text-base font-medium text-foreground">AI Suggestions:</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1095,30 +1095,30 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {keywordSuggestions.map((suggestion, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                      className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
                       onClick={() => handleSelectKeyword(suggestion.keyword)}
                     >
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-xs font-semibold text-purple-400">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-sm font-semibold text-purple-400">
                         {suggestion.priority}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground group-hover:text-purple-400 transition-colors">
+                        <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
                           {suggestion.keyword}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                           {suggestion.reason}
                         </p>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-shrink-0 h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+                        className="flex-shrink-0 h-8 px-3 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
                       >
-                        Auswählen
+                        Select
                       </Button>
                     </div>
                   ))}

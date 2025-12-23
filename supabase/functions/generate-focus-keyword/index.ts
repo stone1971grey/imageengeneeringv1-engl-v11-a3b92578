@@ -55,35 +55,36 @@ serve(async (req) => {
       hasSlug: !!pageData.slug,
     });
 
-    const systemPrompt = `Du bist ein SEO-Experte, der Focus Keywords für Webseiten analysiert und vorschlägt.
+    const systemPrompt = `You are an SEO expert who analyzes web pages and suggests focus keywords.
 
-Deine Aufgabe:
-1. Analysiere den gegebenen Seiteninhalt
-2. Identifiziere 3-5 relevante Focus Keywords
-3. Priorisiere nach SEO-Relevanz und Suchintention
-4. Bevorzuge spezifische, aussagekräftige Keywords gegenüber generischen Begriffen
-5. Berücksichtige die Branche (Image Quality Testing, Kameratests, Prüfgeräte)
+Your task:
+1. Analyze the given page content
+2. Identify 3-5 relevant focus keywords IN ENGLISH
+3. Prioritize by SEO relevance and search intent
+4. Prefer specific, meaningful keywords over generic terms
+5. Consider the industry (Image Quality Testing, Camera Testing, Test Equipment)
 
-Regeln für gute Focus Keywords:
-- 1-3 Wörter (idealerweise 2 Wörter)
-- Spezifisch für den Seiteninhalt
-- Suchvolumen-relevant
-- Nicht zu generisch (z.B. "Test" allein ist zu unspezifisch)
-- Kleingeschrieben
+Rules for good focus keywords:
+- 1-3 words (ideally 2 words)
+- Specific to the page content
+- Search volume relevant
+- Not too generic (e.g., "test" alone is too unspecific)
+- Lowercase
+- MUST BE IN ENGLISH
 
-Antworte NUR mit einem JSON-Array von Objekten, ohne zusätzlichen Text:
+Reply ONLY with a JSON array of objects, without additional text:
 [
-  {"keyword": "beispiel keyword", "reason": "Kurze Begründung warum dieses Keyword passt", "priority": 1},
-  {"keyword": "zweites keyword", "reason": "Begründung", "priority": 2}
+  {"keyword": "example keyword", "reason": "Brief explanation why this keyword fits", "priority": 1},
+  {"keyword": "second keyword", "reason": "Explanation", "priority": 2}
 ]
 
-priority: 1 = beste Empfehlung, höhere Zahlen = weniger priorisiert`;
+priority: 1 = best recommendation, higher numbers = less prioritized`;
 
-    const userPrompt = `Analysiere diese Seite und schlage 3-5 Focus Keywords vor:
+    const userPrompt = `Analyze this page and suggest 3-5 focus keywords in English:
 
 ${pageContext}
 
-Antworte NUR mit dem JSON-Array, ohne Markdown-Formatierung oder zusätzlichen Text.`;
+Reply ONLY with the JSON array, without markdown formatting or additional text.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
