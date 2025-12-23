@@ -447,7 +447,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="basics">Grundlagen</TabsTrigger>
+          <TabsTrigger value="basics">Basics</TabsTrigger>
           <TabsTrigger value="social">Social Media</TabsTrigger>
           <TabsTrigger value="advanced">Advanced</TabsTrigger>
         </TabsList>
@@ -459,37 +459,37 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       <div className="p-6 bg-background border rounded-lg space-y-6">
         <div>
           <Label htmlFor="focus-keyword" className="flex items-center gap-2 font-medium">
-            Fokus Keyword (FKW)
-            <Badge variant="outline" className="text-xs">Empfohlen</Badge>
+            Focus Keyword (FKW)
+            <Badge variant="outline" className="text-xs">Recommended</Badge>
           </Label>
           <Input
             id="focus-keyword"
             value={data.focusKeyword || ''}
             onChange={(e) => handleChange('focusKeyword', e.target.value)}
-            placeholder="z.B. camera testing software"
+            placeholder="e.g. camera testing software"
             className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
           />
           <p className="text-sm text-muted-foreground mt-2">
-            Hauptkeyword für diese Seite - sollte in Title, Description und Slug vorkommen
+            Main keyword for this page - should appear in Title, Description, and Slug
           </p>
         </div>
 
             <div>
               <Label htmlFor="seo-title" className="flex items-center gap-2 font-medium">
                 SEO Title (Meta Title)
-                <Badge variant="outline" className="text-xs">Pflicht</Badge>
+                <Badge variant="outline" className="text-xs">Required</Badge>
                 {data.title && (
-                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
                 )}
                 {data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                  <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
                 )}
               </Label>
               <Input
                 id="seo-title"
                 value={data.title || ''}
                 onChange={(e) => handleChange('title', e.target.value)}
-                placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
+                placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
                 className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
               {data.focusKeyword && data.title && (
@@ -508,7 +508,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 ? 'text-yellow-600'
                 : 'text-red-500'
             }`}>
-              {data.title?.length || 0} / 60 Zeichen
+              {data.title?.length || 0} / 60 characters
             </p>
             <span className={`text-xs font-medium ${
               (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
@@ -522,10 +522,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
                 ? '✓ Optimal'
                 : (data.title?.length || 0) > 60
-                ? '⚠ Zu lang'
+                ? '⚠ Too long'
                 : (data.title?.length || 0) >= 40
-                ? '→ Fast optimal'
-                : '⚠ Zu kurz'}
+                ? '→ Almost optimal'
+                : '⚠ Too short'}
             </span>
           </div>
           <p className="text-sm text-muted-foreground mt-2">
@@ -536,7 +536,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             <div>
           <Label htmlFor="meta-description" className="flex items-center gap-2 font-medium">
                 Meta Description
-                <Badge variant="outline" className="text-xs">Pflicht</Badge>
+                <Badge variant="outline" className="text-xs">Required</Badge>
                 {data.metaDescription && (
                   <Badge variant="secondary" className="text-xs">✓ Set</Badge>
                 )}
@@ -548,7 +548,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             id="meta-description"
             value={data.metaDescription || ''}
             onChange={(e) => handleChange('metaDescription', e.target.value)}
-            placeholder="z.B. Discover professional camera testing solutions with industry-leading precision. ISO-compliant measurement systems for automotive, medical, and industrial imaging applications."
+            placeholder="e.g. Discover professional camera testing solutions with industry-leading precision. ISO-compliant measurement systems for automotive, medical, and industrial imaging applications."
             className="mt-2 min-h-[100px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
             rows={4}
           />
@@ -596,7 +596,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         <div>
           <Label htmlFor="slug" className="flex items-center gap-2 font-medium">
             URL Slug
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            <Badge variant="outline" className="text-xs">Required</Badge>
             {data.slug && (
               <Badge variant="secondary" className="text-xs">✓ Set</Badge>
             )}
