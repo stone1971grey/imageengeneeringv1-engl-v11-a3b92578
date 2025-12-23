@@ -222,18 +222,25 @@ const AdminDashboard = () => {
   const [copySolutionsDialogOpen, setCopySolutionsDialogOpen] = useState(false);
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
-  const [activeTab, setActiveTabState] = useState<string>("");
+  const [activeTab, setActiveTabState] = useState<string>(() => {
+    // Initialize from localStorage immediately on mount
+    const pageKey = new URLSearchParams(window.location.search).get('page') || 'index';
+    const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
+    console.log("[AdminDashboard] Initial tab from localStorage:", savedTab, "for page:", pageKey);
+    return savedTab || "";
+  });
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
+  // Track which page we last loaded tab for (to detect page changes)
+  const lastLoadedPageRef = useRef<string | null>(null);
+  
   // Wrapper to persist activeTab to localStorage (persists across page navigations)
-  // Use selectedPage (from URL) as key since it's available immediately
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
-    // Use selectedPage directly since it's from URL and always available
     const pageKey = selectedPage || 'index';
     if (tab) {
       localStorage.setItem(`admin-activeTab-${pageKey}`, tab);
@@ -241,22 +248,19 @@ const AdminDashboard = () => {
     }
   };
   
-  // Restore activeTab from localStorage IMMEDIATELY when selectedPage changes
-  // This runs before content is loaded, so the tab is set early
-  const restoredTabRef = useRef<string | null>(null);
-  
+  // When selectedPage changes, restore the saved tab for that page
   useEffect(() => {
-    if (selectedPage) {
-      const pageKey = selectedPage || 'index';
+    const pageKey = selectedPage || 'index';
+    
+    // Only restore if we're switching to a DIFFERENT page
+    if (lastLoadedPageRef.current !== pageKey) {
       const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
-      console.log("[AdminDashboard] Early tab restore - pageKey:", pageKey, "savedTab:", savedTab);
+      console.log("[AdminDashboard] Page changed from", lastLoadedPageRef.current, "to", pageKey, "- restoring tab:", savedTab);
       
       if (savedTab) {
-        restoredTabRef.current = savedTab; // Mark this as the intended tab
         setActiveTabState(savedTab);
-      } else {
-        restoredTabRef.current = null;
       }
+      // Don't update lastLoadedPageRef here - do it after content loads
     }
   }, [selectedPage]);
   const sensors = useSensors(
@@ -957,19 +961,23 @@ const AdminDashboard = () => {
     }
     setTabOrder(validOrder);
     
-    // Set active tab - prioritize the already-restored tab from localStorage
+    // Set active tab - check if we already have a valid saved tab
     const pageKey = selectedPage || 'index';
     const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
     const specialTabs = ["footer", "seo", "version-history"];
     const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || specialTabs.includes(savedTab));
     
-    console.log("[AdminDashboard] Content loaded - pageKey:", pageKey, "savedTab:", savedTab, "isValid:", isValidSavedTab, "restoredTabRef:", restoredTabRef.current);
+    console.log("[AdminDashboard] Content loaded - pageKey:", pageKey, "savedTab:", savedTab, "isValid:", isValidSavedTab, "currentActiveTab:", activeTab);
     
-    // If we already restored a tab early (before content load), and it's valid, keep it
-    if (restoredTabRef.current && (validOrder.includes(restoredTabRef.current) || specialTabs.includes(restoredTabRef.current))) {
-      console.log("[AdminDashboard] Keeping early-restored tab:", restoredTabRef.current);
-      // Tab was already set, just make sure it stays
-      setActiveTabState(restoredTabRef.current);
+    // Mark this page as loaded
+    lastLoadedPageRef.current = pageKey;
+    
+    // If current activeTab is valid (already restored), keep it
+    const currentTabIsValid = activeTab && (validOrder.includes(activeTab) || specialTabs.includes(activeTab));
+    
+    if (currentTabIsValid) {
+      console.log("[AdminDashboard] Current tab is valid, keeping:", activeTab);
+      // Don't change - tab was already restored correctly
     } else if (isValidSavedTab) {
       console.log("[AdminDashboard] Restoring saved tab from content load:", savedTab);
       setActiveTabState(savedTab);
