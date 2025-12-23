@@ -4,15 +4,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Loader2 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { syncAltTextToMediaManagement } from "@/utils/syncAltTextToMediaManagement";
 import { createContentBackup } from "@/utils/createContentBackup";
+import { removeBackground, loadImageFromUrl, loadImageFromFile } from "@/utils/removeImageBackground";
 
 interface ProductHeroEditorProps {
   pageSlug: string;
@@ -35,6 +37,8 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'xlarge'>('medium');
   const [imageMaxWidth, setImageMaxWidth] = useState<number | null>(null);
   const [imageMaxHeight, setImageMaxHeight] = useState<number | null>(null);
+  const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(false);
+  const [isRemovingBackground, setIsRemovingBackground] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -754,8 +758,51 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
           </div>
 
           <div className="mt-6">
+            {/* Background Removal Checkbox */}
+            <div className="flex items-center space-x-3 mb-4 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-500/30">
+              <Checkbox
+                id="remove-background"
+                checked={removeBackgroundEnabled}
+                onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
+                className="border-purple-400 data-[state=checked]:bg-purple-600"
+              />
+              <div className="flex-1">
+                <Label htmlFor="remove-background" className="text-white cursor-pointer flex items-center gap-2">
+                  <span>🪄</span> Auto-Remove Background (AI)
+                </Label>
+                <p className="text-xs text-gray-400 mt-1">
+                  Automatically removes the background when uploading a new image
+                </p>
+              </div>
+              {isRemovingBackground && (
+                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+              )}
+            </div>
+
             <MediaSelector
-              onFileSelect={handleImageUpload}
+              onFileSelect={async (file) => {
+                if (removeBackgroundEnabled) {
+                  setIsRemovingBackground(true);
+                  try {
+                    toast.info("Loading AI model for background removal...");
+                    const imgElement = await loadImageFromFile(file);
+                    const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
+                    // Create a new file from the blob with PNG extension
+                    const newFileName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+                    const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
+                    toast.success("Background removed successfully!");
+                    await handleImageUpload(newFile);
+                  } catch (error: any) {
+                    console.error('Background removal failed:', error);
+                    toast.error("Background removal failed. Uploading original image...");
+                    await handleImageUpload(file);
+                  } finally {
+                    setIsRemovingBackground(false);
+                  }
+                } else {
+                  await handleImageUpload(file);
+                }
+              }}
               onMediaSelect={handleMediaSelect}
               acceptedFileTypes="image/*"
               label="Hero Image"

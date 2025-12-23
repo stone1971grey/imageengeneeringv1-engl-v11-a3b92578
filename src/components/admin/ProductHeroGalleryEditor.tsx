@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2 } from 'lucide-react';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, Trash2, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { GeminiIcon } from '@/components/GeminiIcon';
@@ -25,6 +26,7 @@ import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate }
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
+import { removeBackground, loadImageFromFile } from "@/utils/removeImageBackground";
 
 interface ProductImage {
   imageUrl: string;
@@ -65,6 +67,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(false);
+  const [isRemovingBackground, setIsRemovingBackground] = useState(false);
   
   // Initialize with default data structure - do NOT use data prop to avoid shared state
   const [localData, setLocalData] = useState<ProductHeroGalleryData>({
@@ -909,6 +913,27 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Button>
             </div>
 
+            {/* Background Removal Checkbox */}
+            <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg border border-purple-300">
+              <Checkbox
+                id="remove-background-gallery"
+                checked={removeBackgroundEnabled}
+                onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
+                className="border-purple-400 data-[state=checked]:bg-purple-600"
+              />
+              <div className="flex-1">
+                <Label htmlFor="remove-background-gallery" className="cursor-pointer flex items-center gap-2">
+                  <span>🪄</span> Auto-Remove Background (AI)
+                </Label>
+                <p className="text-xs text-gray-500 mt-1">
+                  Automatically removes the background when uploading new images
+                </p>
+              </div>
+              {isRemovingBackground && (
+                <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+              )}
+            </div>
+
             {localData.images.map((image, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
@@ -923,7 +948,28 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 </div>
 
                 <MediaSelector
-                  onFileSelect={(file) => handleImageUpload(index, file)}
+                  onFileSelect={async (file) => {
+                    if (removeBackgroundEnabled) {
+                      setIsRemovingBackground(true);
+                      try {
+                        toast.info("Loading AI model for background removal...");
+                        const imgElement = await loadImageFromFile(file);
+                        const resultBlob = await removeBackground(imgElement, (msg) => toast.info(msg));
+                        const newFileName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+                        const newFile = new File([resultBlob], newFileName, { type: 'image/png' });
+                        toast.success("Background removed successfully!");
+                        await handleImageUpload(index, newFile);
+                      } catch (error: any) {
+                        console.error('Background removal failed:', error);
+                        toast.error("Background removal failed. Uploading original image...");
+                        await handleImageUpload(index, file);
+                      } finally {
+                        setIsRemovingBackground(false);
+                      }
+                    } else {
+                      await handleImageUpload(index, file);
+                    }
+                  }}
                   onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
                   acceptedFileTypes="image/*"
                   label={`Gallery Image ${index + 1}`}
