@@ -73,6 +73,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     priority: number;
   }>>([]);
   const [showH1Suggestions, setShowH1Suggestions] = useState(false);
+  const [selectedH1Suggestion, setSelectedH1Suggestion] = useState<{
+    headline: string;
+    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string } | null;
+  } | null>(null);
+  const [isApplyingH1, setIsApplyingH1] = useState(false);
 
   // Load page content and segment registry
   useEffect(() => {
@@ -596,10 +601,150 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     }
   };
 
-  const handleSelectH1 = (headline: string) => {
-    handleChange('h1', headline);
+  const handleSelectH1 = (suggestion: typeof h1Suggestions[0]) => {
+    handleChange('h1', suggestion.headline);
+    setSelectedH1Suggestion({
+      headline: suggestion.headline,
+      placementSuggestion: suggestion.placementSuggestion
+    });
     setShowH1Suggestions(false);
-    toast.success(`H1 "${headline}" ausgewählt`);
+    toast.success(`H1 "${suggestion.headline}" ausgewählt`);
+  };
+
+  // Apply H1 to the suggested segment and convert old H1 to H2
+  const handleApplyH1ToSegment = async () => {
+    if (!selectedH1Suggestion) return;
+    
+    setIsApplyingH1(true);
+    
+    try {
+      const targetSegmentKey = selectedH1Suggestion.placementSuggestion?.segmentKey;
+      const targetSegmentType = selectedH1Suggestion.placementSuggestion?.segmentType;
+      const newH1 = selectedH1Suggestion.headline;
+      
+      // Find current H1 source to potentially convert to H2
+      const oldH1Source = h1SourceInfo;
+      
+      console.log('[SEO Editor] Applying H1:', {
+        newH1,
+        targetSegmentKey,
+        targetSegmentType,
+        oldH1Source
+      });
+
+      // Find the target segment in registry
+      let targetSegment = segmentRegistry.find(seg => 
+        seg.segment_key === targetSegmentKey && !seg.deleted
+      );
+      
+      // If no specific segment key, try to find by type
+      if (!targetSegment && targetSegmentType) {
+        targetSegment = segmentRegistry.find(seg => 
+          seg.segment_type === targetSegmentType && !seg.deleted
+        );
+      }
+
+      if (!targetSegment) {
+        toast.error(`Kein passendes Segment gefunden. Bitte erstelle zuerst ein ${targetSegmentType || 'Full Hero'} Segment.`);
+        setIsApplyingH1(false);
+        return;
+      }
+
+      // Get current content of the target segment
+      const targetContent = pageContent.find(item => item.section_key === targetSegment.segment_key);
+      
+      if (targetContent) {
+        try {
+          const contentData = JSON.parse(targetContent.content_value);
+          
+          // Update the title/headline field
+          if (targetSegment.segment_type === 'full_hero' || targetSegment.segment_type === 'action-hero') {
+            contentData.title = newH1;
+          } else if (targetSegment.segment_type === 'intro') {
+            contentData.title = newH1;
+          } else {
+            contentData.title = newH1;
+          }
+          
+          // Save the updated content
+          const { error: updateError } = await supabase
+            .from('page_content')
+            .update({ 
+              content_value: JSON.stringify(contentData),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', targetContent.id);
+          
+          if (updateError) {
+            throw updateError;
+          }
+          
+          console.log('[SEO Editor] Updated target segment with new H1');
+          
+        } catch (parseError) {
+          console.error('[SEO Editor] Failed to parse target segment content:', parseError);
+          toast.error('Fehler beim Parsen des Segment-Inhalts');
+          setIsApplyingH1(false);
+          return;
+        }
+      }
+
+      // If old H1 is in a different segment, convert it to H2
+      if (oldH1Source && oldH1Source.key !== targetSegment.segment_key) {
+        const oldContent = pageContent.find(item => item.section_key === oldH1Source.key);
+        
+        if (oldContent) {
+          try {
+            const oldContentData = JSON.parse(oldContent.content_value);
+            
+            // Move title to subtitle/h2 and clear the title
+            if (oldContentData.title) {
+              // Store old title as subtitle (H2)
+              oldContentData.subtitle = oldContentData.title;
+              oldContentData.title = ''; // Clear H1
+              
+              const { error: oldUpdateError } = await supabase
+                .from('page_content')
+                .update({ 
+                  content_value: JSON.stringify(oldContentData),
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', oldContent.id);
+              
+              if (oldUpdateError) {
+                console.error('[SEO Editor] Failed to update old segment:', oldUpdateError);
+              } else {
+                console.log('[SEO Editor] Converted old H1 to H2 in segment:', oldH1Source.key);
+                toast.info(`Alte H1 in "${oldH1Source.label}" wurde zu H2 konvertiert`);
+              }
+            }
+          } catch (parseError) {
+            console.error('[SEO Editor] Failed to parse old segment content:', parseError);
+          }
+        }
+      }
+
+      toast.success(`H1 erfolgreich in "${targetSegment.segment_key}" gesetzt`);
+      
+      // Refresh page content
+      const { data: refreshedContent } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug);
+      
+      if (refreshedContent) {
+        setPageContent(refreshedContent);
+      }
+      
+      // Clear selection after applying
+      setSelectedH1Suggestion(null);
+      
+    } catch (error) {
+      console.error('[SEO Editor] Error applying H1:', error);
+      toast.error('Fehler beim Anwenden der H1');
+    } finally {
+      setIsApplyingH1(false);
+    }
   };
 
   const getStatusIcon = (status: boolean) => {
@@ -1251,6 +1396,61 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               )}
             </div>
 
+            {/* Selected H1 with Apply Button */}
+            {selectedH1Suggestion && (
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-green-400">✓ Ausgewählte H1</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedH1Suggestion(null)}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <p className="text-lg font-semibold text-foreground mb-3">
+                  "{selectedH1Suggestion.headline}"
+                </p>
+                
+                {selectedH1Suggestion.placementSuggestion && (
+                  <div className="mb-3 p-3 bg-muted/30 rounded-md">
+                    <p className="text-sm font-medium text-purple-400 mb-1">Empfohlene Platzierung:</p>
+                    <p className="text-sm text-muted-foreground">{selectedH1Suggestion.placementSuggestion.note}</p>
+                    {selectedH1Suggestion.placementSuggestion.segmentKey && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Segment: <span className="font-mono text-purple-400">{selectedH1Suggestion.placementSuggestion.segmentKey}</span>
+                      </p>
+                    )}
+                    {h1SourceInfo && selectedH1Suggestion.placementSuggestion.segmentKey !== h1SourceInfo.key && (
+                      <p className="text-xs text-yellow-400 mt-2">
+                        ⚠️ Aktuelle H1 in "{h1SourceInfo.label}" wird zu H2 konvertiert
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                <Button
+                  onClick={handleApplyH1ToSegment}
+                  disabled={isApplyingH1}
+                  className="w-full h-10 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isApplyingH1 ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Wird angewendet...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      H1 in Segment übernehmen
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+
             {/* Generate Button - aligned right like Smart FKW */}
             <div className="flex justify-end">
               <Button
@@ -1291,7 +1491,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                     <div
                       key={index}
                       className="flex flex-col gap-2 p-4 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
-                      onClick={() => handleSelectH1(suggestion.headline)}
+                      onClick={() => handleSelectH1(suggestion)}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-sm font-semibold text-purple-400">
