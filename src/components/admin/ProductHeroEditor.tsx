@@ -492,7 +492,7 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       <div className="space-y-4">
         <div>
-          <Label className="text-white">Title</Label>
+          <Label className="text-white">Title (H1 – Zeile 1)</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -501,7 +501,7 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         </div>
         
         <div>
-          <Label className="text-white">Subtitle (Optional)</Label>
+          <Label className="text-white">Subtitle (H1 – Zeile 2, Optional)</Label>
           <Input
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}

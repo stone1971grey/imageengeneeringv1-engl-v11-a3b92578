@@ -663,7 +663,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           {/* Content Tab */}
           <TabsContent value="content" className="space-y-4">
             <div className="space-y-2">
-              <Label>Title (H1)</Label>
+              <Label>Title (H1 – Zeile 1)</Label>
               <Input
                 value={localData.title}
                 onChange={(e) => {
@@ -676,7 +676,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             </div>
 
             <div className="space-y-2">
-              <Label>Subtitle (H2)</Label>
+              <Label>Subtitle (H1 – Zeile 2)</Label>
               <Input
                 value={localData.subtitle}
                 onChange={(e) => {
