@@ -1345,6 +1345,12 @@ export const SEOEditor = ({
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                    data.focusKeyword ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                  }`}>
+                    {getStatusIcon(!!data.focusKeyword)}
+                    <span className="text-sm font-medium">Focus Keyword definiert</span>
+                  </div>
+                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                     checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
                   }`}>
                     {getStatusIcon(checks.keywordInTitle)}
@@ -1862,12 +1868,16 @@ export const SEOEditor = ({
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-medium text-muted-foreground">Current H1</p>
                 {data.h1 && (
-                  <span className={`text-xs font-medium ${
-                    data.h1.length >= 20 && data.h1.length <= 70 ? 'text-green-400' : 
-                    data.h1.length < 20 ? 'text-yellow-400' : 'text-red-400'
-                  }`}>
-                    {data.h1.length} characters {data.h1.length >= 20 && data.h1.length <= 70 ? '✓' : ''}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-medium ${
+                      data.h1.length >= 40 && data.h1.length <= 70 ? 'text-green-400' : 
+                      data.h1.length >= 20 && data.h1.length < 40 ? 'text-yellow-400' : 
+                      data.h1.length > 70 ? 'text-red-400' : 'text-yellow-400'
+                    }`}>
+                      {data.h1.length} characters {data.h1.length >= 40 && data.h1.length <= 70 ? '✓' : ''}
+                    </span>
+                    <span className="text-xs text-muted-foreground">(Ideal: 40-70)</span>
+                  </div>
                 )}
               </div>
               {data.h1 ? (
