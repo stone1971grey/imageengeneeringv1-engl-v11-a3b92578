@@ -642,7 +642,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
         </CardTitle>
         <CardDescription>
-          Hero mit Produktgalerie, Thumbnails, zwei CTA-Buttons und erweiterten Layout-Optionen
+          Hero with product gallery, thumbnails, two CTA buttons and extended layout options
         </CardDescription>
       </CardHeader>
 
@@ -653,17 +653,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           </div>
         )}
 
-        {language !== 'en' && (
-          <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-              <div>
-                <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
-                <div className="text-blue-300 text-xs">Compare and edit Product Hero Gallery in multiple languages</div>
-              </div>
-            </div>
-          </div>
-        )}
 
         <Tabs defaultValue="content">
           <TabsList className="grid w-full grid-cols-4">
@@ -918,13 +907,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Image {index + 1}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDeleteIndex(index)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </Button>
                 </div>
 
                 <MediaSelector
