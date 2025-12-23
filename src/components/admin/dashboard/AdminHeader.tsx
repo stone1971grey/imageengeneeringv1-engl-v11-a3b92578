@@ -437,7 +437,7 @@ export const AdminHeader = ({
             <Button
               variant="default"
               onClick={handlePreview}
-              className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2 shadow-soft hover:shadow-lg"
+              className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 shadow-soft hover:shadow-lg"
             >
               <Eye className="h-4 w-4" />
               Preview
@@ -454,7 +454,7 @@ export const AdminHeader = ({
             {selectedPage && pageInfo && (
               <Button
                 onClick={onCopyPageClick}
-                className="bg-sky-600 text-white hover:bg-sky-700 font-semibold shadow-soft hover:shadow-lg flex items-center gap-2"
+                className="bg-rose-600 text-white hover:bg-rose-700 font-semibold shadow-soft hover:shadow-lg flex items-center gap-2"
               >
                 <Copy className="h-4 w-4" />
                 Copy Page
