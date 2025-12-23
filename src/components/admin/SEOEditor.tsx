@@ -533,409 +533,389 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         </TabsList>
 
         {/* Basics Tab */}
-        <TabsContent value="basics" className="space-y-6">
+        <TabsContent value="basics" className="space-y-4">
 
-      {/* Basic SEO Fields */}
-      <div className="p-6 bg-background border rounded-lg space-y-6">
-
-            <div>
-              <Label htmlFor="seo-title" className="flex items-center gap-2 font-medium">
-                SEO Title (Meta Title)
-                <Badge variant="outline" className="text-xs">Required</Badge>
-                {data.title && (
-                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
-                )}
+          {/* SEO Title */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="seo-title" className="text-base font-semibold text-foreground">
+                SEO Title
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
                 {data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
                 )}
-              </Label>
-              <Input
-                id="seo-title"
-                value={data.title || ''}
-                onChange={(e) => handleChange('title', e.target.value)}
-                placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
-                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-              />
-              {data.focusKeyword && data.title && (
-                <div className="mt-2 px-3 py-2 bg-muted/30 border-2 border-border rounded-md text-sm min-h-[40px] flex items-center">
-                  <span className="font-medium text-muted-foreground mr-2">FKW:</span>
-                  {highlightKeyword(data.title, data.focusKeyword)}
-                </div>
-              )}
-              <div className="flex items-center justify-between mt-2">
-            <p className={`text-sm font-medium ${
-              (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
-                ? 'text-green-600'
-                : (data.title?.length || 0) > 60
-                ? 'text-red-600'
-                : (data.title?.length || 0) >= 40
-                ? 'text-yellow-600'
-                : 'text-red-500'
-            }`}>
-              {data.title?.length || 0} / 60 characters
-            </p>
-            <span className={`text-xs font-medium ${
-              (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
-                ? 'text-green-600'
-                : (data.title?.length || 0) > 60
-                ? 'text-red-600'
-                : (data.title?.length || 0) >= 40
-                ? 'text-yellow-600'
-                : 'text-red-500'
-            }`}>
-              {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
-                ? '✓ Optimal'
-                : (data.title?.length || 0) > 60
-                ? '⚠ Too long'
-                : (data.title?.length || 0) >= 40
-                ? '→ Almost optimal'
-                : '⚠ Too short'}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Appears as title in search engines. Optimal: 50-60 characters with focus keyword.
-          </p>
-        </div>
-
-            <div>
-          <Label htmlFor="meta-description" className="flex items-center gap-2 font-medium">
-                Meta Description
-                <Badge variant="outline" className="text-xs">Required</Badge>
-                {data.metaDescription && (
-                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
-                )}
-                {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
-                )}
-              </Label>
-          <Textarea
-            id="meta-description"
-            value={data.metaDescription || ''}
-            onChange={(e) => handleChange('metaDescription', e.target.value)}
-            placeholder="e.g. Discover professional camera testing solutions with industry-leading precision. ISO-compliant measurement systems for automotive, medical, and industrial imaging applications."
-            className="mt-2 min-h-[100px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
-            rows={4}
-          />
-          {data.focusKeyword && data.metaDescription && (
-            <div className="mt-2 px-3 py-2 bg-muted/30 border-2 border-border rounded-md text-sm min-h-[60px]">
-              <span className="font-medium text-muted-foreground mr-2">FKW:</span>
-              {highlightKeyword(data.metaDescription, data.focusKeyword)}
+              </div>
             </div>
-          )}
-          <div className="flex items-center justify-between mt-2">
-            <p className={`text-sm font-medium ${
-              (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                ? 'text-green-600'
-                : (data.metaDescription?.length || 0) > 160
-                ? 'text-red-600'
-                : (data.metaDescription?.length || 0) >= 100
-                ? 'text-yellow-600'
-                : 'text-red-500'
-            }`}>
-              {data.metaDescription?.length || 0} / 160 characters
-            </p>
-            <span className={`text-xs font-medium ${
-              (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                ? 'text-green-600'
-                : (data.metaDescription?.length || 0) > 160
-                ? 'text-red-600'
-                : (data.metaDescription?.length || 0) >= 100
-                ? 'text-yellow-600'
-                : 'text-red-500'
-            }`}>
-              {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                ? '✓ Optimal'
-                : (data.metaDescription?.length || 0) > 160
-                ? '⚠ Too long'
-                : (data.metaDescription?.length || 0) >= 100
-                ? '→ Almost optimal'
-                : '⚠ Too short'}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Appears as description in search engines. Optimal: 120-160 characters with focus keyword.
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="slug" className="flex items-center gap-2 font-medium">
-            URL Slug
-            <Badge variant="outline" className="text-xs">Required</Badge>
-            {data.slug && (
-              <Badge variant="secondary" className="text-xs">✓ Set</Badge>
-            )}
-            {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
-              <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
-            )}
-          </Label>
-          <div className="flex items-center mt-2">
-            <span className="px-3 py-2 bg-muted rounded-l-md border-2 border-r-0 border-border font-medium h-10 flex items-center text-sm">
-              /
-            </span>
             <Input
-              id="slug"
-              value={data.slug || ''}
-              onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
-              placeholder={pageSlug}
-              className="rounded-l-none h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+              id="seo-title"
+              value={data.title || ''}
+              onChange={(e) => handleChange('title', e.target.value)}
+              placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
+              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Only lowercase letters, numbers and hyphens. FKW should be included.
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="h1" className="flex items-center gap-2 font-medium">
-            H1 Heading
-            <Badge variant="secondary" className="text-xs">Auto-detect</Badge>
-            {data.h1 && (
-              <Badge variant="secondary" className="text-xs">✓ Set</Badge>
+            {data.focusKeyword && data.title && (
+              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+                {highlightKeyword(data.title, data.focusKeyword)}
+              </div>
             )}
-            {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-              <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
-            )}
-          </Label>
-          <div className="mt-2 px-3 py-2 h-10 bg-muted/50 border-2 border-border rounded-md cursor-not-allowed flex items-center text-sm">
-            {data.h1 || <span className="text-muted-foreground">Auto-detected...</span>}
-          </div>
-          {data.h1 && data.focusKeyword && (
-            <div className="mt-2 px-3 py-2 bg-muted/30 border-2 border-border rounded-md text-sm min-h-[40px] flex items-center">
-              <span className="font-medium text-muted-foreground mr-2">FKW:</span>
-              {highlightKeyword(data.h1, data.focusKeyword)}
+            <div className="flex items-center justify-between mt-3">
+              <span className={`text-xs font-medium px-2 py-1 rounded ${
+                (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
+                  ? 'bg-green-500/20 text-green-400'
+                  : (data.title?.length || 0) > 60
+                  ? 'bg-red-500/20 text-red-400'
+                  : (data.title?.length || 0) >= 40
+                  ? 'bg-yellow-500/20 text-yellow-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}>
+                {data.title?.length || 0}/60 chars
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Optimal: 50-60 characters
+              </span>
             </div>
-          )}
-          <p className="text-sm text-muted-foreground mt-2">
-            Auto-detected from Intro title or Hero title. Only one H1 per page allowed.
-          </p>
-        </div>
-      </div>
+          </div>
+
+          {/* Meta Description */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="meta-description" className="text-base font-semibold text-foreground">
+                Meta Description
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
+                {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            <Textarea
+              id="meta-description"
+              value={data.metaDescription || ''}
+              onChange={(e) => handleChange('metaDescription', e.target.value)}
+              placeholder="Describe your page in 120-160 characters..."
+              className="min-h-[100px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
+              rows={3}
+            />
+            {data.focusKeyword && data.metaDescription && (
+              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+                {highlightKeyword(data.metaDescription, data.focusKeyword)}
+              </div>
+            )}
+            <div className="flex items-center justify-between mt-3">
+              <span className={`text-xs font-medium px-2 py-1 rounded ${
+                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                  ? 'bg-green-500/20 text-green-400'
+                  : (data.metaDescription?.length || 0) > 160
+                  ? 'bg-red-500/20 text-red-400'
+                  : (data.metaDescription?.length || 0) >= 100
+                  ? 'bg-yellow-500/20 text-yellow-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}>
+                {data.metaDescription?.length || 0}/160 chars
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Optimal: 120-160 characters
+              </span>
+            </div>
+          </div>
+
+          {/* URL Slug */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="slug" className="text-base font-semibold text-foreground">
+                URL Slug
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
+                {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="px-3 py-2.5 bg-muted/50 rounded-l-md border border-r-0 border-border text-sm text-muted-foreground">
+                /
+              </span>
+              <Input
+                id="slug"
+                value={data.slug || ''}
+                onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
+                placeholder={pageSlug}
+                className="rounded-l-none h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Only lowercase letters, numbers and hyphens
+            </p>
+          </div>
+
+          {/* H1 Heading */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground">
+                H1 Heading
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
+                {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md text-sm text-foreground/80">
+              {data.h1 || <span className="text-muted-foreground italic">Auto-detected from Intro or Hero...</span>}
+            </div>
+            {data.h1 && data.focusKeyword && (
+              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+                {highlightKeyword(data.h1, data.focusKeyword)}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-2">
+              Auto-detected from first Intro or Hero segment
+            </p>
+          </div>
         </TabsContent>
 
         {/* Social Media Tab */}
-        <TabsContent value="social" className="space-y-6">
-          {/* Open Graph / Social Media */}
-          <div className="p-6 bg-background border rounded-lg space-y-6">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-medium flex items-center gap-2">
-                Open Graph / Social Media
-                <Badge variant="outline" className="text-xs">Optional</Badge>
-              </h4>
-            </div>
-            
-            <div>
-              <Label htmlFor="og-title" className="font-medium">OG Title</Label>
-              <Input
-                id="og-title"
-                value={data.ogTitle || ''}
-                onChange={(e) => handleChange('ogTitle', e.target.value)}
-                placeholder="Leave empty = use SEO Title"
-                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-              />
-              <p className="text-sm text-muted-foreground mt-2">
-                Title for social media shares. If empty, SEO Title is used.
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="og-description" className="font-medium">OG Description</Label>
-              <Textarea
-                id="og-description"
-                value={data.ogDescription || ''}
-                onChange={(e) => handleChange('ogDescription', e.target.value)}
-                placeholder="Leave empty = use Meta Description"
-                className="mt-2 min-h-[80px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
-                rows={3}
-              />
-              <p className="text-sm text-muted-foreground mt-2">
-                Description for social media shares. If empty, Meta Description is used.
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="og-image" className="flex items-center gap-2 font-medium">
-                OG Image URL
-                {heroImageUrl && (
-                  <Badge variant="secondary" className="text-xs">Auto-detected from Hero</Badge>
-                )}
+        <TabsContent value="social" className="space-y-4">
+          
+          {/* OG Title */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="og-title" className="text-base font-semibold text-foreground">
+                OG Title
               </Label>
-              
-              <div className="flex gap-2 mt-2">
-                <Input
-                  id="og-image"
-                  value={data.ogImage || heroImageUrl || ''}
-                  onChange={(e) => handleChange('ogImage', e.target.value)}
-                  placeholder={heroImageUrl ? "Auto: Hero image is used (1200×630px)" : "https://... (recommended: 1200×630px)"}
-                  className="flex-1 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-                />
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      
-                      try {
-                        const fileExt = file.name.split('.').pop();
-                        const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
-                        const shortId = Math.random().toString(36).slice(2, 6);
-                        const fileName = `${baseName}-${shortId}.${fileExt}`;
-                        const { data: uploadData, error: uploadError } = await supabase.storage
-                          .from('og-images')
-                          .upload(fileName, file);
-                        
-                        if (uploadError) throw uploadError;
-                        
-                        const { data: { publicUrl } } = supabase.storage
-                          .from('og-images')
-                          .getPublicUrl(fileName);
-                        
-                        handleChange('ogImage', publicUrl);
-                      } catch (error) {
-                        console.error('Upload error:', error);
-                      }
-                    }}
-                  />
-                  <Button type="button" variant="outline" size="sm" className="h-10">
-                    Upload
-                  </Button>
-                </label>
-                {data.ogImage && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10"
-                    onClick={() => handleChange('ogImage', '')}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+              <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
+            </div>
+            <Input
+              id="og-title"
+              value={data.ogTitle || ''}
+              onChange={(e) => handleChange('ogTitle', e.target.value)}
+              placeholder="Leave empty = use SEO Title"
+              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+            />
+            <p className="text-xs text-muted-foreground mt-2">
+              Title for social media shares. Falls back to SEO Title.
+            </p>
+          </div>
+
+          {/* OG Description */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="og-description" className="text-base font-semibold text-foreground">
+                OG Description
+              </Label>
+              <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
+            </div>
+            <Textarea
+              id="og-description"
+              value={data.ogDescription || ''}
+              onChange={(e) => handleChange('ogDescription', e.target.value)}
+              placeholder="Leave empty = use Meta Description"
+              className="min-h-[80px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
+              rows={3}
+            />
+            <p className="text-xs text-muted-foreground mt-2">
+              Description for social media shares. Falls back to Meta Description.
+            </p>
+          </div>
+
+          {/* OG Image */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="og-image" className="text-base font-semibold text-foreground">
+                OG Image
+              </Label>
+              <div className="flex items-center gap-2">
+                {heroImageUrl && (
+                  <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto from Hero</Badge>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Image for social media shares (1200x630px recommended). If empty, Hero image is used.
-              </p>
-              
-              {/* Image Preview */}
-              {(data.ogImage || heroImageUrl) && (
-                <div className="mt-4 p-4 border-2 border-border rounded-lg bg-muted/30">
-                  <p className="text-sm font-medium mb-3">Preview</p>
-                  <img 
-                    src={data.ogImage || heroImageUrl} 
-                    alt="OG Image Preview" 
-                    className="w-full max-w-md rounded-lg border-2 border-border shadow-sm"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
-                  />
-                </div>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                id="og-image"
+                value={data.ogImage || heroImageUrl || ''}
+                onChange={(e) => handleChange('ogImage', e.target.value)}
+                placeholder={heroImageUrl ? "Auto: Hero image" : "https://... (1200×630px)"}
+                className="flex-1 h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+              />
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    
+                    try {
+                      const fileExt = file.name.split('.').pop();
+                      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                      const shortId = Math.random().toString(36).slice(2, 6);
+                      const fileName = `${baseName}-${shortId}.${fileExt}`;
+                      const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('og-images')
+                        .upload(fileName, file);
+                      
+                      if (uploadError) throw uploadError;
+                      
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('og-images')
+                        .getPublicUrl(fileName);
+                      
+                      handleChange('ogImage', publicUrl);
+                    } catch (error) {
+                      console.error('Upload error:', error);
+                    }
+                  }}
+                />
+                <Button type="button" variant="outline" size="sm" className="h-11 px-4">
+                  Upload
+                </Button>
+              </label>
+              {data.ogImage && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-11 px-3"
+                  onClick={() => handleChange('ogImage', '')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               )}
             </div>
+            
+            {/* Image Preview */}
+            {(data.ogImage || heroImageUrl) && (
+              <div className="mt-4 p-4 bg-muted/20 border border-border/50 rounded-lg">
+                <p className="text-xs font-medium text-muted-foreground mb-2">Preview</p>
+                <img 
+                  src={data.ogImage || heroImageUrl} 
+                  alt="OG Image Preview" 
+                  className="w-full max-w-sm rounded border border-border/50"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
+                />
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-2">
+              Image for social shares (1200×630px recommended)
+            </p>
+          </div>
 
-            <div>
-              <Label htmlFor="twitter-card" className="font-medium">Twitter Card Type</Label>
-              <Select
-                value={data.twitterCard || 'summary_large_image'}
-                onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
-              >
-                <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="summary_large_image">Summary Large Image</SelectItem>
-                  <SelectItem value="summary">Summary</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-muted-foreground mt-2">
-                Type of Twitter Card for shares. "Summary Large Image" is recommended.
-              </p>
+          {/* Twitter Card */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="twitter-card" className="text-base font-semibold text-foreground">
+                Twitter Card Type
+              </Label>
+              <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
             </div>
+            <Select
+              value={data.twitterCard || 'summary_large_image'}
+              onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
+            >
+              <SelectTrigger className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="summary_large_image">Summary Large Image</SelectItem>
+                <SelectItem value="summary">Summary</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-2">
+              "Summary Large Image" is recommended for better visibility
+            </p>
           </div>
         </TabsContent>
 
         {/* Advanced Tab */}
-        <TabsContent value="advanced" className="space-y-6">
+        <TabsContent value="advanced" className="space-y-4">
+          
           {/* Focus Keyword */}
-          <div className="p-6 bg-background border rounded-lg space-y-6">
-            <div>
-              <Label htmlFor="focus-keyword" className="flex items-center gap-2 font-medium">
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="focus-keyword" className="text-base font-semibold text-foreground">
                 Focus Keyword (FKW)
-                <Badge variant="outline" className="text-xs">Recommended</Badge>
               </Label>
-              <Input
-                id="focus-keyword"
-                value={data.focusKeyword || ''}
-                onChange={(e) => handleChange('focusKeyword', e.target.value)}
-                placeholder="e.g. camera testing software"
-                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-              />
-              <p className="text-sm text-muted-foreground mt-2">
-                Main keyword for this page - should appear in Title, Description, and Slug
-              </p>
+              <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
             </div>
+            <Input
+              id="focus-keyword"
+              value={data.focusKeyword || ''}
+              onChange={(e) => handleChange('focusKeyword', e.target.value)}
+              placeholder="e.g. camera testing software"
+              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+            />
+            <p className="text-xs text-muted-foreground mt-2">
+              Main keyword for this page – should appear in Title, Description, and Slug
+            </p>
           </div>
 
-          {/* Introduction (Read-only) */}
-          <div className="p-6 bg-background border rounded-lg space-y-6">
-            <div>
-              <Label className="flex items-center gap-2 font-medium">
+          {/* Introduction Text */}
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground">
                 Introduction Text
-                <Badge variant="secondary" className="text-xs">Auto-detected (Read-only)</Badge>
-                {(introductionText.title || introductionText.description) && (
-                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
-                )}
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
                 {(introductionText.title || introductionText.description) && data.focusKeyword && (
                   (introductionText.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) || 
                    introductionText.description.toLowerCase().includes(data.focusKeyword.toLowerCase())) && (
-                    <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
                   )
                 )}
-              </Label>
-              <div className="mt-2 p-4 bg-muted/50 border-2 border-border rounded-lg">
-                {introductionText.title && (
-                  <div className="mb-3">
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Title:</p>
-                    <p className="text-sm">{highlightKeyword(introductionText.title, data.focusKeyword || '')}</p>
-                  </div>
-                )}
-                {introductionText.description && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">Description:</p>
-                    <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
-                  </div>
-                )}
-                {!introductionText.title && !introductionText.description && (
-                  <p className="text-sm text-muted-foreground italic">
-                    No introduction text found. Add an Intro, Tiles or Image-Text segment.
-                  </p>
-                )}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Auto-detected from first Intro, Tiles or Image-Text segment. This text is used for SEO checks.
-              </p>
             </div>
+            <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md">
+              {introductionText.title && (
+                <div className="mb-3">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Title</p>
+                  <p className="text-sm">{highlightKeyword(introductionText.title, data.focusKeyword || '')}</p>
+                </div>
+              )}
+              {introductionText.description && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Description</p>
+                  <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
+                </div>
+              )}
+              {!introductionText.title && !introductionText.description && (
+                <p className="text-sm text-muted-foreground italic">
+                  No introduction found. Add an Intro, Tiles or Image-Text segment.
+                </p>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Auto-detected from first content segment
+            </p>
           </div>
 
           {/* Canonical URL */}
-          <div className="p-6 bg-background border rounded-lg space-y-6">
-            <div>
-              <Label htmlFor="canonical" className="flex items-center gap-2 font-medium">
+          <div className="p-5 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="canonical" className="text-base font-semibold text-foreground">
                 Canonical URL
-                <Badge variant="outline" className="text-xs">Optional</Badge>
               </Label>
-              <Input
-                id="canonical"
-                value={data.canonical || ''}
-                onChange={(e) => handleChange('canonical', e.target.value)}
-                placeholder="https://www.image-engineering.de/your-page"
-                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-              />
-              <p className="text-sm text-muted-foreground mt-2">
-                If this page is a copy of another, enter the original URL here. Leave empty for normal pages.
-              </p>
+              <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
             </div>
+            <Input
+              id="canonical"
+              value={data.canonical || ''}
+              onChange={(e) => handleChange('canonical', e.target.value)}
+              placeholder="https://www.image-engineering.de/your-page"
+              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+            />
+            <p className="text-xs text-muted-foreground mt-2">
+              Only needed if this page is a duplicate of another
+            </p>
           </div>
         </TabsContent>
       </Tabs>
