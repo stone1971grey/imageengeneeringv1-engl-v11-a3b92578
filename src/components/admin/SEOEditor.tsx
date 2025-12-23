@@ -53,6 +53,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   const [pageContent, setPageContent] = useState<any[]>([]);
   const [segmentRegistry, setSegmentRegistry] = useState<any[]>([]);
   const [heroImageUrl, setHeroImageUrl] = useState<string>('');
+  const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
 
   // Load page content and segment registry
   useEffect(() => {
@@ -174,8 +175,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
     
     // Determine H1 heading dynamically with extended priority
-    // Priority: 1. Intro Title > 2. Full Hero > 3. Product Hero Gallery > 4. page_segments JSON
+    // Priority: 1. Intro Title > 2. Full Hero > 3. Product Hero Gallery > 4. page_segments JSON > 5. Action Hero
     let autoH1 = '';
+    let h1Source: { type: string; key: string; id: string | number; label: string } | null = null;
     
     // 1. Check Intro segment first (highest priority)
     if (introRegistry && !introRegistry.deleted) {
@@ -183,8 +185,16 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       if (introContent) {
         try {
           const introData = JSON.parse(introContent.content_value);
-          autoH1 = introData.title || '';
-          console.log('[SEO Editor] H1 from Intro title:', autoH1);
+          if (introData.title) {
+            autoH1 = introData.title;
+            h1Source = {
+              type: 'intro',
+              key: introRegistry.segment_key,
+              id: introRegistry.segment_id,
+              label: 'Intro'
+            };
+            console.log('[SEO Editor] H1 from Intro title:', autoH1);
+          }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse intro for H1:', e);
         }
@@ -199,8 +209,19 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           const fullHeroData = JSON.parse(fullHeroEntry.content_value);
           const titleLine1 = fullHeroData.titleLine1 || '';
           const titleLine2 = fullHeroData.titleLine2 || '';
-          autoH1 = [titleLine1, titleLine2].filter(Boolean).join(' ');
-          console.log('[SEO Editor] H1 from Full Hero titles:', autoH1);
+          const combinedTitle = [titleLine1, titleLine2].filter(Boolean).join(' ');
+          if (combinedTitle) {
+            autoH1 = combinedTitle;
+            const segmentKey = fullHeroEntry.section_key;
+            const segmentId = segmentKey.replace('full_hero_', '');
+            h1Source = {
+              type: 'full-hero',
+              key: segmentKey,
+              id: segmentId,
+              label: 'Full Hero'
+            };
+            console.log('[SEO Editor] H1 from Full Hero titles:', autoH1);
+          }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse full hero for H1:', e);
         }
@@ -217,8 +238,17 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             const phgData = JSON.parse(phgContent.content_value);
             const title = phgData.title || '';
             const subtitle = phgData.subtitle || '';
-            autoH1 = [title, subtitle].filter(Boolean).join(' ');
-            console.log('[SEO Editor] H1 from Product Hero Gallery:', autoH1);
+            const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+            if (combinedTitle) {
+              autoH1 = combinedTitle;
+              h1Source = {
+                type: 'product-hero-gallery',
+                key: productHeroGalleryRegistry.segment_key,
+                id: productHeroGalleryRegistry.segment_id,
+                label: 'Product Hero Gallery'
+              };
+              console.log('[SEO Editor] H1 from Product Hero Gallery:', autoH1);
+            }
           } catch (e) {
             console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
           }
@@ -237,8 +267,17 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           if (heroSegment?.data) {
             const heroTitle = heroSegment.data.hero_title || '';
             const heroSubtitle = heroSegment.data.hero_subtitle || '';
-            autoH1 = [heroTitle, heroSubtitle].filter(Boolean).join(' ').trim();
-            console.log('[SEO Editor] H1 from page_segments JSON:', autoH1);
+            const combinedTitle = [heroTitle, heroSubtitle].filter(Boolean).join(' ').trim();
+            if (combinedTitle) {
+              autoH1 = combinedTitle;
+              h1Source = {
+                type: 'hero',
+                key: 'page_segments',
+                id: heroSegment.id || 'legacy',
+                label: 'Hero (Legacy)'
+              };
+              console.log('[SEO Editor] H1 from page_segments JSON:', autoH1);
+            }
           }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse page_segments for H1:', e);
@@ -254,14 +293,25 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         if (actionHeroContent) {
           try {
             const actionHeroData = JSON.parse(actionHeroContent.content_value);
-            autoH1 = actionHeroData.title || '';
-            console.log('[SEO Editor] H1 from Action Hero:', autoH1);
+            if (actionHeroData.title) {
+              autoH1 = actionHeroData.title;
+              h1Source = {
+                type: 'action-hero',
+                key: actionHeroRegistry.segment_key,
+                id: actionHeroRegistry.segment_id,
+                label: 'Action Hero'
+              };
+              console.log('[SEO Editor] H1 from Action Hero:', autoH1);
+            }
           } catch (e) {
             console.error('[SEO Editor] Failed to parse action hero for H1:', e);
           }
         }
       }
     }
+    
+    // Store H1 source for display
+    setH1SourceInfo(h1Source);
     
     // Update H1 field - if different OR if we need to clear it
     if (data.h1 !== autoH1) {
@@ -716,7 +766,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           {/* H1 Heading */}
           <div className={`p-5 rounded-lg ${data.h1 ? 'bg-zinc-800/50 border border-zinc-700' : 'bg-red-500/10 border border-red-500/30'}`}>
             <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground">
+              <Label className="text-lg font-semibold text-foreground">
                 H1 Heading
               </Label>
               <div className="flex items-center gap-2">
@@ -726,21 +776,51 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 )}
               </div>
             </div>
-            <div className={`px-4 py-3 rounded-md text-sm ${data.h1 ? 'bg-muted/20 border border-border/50 text-foreground/80' : 'bg-red-500/20 border border-red-500/30'}`}>
-              {data.h1 || (
-                <span className="flex items-center gap-2 text-red-400">
-                  <AlertCircle className="h-4 w-4" />
+            
+            {/* H1 Value Display */}
+            <div className={`px-4 py-4 rounded-md ${data.h1 ? 'bg-muted/20 border border-border/50' : 'bg-red-500/20 border border-red-500/30'}`}>
+              {data.h1 ? (
+                <div className="space-y-3">
+                  {/* H1 Text - larger */}
+                  <p className="text-lg font-medium text-foreground">{data.h1}</p>
+                  
+                  {/* Source Badge - Yellow */}
+                  {h1SourceInfo && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm text-muted-foreground">Quelle:</span>
+                      <Badge className="bg-[#f9dc24] text-black font-medium text-sm px-3 py-1">
+                        {h1SourceInfo.label}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/40">
+                        ID: {h1SourceInfo.id}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
+                        Key: {h1SourceInfo.key}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
+                        Type: {h1SourceInfo.type}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <span className="flex items-center gap-2 text-red-400 text-base">
+                  <AlertCircle className="h-5 w-5" />
                   Keine H1 gefunden – bitte Intro, Hero oder Product Hero Gallery Segment hinzufügen
                 </span>
               )}
             </div>
+            
+            {/* FKW Highlight */}
             {data.h1 && data.focusKeyword && (
-              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+              <div className="mt-3 px-4 py-3 bg-muted/20 border border-border/50 rounded text-base">
                 {highlightKeyword(data.h1, data.focusKeyword)}
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-2">
-              Auto-detect aus: Intro Title → Full Hero → Product Hero Gallery → Action Hero
+            
+            {/* Priority Explanation - larger */}
+            <p className="text-sm text-muted-foreground mt-3">
+              <span className="font-medium">Auto-detect Priorität:</span> Intro Title → Full Hero → Product Hero Gallery → Hero (Legacy) → Action Hero
             </p>
           </div>
         </TabsContent>
