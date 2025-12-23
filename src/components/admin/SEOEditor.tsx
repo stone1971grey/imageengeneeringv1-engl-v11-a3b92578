@@ -720,13 +720,18 @@ export const SEOEditor = ({
   };
 
   // Helper to get readable segment label
+  // IMPORTANT: There is NO "hero" segment type - only product-hero, full-hero, action-hero, product-hero-gallery
   const getSegmentLabel = (segmentType: string, segmentKey: string): string => {
     const typeLabels: Record<string, string> = {
       'full_hero': 'Full Hero',
       'full-hero': 'Full Hero',
-      'hero': 'Product Hero',
+      'hero': 'Product Hero', // Legacy mapping - "hero" is really product-hero
       'product-hero': 'Product Hero',
+      'product_hero': 'Product Hero',
+      'product-hero-gallery': 'Product Hero Gallery',
+      'product_hero_gallery': 'Product Hero Gallery',
       'action-hero': 'Action Hero',
+      'action_hero': 'Action Hero',
       'intro': 'Intro',
       'tiles': 'Tiles',
       'image-text': 'Image-Text',
@@ -753,8 +758,9 @@ export const SEOEditor = ({
   };
   
   // Helper to check if segment type stores data in page_segments JSON
+  // IMPORTANT: "hero" is legacy for product-hero
   const isPageSegmentType = (segmentType: string): boolean => {
-    return ['full-hero', 'full_hero', 'action-hero', 'hero', 'product-hero', 'banner', 'banner-p'].includes(segmentType);
+    return ['full-hero', 'full_hero', 'action-hero', 'hero', 'product-hero', 'product-hero-gallery', 'banner', 'banner-p'].includes(segmentType);
   };
 
   // Apply H1 to the suggested segment and convert old H1 to H2

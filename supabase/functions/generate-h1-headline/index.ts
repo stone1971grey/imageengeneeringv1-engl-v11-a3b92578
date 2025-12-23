@@ -48,13 +48,15 @@ serve(async (req) => {
       contextParts.push(`Focus Keyword: ${focusKeyword}`);
     }
 
-    // Normalize segment types and add available segments for placement suggestion
+    // Normalize segment types - IMPORTANT: There is NO "hero" type!
+    // Valid segment types are: full-hero, product-hero, product-hero-gallery, action-hero, intro, etc.
     const normalizeSegmentType = (type: string): string => {
       const typeMap: Record<string, string> = {
-        'hero': 'product-hero',
+        'hero': 'product-hero', // Legacy "hero" is now product-hero
         'full_hero': 'full-hero',
         'product_hero': 'product-hero',
         'action_hero': 'action-hero',
+        'product_hero_gallery': 'product-hero-gallery',
       };
       return typeMap[type] || type;
     };
@@ -100,26 +102,32 @@ H1 QUALITY CRITERIA (for ranking):
 4. Length - 40-60 characters is optimal
 5. Unique - Not generic, specific to this page
 
-PLACEMENT OPTIONS (provide multiple ranked options):
-For each H1 suggestion, provide 2-3 placement options ranked from best to acceptable:
+VALID SEGMENT TYPES (use ONLY these):
+- product-hero: Product detail pages with hero section (PREFERRED for existing pages)
+- product-hero-gallery: Product pages with image gallery
+- full-hero: Full-width hero for landing pages (only use if ALREADY exists, NEVER suggest creating new)
+- action-hero: Call-to-action focused hero
+- intro: Introduction section - great for SEO, does NOT change page character significantly
 
-1. BEST OPTION - Full Hero segment (full_hero)
-   - Maximum visibility at top of page
-   - Great for main landing pages
-   - Suggested position: 1 (first segment)
+IMPORTANT PLACEMENT RULES:
+1. NEVER suggest creating a new "full-hero" - it dramatically changes page character
+2. If a product-hero, product-hero-gallery, or action-hero already exists, USE IT (don't create new)
+3. If NO suitable hero segment exists, suggest creating an "intro" segment as the BEST alternative
+4. Always prefer EXISTING segments over creating new ones
+5. There is NO segment type called just "hero" - use "product-hero" instead
 
-2. SECOND OPTION - Intro segment (intro)  
-   - Good for content pages
-   - Also works well for SEO (contains description too)
-   - Suggested position: 2 (after hero if exists, or first)
+PLACEMENT OPTIONS (provide 2-3 ranked options):
+For each H1 suggestion, provide placement options ranked from best to acceptable:
 
-3. THIRD OPTION - Action Hero segment (action-hero)
-   - For call-to-action focused pages
-   - Suggested position: 1 (first segment)
-
-If a suitable segment does NOT exist, suggest creating a new one with:
-- createNew: true
-- suggestedPosition: where to insert in tab order (1 = first, 2 = second, etc.)
+1. BEST OPTION - Use EXISTING hero segment (product-hero, product-hero-gallery, full-hero, action-hero)
+   - Reference by segmentKey and segmentId
+   - createNew: false
+   
+2. ALTERNATIVE - Create Intro segment (intro)
+   - Does not change page character
+   - Great for SEO (contains description too)
+   - createNew: true
+   - suggestedTabPosition: 2 (usually after hero)
 
 Reply ONLY with a JSON object:
 {
@@ -132,12 +140,12 @@ Reply ONLY with a JSON object:
       "placementOptions": [
         {
           "rank": 1,
-          "segmentType": "full_hero",
-          "segmentKey": "existing_segment_key or null",
-          "segmentId": 123 or null,
+          "segmentType": "product-hero",
+          "segmentKey": "297",
+          "segmentId": 297,
           "createNew": false,
           "suggestedTabPosition": 1,
-          "note": "Best option: Place in Full Hero for maximum visibility at page top"
+          "note": "Best option: Place in existing Product Hero for immediate visibility"
         },
         {
           "rank": 2,
@@ -146,7 +154,7 @@ Reply ONLY with a JSON object:
           "segmentId": null,
           "createNew": true,
           "suggestedTabPosition": 2,
-          "note": "Alternative: Create new Intro segment after hero for SEO-optimized content"
+          "note": "Alternative: Create new Intro segment after hero - minimal impact on page design"
         }
       ],
       "priority": 1
@@ -160,15 +168,20 @@ ${focusKeyword ? `The focus keyword "${focusKeyword}" MUST appear EXACTLY in eac
 RANK BY QUALITY - best headline first!
 Consider: keyword position (start is best), character count (40-60 ideal), clarity, and compelling language.
 
-FOR EACH HEADLINE, provide 2-3 placement options ranked from best to acceptable:
-- If an existing segment can be used, reference it by key and id
-- If no suitable segment exists, set createNew: true and suggest the segment type + position
-- Always include suggestedTabPosition (1 = first position, 2 = second, etc.)
+CRITICAL PLACEMENT RULES:
+1. NEVER suggest creating a new full-hero segment - it changes the page character too much
+2. ALWAYS prefer EXISTING hero segments (product-hero, product-hero-gallery, full-hero, action-hero)
+3. If you need to suggest creating a new segment, ONLY suggest "intro" - it has minimal design impact
+4. There is NO segment type called just "hero" - use "product-hero" for product pages
+
+FOR EACH HEADLINE, provide 2-3 placement options:
+- FIRST: Use an EXISTING hero segment if available (reference by key and id, createNew: false)
+- SECOND: Create an "intro" segment if no suitable hero exists (createNew: true)
 
 Available segments on this page:
 ${normalizedSegments.length > 0
   ? normalizedSegments.map((s: any) => `- Type: ${s.type}, Key: ${s.key}, ID: ${s.id}`).join('\n')
-  : 'No segments exist yet - suggest creating new segments!'}
+  : 'No segments exist yet - suggest creating an intro segment!'}
 
 ${pageContext}
 
