@@ -1457,6 +1457,7 @@ const AdminDashboard = () => {
                 onChange={setSeoData}
                 onSave={handleSaveSEO}
                 pageSegments={pageSegments}
+                editorLanguage={editorLanguage}
               />
             </CardContent>
           </Card>

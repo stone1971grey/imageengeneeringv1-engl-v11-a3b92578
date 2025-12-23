@@ -42,6 +42,8 @@ interface SEOEditorProps {
    * Advanced features influence/override Basic features when active.
    */
   accessLevel?: 'basic' | 'advanced';
+  /** Current editor language for database queries */
+  editorLanguage?: 'en' | 'de' | 'ja' | 'ko' | 'zh';
 }
 
 export const SEOEditor = ({ 
@@ -50,7 +52,8 @@ export const SEOEditor = ({
   onChange, 
   onSave, 
   pageSegments = [],
-  accessLevel = 'advanced' // Default to advanced for now (full program)
+  accessLevel = 'advanced', // Default to advanced for now (full program)
+  editorLanguage = 'en' // Default to English
 }: SEOEditorProps) => {
   
   // Helper to check if advanced features are available
@@ -136,15 +139,16 @@ export const SEOEditor = ({
   // Load page content and segment registry
   useEffect(() => {
     const loadPageData = async () => {
-      console.log('[SEO Editor] Loading page data for:', pageSlug);
+      console.log('[SEO Editor] Loading page data for:', pageSlug, 'language:', editorLanguage);
       
-      // Load page content
+      // Load page content - FILTER BY LANGUAGE
       const { data: contentData, error: contentError } = await supabase
         .from('page_content')
         .select('*')
-        .eq('page_slug', pageSlug);
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
       
-      console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items');
+      console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items for language:', editorLanguage);
       
       if (!contentError && contentData) {
         setPageContent(contentData);
@@ -201,7 +205,7 @@ export const SEOEditor = ({
     };
     
     loadPageData();
-  }, [pageSlug]);
+  }, [pageSlug, editorLanguage]);
 
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
@@ -837,12 +841,23 @@ export const SEOEditor = ({
             );
             
             if (targetIdx !== -1) {
-              // Update the H1 field - for full-hero use titleLine1 or title
+              console.log('[SEO Editor] Found segment at index:', targetIdx, 'type:', segments[targetIdx].type);
+              
+              // Update the H1 field based on segment type
               if (targetSegment.segment_type === 'full-hero' || targetSegment.segment_type === 'full_hero') {
+                // Full Hero uses titleLine1/titleLine2
                 segments[targetIdx].data.titleLine1 = newH1;
                 segments[targetIdx].data.titleLine2 = ''; // Clear line 2
+                console.log('[SEO Editor] Updated full-hero titleLine1');
+              } else if (targetSegment.segment_type === 'hero' || targetSegment.segment_type === 'product-hero') {
+                // Product Hero uses hero_title/hero_subtitle
+                segments[targetIdx].data.hero_title = newH1;
+                segments[targetIdx].data.hero_subtitle = ''; // Clear subtitle
+                console.log('[SEO Editor] Updated product-hero hero_title');
               } else {
+                // Other segments use title
                 segments[targetIdx].data.title = newH1;
+                console.log('[SEO Editor] Updated generic title');
               }
               
               // Also set useH1 flag if available
@@ -1015,11 +1030,12 @@ export const SEOEditor = ({
       
       toast.success(`H1 erfolgreich in "${getSegmentLabel(targetSegment.segment_type, targetSegment.segment_key)}" (ID: ${targetSegment.segment_id}) gesetzt`);
       
-      // Refresh page content
+      // Refresh page content - WITH LANGUAGE FILTER
       const { data: refreshedContent } = await supabase
         .from('page_content')
         .select('*')
-        .eq('page_slug', pageSlug);
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
       
       if (refreshedContent) {
         setPageContent(refreshedContent);
