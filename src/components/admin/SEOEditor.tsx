@@ -537,22 +537,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
       {/* Basic SEO Fields */}
       <div className="p-6 bg-background border rounded-lg space-y-6">
-        <div>
-          <Label htmlFor="focus-keyword" className="flex items-center gap-2 font-medium">
-            Focus Keyword (FKW)
-            <Badge variant="outline" className="text-xs">Recommended</Badge>
-          </Label>
-          <Input
-            id="focus-keyword"
-            value={data.focusKeyword || ''}
-            onChange={(e) => handleChange('focusKeyword', e.target.value)}
-            placeholder="e.g. camera testing software"
-            className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            Main keyword for this page - should appear in Title, Description, and Slug
-          </p>
-        </div>
 
             <div>
               <Label htmlFor="seo-title" className="flex items-center gap-2 font-medium">
@@ -873,6 +857,26 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
         {/* Advanced Tab */}
         <TabsContent value="advanced" className="space-y-6">
+          {/* Focus Keyword */}
+          <div className="p-6 bg-background border rounded-lg space-y-6">
+            <div>
+              <Label htmlFor="focus-keyword" className="flex items-center gap-2 font-medium">
+                Focus Keyword (FKW)
+                <Badge variant="outline" className="text-xs">Recommended</Badge>
+              </Label>
+              <Input
+                id="focus-keyword"
+                value={data.focusKeyword || ''}
+                onChange={(e) => handleChange('focusKeyword', e.target.value)}
+                placeholder="e.g. camera testing software"
+                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+              />
+              <p className="text-sm text-muted-foreground mt-2">
+                Main keyword for this page - should appear in Title, Description, and Slug
+              </p>
+            </div>
+          </div>
+
           {/* Introduction (Read-only) */}
           <div className="p-6 bg-background border rounded-lg space-y-6">
             <div>
