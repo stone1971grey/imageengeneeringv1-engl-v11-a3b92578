@@ -300,56 +300,7 @@ export const AdminHeader = ({
 
         {/* Collapsible Sections for organized button groups */}
         <div className="mt-6 space-y-3">
-          {/* 1. Page Actions */}
-          {selectedPage && pageInfo && (
-            <CollapsibleSection 
-              title="Page Actions" 
-              icon={Layers} 
-              colorClass="bg-gradient-to-r from-orange-500 to-amber-500"
-              defaultOpen={true}
-            >
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
-                onClick={onAddSegmentClick}
-              >
-                <Layers className="h-4 w-4" />
-                Add Segment
-              </Button>
-
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
-                disabled={!hasDesignButtons}
-                title={!hasDesignButtons ? 'Design elements are only available for second and third-level navigation pages' : undefined}
-                onClick={onDesignElementClick}
-              >
-                <Palette className="h-4 w-4" />
-                Navigation Design
-              </Button>
-
-              <Button
-                variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
-                disabled={!hasDesignButtons}
-                title={!hasDesignButtons ? 'Navigation CTAs are only available for second and third-level navigation pages' : undefined}
-                onClick={onCtaClick}
-              >
-                <Zap className="h-4 w-4" />
-                Navigation CTA
-              </Button>
-
-              <ShortcutEditor
-                pageId={pageInfo.pageId}
-                pageSlug={pageInfo.pageSlug}
-                pageTitle={pageInfo.pageTitle}
-                currentTargetSlug={pageInfo.targetPageSlug || null}
-                onShortcutUpdated={loadPageInfo}
-              />
-            </CollapsibleSection>
-          )}
-
-          {/* 3. Content Management */}
+          {/* 1. Content Management */}
           <CollapsibleSection 
             title="Content Management" 
             icon={Database} 
@@ -398,7 +349,7 @@ export const AdminHeader = ({
             )}
           </CollapsibleSection>
 
-          {/* 4. Settings */}
+          {/* 2. Settings */}
           <CollapsibleSection 
             title="Settings" 
             icon={Settings} 
@@ -427,7 +378,56 @@ export const AdminHeader = ({
             )}
           </CollapsibleSection>
 
-          {/* 5. Page Tools */}
+          {/* 3. Page Actions */}
+          {selectedPage && pageInfo && (
+            <CollapsibleSection 
+              title="Page Actions" 
+              icon={Layers} 
+              colorClass="bg-sky-500"
+              defaultOpen={true}
+            >
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
+                onClick={onAddSegmentClick}
+              >
+                <Layers className="h-4 w-4" />
+                Add Segment
+              </Button>
+
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
+                disabled={!hasDesignButtons}
+                title={!hasDesignButtons ? 'Design elements are only available for second and third-level navigation pages' : undefined}
+                onClick={onDesignElementClick}
+              >
+                <Palette className="h-4 w-4" />
+                Navigation Design
+              </Button>
+
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
+                disabled={!hasDesignButtons}
+                title={!hasDesignButtons ? 'Navigation CTAs are only available for second and third-level navigation pages' : undefined}
+                onClick={onCtaClick}
+              >
+                <Zap className="h-4 w-4" />
+                Navigation CTA
+              </Button>
+
+              <ShortcutEditor
+                pageId={pageInfo.pageId}
+                pageSlug={pageInfo.pageSlug}
+                pageTitle={pageInfo.pageTitle}
+                currentTargetSlug={pageInfo.targetPageSlug || null}
+                onShortcutUpdated={loadPageInfo}
+              />
+            </CollapsibleSection>
+          )}
+
+          {/* 4. Page Tools */}
           <CollapsibleSection 
             title="Page Tools" 
             icon={FileText} 
