@@ -110,28 +110,34 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       if (registryData && registryData.length > 0) {
         const introRegistry = registryData[0];
         
-        // Check if the intro has a title (H1)
-        const { data: introContent } = await supabase
+        // Intro content is stored inside page_segments, not as separate section_key
+        const { data: pageSegmentsRow } = await supabase
           .from('page_content')
           .select('content_value')
           .eq('page_slug', pageSlug)
-          .eq('section_key', introRegistry.segment_key)
+          .eq('section_key', 'page_segments')
           .eq('language', language)
           .maybeSingle();
         
-        if (introContent?.content_value) {
+        if (pageSegmentsRow?.content_value) {
           try {
-            const introData = JSON.parse(introContent.content_value);
-            if (introData.title && introData.headingLevel === 'h1') {
+            const segments = JSON.parse(pageSegmentsRow.content_value);
+            // Find the intro segment by its ID
+            const introSegment = segments.find((seg: any) => 
+              String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
+            );
+            
+            if (introSegment?.data?.title && introSegment.data.headingLevel === 'h1') {
               setDetectedH1Source({
                 type: 'intro',
                 key: introRegistry.segment_key,
                 label: `Intro (ID: ${introRegistry.segment_id})`
               });
+              console.log('[PHG Editor] Found external H1 in Intro segment:', introRegistry.segment_id);
               return;
             }
           } catch (e) {
-            console.error('[PHG Editor] Failed to parse intro content:', e);
+            console.error('[PHG Editor] Failed to parse page_segments:', e);
           }
         }
       }
