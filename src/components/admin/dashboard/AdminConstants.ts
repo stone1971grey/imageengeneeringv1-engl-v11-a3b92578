@@ -20,6 +20,21 @@ export const INDUSTRY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
   'your-solution/photography': 'Photo & Video',
 };
 
+// Mapping from parent page slugs to navigation "products" categories
+export const PRODUCTS_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+  'products/test-charts': 'Test Charts',
+  'products/illumination-devices': 'Illumination Devices',
+  'products/software': 'Software',
+  'products/camera-test-systems': 'Camera Test Systems',
+};
+
+// Mapping from parent page slugs to navigation "company" categories
+export const COMPANY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+  'company': 'Company',
+  'company/news': 'News',
+  'company/about': 'About',
+};
+
 // Multilingual Rainbow - Languages Definition
 export const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
