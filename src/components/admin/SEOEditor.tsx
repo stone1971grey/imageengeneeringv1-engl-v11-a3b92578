@@ -1251,24 +1251,26 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               )}
             </div>
 
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerateH1Headlines}
-              disabled={isGeneratingH1}
-              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-            >
-              {isGeneratingH1 ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analysiere...
-                </>
-              ) : (
-                <>
-                  <GeminiIcon className="h-4 w-4 mr-2" />
-                  Smart H1 Generator
-                </>
-              )}
-            </Button>
+            {/* Generate Button - aligned right like Smart FKW */}
+            <div className="flex justify-end">
+              <Button
+                onClick={handleGenerateH1Headlines}
+                disabled={isGeneratingH1}
+                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isGeneratingH1 ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analysiere...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart H1
+                  </>
+                )}
+              </Button>
+            </div>
             
             {/* H1 Suggestions */}
             {showH1Suggestions && h1Suggestions.length > 0 && (
