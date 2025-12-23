@@ -7,6 +7,20 @@
  */
 export const getDefaultSegmentData = (templateType: string): Record<string, any> => {
   switch (templateType) {
+    case 'hero':
+      return {
+        hero_title: 'New Hero Section',
+        hero_subtitle: '',
+        hero_description: '',
+        hero_cta_text: 'Learn More',
+        hero_image_url: '',
+        hero_image_metadata: null,
+        hero_image_position: 'right',
+        hero_layout_ratio: '2-5',
+        hero_top_spacing: 'medium',
+        hero_cta_link: '#',
+        hero_cta_style: 'standard'
+      };
     case 'meta-navigation':
       return {
         links: [
@@ -231,6 +245,22 @@ export const getDefaultSegmentData = (templateType: string): Record<string, any>
  */
 export const getLanguageIndependentFields = (templateType: string, data: Record<string, any>): Record<string, any> => {
   switch (templateType) {
+    case 'hero':
+      return {
+        hero_image_url: data.hero_image_url || '',
+        hero_image_metadata: data.hero_image_metadata || null,
+        hero_cta_link: data.hero_cta_link || '#',
+        hero_cta_style: data.hero_cta_style || 'standard',
+        hero_image_position: data.hero_image_position || 'right',
+        hero_layout_ratio: data.hero_layout_ratio || '2-5',
+        hero_top_spacing: data.hero_top_spacing || 'medium',
+        // Text fields empty
+        hero_title: '',
+        hero_subtitle: '',
+        hero_description: '',
+        hero_cta_text: ''
+      };
+    
     case 'product-hero-gallery':
       return {
         imagePosition: data.imagePosition || 'right',
