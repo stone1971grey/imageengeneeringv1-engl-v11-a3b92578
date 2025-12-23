@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.generate-focus-keyword]
 verify_jwt = true
+
+[functions.generate-h1-headline]
+verify_jwt = true
