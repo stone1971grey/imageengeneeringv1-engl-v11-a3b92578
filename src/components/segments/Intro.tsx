@@ -11,7 +11,7 @@ const Intro = ({
     <section className="pt-10 pb-2 bg-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-black mb-8 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight">
             {title}
           </h1>
           <p className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line">
