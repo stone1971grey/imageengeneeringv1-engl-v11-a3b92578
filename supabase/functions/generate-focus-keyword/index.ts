@@ -55,32 +55,38 @@ serve(async (req) => {
       hasSlug: !!pageData.slug,
     });
 
-    const systemPrompt = `You are an SEO expert who analyzes web pages and suggests focus keywords.
+    const systemPrompt = `You are an SEO expert specializing in focus keyword selection. Your task is to identify the MAIN QUESTION this page answers.
 
-Your task:
-1. Analyze the given page content
-2. Identify 3-5 relevant focus keywords IN ENGLISH
-3. Prioritize by SEO relevance and search intent
-4. Prefer specific, meaningful keywords over generic terms
-5. Consider the industry (Image Quality Testing, Camera Testing, Test Equipment)
+CRITICAL RULES FOR GOOD FOCUS KEYWORDS:
+✔ Realistic search demand - people actually search for this term
+✔ Clear search intent - the intent behind the search is obvious  
+✔ Not too broad - avoid generic terms like "SEO", "camera", "test"
+✔ Not too specific - avoid overly technical terms like "seo-suite-cms-feature-2025"
+✔ Exact content match - the keyword must precisely match what the page offers
 
-Rules for good focus keywords:
-- 1-3 words (ideally 2 words)
-- Specific to the page content
-- Search volume relevant
-- Not too generic (e.g., "test" alone is too unspecific)
+KEY INSIGHT: A page answers ONE main question → this question IS the focus keyword.
+
+Technical guidelines:
+- 1-4 words (ideally 2-3 words)
 - Lowercase
 - MUST BE IN ENGLISH
+- Consider the industry context: Image Quality Testing, Camera Testing, Test Equipment, Automotive Vision Testing
 
-Reply ONLY with a JSON array of objects, without additional text:
+Your ranking criteria (most important first):
+1. Search intent match - Does the keyword reflect what the user wants to find?
+2. Content relevance - Does the page actually deliver on this keyword?
+3. Search volume potential - Would real users search for this?
+4. Specificity balance - Not too broad, not too niche
+
+Reply ONLY with a JSON array, RANKED BY QUALITY (best keyword first):
 [
-  {"keyword": "example keyword", "reason": "Brief explanation why this keyword fits", "priority": 1},
-  {"keyword": "second keyword", "reason": "Explanation", "priority": 2}
-]
+  {"keyword": "best keyword", "reason": "Why this is #1 - matches user intent and page content perfectly", "priority": 1},
+  {"keyword": "second best", "reason": "Why this ranks #2", "priority": 2}
+]`;
 
-priority: 1 = best recommendation, higher numbers = less prioritized`;
+    const userPrompt = `Analyze this page and suggest 3-5 focus keywords in English. RANK BY QUALITY - best keyword first!
 
-    const userPrompt = `Analyze this page and suggest 3-5 focus keywords in English:
+Ask yourself: "What MAIN QUESTION does this page answer? What would a user type in Google to find exactly THIS page?"
 
 ${pageContext}
 
