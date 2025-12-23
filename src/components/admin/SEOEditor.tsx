@@ -127,6 +127,11 @@ export const SEOEditor = ({
   const [isApplyingH1, setIsApplyingH1] = useState(false);
   const [isCreatingSegment, setIsCreatingSegment] = useState(false);
   
+  // Collapsible state for SEO Health Check and SERP Preview
+  const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
+  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(true);
+  const [isSerpPreviewOpen, setIsSerpPreviewOpen] = useState(true);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -1089,6 +1094,10 @@ export const SEOEditor = ({
       // Clear selection after applying (but keep changelog visible)
       setSelectedH1Suggestion(null);
       
+      // Auto-save after H1 was applied to segment
+      console.log('[SEO Editor] Auto-saving SEO changes after H1 update...');
+      onSave();
+      
     } catch (error) {
       console.error('[SEO Editor] Error applying H1:', error);
       toast.error('Fehler beim Anwenden der H1');
@@ -1144,10 +1153,6 @@ export const SEOEditor = ({
     
     return parts.length > 0 ? parts : text;
   };
-
-  const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
-  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(true);
-  const [isSerpPreviewOpen, setIsSerpPreviewOpen] = useState(true);
 
   // Calculate basic and advanced check counts
   const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
