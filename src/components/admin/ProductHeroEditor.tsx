@@ -758,26 +758,28 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
           </div>
 
           <div className="mt-6">
-            {/* Background Removal Checkbox */}
-            <div className="flex items-center space-x-3 mb-4 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-500/30">
-              <Checkbox
-                id="remove-background"
-                checked={removeBackgroundEnabled}
-                onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
-                className="border-purple-400 data-[state=checked]:bg-purple-600"
-              />
-              <div className="flex-1">
-                <Label htmlFor="remove-background" className="text-white cursor-pointer flex items-center gap-2">
-                  <span>🪄</span> Auto-Remove Background (AI)
-                </Label>
-                <p className="text-xs text-gray-400 mt-1">
-                  Automatically removes the background when uploading a new image
-                </p>
+            {/* Background Removal Checkbox - Only show for EN since images are shared */}
+            {language === 'en' && (
+              <div className="flex items-center space-x-4 mb-4 p-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg border border-purple-400 shadow-lg shadow-purple-500/30">
+                <Checkbox
+                  id="remove-background"
+                  checked={removeBackgroundEnabled}
+                  onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
+                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-purple-600 h-5 w-5"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="remove-background" className="text-white cursor-pointer flex items-center gap-2 text-base font-semibold">
+                    <GeminiIcon className="w-5 h-5" /> Auto-Remove Background (AI)
+                  </Label>
+                  <p className="text-sm text-white/80 mt-1">
+                    Automatically removes the background when uploading a new image
+                  </p>
+                </div>
+                {isRemovingBackground && (
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                )}
               </div>
-              {isRemovingBackground && (
-                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
-              )}
-            </div>
+            )}
 
             <MediaSelector
               onFileSelect={async (file) => {
