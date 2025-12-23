@@ -6,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Sparkles, Loader2 } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { GeminiIcon } from "@/components/GeminiIcon";
 
 interface SEOData {
   title?: string;
@@ -1050,35 +1051,35 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Label>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateFocusKeywords}
-                  disabled={isGeneratingKeywords}
-                  className="gap-1.5 text-xs h-7 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/20 hover:to-blue-500/20"
-                >
-                  {isGeneratingKeywords ? (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Analysiere...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-3 w-3" />
-                      Smart FKW
-                    </>
-                  )}
-                </Button>
               </div>
             </div>
             
-            <Input
-              id="focus-keyword"
-              value={data.focusKeyword || ''}
-              onChange={(e) => handleChange('focusKeyword', e.target.value)}
-              placeholder="e.g. camera testing software"
-              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
-            />
+            <div className="flex gap-2">
+              <Input
+                id="focus-keyword"
+                value={data.focusKeyword || ''}
+                onChange={(e) => handleChange('focusKeyword', e.target.value)}
+                placeholder="e.g. camera testing software"
+                className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 flex-1"
+              />
+              <Button
+                onClick={handleGenerateFocusKeywords}
+                disabled={isGeneratingKeywords}
+                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isGeneratingKeywords ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analysiere...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart FKW
+                  </>
+                )}
+              </Button>
+            </div>
             
             {/* Keyword Suggestions */}
             {showKeywordSuggestions && keywordSuggestions.length > 0 && (
