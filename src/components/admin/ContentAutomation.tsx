@@ -433,8 +433,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border-gray-600 shadow-2xl">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-xl border border-white/10">
-            <GeminiIcon className="h-8 w-8" rainbow />
+          <div className="p-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl">
+            <GeminiIcon className="h-8 w-8 text-white" />
           </div>
           <div>
             <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
