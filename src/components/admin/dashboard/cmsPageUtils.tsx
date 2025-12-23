@@ -1,7 +1,7 @@
 // CMS Page Creation Utilities
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { INDUSTRY_PARENT_CATEGORY_BY_SLUG } from './AdminConstants';
+import { INDUSTRY_PARENT_CATEGORY_BY_SLUG, PRODUCTS_PARENT_CATEGORY_BY_SLUG, COMPANY_PARENT_CATEGORY_BY_SLUG } from './AdminConstants';
 
 interface CreateCMSPageParams {
   slug: string;
@@ -221,21 +221,38 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
 
     toast.success("✅ Page content initialized!");
 
-    // Automatically create navigation_links entries
-    const industryParentCategory = parent_slug_value
-      ? INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]
-      : undefined;
+    // Automatically create navigation_links entries based on parent category
+    let navCategory: string | undefined;
+    let navParentCategory: string | undefined;
+    let flyoutName: string | undefined;
 
-    if (industryParentCategory) {
+    // Check which category this page belongs to
+    if (parent_slug_value) {
+      if (INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'industries';
+        navParentCategory = INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Your Solution';
+      } else if (PRODUCTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'products';
+        navParentCategory = PRODUCTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Products';
+      } else if (COMPANY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
+        navCategory = 'company';
+        navParentCategory = COMPANY_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
+        flyoutName = 'Company';
+      }
+    }
+
+    if (navCategory && navParentCategory) {
       try {
         const navigationRows = languages.map((lang) => ({
-          category: 'industries',
+          category: navCategory,
           language: lang,
           active: true,
           position: 0,
           slug: `/${slug}`,
-          label_key: `industries.${industryParentCategory}.${pageTitle}`,
-          parent_category: industryParentCategory,
+          label_key: `${navCategory}.${navParentCategory}.${pageTitle}`,
+          parent_category: navParentCategory,
           parent_label: pageTitle,
           description: '',
           icon_key: null,
@@ -248,11 +265,13 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
         if (navError) {
           console.error('[createNewCMSPageWithSlug] Error creating navigation_links:', navError);
         } else {
-          toast.success('✅ Navigation entry created – page is now visible in Your Solution flyout');
+          toast.success(`✅ Navigation entry created – page is now visible in ${flyoutName} flyout`);
         }
       } catch (navErr) {
         console.error('[createNewCMSPageWithSlug] Unexpected navigation_links error:', navErr);
       }
+    } else {
+      console.log(`[createNewCMSPageWithSlug] No navigation category found for parent: ${parent_slug_value}`);
     }
 
     // Grant editor access if needed
