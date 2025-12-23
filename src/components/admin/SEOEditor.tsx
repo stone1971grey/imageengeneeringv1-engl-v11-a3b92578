@@ -35,9 +35,26 @@ interface SEOEditorProps {
   onChange: (data: SEOData) => void;
   onSave: () => void;
   pageSegments?: any[];
+  /** 
+   * Access level for SEO features:
+   * - 'basic': Only basic SEO features (Title, Meta, Slug, H1 detection)
+   * - 'advanced': Full access including Focus Keywords, Smart H1, Smart FKW, etc.
+   * Advanced features influence/override Basic features when active.
+   */
+  accessLevel?: 'basic' | 'advanced';
 }
 
-export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] }: SEOEditorProps) => {
+export const SEOEditor = ({ 
+  pageSlug, 
+  data, 
+  onChange, 
+  onSave, 
+  pageSegments = [],
+  accessLevel = 'advanced' // Default to advanced for now (full program)
+}: SEOEditorProps) => {
+  
+  // Helper to check if advanced features are available
+  const isAdvancedMode = accessLevel === 'advanced';
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -813,39 +830,51 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             SEO Health Check
           </h3>
           <div className="flex items-center gap-2">
+            {/* Show appropriate total based on access level */}
             <div className={`h-2.5 w-2.5 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
-              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500'
+              isAdvancedMode
+                ? (Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
+                   Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500')
+                : (basicPassedCount >= 4 ? 'bg-green-500' : 
+                   basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
             }`} />
             <span className="text-sm font-medium">
-              {Object.values(checks).filter(Boolean).length}/10 Checks
+              {isAdvancedMode 
+                ? `${Object.values(checks).filter(Boolean).length}/10 Checks`
+                : `${basicPassedCount}/5 Checks`
+              }
             </span>
+            {isAdvancedMode && (
+              <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
+            )}
           </div>
         </div>
 
-        {/* Toggle Buttons for Basic/Advanced */}
-        <div className="flex gap-2 mb-4">
-          <button
-            onClick={() => setHealthCheckView('basic')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              healthCheckView === 'basic' 
-                ? 'bg-[#f9dc24] text-black' 
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Basic ({basicPassedCount}/5)
-          </button>
-          <button
-            onClick={() => setHealthCheckView('advanced')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              healthCheckView === 'advanced' 
-                ? 'bg-[#f9dc24] text-black' 
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Advanced ({advancedPassedCount}/5)
-          </button>
-        </div>
+        {/* Toggle Buttons for Basic/Advanced - Only show in Advanced mode */}
+        {isAdvancedMode && (
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setHealthCheckView('basic')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                healthCheckView === 'basic' 
+                  ? 'bg-[#f9dc24] text-black' 
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              Basic ({basicPassedCount}/5)
+            </button>
+            <button
+              onClick={() => setHealthCheckView('advanced')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                healthCheckView === 'advanced' 
+                  ? 'bg-[#f9dc24] text-black' 
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              Advanced ({advancedPassedCount}/5)
+            </button>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Health Check - Always visible */}
@@ -883,8 +912,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </div>
           </div>
 
-          {/* Advanced Health Check - Only visible when Advanced is selected */}
-          {healthCheckView === 'advanced' && (
+          {/* Advanced Health Check - Only visible in Advanced mode when Advanced tab is selected */}
+          {isAdvancedMode && healthCheckView === 'advanced' && (
             <div className="space-y-3">
               <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
               <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
@@ -931,10 +960,15 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted">
+        <TabsList className={`grid w-full mb-6 bg-muted ${isAdvancedMode ? 'grid-cols-3' : 'grid-cols-2'}`}>
           <TabsTrigger value="basics" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
           <TabsTrigger value="social" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
-          <TabsTrigger value="advanced" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Advanced</TabsTrigger>
+          {isAdvancedMode && (
+            <TabsTrigger value="advanced" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-1">
+              Advanced
+              <GeminiIcon className="h-3 w-3 ml-1" />
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Basics Tab */}
@@ -948,7 +982,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Label>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
-                {data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                {isAdvancedMode && data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
                 )}
               </div>
@@ -960,7 +994,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
               className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
-            {data.focusKeyword && data.title && (
+            {isAdvancedMode && data.focusKeyword && data.title && (
               <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
                 {highlightKeyword(data.title, data.focusKeyword)}
               </div>
@@ -991,7 +1025,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Label>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
-                {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                {isAdvancedMode && data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
                 )}
               </div>
@@ -1004,7 +1038,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               className="min-h-[100px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
               rows={3}
             />
-            {data.focusKeyword && data.metaDescription && (
+            {isAdvancedMode && data.focusKeyword && data.metaDescription && (
               <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
                 {highlightKeyword(data.metaDescription, data.focusKeyword)}
               </div>
@@ -1065,7 +1099,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Label>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
-                {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                {isAdvancedMode && data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
                 )}
               </div>
@@ -1266,7 +1300,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
         </TabsContent>
 
-        {/* Advanced Tab */}
+        {/* Advanced Tab - Only rendered in Advanced mode */}
+        {isAdvancedMode && (
         <TabsContent value="advanced" className="space-y-4">
           
           {/* Focus Keyword */}
@@ -1605,6 +1640,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </p>
           </div>
         </TabsContent>
+        )}
       </Tabs>
 
       {/* Save Button */}
