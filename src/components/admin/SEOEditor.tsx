@@ -716,14 +716,55 @@ export const SEOEditor = ({
       }];
     }
     
-    // Enrich placement options with segment IDs from registry
-    allPlacementOptions = allPlacementOptions.map(opt => {
-      if (!opt.segmentId && opt.segmentKey) {
-        const foundSeg = segmentRegistry.find(seg => 
-          seg.segment_key === opt.segmentKey && !seg.deleted
-        );
-        return { ...opt, segmentId: foundSeg?.segment_id || null };
+    // Enrich placement options with segment IDs from actual page_content (not registry)
+    // Parse page_segments to get real segment IDs
+    const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+    let actualSegments: any[] = [];
+    if (pageSegmentsEntry) {
+      try {
+        actualSegments = JSON.parse(pageSegmentsEntry.content_value);
+      } catch (e) {
+        console.error('[SEO Editor] Failed to parse page_segments for enrichment:', e);
       }
+    }
+    
+    allPlacementOptions = allPlacementOptions.map(opt => {
+      // First try to find by key in actual segments
+      if (opt.segmentKey) {
+        const foundInContent = actualSegments.find((seg: any) => 
+          seg.id === opt.segmentKey || 
+          seg.segmentKey === opt.segmentKey
+        );
+        if (foundInContent) {
+          return { 
+            ...opt, 
+            segmentId: foundInContent.segmentId || foundInContent.id || opt.segmentKey 
+          };
+        }
+      }
+      
+      // If segment type matches, find first matching segment in actual content
+      if (!opt.segmentId && opt.segmentType) {
+        const typesToMatch = [opt.segmentType];
+        if (opt.segmentType === 'product-hero' || opt.segmentType === 'product-hero-gallery') {
+          typesToMatch.push('hero');
+        }
+        if (opt.segmentType === 'hero') {
+          typesToMatch.push('product-hero', 'product-hero-gallery');
+        }
+        
+        const foundByType = actualSegments.find((seg: any) => 
+          typesToMatch.includes(seg.type) || typesToMatch.includes(seg.segmentType)
+        );
+        if (foundByType) {
+          return { 
+            ...opt, 
+            segmentId: foundByType.segmentId || foundByType.id,
+            segmentKey: foundByType.segmentKey || foundByType.id 
+          };
+        }
+      }
+      
       return opt;
     });
     
@@ -1111,14 +1152,20 @@ export const SEOEditor = ({
       }
       
       // Update the h1 in the SEO data (this syncs Basic and Advanced)
-      handleChange('h1', newH1);
+      // IMPORTANT: Use onChange directly with the updated h1 value
+      const updatedData = { ...data, h1: newH1 };
+      onChange(updatedData);
       
       // Clear selection after applying (but keep changelog visible)
       setSelectedH1Suggestion(null);
       
       // Auto-save after H1 was applied to segment
+      // Use setTimeout to ensure React state update has propagated
       console.log('[SEO Editor] Auto-saving SEO changes after H1 update...');
-      onSave();
+      setTimeout(() => {
+        onSave();
+        toast.success('H1 automatisch gespeichert', { duration: 3000 });
+      }, 100);
       
     } catch (error) {
       console.error('[SEO Editor] Error applying H1:', error);
