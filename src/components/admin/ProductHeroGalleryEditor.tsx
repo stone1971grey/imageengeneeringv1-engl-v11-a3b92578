@@ -40,6 +40,8 @@ interface ProductHeroGalleryData {
   imagePosition: 'left' | 'right';
   layoutRatio: '1-1' | '2-3' | '2-5';
   topSpacing: 'small' | 'medium' | 'large' | 'extra-large';
+  imageMaxWidth: number | null;
+  imageMaxHeight: number | null;
   cta1Text: string;
   cta1Link: string;
   cta1Style: 'standard' | 'technical' | 'outline-white';
@@ -78,7 +80,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     cta2Style: 'standard',
     imagePosition: 'right',
     layoutRatio: '1-1',
-    topSpacing: 'medium'
+    topSpacing: 'medium',
+    imageMaxWidth: null,
+    imageMaxHeight: null
   });
 
   useEffect(() => {
@@ -761,6 +765,40 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Image Size Constraints */}
+            <div className="space-y-2">
+              <Label>Image Size Constraints (optional)</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-500 text-xs mb-1 block">Max Width (px)</Label>
+                  <Input
+                    type="number"
+                    value={localData.imageMaxWidth || ''}
+                    onChange={(e) => {
+                      const updatedData = { ...localData, imageMaxWidth: e.target.value ? parseInt(e.target.value) : null };
+                      setLocalData(updatedData);
+                      onChange(updatedData);
+                    }}
+                    placeholder="e.g. 500"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-500 text-xs mb-1 block">Max Height (px)</Label>
+                  <Input
+                    type="number"
+                    value={localData.imageMaxHeight || ''}
+                    onChange={(e) => {
+                      const updatedData = { ...localData, imageMaxHeight: e.target.value ? parseInt(e.target.value) : null };
+                      setLocalData(updatedData);
+                      onChange(updatedData);
+                    }}
+                    placeholder="e.g. 400"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">Leave empty for auto-sizing. Applies to all gallery images.</p>
             </div>
           </TabsContent>
 
