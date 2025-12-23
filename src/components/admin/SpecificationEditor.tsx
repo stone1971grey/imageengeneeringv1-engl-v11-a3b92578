@@ -257,7 +257,7 @@ const SpecificationEditor = ({
         {/* Title */}
         <div>
           <Label htmlFor={`spec-title-${segmentId}`} className="text-white text-base">
-            Section Title
+            Section Title (H2)
           </Label>
           <Input
             id={`spec-title-${segmentId}`}

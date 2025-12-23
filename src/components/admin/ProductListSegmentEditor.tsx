@@ -369,7 +369,7 @@ export const ProductListSegmentEditor = ({
     return (
       <div className="space-y-4 p-4 bg-background border rounded-lg">
         <div className="space-y-2">
-          <Label>Section Title</Label>
+          <Label>Section Title (H2)</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}

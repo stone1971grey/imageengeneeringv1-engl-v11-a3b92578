@@ -230,7 +230,7 @@ const DownloadsSegmentEditorComponent = ({
 
       <div className="space-y-4">
         <div>
-          <Label className="text-white">Segment Title</Label>
+          <Label className="text-white">Segment Title (H2)</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}

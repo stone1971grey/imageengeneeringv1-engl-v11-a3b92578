@@ -265,7 +265,7 @@ const EventsSegmentEditorComponent = ({
         </div>
         
         <div className="space-y-2">
-          <Label className="text-white">Section Title</Label>
+          <Label className="text-white">Section Title (H2)</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}

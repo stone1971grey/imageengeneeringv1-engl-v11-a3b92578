@@ -352,7 +352,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
       <Card className="bg-gray-700 border-gray-600">
         <CardContent className="pt-6 space-y-4">
           <div>
-            <Label htmlFor="tiles-title" className="text-white">Section Title</Label>
+            <Label htmlFor="tiles-title" className="text-white">Section Title (H2)</Label>
             <Input
               id="tiles-title"
               value={title}

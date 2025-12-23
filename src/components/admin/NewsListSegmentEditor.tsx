@@ -231,7 +231,7 @@ const NewsListSegmentEditorComponent = ({
       </h3>
 
       <div className="space-y-2">
-        <Label htmlFor="title">Section Title</Label>
+        <Label htmlFor="title">Section Title (H2)</Label>
         <Input
           id="title"
           value={title}
