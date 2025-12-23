@@ -82,25 +82,55 @@ H1 QUALITY CRITERIA (for ranking):
 4. Length - 40-60 characters is optimal
 5. Unique - Not generic, specific to this page
 
-PLACEMENT SUGGESTIONS:
-- Consider which segment type would be best for the H1
-- Full Hero segments are ideal for main H1
-- Intro segments can also contain H1
-- If no suitable segment exists, suggest creating one
+PLACEMENT OPTIONS (provide multiple ranked options):
+For each H1 suggestion, provide 2-3 placement options ranked from best to acceptable:
+
+1. BEST OPTION - Full Hero segment (full_hero)
+   - Maximum visibility at top of page
+   - Great for main landing pages
+   - Suggested position: 1 (first segment)
+
+2. SECOND OPTION - Intro segment (intro)  
+   - Good for content pages
+   - Also works well for SEO (contains description too)
+   - Suggested position: 2 (after hero if exists, or first)
+
+3. THIRD OPTION - Action Hero segment (action-hero)
+   - For call-to-action focused pages
+   - Suggested position: 1 (first segment)
+
+If a suitable segment does NOT exist, suggest creating a new one with:
+- createNew: true
+- suggestedPosition: where to insert in tab order (1 = first, 2 = second, etc.)
 
 Reply ONLY with a JSON object:
 {
   "suggestions": [
     {
       "headline": "Optimized H1 Headline Here",
-      "reason": "Why this is the #1 choice - keyword position, length, clarity",
+      "reason": "Why this is the best choice",
       "characterCount": 45,
       "keywordPosition": "start|middle|end",
-      "placementSuggestion": {
-        "segmentType": "full_hero|intro|action-hero",
-        "segmentKey": "existing_segment_key or null",
-        "note": "Place in Full Hero for maximum visibility"
-      },
+      "placementOptions": [
+        {
+          "rank": 1,
+          "segmentType": "full_hero",
+          "segmentKey": "existing_segment_key or null",
+          "segmentId": 123 or null,
+          "createNew": false,
+          "suggestedTabPosition": 1,
+          "note": "Best option: Place in Full Hero for maximum visibility at page top"
+        },
+        {
+          "rank": 2,
+          "segmentType": "intro",
+          "segmentKey": null,
+          "segmentId": null,
+          "createNew": true,
+          "suggestedTabPosition": 2,
+          "note": "Alternative: Create new Intro segment after hero for SEO-optimized content"
+        }
+      ],
       "priority": 1
     }
   ]
@@ -112,7 +142,15 @@ ${focusKeyword ? `The focus keyword "${focusKeyword}" MUST appear EXACTLY in eac
 RANK BY QUALITY - best headline first!
 Consider: keyword position (start is best), character count (40-60 ideal), clarity, and compelling language.
 
-Also suggest the best segment for placing this H1.
+FOR EACH HEADLINE, provide 2-3 placement options ranked from best to acceptable:
+- If an existing segment can be used, reference it by key and id
+- If no suitable segment exists, set createNew: true and suggest the segment type + position
+- Always include suggestedTabPosition (1 = first position, 2 = second, etc.)
+
+Available segments on this page:
+${segments && Array.isArray(segments) && segments.length > 0
+  ? segments.map((s: any) => `- Type: ${s.type}, Key: ${s.key}, ID: ${s.id}`).join('\n')
+  : 'No segments exist yet - suggest creating new segments!'}
 
 ${pageContext}
 
@@ -186,14 +224,50 @@ Reply ONLY with the JSON object, without markdown formatting or additional text.
 
     const validSuggestions = result.suggestions
       .filter((s: any) => s.headline && typeof s.headline === 'string')
-      .map((s: any, index: number) => ({
-        headline: s.headline,
-        reason: s.reason || 'AI-generated suggestion',
-        characterCount: s.characterCount || s.headline.length,
-        keywordPosition: s.keywordPosition || 'unknown',
-        placementSuggestion: s.placementSuggestion || null,
-        priority: s.priority || index + 1
-      }))
+      .map((s: any, index: number) => {
+        // Handle both old single placementSuggestion and new placementOptions array
+        let placementOptions = s.placementOptions || [];
+        
+        // Fallback: convert old format to new format
+        if (placementOptions.length === 0 && s.placementSuggestion) {
+          placementOptions = [{
+            rank: 1,
+            segmentType: s.placementSuggestion.segmentType,
+            segmentKey: s.placementSuggestion.segmentKey,
+            segmentId: s.placementSuggestion.segmentId || null,
+            createNew: !s.placementSuggestion.segmentKey,
+            suggestedTabPosition: 1,
+            note: s.placementSuggestion.note
+          }];
+        }
+        
+        // Ensure all placement options have required fields
+        placementOptions = placementOptions.map((opt: any, optIndex: number) => ({
+          rank: opt.rank || optIndex + 1,
+          segmentType: opt.segmentType || 'intro',
+          segmentKey: opt.segmentKey || null,
+          segmentId: opt.segmentId || null,
+          createNew: opt.createNew ?? !opt.segmentKey,
+          suggestedTabPosition: opt.suggestedTabPosition || 1,
+          note: opt.note || `Option ${optIndex + 1}`
+        }));
+        
+        return {
+          headline: s.headline,
+          reason: s.reason || 'AI-generated suggestion',
+          characterCount: s.characterCount || s.headline.length,
+          keywordPosition: s.keywordPosition || 'unknown',
+          placementOptions: placementOptions.sort((a: any, b: any) => a.rank - b.rank).slice(0, 3),
+          // Keep backward compatibility
+          placementSuggestion: placementOptions[0] ? {
+            segmentType: placementOptions[0].segmentType,
+            segmentKey: placementOptions[0].segmentKey,
+            segmentId: placementOptions[0].segmentId,
+            note: placementOptions[0].note
+          } : null,
+          priority: s.priority || index + 1
+        };
+      })
       .sort((a: any, b: any) => a.priority - b.priority)
       .slice(0, 5);
 
