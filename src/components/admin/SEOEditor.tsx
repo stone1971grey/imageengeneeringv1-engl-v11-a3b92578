@@ -368,7 +368,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
   return (
     <div className="space-y-6">
-      {/* SEO Score Overview - Always visible */}
+      {/* SEO Health Check - Split into Basic and Advanced */}
       <div className="p-6 bg-background border rounded-lg">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold flex items-center gap-2">
@@ -377,62 +377,72 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </h3>
           <div className="flex items-center gap-2">
             <div className={`h-2.5 w-2.5 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500' : 
-              Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+              Object.values(checks).filter(Boolean).length >= 6 ? 'bg-green-500' : 
+              Object.values(checks).filter(Boolean).length >= 4 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-medium">
-              {Object.values(checks).filter(Boolean).length}/7 Checks
+              {Object.values(checks).filter(Boolean).length}/8 Checks
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.titleLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.titleLength)}
-            <span className="text-sm font-medium">Title Length</span>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Basic Health Check - Left Column */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic</h4>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.titleLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.titleLength)}
+              <span className="text-sm font-medium">Title Length</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.descriptionLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.descriptionLength)}
+              <span className="text-sm font-medium">Description Length</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.hasH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.hasH1)}
+              <span className="text-sm font-medium">H1 Present</span>
+            </div>
           </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.descriptionLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.descriptionLength)}
-            <span className="text-sm font-medium">Description Length</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.keywordInTitle)}
-            <span className="text-sm font-medium">FKW in Title</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.keywordInDescription)}
-            <span className="text-sm font-medium">FKW in Description</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.keywordInSlug)}
-            <span className="text-sm font-medium">FKW in Slug</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.hasH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.hasH1)}
-            <span className="text-sm font-medium">H1 Present</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.keywordInH1)}
-            <span className="text-sm font-medium">FKW in H1</span>
-          </div>
-          <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-            checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-          }`}>
-            {getStatusIcon(checks.keywordInIntroduction)}
-            <span className="text-sm font-medium">FKW in Introduction</span>
+
+          {/* Advanced Health Check - Right Column */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.keywordInTitle ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.keywordInTitle)}
+              <span className="text-sm font-medium">FKW in Title</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.keywordInDescription ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.keywordInDescription)}
+              <span className="text-sm font-medium">FKW in Description</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.keywordInSlug)}
+              <span className="text-sm font-medium">FKW in Slug</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.keywordInH1)}
+              <span className="text-sm font-medium">FKW in H1</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.keywordInIntroduction ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.keywordInIntroduction)}
+              <span className="text-sm font-medium">FKW in Introduction</span>
+            </div>
           </div>
         </div>
       </div>
