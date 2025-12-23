@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,6 +70,8 @@ interface AdminHeaderProps {
   setIsSEOEditorOpen: (open: boolean) => void;
   isGlossaryOpen: boolean;
   setIsGlossaryOpen: (open: boolean) => void;
+  isContentAutomationOpen?: boolean;
+  setIsContentAutomationOpen?: (open: boolean) => void;
   loadPageInfo: () => void;
   currentUser?: SupabaseUser | null;
 }
@@ -94,6 +96,8 @@ export const AdminHeader = ({
   setIsSEOEditorOpen,
   isGlossaryOpen,
   setIsGlossaryOpen,
+  isContentAutomationOpen,
+  setIsContentAutomationOpen,
   loadPageInfo,
   currentUser,
 }: AdminHeaderProps) => {
@@ -371,6 +375,16 @@ export const AdminHeader = ({
               >
                 <Book className="h-4 w-4" />
                 Glossary
+              </Button>
+            )}
+            {isAdmin && selectedPage && setIsContentAutomationOpen && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-soft hover:shadow-lg"
+                onClick={() => setIsContentAutomationOpen(!isContentAutomationOpen)}
+              >
+                <Sparkles className="h-4 w-4" />
+                Content Automation
               </Button>
             )}
           </CollapsibleSection>

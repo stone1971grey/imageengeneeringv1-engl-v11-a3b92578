@@ -77,6 +77,7 @@ import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEdito
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
+import { ContentAutomation } from '@/components/admin/ContentAutomation';
 import { TemplateSelectionDialog } from '@/components/admin/dashboard/TemplateSelectionDialog';
 import { WelcomeTab } from '@/components/admin/dashboard/WelcomeTab';
 import { AdminHeader } from '@/components/admin/dashboard/AdminHeader';
@@ -349,6 +350,7 @@ const AdminDashboard = () => {
   const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
   const [isSEOEditorOpen, setIsSEOEditorOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+  const [isContentAutomationOpen, setIsContentAutomationOpen] = useState(false);
   const [seoData, setSeoData] = useState<any>({
     title: '',
     metaDescription: '',
@@ -1400,6 +1402,8 @@ const AdminDashboard = () => {
           setIsSEOEditorOpen={setIsSEOEditorOpen}
           isGlossaryOpen={isGlossaryOpen}
           setIsGlossaryOpen={setIsGlossaryOpen}
+          isContentAutomationOpen={isContentAutomationOpen}
+          setIsContentAutomationOpen={setIsContentAutomationOpen}
           loadPageInfo={loadPageInfo}
           currentUser={user}
         />
@@ -1492,6 +1496,20 @@ const AdminDashboard = () => {
         {isGlossaryOpen && (
           <div className="mb-8">
             <GlossaryManager />
+          </div>
+        )}
+
+        {/* Content Automation - Conditional Rendering */}
+        {isContentAutomationOpen && selectedPage && (
+          <div className="mb-8">
+            <ContentAutomation
+              pageSlug={resolvedPageSlug || selectedPage}
+              language={editorLanguage}
+              onImportComplete={() => {
+                loadContent();
+                setIsContentAutomationOpen(false);
+              }}
+            />
           </div>
         )}
 
