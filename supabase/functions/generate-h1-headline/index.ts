@@ -89,7 +89,7 @@ serve(async (req) => {
 
 CRITICAL H1 HEADLINE RULES:
 ✔ Exact focus keyword match - The focus keyword MUST appear EXACTLY in the H1 (not variations)
-✔ Length: 20-70 characters (ideal: 40-60 characters)
+✔ Length: 40-70 characters INCLUDING SPACES (this is the sweet spot for readability, keyword signaling, and clean display on desktop/mobile)
 ✔ One H1 per page - This is THE main headline
 ✔ Clear, compelling, actionable language
 ✔ Match user search intent
@@ -97,7 +97,8 @@ CRITICAL H1 HEADLINE RULES:
 
 H1 QUALITY CRITERIA (for ranking):
 1. Focus Keyword Position - Keyword at the START ranks higher
-2. Clarity - Clear what the page is about
+2. Length - 40-70 characters INCLUDING SPACES is optimal (not too short, not too long)
+3. Clarity - Clear what the page is about
 3. Compelling - Makes users want to read more
 4. Length - 40-60 characters is optimal
 5. Unique - Not generic, specific to this page
