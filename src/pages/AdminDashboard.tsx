@@ -601,7 +601,8 @@ const AdminDashboard = () => {
         ogTitle: '',
         ogDescription: '',
         ogImage: '',
-        twitterCard: 'summary_large_image'
+        twitterCard: 'summary_large_image',
+        h1Locked: false
       });
       
       // Comprehensive error handler for page loading

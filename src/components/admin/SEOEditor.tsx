@@ -29,6 +29,8 @@ interface SEOData {
   twitterCard?: 'summary' | 'summary_large_image';
   introduction?: string;
   h1?: string;
+  /** If true, h1 was manually set via Smart H1 and should not be auto-detected */
+  h1Locked?: boolean;
 }
 
 interface SEOEditorProps {
@@ -447,10 +449,13 @@ export const SEOEditor = ({
     // Store H1 source for display
     setH1SourceInfo(h1Source);
     
-    // Update H1 field - if different OR if we need to clear it
-    if (data.h1 !== autoH1) {
-      console.log('[SEO Editor] Updating H1 to:', autoH1 || '(empty)');
+    // Update H1 field - BUT ONLY if h1 is not locked (manually set via Smart H1)
+    // If h1Locked is true, keep the saved optimized H1 and don't auto-detect
+    if (!data.h1Locked && data.h1 !== autoH1) {
+      console.log('[SEO Editor] Updating H1 to:', autoH1 || '(empty)', '(auto-detected)');
       onChange({ ...data, h1: autoH1 });
+    } else if (data.h1Locked) {
+      console.log('[SEO Editor] H1 is locked (manually set), keeping:', data.h1);
     }
     
     // Check if keyword is in H1
@@ -1080,8 +1085,8 @@ export const SEOEditor = ({
             setPageContent(refreshedContent);
           }
           
-          // Update the h1 in the SEO data
-          const updatedData = { ...data, h1: newH1 };
+          // Update the h1 in the SEO data AND lock it to prevent auto-detection override
+          const updatedData = { ...data, h1: newH1, h1Locked: true };
           onChange(updatedData);
           
           // Clear selection after applying
@@ -1400,8 +1405,8 @@ export const SEOEditor = ({
       }
       
       // Update the h1 in the SEO data (this syncs Basic and Advanced)
-      // IMPORTANT: Use onChange directly with the updated h1 value
-      const updatedData = { ...data, h1: newH1 };
+      // IMPORTANT: Use onChange directly with the updated h1 value AND lock it
+      const updatedData = { ...data, h1: newH1, h1Locked: true };
       onChange(updatedData);
       
       // Clear selection after applying (but keep changelog visible)
@@ -2099,7 +2104,14 @@ export const SEOEditor = ({
             {/* Current H1 Display */}
             <div className="mb-4 p-4 bg-muted/20 border border-border/50 rounded-md">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-medium text-muted-foreground">Current H1</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-medium text-muted-foreground">Current H1</p>
+                  {data.h1Locked && (
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                      🔒 Gesperrt (manuell gesetzt)
+                    </Badge>
+                  )}
+                </div>
                 {data.h1 && (
                   <div className="flex items-center gap-2">
                     <span className={`text-xs font-medium ${
@@ -2122,6 +2134,17 @@ export const SEOEditor = ({
                 <p className="text-xs text-muted-foreground mt-2">
                   Source: {h1SourceInfo.label} ({h1SourceInfo.key})
                 </p>
+              )}
+              {/* Unlock button for locked H1 */}
+              {data.h1Locked && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onChange({ ...data, h1Locked: false })}
+                  className="mt-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  🔓 Entsperren (Auto-Erkennung aktivieren)
+                </Button>
               )}
             </div>
 
