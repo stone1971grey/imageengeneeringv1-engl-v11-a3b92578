@@ -62,42 +62,52 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
   handleSaveSegments,
   setPageSegments,
 }) => {
+  // Guard against undefined/null pageSegments
+  const safePageSegments = Array.isArray(pageSegments) ? pageSegments : [];
+  
   return (
     <>
-      {pageSegments.map((segment, index) => {
+      {safePageSegments.map((segment, index) => {
+        // Guard against malformed segment
+        if (!segment || !segment.type) {
+          console.warn('[DynamicSegmentRenderer] Skipping invalid segment at index', index, segment);
+          return null;
+        }
+        
         // Calculate display number based on same type before this index
-        const sameTypeBefore = pageSegments.slice(0, index).filter(s => s.type === segment.type).length;
+        const sameTypeBefore = safePageSegments.slice(0, index).filter(s => s?.type === segment.type).length;
         const displayNumber = sameTypeBefore + 1;
-        const segmentId = segmentRegistry[segment.id] || segment.id;
+        const segmentId = segmentRegistry?.[segment.id] || segment.id;
         const reverseRegistry = (window as any).__segmentKeyRegistry || {};
         const customKey = reverseRegistry[String(segmentId)];
 
         // Always generate formatted label based on segment type
         let label = '';
-        if (segment.type === 'hero') label = `Produkt Hero - F-${displayNumber}`;
-        else if (segment.type === 'meta-navigation') label = `Meta Navigation - E-${displayNumber}`;
-        else if (segment.type === 'product-hero-gallery') label = `Product Gallery - G-${displayNumber}`;
-        else if (segment.type === 'tiles') label = `Tiles - H-${displayNumber}`;
-        else if (segment.type === 'banner') label = `Banner - J-${displayNumber}`;
-        else if (segment.type === 'banner-p') label = `Banner P - ${displayNumber}`;
-        else if (segment.type === 'image-text') label = `Image & Text - I-${displayNumber}`;
-        else if (segment.type === 'full-hero') label = `Full Hero - A-${displayNumber}`;
-        else if (segment.type === 'intro') label = `Intro - B-${displayNumber}`;
-        else if (segment.type === 'industries') label = `Industries - C-${displayNumber}`;
-        else if (segment.type === 'news') label = `Latest News - D-${displayNumber}`;
-        else if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-        else if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
-        else if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
-        else if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
-        else if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
-        else if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
-        else if (segment.type === 'mini-footer') label = `Mini Footer - U-${displayNumber}`;
-        else if (segment.type === 'feature-overview') label = `Features - K-${displayNumber}`;
-        else if (segment.type === 'table') label = `Table - L-${displayNumber}`;
-        else if (segment.type === 'faq') label = `FAQ - O-${displayNumber}`;
-        else if (segment.type === 'video') label = `Video - M-${displayNumber}`;
-        else if (segment.type === 'specification') label = `Specification - N-${displayNumber}`;
-        else label = `${segment.type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - ${displayNumber}`;
+        const segType = segment.type || 'unknown';
+        if (segType === 'hero') label = `Produkt Hero - F-${displayNumber}`;
+        else if (segType === 'meta-navigation') label = `Meta Navigation - E-${displayNumber}`;
+        else if (segType === 'product-hero-gallery') label = `Product Gallery - G-${displayNumber}`;
+        else if (segType === 'tiles') label = `Tiles - H-${displayNumber}`;
+        else if (segType === 'banner') label = `Banner - J-${displayNumber}`;
+        else if (segType === 'banner-p') label = `Banner P - ${displayNumber}`;
+        else if (segType === 'image-text') label = `Image & Text - I-${displayNumber}`;
+        else if (segType === 'full-hero') label = `Full Hero - A-${displayNumber}`;
+        else if (segType === 'intro') label = `Intro - B-${displayNumber}`;
+        else if (segType === 'industries') label = `Industries - C-${displayNumber}`;
+        else if (segType === 'news') label = `Latest News - D-${displayNumber}`;
+        else if (segType === 'debug') label = `Debug ${displayNumber}`;
+        else if (segType === 'news-list') label = `News List - P-${displayNumber}`;
+        else if (segType === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
+        else if (segType === 'events') label = `Events List - R-${displayNumber}`;
+        else if (segType === 'product-list') label = `Product List - S-${displayNumber}`;
+        else if (segType === 'downloads') label = `Downloads - T-${displayNumber}`;
+        else if (segType === 'mini-footer') label = `Mini Footer - U-${displayNumber}`;
+        else if (segType === 'feature-overview') label = `Features - K-${displayNumber}`;
+        else if (segType === 'table') label = `Table - L-${displayNumber}`;
+        else if (segType === 'faq') label = `FAQ - O-${displayNumber}`;
+        else if (segType === 'video') label = `Video - M-${displayNumber}`;
+        else if (segType === 'specification') label = `Specification - N-${displayNumber}`;
+        else label = `${segType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - ${displayNumber}`;
 
         // Build available segments for meta-navigation
         const buildAvailableSegments = () => {
@@ -128,16 +138,16 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
           }
 
           // Dynamic segments
-          pageSegments.forEach((seg) => {
-            if (seg.type === 'meta-navigation') return;
+          safePageSegments.forEach((seg) => {
+            if (!seg || seg.type === 'meta-navigation') return;
 
-            const numericId = segmentRegistry[seg.id];
+            const numericId = segmentRegistry?.[seg.id];
             if (!numericId) return;
 
-            const segmentIndex = pageSegments.indexOf(seg);
-            const sameTypeBefore = pageSegments
+            const segmentIndex = safePageSegments.indexOf(seg);
+            const sameTypeBefore = safePageSegments
               .slice(0, segmentIndex)
-              .filter((s) => s.type === seg.type).length;
+              .filter((s) => s?.type === seg.type).length;
             const displayNumber = sameTypeBefore + 1;
             const segLabel = buildSegmentLabel(seg.type as string, displayNumber);
 
@@ -489,7 +499,7 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                     <DebugEditor
                       data={segment.data}
                       onChange={(newData) => {
-                        const updatedSegments = pageSegments.map(s =>
+                        const updatedSegments = safePageSegments.map(s =>
                           s.id === segment.id ? { ...s, data: newData } : s
                         );
                         setPageSegments(updatedSegments);
@@ -539,7 +549,7 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                   <IndustriesSegmentEditor
                     data={segment.data || {}}
                     onChange={(newData) => {
-                      const updatedSegments = pageSegments.map(s =>
+                      const updatedSegments = safePageSegments.map(s =>
                         s.id === segment.id ? { ...s, data: newData } : s
                       );
                       setPageSegments(updatedSegments);
@@ -583,8 +593,8 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                           key={`phg-${segment.id}-${language}`}
                           data={segment.data}
                           onChange={(newData) => {
-                            const newSegments = [...pageSegments];
-                            newSegments[index].data = newData;
+                            const newSegments = [...safePageSegments];
+                            if (newSegments[index]) newSegments[index].data = newData;
                             setPageSegments(newSegments);
                           }}
                           onSave={() => handleSaveSegments()}
@@ -606,8 +616,8 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                     <BannerSegmentEditor
                       data={segment.data}
                       onChange={(newData) => {
-                        const newSegments = [...pageSegments];
-                        newSegments[index].data = newData;
+                        const newSegments = [...safePageSegments];
+                        if (newSegments[index]) newSegments[index].data = newData;
                         setPageSegments(newSegments);
                       }}
                       onSave={() => handleSaveSegments()}
@@ -627,8 +637,8 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                     <BannerPEditor
                       data={segment.data}
                       onChange={(newData) => {
-                        const newSegments = [...pageSegments];
-                        newSegments[index].data = newData;
+                        const newSegments = [...safePageSegments];
+                        if (newSegments[index]) newSegments[index].data = newData;
                         setPageSegments(newSegments);
                       }}
                       onSave={() => handleSaveSegments()}
