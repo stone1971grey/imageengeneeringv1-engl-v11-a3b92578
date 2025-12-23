@@ -20,6 +20,8 @@ interface ProductHeroGalleryProps {
     imagePosition?: 'left' | 'right';
     layoutRatio?: '1-1' | '2-3' | '2-5';
     topSpacing?: 'small' | 'medium' | 'large' | 'extra-large';
+    imageMaxWidth?: number | null;
+    imageMaxHeight?: number | null;
     cta1Text: string;
     cta1Link: string;
     cta1Style: 'standard' | 'technical' | 'outline-white';
@@ -38,6 +40,14 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   const imagePosition = data.imagePosition || 'right';
   const layoutRatio = data.layoutRatio || '1-1';
   const topSpacing = data.topSpacing || 'medium';
+  const imageMaxWidth = data.imageMaxWidth || null;
+  const imageMaxHeight = data.imageMaxHeight || null;
+
+  // Build image style constraints
+  const imageStyle: React.CSSProperties = {
+    ...(imageMaxWidth ? { maxWidth: `${imageMaxWidth}px` } : {}),
+    ...(imageMaxHeight ? { maxHeight: `${imageMaxHeight}px` } : {}),
+  };
 
   // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
   // Meta Navigation (wenn vorhanden) ist ~60px hoch
@@ -171,7 +181,11 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
 
   const imageGallery = (
     <div className="relative">
-      <div className="relative rounded-lg shadow-soft group cursor-pointer" onClick={() => setIsModalOpen(true)}>
+      <div 
+        className="relative rounded-lg shadow-soft group cursor-pointer" 
+        onClick={() => setIsModalOpen(true)}
+        style={imageMaxWidth || imageMaxHeight ? { display: 'flex', justifyContent: 'center' } : {}}
+      >
         {/* Animated glow effect behind image */}
         <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
         
@@ -179,6 +193,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
           src={data.images[currentImageIndex]?.imageUrl} 
           alt={data.images[currentImageIndex]?.title || data.title}
           className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
+          style={imageStyle}
         />
         
         {/* Subtle overlay */}

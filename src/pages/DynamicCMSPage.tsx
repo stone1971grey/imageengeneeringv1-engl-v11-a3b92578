@@ -778,6 +778,10 @@ const DynamicCMSPage = () => {
                       src={segment.data.hero_image_url}
                       alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
                       className="w-full h-auto object-cover shadow-2xl"
+                      style={{
+                        ...(segment.data.hero_image_max_width ? { maxWidth: `${segment.data.hero_image_max_width}px` } : {}),
+                        ...(segment.data.hero_image_max_height ? { maxHeight: `${segment.data.hero_image_max_height}px` } : {}),
+                      }}
                     />
                   </div>
                 )}
@@ -818,6 +822,8 @@ const DynamicCMSPage = () => {
               imagePosition: segment.data?.imagePosition || "right",
               layoutRatio: segment.data?.layoutRatio || "2-5",
               topSpacing: segment.data?.topSpacing || "medium",
+              imageMaxWidth: segment.data?.imageMaxWidth || null,
+              imageMaxHeight: segment.data?.imageMaxHeight || null,
             }}
           />
         );

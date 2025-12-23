@@ -33,6 +33,8 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('2-5');
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'xlarge'>('medium');
+  const [imageMaxWidth, setImageMaxWidth] = useState<number | null>(null);
+  const [imageMaxHeight, setImageMaxHeight] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -85,6 +87,8 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
           let currentImagePosition = heroSegment.data.hero_image_position || 'right';
           let currentLayoutRatio = heroSegment.data.hero_layout_ratio || '2-5';
           let currentTopSpacing = heroSegment.data.hero_top_spacing || 'medium';
+          let currentImageMaxWidth = heroSegment.data.hero_image_max_width || null;
+          let currentImageMaxHeight = heroSegment.data.hero_image_max_height || null;
 
           // FALLBACK: For non-EN languages, ALWAYS load layout settings from EN reference
           if (language !== 'en') {
@@ -115,6 +119,8 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
                 currentImagePosition = enHeroSegment.data.hero_image_position || 'right';
                 currentLayoutRatio = enHeroSegment.data.hero_layout_ratio || '2-5';
                 currentTopSpacing = enHeroSegment.data.hero_top_spacing || 'medium';
+                currentImageMaxWidth = enHeroSegment.data.hero_image_max_width || null;
+                currentImageMaxHeight = enHeroSegment.data.hero_image_max_height || null;
               }
             }
           }
@@ -124,6 +130,8 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
           setImagePosition(currentImagePosition);
           setLayoutRatio(currentLayoutRatio);
           setTopSpacing(currentTopSpacing);
+          setImageMaxWidth(currentImageMaxWidth);
+          setImageMaxHeight(currentImageMaxHeight);
         }
       } catch (error) {
         console.error("Error parsing segments:", error);
@@ -384,7 +392,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         hero_image_metadata: imageMetadata,
         hero_image_position: imagePosition,
         hero_layout_ratio: layoutRatio,
-        hero_top_spacing: topSpacing
+        hero_top_spacing: topSpacing,
+        hero_image_max_width: imageMaxWidth,
+        hero_image_max_height: imageMaxHeight
       };
 
       if (segmentIndex !== -1) {
@@ -712,6 +722,34 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
                   <span className="text-xs text-white block mt-2">XL (90px)</span>
                 </button>
               </div>
+            </div>
+
+            {/* Image Size Constraints */}
+            <div>
+              <Label className="text-white mb-3 block">Image Size Constraints (optional)</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-400 text-xs mb-1 block">Max Width (px)</Label>
+                  <Input
+                    type="number"
+                    value={imageMaxWidth || ''}
+                    onChange={(e) => setImageMaxWidth(e.target.value ? parseInt(e.target.value) : null)}
+                    placeholder="e.g. 500"
+                    className="border-2 border-gray-600 text-white bg-gray-800"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-400 text-xs mb-1 block">Max Height (px)</Label>
+                  <Input
+                    type="number"
+                    value={imageMaxHeight || ''}
+                    onChange={(e) => setImageMaxHeight(e.target.value ? parseInt(e.target.value) : null)}
+                    placeholder="e.g. 400"
+                    className="border-2 border-gray-600 text-white bg-gray-800"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Leave empty for auto-sizing based on layout ratio.</p>
             </div>
           </div>
 
