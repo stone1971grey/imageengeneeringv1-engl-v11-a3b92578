@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,6 +59,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   const [isLoading, setIsLoading] = useState(false);
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
   const [createRedirect, setCreateRedirect] = useState(false);
+  const [existingRedirectId, setExistingRedirectId] = useState<string | null>(null);
   const [selectedSegments, setSelectedSegments] = useState<{
     productHero: boolean;
     intro: boolean;
@@ -76,6 +77,54 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   });
   const [isImporting, setIsImporting] = useState(false);
   const [isSavingRedirect, setIsSavingRedirect] = useState(false);
+
+  // Check if redirect already exists for this page on mount and when sourceUrl changes
+  useEffect(() => {
+    const checkExistingRedirect = async () => {
+      // Build target URL
+      const targetUrl = `/${language}/${pageSlug}`;
+      
+      // Check by target URL
+      const { data: byTarget } = await supabase
+        .from('redirects')
+        .select('id, source_url')
+        .eq('target_url', targetUrl)
+        .maybeSingle();
+      
+      if (byTarget) {
+        setCreateRedirect(true);
+        setExistingRedirectId(byTarget.id);
+        return;
+      }
+
+      // Also check if source URL already has a redirect
+      if (sourceUrl) {
+        let sourceUrlPath = sourceUrl;
+        try {
+          const urlObj = new URL(sourceUrl);
+          sourceUrlPath = urlObj.pathname;
+        } catch {
+          // Already a path
+        }
+        
+        const { data: bySource } = await supabase
+          .from('redirects')
+          .select('id')
+          .eq('source_url', sourceUrlPath)
+          .maybeSingle();
+        
+        if (bySource) {
+          setCreateRedirect(true);
+          setExistingRedirectId(bySource.id);
+          return;
+        }
+      }
+      
+      setExistingRedirectId(null);
+    };
+    
+    checkExistingRedirect();
+  }, [pageSlug, language, sourceUrl]);
 
   const handleSaveRedirect = async () => {
     if (!sourceUrl) {
