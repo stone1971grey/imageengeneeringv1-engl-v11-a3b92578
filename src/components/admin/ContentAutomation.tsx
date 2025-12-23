@@ -118,7 +118,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           target_url: targetUrl,
           redirect_type: 301,
           is_active: true,
-          notes: `Created via Content Automation for page: ${pageSlug}`,
+          notes: `Content Automation for page "${pageSlug}" | Source: ${sourceUrl}`,
         });
 
       if (redirectError) {
@@ -460,7 +460,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             target_url: targetUrl,
             redirect_type: 301,
             is_active: true,
-            notes: `Auto-created via Content Automation for page: ${pageSlug}`,
+            notes: `Content Automation for page "${pageSlug}" | Source: ${sourceUrl}`,
           });
 
         if (redirectError) {
