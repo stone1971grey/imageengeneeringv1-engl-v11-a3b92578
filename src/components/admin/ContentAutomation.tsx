@@ -43,8 +43,19 @@ interface ContentAutomationProps {
   onImportComplete?: () => void;
 }
 
+// Mapping of page slugs to their original source URLs for migration
+const SOURCE_URL_MAPPING: Record<string, string> = {
+  'products/illumination-devices/arcturus': 'https://www.image-engineering.de/products/illumination-devices/arcturus',
+  'products/illumination-devices/vega': 'https://www.image-engineering.de/products/illumination-devices/vega',
+  'products/lightboxes/le7': 'https://www.image-engineering.de/products/lightboxes/le7',
+  'products/test-charts': 'https://www.image-engineering.de/products/test-charts',
+  'products/software/iq-analyzer-x': 'https://www.image-engineering.de/products/software/iq-analyzer-x',
+};
+
 export const ContentAutomation = ({ pageSlug, language, onImportComplete }: ContentAutomationProps) => {
-  const [sourceUrl, setSourceUrl] = useState('');
+  // Initialize sourceUrl from mapping if available
+  const initialSourceUrl = SOURCE_URL_MAPPING[pageSlug] || '';
+  const [sourceUrl, setSourceUrl] = useState(initialSourceUrl);
   const [isLoading, setIsLoading] = useState(false);
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
   const [createRedirect, setCreateRedirect] = useState(false);
