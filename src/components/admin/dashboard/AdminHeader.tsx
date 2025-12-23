@@ -431,13 +431,13 @@ export const AdminHeader = ({
           <CollapsibleSection 
             title="Page Tools" 
             icon={FileText} 
-            colorClass="bg-gradient-to-r from-purple-600 to-pink-600"
+            colorClass="bg-blue-700"
             defaultOpen={false}
           >
             <Button
               variant="default"
               onClick={handlePreview}
-              className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+              className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2 shadow-soft hover:shadow-lg"
             >
               <Eye className="h-4 w-4" />
               Preview
@@ -445,7 +445,7 @@ export const AdminHeader = ({
             
             <Button
               onClick={onCreatePageClick}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+              className="bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-soft hover:shadow-lg flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Create Page
@@ -454,7 +454,7 @@ export const AdminHeader = ({
             {selectedPage && pageInfo && (
               <Button
                 onClick={onCopyPageClick}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                className="bg-sky-600 text-white hover:bg-sky-700 font-semibold shadow-soft hover:shadow-lg flex items-center gap-2"
               >
                 <Copy className="h-4 w-4" />
                 Copy Page
