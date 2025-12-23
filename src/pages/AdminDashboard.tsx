@@ -1480,7 +1480,7 @@ const AdminDashboard = () => {
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
             >
-              <TabsList className="flex flex-wrap justify-start w-full h-auto p-2 bg-gray-200 pl-3">
+              <TabsList className="flex flex-wrap w-full h-auto p-2 bg-gray-200 pl-3">
                 {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
                 {pageSegments
                   .filter(segment => segment.type === 'meta-navigation')
