@@ -45,9 +45,9 @@ interface ContentAutomationProps {
 
 // Mapping of page slugs to their original source URLs for migration
 const SOURCE_URL_MAPPING: Record<string, string> = {
-  'products/illumination-devices/arcturus': 'https://www.image-engineering.de/products/illumination-devices/arcturus',
-  'products/illumination-devices/vega': 'https://www.image-engineering.de/products/illumination-devices/vega',
-  'products/lightboxes/le7': 'https://www.image-engineering.de/products/lightboxes/le7',
+  'products/illumination-devices/arcturus': 'https://www.image-engineering.de/products/equipment/illumination-devices/1315-arcturus',
+  'products/illumination-devices/vega': 'https://www.image-engineering.de/products/equipment/illumination-devices/vega',
+  'products/lightboxes/le7': 'https://www.image-engineering.de/products/equipment/lightboxes/le7',
   'products/test-charts': 'https://www.image-engineering.de/products/test-charts',
   'products/software/iq-analyzer-x': 'https://www.image-engineering.de/products/software/iq-analyzer-x',
 };
