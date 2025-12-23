@@ -128,6 +128,7 @@ export const SEOEditor = ({
   const [isApplyingH1, setIsApplyingH1] = useState(false);
   const [isCreatingSegment, setIsCreatingSegment] = useState(false);
   const [isRedirectManagerOpen, setIsRedirectManagerOpen] = useState(false);
+  const [pageRedirects, setPageRedirects] = useState<Array<{ id: string; source_url: string; target_url: string; redirect_type: number; notes: string | null }>>([]);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
@@ -229,6 +230,29 @@ export const SEOEditor = ({
     
     loadPageData();
   }, [pageSlug, editorLanguage]);
+
+  // Load redirects for this page
+  useEffect(() => {
+    const loadRedirects = async () => {
+      // Build possible target URLs for this page
+      const possibleTargets = [
+        `/${editorLanguage}/${pageSlug}`,
+        `/${pageSlug}`,
+        pageSlug,
+      ];
+      
+      const { data: redirectData, error } = await supabase
+        .from('redirects')
+        .select('id, source_url, target_url, redirect_type, notes')
+        .or(possibleTargets.map(t => `target_url.eq.${t}`).join(','));
+      
+      if (!error && redirectData) {
+        setPageRedirects(redirectData);
+      }
+    };
+    
+    loadRedirects();
+  }, [pageSlug, editorLanguage, isRedirectManagerOpen]);
 
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
@@ -2298,8 +2322,8 @@ export const SEOEditor = ({
             </p>
           </div>
 
-          {/* Redirect Manager Button */}
-          <div className="p-5 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg">
+          {/* Redirect Manager Section */}
+          <div className="p-5 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -2318,6 +2342,37 @@ export const SEOEditor = ({
                 Open Redirect Manager
               </Button>
             </div>
+            
+            {/* Display existing redirects for this page */}
+            {pageRedirects.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">
+                  Redirects pointing to this page:
+                </Label>
+                <div className="space-y-2">
+                  {pageRedirects.map((redirect) => (
+                    <div 
+                      key={redirect.id}
+                      className="flex items-center gap-3 p-3 bg-background/50 rounded-lg border border-border"
+                    >
+                      <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                        {redirect.redirect_type}
+                      </Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-mono text-foreground truncate">{redirect.source_url}</span>
+                          <span className="text-muted-foreground">→</span>
+                          <span className="font-mono text-blue-400 truncate">{redirect.target_url}</span>
+                        </div>
+                        {redirect.notes && (
+                          <p className="text-xs text-muted-foreground mt-1 truncate">{redirect.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </TabsContent>
         )}
