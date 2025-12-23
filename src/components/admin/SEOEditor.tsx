@@ -994,9 +994,46 @@ export const SEOEditor = ({
         dataObj.titleLine2 = '';
         updateDetails = 'titleLine1';
       } else if (actualSegmentType === 'product-hero-gallery') {
-        // Product Hero Gallery uses title field directly (no data wrapper usually)
-        dataObj.title = newH1;
-        updateDetails = 'title (product-hero-gallery)';
+        // Product Hero Gallery has title + subtitle for two-line H1 display
+        // Intelligently split the H1 at colon, em-dash, or en-dash for better visual presentation
+        const colonIndex = newH1.indexOf(':');
+        const emDashIndex = newH1.indexOf('–');
+        const enDashIndex = newH1.indexOf('-');
+        
+        // Prioritize colon, then em-dash, then en-dash for splitting
+        let splitIndex = -1;
+        let separator = '';
+        
+        if (colonIndex > 10 && colonIndex < newH1.length - 5) {
+          splitIndex = colonIndex;
+          separator = ':';
+        } else if (emDashIndex > 10 && emDashIndex < newH1.length - 5) {
+          splitIndex = emDashIndex;
+          separator = '–';
+        } else if (enDashIndex > 10 && enDashIndex < newH1.length - 5) {
+          // Only use hyphen if it's likely a separator (surrounded by spaces or after a word)
+          const beforeChar = newH1[enDashIndex - 1];
+          const afterChar = newH1[enDashIndex + 1];
+          if (beforeChar === ' ' || afterChar === ' ') {
+            splitIndex = enDashIndex;
+            separator = '-';
+          }
+        }
+        
+        if (splitIndex > 0) {
+          // Split at the separator - title includes the separator for visual flow
+          const titlePart = newH1.substring(0, splitIndex + 1).trim();
+          const subtitlePart = newH1.substring(splitIndex + 1).trim();
+          dataObj.title = titlePart;
+          dataObj.subtitle = subtitlePart;
+          updateDetails = `title + subtitle (intelligent split at "${separator}")`;
+          console.log('[SEO Editor] PHG intelligent split:', { title: titlePart, subtitle: subtitlePart });
+        } else {
+          // No good split point found - put everything in title
+          dataObj.title = newH1;
+          dataObj.subtitle = '';
+          updateDetails = 'title only (no split point found)';
+        }
       } else if (actualSegmentType === 'product-hero' || actualSegmentType === 'hero') {
         // Check which field exists
         if (dataObj.hasOwnProperty('hero_title')) {

@@ -528,7 +528,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         segments = JSON.parse(existingContent.content_value);
       }
 
-      const segmentIndex = segments.findIndex((s: any) => s.id === segmentId);
+      const segmentIndex = segments.findIndex((s: any) => String(s.id) === String(segmentId));
 
       if (segmentIndex !== -1) {
         segments[segmentIndex].data = localData;
