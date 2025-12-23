@@ -231,7 +231,6 @@ export const getDefaultSegmentData = (templateType: string): Record<string, any>
  */
 export const getLanguageIndependentFields = (templateType: string, data: Record<string, any>): Record<string, any> => {
   switch (templateType) {
-    
     case 'product-hero-gallery':
       return {
         imagePosition: data.imagePosition || 'right',

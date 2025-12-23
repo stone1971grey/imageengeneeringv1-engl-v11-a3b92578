@@ -353,7 +353,7 @@ export const AdminHeader = ({
             colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
             defaultOpen={false}
           >
-            {isAdmin && (
+            {(isAdmin || isEditor) && (
               <Button
                 variant="decision"
                 className="flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg"
