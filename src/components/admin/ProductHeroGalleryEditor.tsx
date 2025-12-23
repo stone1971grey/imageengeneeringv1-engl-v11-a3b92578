@@ -761,39 +761,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Select>
             </div>
 
-            {/* Image Size Constraints */}
-            <div className="space-y-2">
-              <Label>Image Size Constraints (optional)</Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-500 text-xs mb-1 block">Max Width (px)</Label>
-                  <Input
-                    type="number"
-                    value={localData.imageMaxWidth || ''}
-                    onChange={(e) => {
-                      const updatedData = { ...localData, imageMaxWidth: e.target.value ? parseInt(e.target.value) : null };
-                      setLocalData(updatedData);
-                      onChange(updatedData);
-                    }}
-                    placeholder="e.g. 500"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-500 text-xs mb-1 block">Max Height (px)</Label>
-                  <Input
-                    type="number"
-                    value={localData.imageMaxHeight || ''}
-                    onChange={(e) => {
-                      const updatedData = { ...localData, imageMaxHeight: e.target.value ? parseInt(e.target.value) : null };
-                      setLocalData(updatedData);
-                      onChange(updatedData);
-                    }}
-                    placeholder="e.g. 400"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">Leave empty for auto-sizing. Applies to all gallery images.</p>
-            </div>
+            {/* Image Size Constraints removed - handled individually per image in Gallery tab */}
           </TabsContent>
 
           {/* Buttons Tab */}
@@ -915,6 +883,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   acceptedFileTypes="image/*"
                   label={`Gallery Image ${index + 1}`}
                   currentImageUrl={image.imageUrl}
+                  previewSize="small"
                 />
 
                 {/* AI Background Removal Button - Individual per image, only in EN */}
@@ -961,53 +930,53 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
                 {/* Image Metadata Display */}
                 {image.metadata && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-2">
-                    <h5 className="font-medium text-sm text-gray-700">Image Information</h5>
+                  <div className="bg-gray-900 rounded-lg p-3 space-y-2">
+                    <h5 className="font-medium text-sm text-white">Image Information</h5>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
-                        <span className="font-medium text-gray-600">Original Name:</span>
-                        <p className="text-gray-800 truncate" title={image.metadata.originalFileName}>
+                        <span className="font-medium text-gray-400">Original Name:</span>
+                        <p className="text-white truncate" title={image.metadata.originalFileName}>
                           {image.metadata.originalFileName}
                         </p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Dimensions:</span>
-                        <p className="text-gray-800">
+                        <span className="font-medium text-gray-400">Dimensions:</span>
+                        <p className="text-white">
                           {typeof image.metadata.width === 'number' && typeof image.metadata.height === 'number'
                             ? `${image.metadata.width} × ${image.metadata.height} px`
                             : '—'}
                         </p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">File Size:</span>
-                        <p className="text-gray-800">
+                        <span className="font-medium text-gray-400">File Size:</span>
+                        <p className="text-white">
                           {typeof image.metadata.fileSizeKB === 'number'
                             ? formatFileSize(image.metadata.fileSizeKB)
                             : '—'}
                         </p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Format:</span>
-                        <p className="text-gray-800">{image.metadata.format || '—'}</p>
+                        <span className="font-medium text-gray-400">Format:</span>
+                        <p className="text-white">{image.metadata.format || '—'}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Uploaded:</span>
-                        <p className="text-gray-800">
+                        <span className="font-medium text-gray-400">Uploaded:</span>
+                        <p className="text-white">
                           {image.metadata.uploadDate
                             ? formatUploadDate(image.metadata.uploadDate)
                             : '—'}
                         </p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Storage URL:</span>
+                        <span className="font-medium text-gray-400">Storage URL:</span>
                         {(() => {
                           const storageUrl = image.metadata.url || image.imageUrl;
                           if (!storageUrl) {
-                            return <p className="text-gray-800 text-xs">—</p>;
+                            return <p className="text-white text-xs">—</p>;
                           }
                           const fileName = storageUrl.split('/').pop() || storageUrl;
                           return (
-                            <p className="text-gray-800 text-xs truncate" title={storageUrl}>
+                            <p className="text-white text-xs truncate" title={storageUrl}>
                               {fileName}
                             </p>
                           );
@@ -1047,11 +1016,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 </div>
 
                 {/* Individual Image Size Settings */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
-                  <Label className="font-medium text-blue-800">Image Size (individual)</Label>
+                <div className="bg-gray-900 rounded-lg p-3 space-y-3">
+                  <Label className="font-medium text-white">Image Size (individual)</Label>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs text-blue-600">Max Width (px)</Label>
+                      <Label className="text-xs text-gray-400">Max Width (px)</Label>
                       <Input
                         type="number"
                         value={image.maxWidth || ''}
@@ -1066,11 +1035,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                           onChange(updatedData);
                         }}
                         placeholder="e.g. 450"
-                        className="h-8"
+                        className="h-8 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-blue-600">Max Height (px)</Label>
+                      <Label className="text-xs text-gray-400">Max Height (px)</Label>
                       <Input
                         type="number"
                         value={image.maxHeight || ''}
@@ -1085,11 +1054,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                           onChange(updatedData);
                         }}
                         placeholder="e.g. 400"
-                        className="h-8"
+                        className="h-8 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
                       />
                     </div>
                   </div>
-                  <p className="text-xs text-blue-500">Leave empty to use global settings or auto-sizing.</p>
+                  <p className="text-xs text-gray-400">Leave empty for auto-sizing.</p>
                 </div>
 
                 <div>
