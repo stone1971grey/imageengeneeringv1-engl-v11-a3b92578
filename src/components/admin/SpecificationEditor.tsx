@@ -190,14 +190,16 @@ const SpecificationEditor = ({
 
       let segments = segmentsData?.content_value ? JSON.parse(segmentsData.content_value) : [];
 
-      // Find and update the specification segment
-      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === segmentIdStr);
       
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = { title, rows };
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'specification',
           data: { title, rows }
         });

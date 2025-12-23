@@ -172,14 +172,17 @@ const FAQEditor = ({ pageSlug, segmentId, language, onSave }: FAQEditorProps) =>
 
       let segments = segmentsData?.content_value ? JSON.parse(segmentsData.content_value) : [];
 
-      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === segmentIdStr);
       const faqData = { title, subtext, items };
       
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = faqData;
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'faq',
           data: faqData
         });

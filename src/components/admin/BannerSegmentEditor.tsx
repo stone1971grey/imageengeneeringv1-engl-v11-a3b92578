@@ -541,9 +541,9 @@ const BannerSegmentEditorComponent = ({
             if (englishBanner) {
               updatedSegments.push({ ...englishBanner, data: targetData });
             } else {
-              // Fallback: create minimal banner segment
+              // Fallback: create minimal banner segment with String ID
               updatedSegments.push({
-                id: segmentId,
+                id: String(segmentId),
                 type: "banner",
                 data: targetData,
               });

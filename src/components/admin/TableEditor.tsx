@@ -178,14 +178,17 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
 
       let segments = segmentsData?.content_value ? JSON.parse(segmentsData.content_value) : [];
 
-      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === segmentIdStr);
       const tableData = { title, subtext, headers, rows };
       
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = tableData;
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'table',
           data: tableData
         });

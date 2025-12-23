@@ -289,8 +289,9 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
         segments = JSON.parse(existingData.content_value);
       }
 
-      // Find and update the image-text segment
-      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === segmentIdStr);
       const updatedSegmentData = {
         title,
         subtext,
@@ -301,11 +302,12 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
       };
 
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = updatedSegmentData;
       } else {
         // Create new segment entry if it doesn't exist
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'image-text',
           data: updatedSegmentData
         });

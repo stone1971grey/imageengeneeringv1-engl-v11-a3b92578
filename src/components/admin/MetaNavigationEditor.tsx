@@ -237,11 +237,14 @@ const MetaNavigationEditorComponent = ({
         links,
       };
 
+      // CRITICAL: Always use String() for IDs to prevent duplicates
+      const segmentIdStr = String(segmentId);
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = updatedSegmentData;
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'meta-navigation',
           data: updatedSegmentData,
         });
