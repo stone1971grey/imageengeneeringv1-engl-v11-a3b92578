@@ -408,7 +408,7 @@ export const AdminHeader = ({
             {isAdmin && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-slate-600 text-white hover:bg-slate-700 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-slate-500 to-blue-600 text-white hover:from-slate-600 hover:to-blue-700 shadow-soft hover:shadow-lg"
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               >
                 <Eye className="h-4 w-4" />
@@ -418,7 +418,7 @@ export const AdminHeader = ({
             {(isAdmin || allowedPages.includes('glossary')) && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-gray-700 text-white hover:bg-gray-800 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-gray-600 to-indigo-600 text-white hover:from-gray-700 hover:to-indigo-700 shadow-soft hover:shadow-lg"
                 onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
               >
                 <Book className="h-4 w-4" />
