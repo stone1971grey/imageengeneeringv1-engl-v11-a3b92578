@@ -67,7 +67,9 @@ CRITICAL RULES FOR GOOD FOCUS KEYWORDS:
 KEY INSIGHT: A page answers ONE main question → this question IS the focus keyword.
 
 Technical guidelines:
-- 1-4 words (ideally 2-3 words)
+- IDEAL LENGTH: 3-6 words (this is the sweet spot for search intent)
+- Minimum: 3 words (avoid too generic keywords)
+- Maximum: 6 words (avoid overly long keyword phrases)
 - Lowercase
 - MUST BE IN ENGLISH
 - Consider the industry context: Image Quality Testing, Camera Testing, Test Equipment, Automotive Vision Testing
@@ -77,11 +79,12 @@ Your ranking criteria (most important first):
 2. Content relevance - Does the page actually deliver on this keyword?
 3. Search volume potential - Would real users search for this?
 4. Specificity balance - Not too broad, not too niche
+5. Word count - Prefer 3-6 words for optimal specificity
 
 Reply ONLY with a JSON array, RANKED BY QUALITY (best keyword first):
 [
-  {"keyword": "best keyword", "reason": "Why this is #1 - matches user intent and page content perfectly", "priority": 1},
-  {"keyword": "second best", "reason": "Why this ranks #2", "priority": 2}
+  {"keyword": "best keyword phrase here", "reason": "Why this is #1 - matches user intent and page content perfectly", "priority": 1},
+  {"keyword": "second best phrase", "reason": "Why this ranks #2", "priority": 2}
 ]`;
 
     const userPrompt = `Analyze this page and suggest 3-5 focus keywords in English. RANK BY QUALITY - best keyword first!
