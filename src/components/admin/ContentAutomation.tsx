@@ -44,17 +44,60 @@ interface ContentAutomationProps {
 }
 
 // Mapping of page slugs to their original source URLs for migration
-const SOURCE_URL_MAPPING: Record<string, string> = {
-  'products/illumination-devices/arcturus': 'https://www.image-engineering.de/products/equipment/illumination-devices/1315-arcturus',
-  'products/illumination-devices/vega': 'https://www.image-engineering.de/products/equipment/illumination-devices/vega',
-  'products/lightboxes/le7': 'https://www.image-engineering.de/products/equipment/lightboxes/le7',
-  'products/test-charts': 'https://www.image-engineering.de/products/test-charts',
-  'products/software/iq-analyzer-x': 'https://www.image-engineering.de/products/software/iq-analyzer-x',
+// Structure: { pageSlug: { default: url, de?: url, ja?: url, ... } }
+type LanguageUrls = {
+  default: string;
+  de?: string;
+  ja?: string;
+  ko?: string;
+  zh?: string;
+};
+
+const SOURCE_URL_MAPPING: Record<string, LanguageUrls> = {
+  'products/illumination-devices/arcturus': {
+    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1315-arcturus',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1315-arcturus',
+  },
+  'products/illumination-devices/vega': {
+    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/vega',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/vega',
+  },
+  'products/lightboxes/le7': {
+    default: 'https://www.image-engineering.de/products/equipment/lightboxes/le7',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/lightboxes/le7',
+  },
+  'products/test-charts': {
+    default: 'https://www.image-engineering.de/products/test-charts',
+    de: 'https://www.image-engineering.de/de/produkte/test-charts',
+  },
+  'products/software/iq-analyzer-x': {
+    default: 'https://www.image-engineering.de/products/software/iq-analyzer-x',
+    de: 'https://www.image-engineering.de/de/produkte/software/iq-analyzer-x',
+  },
+};
+
+// Helper to get URL for current language
+const getSourceUrlForLanguage = (pageSlug: string, language: string): string => {
+  const mapping = SOURCE_URL_MAPPING[pageSlug];
+  if (!mapping) return '';
+  
+  // Check for language-specific URL, fall back to default (English)
+  if (language !== 'en' && mapping[language as keyof LanguageUrls]) {
+    return mapping[language as keyof LanguageUrls] as string;
+  }
+  return mapping.default;
+};
+
+// Check if a language has its own source URL (not just default)
+const hasLanguageSpecificUrl = (pageSlug: string, language: string): boolean => {
+  const mapping = SOURCE_URL_MAPPING[pageSlug];
+  if (!mapping || language === 'en') return false;
+  return !!mapping[language as keyof LanguageUrls];
 };
 
 export const ContentAutomation = ({ pageSlug, language, onImportComplete }: ContentAutomationProps) => {
-  // Initialize sourceUrl from mapping if available
-  const initialSourceUrl = SOURCE_URL_MAPPING[pageSlug] || '';
+  // Initialize sourceUrl from mapping if available (language-aware)
+  const initialSourceUrl = getSourceUrlForLanguage(pageSlug, language);
   const [sourceUrl, setSourceUrl] = useState(initialSourceUrl);
   const [isLoading, setIsLoading] = useState(false);
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
@@ -77,6 +120,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   });
   const [isImporting, setIsImporting] = useState(false);
   const [isSavingRedirect, setIsSavingRedirect] = useState(false);
+
+  // Update sourceUrl when language changes
+  useEffect(() => {
+    const newUrl = getSourceUrlForLanguage(pageSlug, language);
+    setSourceUrl(newUrl);
+  }, [pageSlug, language]);
 
   // Check if redirect already exists for this page on mount and when sourceUrl changes
   useEffect(() => {
@@ -167,7 +216,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           target_url: targetUrl,
           redirect_type: 301,
           is_active: true,
-          notes: `Content Automation for page "${pageSlug}" | Source: ${sourceUrl}`,
+          notes: `Content Automation for page "${pageSlug}" [${language.toUpperCase()}] | Source: ${sourceUrl}`,
         });
 
       if (redirectError) {
@@ -509,7 +558,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             target_url: targetUrl,
             redirect_type: 301,
             is_active: true,
-            notes: `Content Automation for page "${pageSlug}" | Source: ${sourceUrl}`,
+            notes: `Content Automation for page "${pageSlug}" [${language.toUpperCase()}] | Source: ${sourceUrl}`,
           });
 
         if (redirectError) {
@@ -554,11 +603,52 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Language-specific URL indicator */}
+        {language !== 'en' && (
+          <div className={`p-4 rounded-lg border ${
+            hasLanguageSpecificUrl(pageSlug, language) 
+              ? 'bg-green-500/10 border-green-500/30' 
+              : 'bg-amber-500/10 border-amber-500/30'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${
+                hasLanguageSpecificUrl(pageSlug, language) 
+                  ? 'bg-green-500/20' 
+                  : 'bg-amber-500/20'
+              }`}>
+                <Globe className={`h-5 w-5 ${
+                  hasLanguageSpecificUrl(pageSlug, language) 
+                    ? 'text-green-400' 
+                    : 'text-amber-400'
+                }`} />
+              </div>
+              <div className="flex-1">
+                <p className={`font-medium ${
+                  hasLanguageSpecificUrl(pageSlug, language) 
+                    ? 'text-green-300' 
+                    : 'text-amber-300'
+                }`}>
+                  {hasLanguageSpecificUrl(pageSlug, language) 
+                    ? `✓ Language-specific source URL available for ${language.toUpperCase()}`
+                    : `No language-specific source for ${language.toUpperCase()} - using English default`
+                  }
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  {hasLanguageSpecificUrl(pageSlug, language)
+                    ? 'Fetched content will be from the native language source page.'
+                    : 'Consider using Automatic Translate after importing English content, or add a language-specific URL below.'
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* URL Input */}
         <div className="space-y-3">
           <Label htmlFor="sourceUrl" className="text-white text-lg flex items-center gap-2 font-medium">
             <Globe className="h-5 w-5 text-[#f9dc24]" />
-            Source URL
+            Source URL {language !== 'en' && <Badge variant="outline" className="ml-2 text-xs">{language.toUpperCase()}</Badge>}
           </Label>
           <p className="text-gray-400 text-sm">
             Enter the source page URL to import content from.
