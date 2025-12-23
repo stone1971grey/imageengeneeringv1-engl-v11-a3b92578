@@ -13,22 +13,22 @@ export const GeminiIcon = ({ className = "h-4 w-4", rainbow = false }: GeminiIco
       >
         <defs>
           <linearGradient id="geminiRainbow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF6B6B" />
-            <stop offset="25%" stopColor="#FFE66D" />
-            <stop offset="50%" stopColor="#4ECDC4" />
-            <stop offset="75%" stopColor="#A06CD5" />
-            <stop offset="100%" stopColor="#FF6B6B" />
+            <stop offset="0%" stopColor="#FF6B9D" />
+            <stop offset="25%" stopColor="#FF8A65" />
+            <stop offset="50%" stopColor="#FFD54F" />
+            <stop offset="75%" stopColor="#4FC3F7" />
+            <stop offset="100%" stopColor="#E040FB" />
           </linearGradient>
           <linearGradient id="geminiRainbow2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#A06CD5" />
-            <stop offset="33%" stopColor="#4ECDC4" />
-            <stop offset="66%" stopColor="#FFE66D" />
-            <stop offset="100%" stopColor="#FF6B6B" />
+            <stop offset="0%" stopColor="#E040FB" />
+            <stop offset="33%" stopColor="#4FC3F7" />
+            <stop offset="66%" stopColor="#FFD54F" />
+            <stop offset="100%" stopColor="#FF6B9D" />
           </linearGradient>
           <linearGradient id="geminiRainbow3" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#4ECDC4" />
-            <stop offset="50%" stopColor="#A06CD5" />
-            <stop offset="100%" stopColor="#FF6B6B" />
+            <stop offset="0%" stopColor="#4FC3F7" />
+            <stop offset="50%" stopColor="#E040FB" />
+            <stop offset="100%" stopColor="#FF6B9D" />
           </linearGradient>
         </defs>
         {/* Main sparkle */}
