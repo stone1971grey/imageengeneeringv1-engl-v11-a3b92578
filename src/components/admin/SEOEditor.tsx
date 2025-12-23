@@ -86,21 +86,50 @@ export const SEOEditor = ({
     reason: string;
     characterCount: number;
     keywordPosition: string;
+    placementOptions?: Array<{
+      rank: number;
+      segmentType: string;
+      segmentKey: string | null;
+      segmentId: number | null;
+      createNew: boolean;
+      suggestedTabPosition: number;
+      note: string;
+    }>;
     placementSuggestion: { segmentType: string; segmentKey: string | null; note: string; segmentId?: number } | null;
     priority: number;
   }>>([]);
   const [showH1Suggestions, setShowH1Suggestions] = useState(false);
   const [selectedH1Suggestion, setSelectedH1Suggestion] = useState<{
     headline: string;
-    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string; segmentId?: number } | null;
+    selectedPlacement: {
+      rank: number;
+      segmentType: string;
+      segmentKey: string | null;
+      segmentId: number | null;
+      createNew: boolean;
+      suggestedTabPosition: number;
+      note: string;
+    } | null;
+    allPlacementOptions: Array<{
+      rank: number;
+      segmentType: string;
+      segmentKey: string | null;
+      segmentId: number | null;
+      createNew: boolean;
+      suggestedTabPosition: number;
+      note: string;
+    }>;
   } | null>(null);
   const [isApplyingH1, setIsApplyingH1] = useState(false);
+  const [isCreatingSegment, setIsCreatingSegment] = useState(false);
   
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
     newH1: string;
     targetSegment: { id: number; key: string; type: string; label: string };
+    createdNewSegment?: boolean;
+    tabPosition?: number;
     oldH1?: { text: string; segment: { key: string; label: string }; action: string };
   } | null>(null);
 
@@ -627,30 +656,67 @@ export const SEOEditor = ({
   };
 
   const handleSelectH1 = (suggestion: typeof h1Suggestions[0]) => {
-    // Find segment ID from registry if not provided
-    const segmentKey = suggestion.placementSuggestion?.segmentKey;
-    const segmentType = suggestion.placementSuggestion?.segmentType;
+    // Use placementOptions if available, otherwise convert from placementSuggestion
+    let allPlacementOptions = suggestion.placementOptions || [];
     
-    let segmentId: number | undefined = suggestion.placementSuggestion?.segmentId;
-    if (!segmentId && (segmentKey || segmentType)) {
-      const foundSegment = segmentRegistry.find(seg => 
-        (segmentKey && seg.segment_key === segmentKey && !seg.deleted) ||
-        (!segmentKey && segmentType && seg.segment_type === segmentType && !seg.deleted)
-      );
-      segmentId = foundSegment?.segment_id;
+    // Fallback: convert old format
+    if (allPlacementOptions.length === 0 && suggestion.placementSuggestion) {
+      const segmentKey = suggestion.placementSuggestion.segmentKey;
+      const segmentType = suggestion.placementSuggestion.segmentType;
+      let segmentId = suggestion.placementSuggestion.segmentId;
+      
+      if (!segmentId && (segmentKey || segmentType)) {
+        const foundSegment = segmentRegistry.find(seg => 
+          (segmentKey && seg.segment_key === segmentKey && !seg.deleted) ||
+          (!segmentKey && segmentType && seg.segment_type === segmentType && !seg.deleted)
+        );
+        segmentId = foundSegment?.segment_id;
+      }
+      
+      allPlacementOptions = [{
+        rank: 1,
+        segmentType: segmentType,
+        segmentKey: segmentKey,
+        segmentId: segmentId || null,
+        createNew: !segmentKey,
+        suggestedTabPosition: 1,
+        note: suggestion.placementSuggestion.note
+      }];
     }
+    
+    // Enrich placement options with segment IDs from registry
+    allPlacementOptions = allPlacementOptions.map(opt => {
+      if (!opt.segmentId && opt.segmentKey) {
+        const foundSeg = segmentRegistry.find(seg => 
+          seg.segment_key === opt.segmentKey && !seg.deleted
+        );
+        return { ...opt, segmentId: foundSeg?.segment_id || null };
+      }
+      return opt;
+    });
     
     handleChange('h1', suggestion.headline);
     setSelectedH1Suggestion({
       headline: suggestion.headline,
-      placementSuggestion: suggestion.placementSuggestion ? {
-        ...suggestion.placementSuggestion,
-        segmentId
-      } : null
+      selectedPlacement: allPlacementOptions[0] || null,
+      allPlacementOptions
     });
     setShowH1Suggestions(false);
-    setH1ChangeLog(null); // Clear previous changelog
+    setH1ChangeLog(null);
     toast.success(`H1 "${suggestion.headline}" ausgewählt`);
+  };
+
+  // Change selected placement option
+  const handleChangePlacement = (placementIndex: number) => {
+    if (!selectedH1Suggestion) return;
+    const newPlacement = selectedH1Suggestion.allPlacementOptions[placementIndex];
+    if (newPlacement) {
+      setSelectedH1Suggestion({
+        ...selectedH1Suggestion,
+        selectedPlacement: newPlacement
+      });
+      toast.info(`Platzierung geändert: ${getSegmentLabel(newPlacement.segmentType, newPlacement.segmentKey || '')}`);
+    }
   };
 
   // Helper to get readable segment label
@@ -679,15 +745,32 @@ export const SEOEditor = ({
 
   // Apply H1 to the suggested segment and convert old H1 to H2
   const handleApplyH1ToSegment = async () => {
-    if (!selectedH1Suggestion) return;
+    if (!selectedH1Suggestion || !selectedH1Suggestion.selectedPlacement) return;
     
     setIsApplyingH1(true);
     setH1ChangeLog(null);
     
+    const placement = selectedH1Suggestion.selectedPlacement;
+    const newH1 = selectedH1Suggestion.headline;
+    
     try {
-      const targetSegmentKey = selectedH1Suggestion.placementSuggestion?.segmentKey;
-      const targetSegmentType = selectedH1Suggestion.placementSuggestion?.segmentType;
-      const newH1 = selectedH1Suggestion.headline;
+      // Check if we need to create a new segment
+      if (placement.createNew) {
+        toast.info(`Neues ${getSegmentLabel(placement.segmentType, '')} Segment wird erstellt...`);
+        setIsCreatingSegment(true);
+        
+        // For now, show message that segment needs to be created manually
+        // Full segment creation would require integration with segment management
+        toast.warning(
+          `Bitte erstelle zuerst ein "${getSegmentLabel(placement.segmentType, '')}" Segment an Position ${placement.suggestedTabPosition} im Tab-Editor. Danach kannst du die H1 anwenden.`
+        );
+        setIsApplyingH1(false);
+        setIsCreatingSegment(false);
+        return;
+      }
+      
+      const targetSegmentKey = placement.segmentKey;
+      const targetSegmentType = placement.segmentType;
       
       // Find current H1 source to potentially convert to H2
       const oldH1Source = h1SourceInfo;
@@ -697,7 +780,8 @@ export const SEOEditor = ({
         newH1,
         targetSegmentKey,
         targetSegmentType,
-        oldH1Source
+        oldH1Source,
+        placement
       });
 
       // Find the target segment in registry
@@ -713,7 +797,7 @@ export const SEOEditor = ({
       }
 
       if (!targetSegment) {
-        toast.error(`Kein passendes Segment gefunden. Bitte erstelle zuerst ein ${targetSegmentType || 'Full Hero'} Segment.`);
+        toast.error(`Kein passendes Segment gefunden. Bitte erstelle zuerst ein ${getSegmentLabel(targetSegmentType, '')} Segment.`);
         setIsApplyingH1(false);
         return;
       }
@@ -1527,49 +1611,91 @@ export const SEOEditor = ({
                   "{selectedH1Suggestion.headline}"
                 </p>
                 
-                {selectedH1Suggestion.placementSuggestion && (
-                  <div className="mb-3 p-3 bg-muted/30 rounded-md border border-purple-500/20">
-                    <p className="text-sm font-medium text-purple-400 mb-2">📍 Empfohlene Platzierung:</p>
-                    <p className="text-sm text-muted-foreground mb-2">{selectedH1Suggestion.placementSuggestion.note}</p>
-                    
-                    {/* Segment Details Box */}
-                    <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-muted-foreground">Segment-Typ:</span>
-                          <p className="font-medium text-foreground">
-                            {getSegmentLabel(selectedH1Suggestion.placementSuggestion.segmentType, selectedH1Suggestion.placementSuggestion.segmentKey || '')}
-                          </p>
+                {selectedH1Suggestion.selectedPlacement && (
+                  <div className="mb-3 space-y-3">
+                    {/* Placement Options Selector */}
+                    {selectedH1Suggestion.allPlacementOptions.length > 1 && (
+                      <div className="p-3 bg-muted/20 rounded-md border border-border/50">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Platzierungsoptionen (Beste → Alternativ):</p>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedH1Suggestion.allPlacementOptions.map((opt, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => handleChangePlacement(idx)}
+                              className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                                opt.rank === selectedH1Suggestion.selectedPlacement?.rank
+                                  ? 'bg-purple-500/20 border-purple-500/50 text-purple-400'
+                                  : 'bg-muted/30 border-border/50 text-muted-foreground hover:bg-muted/50'
+                              }`}
+                            >
+                              <span className="font-semibold mr-1">#{opt.rank}</span>
+                              {getSegmentLabel(opt.segmentType, opt.segmentKey || '')}
+                              {opt.createNew && <span className="ml-1 text-yellow-400">+ NEU</span>}
+                            </button>
+                          ))}
                         </div>
-                        {selectedH1Suggestion.placementSuggestion.segmentId && (
-                          <div>
-                            <span className="text-muted-foreground">Segment-ID:</span>
-                            <p className="font-mono font-medium text-purple-400">
-                              #{selectedH1Suggestion.placementSuggestion.segmentId}
-                            </p>
-                          </div>
-                        )}
-                        {selectedH1Suggestion.placementSuggestion.segmentKey && (
-                          <div className="col-span-2">
-                            <span className="text-muted-foreground">Segment-Key:</span>
-                            <p className="font-mono font-medium text-purple-400 break-all">
-                              {selectedH1Suggestion.placementSuggestion.segmentKey}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {h1SourceInfo && selectedH1Suggestion.placementSuggestion.segmentKey !== h1SourceInfo.key && (
-                      <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-xs">
-                        <p className="text-yellow-400 font-medium">
-                          ⚠️ Bestehende H1 wird angepasst:
-                        </p>
-                        <p className="text-yellow-400/80 mt-1">
-                          H1 in "{h1SourceInfo.label}" ({h1SourceInfo.key}) → wird zu H2 konvertiert
-                        </p>
                       </div>
                     )}
+                    
+                    {/* Selected Placement Details */}
+                    <div className="p-3 bg-muted/30 rounded-md border border-purple-500/20">
+                      <p className="text-sm font-medium text-purple-400 mb-2">
+                        📍 {selectedH1Suggestion.selectedPlacement.createNew ? 'Neues Segment erstellen:' : 'Platzierung:'}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-2">{selectedH1Suggestion.selectedPlacement.note}</p>
+                      
+                      {/* Segment Details Box */}
+                      <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-muted-foreground">Segment-Typ:</span>
+                            <p className="font-medium text-foreground">
+                              {getSegmentLabel(selectedH1Suggestion.selectedPlacement.segmentType, selectedH1Suggestion.selectedPlacement.segmentKey || '')}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Tab-Position:</span>
+                            <p className="font-mono font-medium text-purple-400">
+                              #{selectedH1Suggestion.selectedPlacement.suggestedTabPosition}
+                            </p>
+                          </div>
+                          {selectedH1Suggestion.selectedPlacement.segmentId && !selectedH1Suggestion.selectedPlacement.createNew && (
+                            <div>
+                              <span className="text-muted-foreground">Segment-ID:</span>
+                              <p className="font-mono font-medium text-purple-400">
+                                #{selectedH1Suggestion.selectedPlacement.segmentId}
+                              </p>
+                            </div>
+                          )}
+                          {selectedH1Suggestion.selectedPlacement.segmentKey && !selectedH1Suggestion.selectedPlacement.createNew && (
+                            <div className="col-span-2">
+                              <span className="text-muted-foreground">Segment-Key:</span>
+                              <p className="font-mono font-medium text-purple-400 break-all">
+                                {selectedH1Suggestion.selectedPlacement.segmentKey}
+                              </p>
+                            </div>
+                          )}
+                          {selectedH1Suggestion.selectedPlacement.createNew && (
+                            <div className="col-span-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
+                              <p className="text-yellow-400 text-xs font-medium">
+                                ⚡ Neues Segment wird an Position {selectedH1Suggestion.selectedPlacement.suggestedTabPosition} erstellt
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {h1SourceInfo && selectedH1Suggestion.selectedPlacement.segmentKey !== h1SourceInfo.key && !selectedH1Suggestion.selectedPlacement.createNew && (
+                        <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-xs">
+                          <p className="text-yellow-400 font-medium">
+                            ⚠️ Bestehende H1 wird angepasst:
+                          </p>
+                          <p className="text-yellow-400/80 mt-1">
+                            H1 in "{h1SourceInfo.label}" ({h1SourceInfo.key}) → wird zu H2 konvertiert
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 
