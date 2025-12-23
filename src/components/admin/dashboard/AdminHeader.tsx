@@ -242,10 +242,7 @@ export const AdminHeader = ({
                     ID {pageInfo.pageId}
                   </span>
                   <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                  <span 
-                    className="text-base text-gray-700 font-mono truncate max-w-[200px] min-w-0"
-                    title={pageInfo.pageSlug}
-                  >
+                  <span className="text-base text-gray-700 font-mono whitespace-nowrap">
                     {pageInfo.pageSlug}
                   </span>
                   {pageInfo.targetPageSlug && (
