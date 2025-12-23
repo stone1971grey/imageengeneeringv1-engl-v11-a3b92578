@@ -607,6 +607,38 @@ const DynamicCMSPage = () => {
       // Apply alt text enrichment
       const enrichedSegments = await enrichSegmentsWithAltTexts(finalSegments, urlLanguage);
       
+      // CRITICAL: Auto-sync tab_order with page_segments to prevent missing segments
+      // This ensures that all segments in page_segments are also in tab_order
+      const segmentIds = enrichedSegments.map(seg => String(seg.id || seg.segment_key));
+      const missingFromTabOrder = segmentIds.filter(id => !loadedTabOrder.includes(id));
+      
+      if (missingFromTabOrder.length > 0) {
+        console.warn(`[DynamicCMSPage] CRITICAL: Found ${missingFromTabOrder.length} segments missing from tab_order:`, {
+          pageSlug,
+          missingIds: missingFromTabOrder,
+          currentTabOrder: loadedTabOrder,
+          segmentIds
+        });
+        
+        // Auto-fix: Add missing segments at their correct position
+        const fixedTabOrder = [...loadedTabOrder];
+        missingFromTabOrder.forEach(missingId => {
+          const segment = enrichedSegments.find(seg => String(seg.id || seg.segment_key) === missingId);
+          if (segment) {
+            const position = segment.position ?? enrichedSegments.indexOf(segment);
+            // Insert at the correct position, clamped to valid range
+            const insertIndex = Math.min(position, fixedTabOrder.length);
+            fixedTabOrder.splice(insertIndex, 0, missingId);
+          }
+        });
+        
+        // Remove duplicates while preserving order
+        const uniqueTabOrder = [...new Set(fixedTabOrder)];
+        
+        console.log(`[DynamicCMSPage] Auto-fixed tab_order:`, uniqueTabOrder);
+        loadedTabOrder = uniqueTabOrder;
+      }
+      
       setPageSegments(enrichedSegments);
       setTabOrder(loadedTabOrder);
 
@@ -628,9 +660,6 @@ const DynamicCMSPage = () => {
           hasNewsListSegment: enhancedSegments.some(s => s.type === 'news-list'),
         });
       }
-
-      // REMOVED: Auto-sync tab_order logic that was adding unwanted empty segments
-      // tab_order is now authoritative - only segments explicitly in tab_order will be rendered
     }
 
     setLoading(false);

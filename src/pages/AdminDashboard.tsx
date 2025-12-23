@@ -1287,7 +1287,7 @@ const AdminDashboard = () => {
       tabOrder
     };
 
-    await saveAllSegments(ctx, setPageSegments);
+    await saveAllSegments(ctx, setPageSegments, setTabOrder);
     setSaving(false);
   };
 

@@ -429,13 +429,56 @@ export async function deleteSegment(
 }
 
 /**
- * Save all segments with safety checks
+ * Ensures tab_order is synchronized with page_segments
+ * This prevents segments from disappearing due to missing tab_order entries
+ */
+export function synchronizeTabOrder(pageSegments: any[], tabOrder: string[]): string[] {
+  const segmentIds = pageSegments.map(seg => String(seg.id));
+  const missingIds = segmentIds.filter(id => !tabOrder.includes(id));
+  
+  if (missingIds.length > 0) {
+    console.warn(`[TAB ORDER SYNC] Found ${missingIds.length} segments missing from tab_order:`, missingIds);
+    
+    // Build new tab order: existing order + missing segments in their position order
+    const newTabOrder = [...tabOrder];
+    
+    missingIds.forEach(missingId => {
+      const segment = pageSegments.find(seg => String(seg.id) === missingId);
+      if (segment) {
+        const position = segment.position ?? pageSegments.indexOf(segment);
+        // Insert at the correct position
+        newTabOrder.splice(position, 0, missingId);
+      } else {
+        // Fallback: add at the end
+        newTabOrder.push(missingId);
+      }
+    });
+    
+    // Remove any tab_order entries that don't exist in page_segments
+    const validTabOrder = newTabOrder.filter(id => segmentIds.includes(id));
+    
+    return validTabOrder;
+  }
+  
+  // Also remove any orphaned entries from tab_order
+  const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
+  if (validTabOrder.length !== tabOrder.length) {
+    console.warn(`[TAB ORDER SYNC] Removed ${tabOrder.length - validTabOrder.length} orphaned entries from tab_order`);
+    return validTabOrder;
+  }
+  
+  return tabOrder;
+}
+
+/**
+ * Save all segments with safety checks and automatic tab_order synchronization
  */
 export async function saveAllSegments(
   ctx: SegmentOperationContext,
-  setPageSegments: (segments: any[]) => void
+  setPageSegments: (segments: any[]) => void,
+  setTabOrder?: (order: string[]) => void
 ): Promise<boolean> {
-  const { resolvedPageSlug, selectedPage, editorLanguage, userId, pageSegments } = ctx;
+  const { resolvedPageSlug, selectedPage, editorLanguage, userId, pageSegments, tabOrder } = ctx;
   const currentPageSlug = resolvedPageSlug || selectedPage;
 
   try {
@@ -484,7 +527,17 @@ export async function saveAllSegments(
       position: idx
     }));
 
-    const { error } = await supabase
+    // CRITICAL: Synchronize tab_order with page_segments to prevent segments from disappearing
+    const synchronizedTabOrder = synchronizeTabOrder(pageSegments, tabOrder);
+    
+    // Check if synchronization was needed
+    if (synchronizedTabOrder.join(',') !== tabOrder.join(',')) {
+      console.log('[SAVE] Tab order was auto-synchronized to match page_segments');
+      toast.info("Tab order was automatically synchronized");
+    }
+
+    // Save page_segments
+    const { error: segmentsError } = await supabase
       .from("page_content")
       .upsert({
         page_slug: currentPageSlug,
@@ -496,9 +549,28 @@ export async function saveAllSegments(
         updated_by: userId
       }, { onConflict: 'page_slug,section_key,language' });
 
-    if (error) throw error;
+    if (segmentsError) throw segmentsError;
+
+    // CRITICAL: Always save synchronized tab_order together with page_segments
+    const { error: tabOrderError } = await supabase
+      .from("page_content")
+      .upsert({
+        page_slug: currentPageSlug,
+        section_key: "tab_order",
+        content_type: "json",
+        content_value: JSON.stringify(synchronizedTabOrder),
+        language: editorLanguage,
+        updated_at: new Date().toISOString(),
+        updated_by: userId
+      }, { onConflict: 'page_slug,section_key,language' });
+
+    if (tabOrderError) throw tabOrderError;
 
     setPageSegments(segmentsWithPositions);
+    if (setTabOrder) {
+      setTabOrder(synchronizedTabOrder);
+    }
+    
     toast.success("Segments saved successfully!");
     return true;
   } catch (error: any) {
