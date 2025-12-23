@@ -416,6 +416,33 @@ export async function deleteSegment(
       }
     }
 
+    // Clean up file_segment_mappings - remove this segment ID from any image mappings
+    try {
+      // Find all mappings that include this segment ID
+      const { data: mappingsToClean } = await supabase
+        .from("file_segment_mappings")
+        .select("id, segment_ids")
+        .contains("segment_ids", [segmentId]);
+
+      if (mappingsToClean && mappingsToClean.length > 0) {
+        for (const mapping of mappingsToClean) {
+          const updatedSegmentIds = (mapping.segment_ids as string[]).filter(id => id !== segmentId);
+          
+          await supabase
+            .from("file_segment_mappings")
+            .update({ 
+              segment_ids: updatedSegmentIds,
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", mapping.id);
+        }
+        console.log(`[deleteSegment] Cleaned up ${mappingsToClean.length} file_segment_mappings for segment ${segmentId}`);
+      }
+    } catch (mappingError) {
+      console.error("[deleteSegment] Error cleaning up file_segment_mappings:", mappingError);
+      // Don't throw - this is a cleanup operation, not critical
+    }
+
     setPageSegments(updatedSegments);
     setTabOrder(updatedTabOrder);
     setActiveTab(updatedTabOrder[0] || 'tiles');
