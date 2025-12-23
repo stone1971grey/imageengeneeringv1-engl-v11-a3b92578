@@ -821,244 +821,177 @@ export const SEOEditor = ({
         targetSegmentKey,
         targetSegmentType,
         targetSegmentId,
-        oldH1Source
+        oldH1Source,
+        segmentRegistryCount: segmentRegistry.length,
+        pageContentCount: pageContent.length
       });
 
-      // IMPROVED: Try multiple ways to find the target segment
-      let targetSegment = null;
+      // Get page_segments entry first - we'll need it anyway
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
       
-      // 1. Try by segment_id if provided
+      if (!pageSegmentsEntry) {
+        toast.error('Keine page_segments Daten gefunden. Bitte Seite neu laden.', { duration: 5000 });
+        setIsApplyingH1(false);
+        return;
+      }
+
+      let segments: any[];
+      try {
+        segments = JSON.parse(pageSegmentsEntry.content_value);
+        console.log('[SEO Editor] page_segments parsed, contains', segments.length, 'segments');
+      } catch (e) {
+        toast.error('Fehler beim Parsen von page_segments', { duration: 5000 });
+        setIsApplyingH1(false);
+        return;
+      }
+
+      // DIRECT SEARCH IN page_segments - bypass registry issues
+      let targetIdx = -1;
+      
+      // Strategy 1: Find by segment ID
       if (targetSegmentId) {
-        targetSegment = segmentRegistry.find(seg => 
-          seg.segment_id === targetSegmentId && !seg.deleted
+        targetIdx = segments.findIndex((seg: any) => 
+          seg.id === String(targetSegmentId) || 
+          seg.segmentId === targetSegmentId ||
+          seg.id === targetSegmentId
         );
-        console.log('[SEO Editor] Lookup by segment_id:', targetSegmentId, '→', targetSegment ? 'found' : 'not found');
+        console.log('[SEO Editor] Lookup by segmentId', targetSegmentId, '→ index:', targetIdx);
       }
       
-      // 2. Try by segment_key
-      if (!targetSegment && targetSegmentKey) {
-        targetSegment = segmentRegistry.find(seg => 
-          seg.segment_key === targetSegmentKey && !seg.deleted
+      // Strategy 2: Find by segment key
+      if (targetIdx === -1 && targetSegmentKey) {
+        targetIdx = segments.findIndex((seg: any) => 
+          seg.segmentKey === targetSegmentKey ||
+          seg.id === targetSegmentKey
         );
-        console.log('[SEO Editor] Lookup by segment_key:', targetSegmentKey, '→', targetSegment ? 'found' : 'not found');
+        console.log('[SEO Editor] Lookup by segmentKey', targetSegmentKey, '→ index:', targetIdx);
       }
       
-      // 3. Try by segment_type (for hero types, also match legacy "hero")
-      if (!targetSegment && targetSegmentType) {
+      // Strategy 3: Find by segment type
+      if (targetIdx === -1 && targetSegmentType) {
         const typesToMatch = [targetSegmentType];
-        // Add legacy type mappings
+        // Add type variations
         if (targetSegmentType === 'product-hero' || targetSegmentType === 'product-hero-gallery') {
-          typesToMatch.push('hero');
+          typesToMatch.push('hero', 'product-hero', 'product-hero-gallery');
         }
         if (targetSegmentType === 'hero') {
           typesToMatch.push('product-hero', 'product-hero-gallery');
         }
         
-        targetSegment = segmentRegistry.find(seg => 
-          typesToMatch.includes(seg.segment_type) && !seg.deleted
+        targetIdx = segments.findIndex((seg: any) => 
+          typesToMatch.includes(seg.type) || 
+          typesToMatch.includes(seg.segmentType)
         );
-        console.log('[SEO Editor] Lookup by types:', typesToMatch, '→', targetSegment ? 'found' : 'not found');
+        console.log('[SEO Editor] Lookup by types', typesToMatch, '→ index:', targetIdx);
       }
 
-      // Log for debugging
-      console.log('[SEO Editor] Final target segment:', targetSegment);
-
-      if (!targetSegment) {
-        toast.error(`Kein passendes Segment gefunden. Segment-Typ: ${targetSegmentType}, Key: ${targetSegmentKey}, ID: ${targetSegmentId}`, { duration: 6000 });
+      if (targetIdx === -1) {
+        console.error('[SEO Editor] Segment not found. Available segments:', 
+          segments.map((s: any) => ({ id: s.id, segmentId: s.segmentId, type: s.type, segmentType: s.segmentType }))
+        );
+        toast.error(`Segment nicht gefunden in page_segments. ID: ${targetSegmentId}, Typ: ${targetSegmentType}`, { duration: 6000 });
         setIsApplyingH1(false);
         return;
       }
 
-      console.log('[SEO Editor] Target segment found:', targetSegment);
-      
-      let segmentUpdated = false;
+      const segmentData = segments[targetIdx];
+      const actualSegmentType = segmentData.segmentType || segmentData.type || targetSegmentType;
+      console.log('[SEO Editor] Found segment at index', targetIdx, 'type:', actualSegmentType);
+      console.log('[SEO Editor] Segment data keys:', Object.keys(segmentData));
+      console.log('[SEO Editor] Segment data.data keys:', segmentData.data ? Object.keys(segmentData.data) : 'no data wrapper');
+
+      // Determine where to write the H1 based on actual segment structure
+      // Check if segment has 'data' wrapper or direct properties
+      const dataObj = segmentData.data || segmentData;
       let updateDetails = '';
-
-      // Check if this segment type stores data in page_segments JSON
-      // IMPORTANT: Include legacy "hero" type as it maps to product-hero
-      const segmentTypeForCheck = targetSegment.segment_type === 'hero' ? 'product-hero' : targetSegment.segment_type;
       
-      if (isPageSegmentType(targetSegment.segment_type) || targetSegment.segment_type === 'hero') {
-        // Update the page_segments JSON
-        const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
-        
-        if (pageSegmentsEntry) {
-          try {
-            const segments = JSON.parse(pageSegmentsEntry.content_value);
-            console.log('[SEO Editor] page_segments has', segments.length, 'segments');
-            
-            // IMPROVED: Try multiple ways to find the segment in page_segments
-            let targetIdx = -1;
-            
-            // Try by id matching segment_id
-            targetIdx = segments.findIndex((seg: any) => 
-              seg.id === String(targetSegment.segment_id)
-            );
-            console.log('[SEO Editor] Lookup in page_segments by id===segment_id:', targetIdx);
-            
-            // Try by id matching segment_key  
-            if (targetIdx === -1) {
-              targetIdx = segments.findIndex((seg: any) => 
-                seg.id === targetSegment.segment_key
-              );
-              console.log('[SEO Editor] Lookup in page_segments by id===segment_key:', targetIdx);
-            }
-            
-            // Try by segmentId field
-            if (targetIdx === -1) {
-              targetIdx = segments.findIndex((seg: any) => 
-                seg.segmentId === targetSegment.segment_id
-              );
-              console.log('[SEO Editor] Lookup in page_segments by segmentId:', targetIdx);
-            }
-            
-            // Try by segmentKey field
-            if (targetIdx === -1) {
-              targetIdx = segments.findIndex((seg: any) => 
-                seg.segmentKey === targetSegment.segment_key
-              );
-              console.log('[SEO Editor] Lookup in page_segments by segmentKey:', targetIdx);
-            }
-            
-            if (targetIdx !== -1) {
-              const segmentData = segments[targetIdx];
-              const actualSegmentType = segmentData.segmentType || segmentData.type || targetSegment.segment_type;
-              console.log('[SEO Editor] Found segment at index:', targetIdx, 'actual type:', actualSegmentType, 'data keys:', Object.keys(segmentData));
-              
-              // Determine where to write the H1 based on actual segment structure
-              // Check if segment has 'data' wrapper or direct properties
-              const dataObj = segmentData.data || segmentData;
-              
-              // Update the H1 field based on segment type
-              if (actualSegmentType === 'full-hero' || actualSegmentType === 'full_hero') {
-                dataObj.titleLine1 = newH1;
-                dataObj.titleLine2 = '';
-                updateDetails = 'titleLine1';
-              } else if (actualSegmentType === 'product-hero' || actualSegmentType === 'product-hero-gallery' || actualSegmentType === 'hero') {
-                // Product Hero Gallery uses title field directly
-                if (dataObj.hasOwnProperty('title') || actualSegmentType === 'product-hero-gallery') {
-                  dataObj.title = newH1;
-                  updateDetails = 'title';
-                } else if (dataObj.hasOwnProperty('hero_title')) {
-                  dataObj.hero_title = newH1;
-                  dataObj.hero_subtitle = '';
-                  updateDetails = 'hero_title';
-                } else {
-                  // Fallback: set title
-                  dataObj.title = newH1;
-                  updateDetails = 'title (fallback)';
-                }
-              } else {
-                dataObj.title = newH1;
-                updateDetails = 'title';
-              }
-              
-              // Set useH1 flag if available
-              if (dataObj.hasOwnProperty('useH1')) {
-                dataObj.useH1 = true;
-              }
-              
-              // Write back the changes
-              if (segmentData.data) {
-                segments[targetIdx].data = dataObj;
-              } else {
-                segments[targetIdx] = { ...segmentData, ...dataObj };
-              }
-              
-              console.log('[SEO Editor] Updated field:', updateDetails, 'new value:', newH1);
-              
-              // Save the updated page_segments
-              const { error: updateError } = await supabase
-                .from('page_content')
-                .update({ 
-                  content_value: JSON.stringify(segments),
-                  updated_at: new Date().toISOString()
-                })
-                .eq('id', pageSegmentsEntry.id);
-              
-              if (updateError) {
-                throw updateError;
-              }
-              
-              console.log('[SEO Editor] Successfully saved page_segments');
-              segmentUpdated = true;
-            } else {
-              console.error('[SEO Editor] Segment not found in page_segments array. Segment IDs in array:', 
-                segments.map((s: any) => ({ id: s.id, segmentId: s.segmentId, segmentKey: s.segmentKey }))
-              );
-              toast.error(`Segment nicht in page_segments gefunden. Registry-ID: ${targetSegment.segment_id}`, { duration: 5000 });
-            }
-          } catch (parseError) {
-            console.error('[SEO Editor] Failed to parse page_segments:', parseError);
-            toast.error('Fehler beim Parsen von page_segments');
-          }
+      // Update the H1 field based on segment type
+      if (actualSegmentType === 'full-hero' || actualSegmentType === 'full_hero') {
+        dataObj.titleLine1 = newH1;
+        dataObj.titleLine2 = '';
+        updateDetails = 'titleLine1';
+      } else if (actualSegmentType === 'product-hero-gallery') {
+        // Product Hero Gallery uses title field directly (no data wrapper usually)
+        dataObj.title = newH1;
+        updateDetails = 'title (product-hero-gallery)';
+      } else if (actualSegmentType === 'product-hero' || actualSegmentType === 'hero') {
+        // Check which field exists
+        if (dataObj.hasOwnProperty('hero_title')) {
+          dataObj.hero_title = newH1;
+          dataObj.hero_subtitle = '';
+          updateDetails = 'hero_title';
+        } else if (dataObj.hasOwnProperty('title')) {
+          dataObj.title = newH1;
+          updateDetails = 'title';
         } else {
-          console.error('[SEO Editor] No page_segments entry found for this page');
-          toast.error('Keine page_segments Daten für diese Seite gefunden');
+          // Create hero_title if nothing exists
+          dataObj.hero_title = newH1;
+          updateDetails = 'hero_title (created)';
         }
+      } else if (actualSegmentType === 'intro') {
+        dataObj.title = newH1;
+        dataObj.headingLevel = 'h1';
+        updateDetails = 'title + headingLevel=h1';
       } else {
-        // For other segments, look for content with section_key = segment_key
-        const targetContent = pageContent.find(item => item.section_key === targetSegment.segment_key);
-        
-        if (targetContent) {
-          try {
-            const contentData = JSON.parse(targetContent.content_value);
-            
-            contentData.title = newH1;
-            updateDetails = 'title';
-            
-            if (targetSegment.segment_type === 'intro') {
-              contentData.headingLevel = 'h1';
-              updateDetails = 'title + headingLevel=h1';
-            }
-            
-            const { error: updateError } = await supabase
-              .from('page_content')
-              .update({ 
-                content_value: JSON.stringify(contentData),
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', targetContent.id);
-            
-            if (updateError) {
-              throw updateError;
-            }
-            
-            console.log('[SEO Editor] Updated target segment with new H1');
-            segmentUpdated = true;
-            
-          } catch (parseError) {
-            console.error('[SEO Editor] Failed to parse target segment content:', parseError);
-            toast.error('Fehler beim Parsen des Segment-Inhalts');
-            setIsApplyingH1(false);
-            return;
-          }
-        } else {
-          console.log('[SEO Editor] No content found for section_key:', targetSegment.segment_key);
-          toast.error(`Kein Content für Segment gefunden: ${targetSegment.segment_key}`);
-        }
+        dataObj.title = newH1;
+        updateDetails = 'title';
       }
-
-      if (!segmentUpdated) {
-        toast.error(`Konnte H1 nicht im Segment speichern. Segment-Typ: ${targetSegment.segment_type}, Key: ${targetSegment.segment_key}`, { duration: 5000 });
+      
+      // Set useH1 flag if available
+      if (dataObj.hasOwnProperty('useH1')) {
+        dataObj.useH1 = true;
+      }
+      
+      // Write back the changes
+      if (segmentData.data) {
+        segments[targetIdx].data = dataObj;
+      } else {
+        // For product-hero-gallery which has direct properties
+        Object.assign(segments[targetIdx], dataObj);
+      }
+      
+      console.log('[SEO Editor] Updated field:', updateDetails, 'new value:', newH1);
+      
+      // Save the updated page_segments
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsEntry.id);
+      
+      if (updateError) {
+        console.error('[SEO Editor] Failed to save:', updateError);
+        toast.error(`Speichern fehlgeschlagen: ${updateError.message}`, { duration: 5000 });
         setIsApplyingH1(false);
         return;
       }
+      
+      console.log('[SEO Editor] Successfully saved page_segments with updated H1');
+
+      // Build target segment info for changelog
+      const targetSegmentInfo = {
+        id: segmentData.segmentId || segmentData.id || targetSegmentId || 0,
+        key: segmentData.segmentKey || segmentData.id || targetSegmentKey || '',
+        type: actualSegmentType,
+        label: getSegmentLabel(actualSegmentType, segmentData.segmentKey || '')
+      };
 
       // Prepare changelog entry
       let changeLogEntry: typeof h1ChangeLog = {
         timestamp: new Date().toISOString(),
         newH1,
         targetSegment: {
-          id: targetSegment.segment_id,
-          key: targetSegment.segment_key,
-          type: targetSegment.segment_type,
-          label: getSegmentLabel(targetSegment.segment_type, targetSegment.segment_key)
+          id: typeof targetSegmentInfo.id === 'string' ? parseInt(targetSegmentInfo.id) || 0 : targetSegmentInfo.id,
+          key: targetSegmentInfo.key,
+          type: targetSegmentInfo.type,
+          label: targetSegmentInfo.label
         }
       };
 
       // If old H1 is in a different segment, convert it to H2
-      if (oldH1Source && oldH1Source.key !== targetSegment.segment_key) {
+      if (oldH1Source && oldH1Source.key !== targetSegmentInfo.key) {
         // Check if old segment is in page_segments
         if (isPageSegmentType(oldH1Source.type)) {
           const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
@@ -1137,7 +1070,7 @@ export const SEOEditor = ({
       // Set the changelog for display
       setH1ChangeLog(changeLogEntry);
       
-      toast.success(`H1 erfolgreich in "${getSegmentLabel(targetSegment.segment_type, targetSegment.segment_key)}" (ID: ${targetSegment.segment_id}) gesetzt`);
+      toast.success(`H1 erfolgreich in "${targetSegmentInfo.label}" (ID: ${targetSegmentInfo.id}) gesetzt`);
       
       // Refresh page content - WITH LANGUAGE FILTER
       const { data: refreshedContent } = await supabase
@@ -1865,9 +1798,18 @@ export const SEOEditor = ({
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <p className="text-lg font-semibold text-foreground mb-3">
-                  "{selectedH1Suggestion.headline}"
-                </p>
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <p className="text-lg font-semibold text-foreground">
+                    "{selectedH1Suggestion.headline}"
+                  </p>
+                  <Badge variant="outline" className={`shrink-0 ${
+                    selectedH1Suggestion.headline.length >= 40 && selectedH1Suggestion.headline.length <= 70
+                      ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                      : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                  }`}>
+                    {selectedH1Suggestion.headline.length} Zeichen
+                  </Badge>
+                </div>
                 
                 {selectedH1Suggestion.selectedPlacement && (
                   <div className="mb-3 space-y-3">
