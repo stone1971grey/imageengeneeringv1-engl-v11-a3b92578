@@ -6,10 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Sparkles, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SEOData {
   title?: string;
@@ -54,6 +55,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   const [segmentRegistry, setSegmentRegistry] = useState<any[]>([]);
   const [heroImageUrl, setHeroImageUrl] = useState<string>('');
   const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
+  
+  // Smart Focus Keyword state
+  const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
+  const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
+  const [showKeywordSuggestions, setShowKeywordSuggestions] = useState(false);
 
   // Load page content and segment registry
   useEffect(() => {
@@ -456,6 +462,62 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       ...data,
       [field]: value
     });
+  };
+
+  // Generate Smart Focus Keywords using AI
+  const handleGenerateFocusKeywords = async () => {
+    setIsGeneratingKeywords(true);
+    setKeywordSuggestions([]);
+    setShowKeywordSuggestions(false);
+
+    try {
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        h1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+      };
+
+      console.log('[SEO Editor] Generating focus keywords with data:', pageData);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-focus-keyword', {
+        body: { pageData }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating keywords:', error);
+        toast.error('Fehler beim Generieren der Keywords: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.keywords && Array.isArray(result.keywords)) {
+        console.log('[SEO Editor] Generated keywords:', result.keywords);
+        setKeywordSuggestions(result.keywords);
+        setShowKeywordSuggestions(true);
+        toast.success(`${result.keywords.length} Keyword-Vorschläge generiert`);
+      } else {
+        toast.error('Keine Keywords generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unerwarteter Fehler beim Generieren der Keywords');
+    } finally {
+      setIsGeneratingKeywords(false);
+    }
+  };
+
+  const handleSelectKeyword = (keyword: string) => {
+    handleChange('focusKeyword', keyword);
+    setShowKeywordSuggestions(false);
+    toast.success(`Focus Keyword "${keyword}" ausgewählt`);
   };
 
   const getStatusIcon = (status: boolean) => {
@@ -986,8 +1048,30 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               <Label htmlFor="focus-keyword" className="text-base font-semibold text-foreground">
                 Focus Keyword (FKW)
               </Label>
-              <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateFocusKeywords}
+                  disabled={isGeneratingKeywords}
+                  className="gap-1.5 text-xs h-7 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/20 hover:to-blue-500/20"
+                >
+                  {isGeneratingKeywords ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Analysiere...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3 w-3" />
+                      Smart FKW
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
+            
             <Input
               id="focus-keyword"
               value={data.focusKeyword || ''}
@@ -995,6 +1079,52 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               placeholder="e.g. camera testing software"
               className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
+            
+            {/* Keyword Suggestions */}
+            {showKeywordSuggestions && keywordSuggestions.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground">KI-Vorschläge:</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowKeywordSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {keywordSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                      onClick={() => handleSelectKeyword(suggestion.keyword)}
+                    >
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-xs font-semibold text-purple-400">
+                        {suggestion.priority}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground group-hover:text-purple-400 transition-colors">
+                          {suggestion.keyword}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {suggestion.reason}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0 h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+                      >
+                        Auswählen
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             <p className="text-xs text-muted-foreground mt-2">
               Main keyword for this page – should appear in Title, Description, and Slug
             </p>
