@@ -496,6 +496,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (selectedPage) {
       sessionStorage.setItem(ADMIN_SELECTED_PAGE_KEY, selectedPage);
+    } else {
+      // Clear sessionStorage when no page is selected to prevent auto-loading old page
+      sessionStorage.removeItem(ADMIN_SELECTED_PAGE_KEY);
     }
   }, [selectedPage]);
 
