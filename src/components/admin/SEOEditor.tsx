@@ -536,7 +536,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         <TabsContent value="basics" className="space-y-4">
 
           {/* SEO Title */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="seo-title" className="text-base font-semibold text-foreground">
                 SEO Title
@@ -579,7 +579,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* Meta Description */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="meta-description" className="text-base font-semibold text-foreground">
                 Meta Description
@@ -623,7 +623,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* URL Slug */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="slug" className="text-base font-semibold text-foreground">
                 URL Slug
@@ -653,7 +653,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* H1 Heading */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label className="text-base font-semibold text-foreground">
                 H1 Heading
@@ -683,7 +683,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         <TabsContent value="social" className="space-y-4">
           
           {/* OG Title */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="og-title" className="text-base font-semibold text-foreground">
                 OG Title
@@ -703,7 +703,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* OG Description */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="og-description" className="text-base font-semibold text-foreground">
                 OG Description
@@ -724,7 +724,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* OG Image */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="og-image" className="text-base font-semibold text-foreground">
                 OG Image
@@ -810,7 +810,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* Twitter Card */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="twitter-card" className="text-base font-semibold text-foreground">
                 Twitter Card Type
@@ -839,7 +839,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         <TabsContent value="advanced" className="space-y-4">
           
           {/* Focus Keyword */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="focus-keyword" className="text-base font-semibold text-foreground">
                 Focus Keyword (FKW)
@@ -859,7 +859,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* Introduction Text */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label className="text-base font-semibold text-foreground">
                 Introduction Text
@@ -899,7 +899,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* Canonical URL */}
-          <div className="p-5 bg-card border border-border rounded-lg">
+          <div className="p-5 bg-muted/40 border border-border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <Label htmlFor="canonical" className="text-base font-semibold text-foreground">
                 Canonical URL
