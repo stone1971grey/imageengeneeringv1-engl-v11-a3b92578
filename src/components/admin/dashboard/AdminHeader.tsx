@@ -300,31 +300,7 @@ export const AdminHeader = ({
 
         {/* Collapsible Sections for organized button groups */}
         <div className="mt-6 space-y-3">
-          {/* 1. Unified Smart Search */}
-          <CollapsibleSection 
-            title="Unified Smart Search" 
-            icon={Search} 
-            colorClass="bg-gradient-to-r from-blue-600 to-cyan-600"
-            defaultOpen={false}
-          >
-            <div className="w-full p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800 mb-3">
-                <strong>Unified Smart Search</strong> durchsucht alle CMS-Inhalte in Echtzeit:
-              </p>
-              <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-                <li>CMS-Seiten (page_registry)</li>
-                <li>Produkte (products table)</li>
-                <li>News-Artikel (news_articles)</li>
-                <li>Events (events table)</li>
-                <li>Downloads (downloads table)</li>
-              </ul>
-              <p className="text-xs text-blue-600 mt-3 italic">
-                Die Suche ist in der Navigation und auf der Suchergebnisseite verfügbar.
-              </p>
-            </div>
-          </CollapsibleSection>
-
-          {/* 2. Page Actions */}
+          {/* 1. Page Actions */}
           {selectedPage && pageInfo && (
             <CollapsibleSection 
               title="Page Actions" 
