@@ -241,23 +241,21 @@ const AdminDashboard = () => {
     }
   };
   
-  // Restore activeTab from localStorage when tabOrder changes (e.g., after page load)
-  // This ensures the saved tab is restored even when navigating back to the page
+  // Restore activeTab from localStorage when navigating back to the page
+  // This effect runs when the component mounts or when selectedPage changes
   useEffect(() => {
-    if (tabOrder.length > 0 && selectedPage) {
+    if (selectedPage) {
       const pageKey = selectedPage || 'index';
       const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
-      console.log("[AdminDashboard] Tab restore check - pageKey:", pageKey, "savedTab:", savedTab, "tabOrder:", tabOrder.slice(0, 3));
+      console.log("[AdminDashboard] Navigation restore check - pageKey:", pageKey, "savedTab:", savedTab, "currentTab:", activeTab);
       
-      if (savedTab && (tabOrder.includes(savedTab) || savedTab === "footer" || savedTab === "seo" || savedTab === "version-history")) {
-        // Only restore if current tab is different and is the default (first tab)
-        if (activeTab !== savedTab && (activeTab === tabOrder[0] || !activeTab)) {
-          console.log("[AdminDashboard] Restoring saved tab:", savedTab);
-          setActiveTabState(savedTab);
-        }
+      if (savedTab) {
+        // Always restore saved tab immediately on page change
+        console.log("[AdminDashboard] Immediately restoring saved tab on navigation:", savedTab);
+        setActiveTabState(savedTab);
       }
     }
-  }, [tabOrder, selectedPage]);
+  }, [selectedPage]); // Only depend on selectedPage, not tabOrder
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -956,17 +954,20 @@ const AdminDashboard = () => {
     }
     setTabOrder(validOrder);
     
-    // Set active tab
-    if (validOrder.length > 0) {
-      const pageKey = selectedPage || 'index';
-      const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
-      const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || savedTab === "footer");
-      if (isValidSavedTab) {
-        setActiveTabState(savedTab);
-      } else {
-        setActiveTabState(validOrder[0]);
-        localStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
-      }
+    // Set active tab - always prioritize saved tab
+    const pageKey = selectedPage || 'index';
+    const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
+    const specialTabs = ["footer", "seo", "version-history"];
+    const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || specialTabs.includes(savedTab));
+    
+    console.log("[AdminDashboard] Content loaded - pageKey:", pageKey, "savedTab:", savedTab, "isValid:", isValidSavedTab);
+    
+    if (isValidSavedTab) {
+      console.log("[AdminDashboard] Restoring saved tab from content load:", savedTab);
+      setActiveTabState(savedTab);
+    } else if (validOrder.length > 0) {
+      setActiveTabState(validOrder[0]);
+      localStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
     }
     
     // Save segment IDs if needed
