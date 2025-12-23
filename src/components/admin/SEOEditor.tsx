@@ -724,6 +724,8 @@ export const SEOEditor = ({
     const typeLabels: Record<string, string> = {
       'full_hero': 'Full Hero',
       'full-hero': 'Full Hero',
+      'hero': 'Product Hero',
+      'product-hero': 'Product Hero',
       'action-hero': 'Action Hero',
       'intro': 'Intro',
       'tiles': 'Tiles',
@@ -738,9 +740,21 @@ export const SEOEditor = ({
       'events': 'Events',
       'downloads': 'Downloads',
       'products': 'Products',
+      'product-list': 'Product List',
       'feature-overview': 'Feature Overview',
+      'news-list': 'News List',
+      'downloads-list': 'Downloads List',
+      'events-list': 'Events List',
+      'footer': 'Footer',
+      'industries': 'Industries',
+      'debug': 'Debug',
     };
     return typeLabels[segmentType] || segmentType;
+  };
+  
+  // Helper to check if segment type stores data in page_segments JSON
+  const isPageSegmentType = (segmentType: string): boolean => {
+    return ['full-hero', 'full_hero', 'action-hero', 'hero', 'product-hero', 'banner', 'banner-p'].includes(segmentType);
   };
 
   // Apply H1 to the suggested segment and convert old H1 to H2
@@ -759,8 +773,6 @@ export const SEOEditor = ({
         toast.info(`Neues ${getSegmentLabel(placement.segmentType, '')} Segment wird erstellt...`);
         setIsCreatingSegment(true);
         
-        // For now, show message that segment needs to be created manually
-        // Full segment creation would require integration with segment management
         toast.warning(
           `Bitte erstelle zuerst ein "${getSegmentLabel(placement.segmentType, '')}" Segment an Position ${placement.suggestedTabPosition} im Tab-Editor. Danach kannst du die H1 anwenden.`
         );
@@ -802,43 +814,105 @@ export const SEOEditor = ({
         return;
       }
 
-      // Get current content of the target segment
-      const targetContent = pageContent.find(item => item.section_key === targetSegment.segment_key);
+      console.log('[SEO Editor] Target segment found:', targetSegment);
       
-      if (targetContent) {
-        try {
-          const contentData = JSON.parse(targetContent.content_value);
-          
-          // Update the title/headline field
-          if (targetSegment.segment_type === 'full_hero' || targetSegment.segment_type === 'action-hero') {
-            contentData.title = newH1;
-          } else if (targetSegment.segment_type === 'intro') {
-            contentData.title = newH1;
-          } else {
-            contentData.title = newH1;
+      let segmentUpdated = false;
+
+      // Check if this segment type stores data in page_segments JSON
+      if (isPageSegmentType(targetSegment.segment_type)) {
+        // Update the page_segments JSON
+        const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+        
+        if (pageSegmentsEntry) {
+          try {
+            const segments = JSON.parse(pageSegmentsEntry.content_value);
+            const targetIdx = segments.findIndex((seg: any) => 
+              seg.id === String(targetSegment.segment_id) || seg.id === targetSegment.segment_key
+            );
+            
+            if (targetIdx !== -1) {
+              // Update the H1 field - for full-hero use titleLine1 or title
+              if (targetSegment.segment_type === 'full-hero' || targetSegment.segment_type === 'full_hero') {
+                segments[targetIdx].data.titleLine1 = newH1;
+                segments[targetIdx].data.titleLine2 = ''; // Clear line 2
+              } else {
+                segments[targetIdx].data.title = newH1;
+              }
+              
+              // Also set useH1 flag if available
+              if (segments[targetIdx].data.hasOwnProperty('useH1')) {
+                segments[targetIdx].data.useH1 = true;
+              }
+              
+              // Save the updated page_segments
+              const { error: updateError } = await supabase
+                .from('page_content')
+                .update({ 
+                  content_value: JSON.stringify(segments),
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', pageSegmentsEntry.id);
+              
+              if (updateError) {
+                throw updateError;
+              }
+              
+              console.log('[SEO Editor] Updated page_segments with new H1');
+              segmentUpdated = true;
+            } else {
+              console.error('[SEO Editor] Segment not found in page_segments:', targetSegment.segment_id);
+            }
+          } catch (parseError) {
+            console.error('[SEO Editor] Failed to parse page_segments:', parseError);
           }
-          
-          // Save the updated content
-          const { error: updateError } = await supabase
-            .from('page_content')
-            .update({ 
-              content_value: JSON.stringify(contentData),
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', targetContent.id);
-          
-          if (updateError) {
-            throw updateError;
-          }
-          
-          console.log('[SEO Editor] Updated target segment with new H1');
-          
-        } catch (parseError) {
-          console.error('[SEO Editor] Failed to parse target segment content:', parseError);
-          toast.error('Fehler beim Parsen des Segment-Inhalts');
-          setIsApplyingH1(false);
-          return;
         }
+      } else {
+        // For other segments, look for content with section_key = segment_key
+        const targetContent = pageContent.find(item => item.section_key === targetSegment.segment_key);
+        
+        if (targetContent) {
+          try {
+            const contentData = JSON.parse(targetContent.content_value);
+            
+            // Update the title field
+            contentData.title = newH1;
+            
+            // For intro segments, also set headingLevel to h1
+            if (targetSegment.segment_type === 'intro') {
+              contentData.headingLevel = 'h1';
+            }
+            
+            // Save the updated content
+            const { error: updateError } = await supabase
+              .from('page_content')
+              .update({ 
+                content_value: JSON.stringify(contentData),
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', targetContent.id);
+            
+            if (updateError) {
+              throw updateError;
+            }
+            
+            console.log('[SEO Editor] Updated target segment with new H1');
+            segmentUpdated = true;
+            
+          } catch (parseError) {
+            console.error('[SEO Editor] Failed to parse target segment content:', parseError);
+            toast.error('Fehler beim Parsen des Segment-Inhalts');
+            setIsApplyingH1(false);
+            return;
+          }
+        } else {
+          console.log('[SEO Editor] No content found for section_key:', targetSegment.segment_key);
+        }
+      }
+
+      if (!segmentUpdated) {
+        toast.error(`Konnte H1 nicht im Segment speichern. Segment-Typ: ${targetSegment.segment_type}, Key: ${targetSegment.segment_key}`);
+        setIsApplyingH1(false);
+        return;
       }
 
       // Prepare changelog entry
@@ -855,44 +929,77 @@ export const SEOEditor = ({
 
       // If old H1 is in a different segment, convert it to H2
       if (oldH1Source && oldH1Source.key !== targetSegment.segment_key) {
-        const oldContent = pageContent.find(item => item.section_key === oldH1Source.key);
-        
-        if (oldContent) {
-          try {
-            const oldContentData = JSON.parse(oldContent.content_value);
-            
-            // Move title to subtitle/h2 and clear the title
-            if (oldContentData.title) {
-              // Store old title as subtitle (H2)
-              oldContentData.subtitle = oldContentData.title;
-              oldContentData.title = ''; // Clear H1
+        // Check if old segment is in page_segments
+        if (isPageSegmentType(oldH1Source.type)) {
+          const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+          if (pageSegmentsEntry) {
+            try {
+              const segments = JSON.parse(pageSegmentsEntry.content_value);
+              const oldIdx = segments.findIndex((seg: any) => seg.id === oldH1Source.key || seg.id === oldH1Source.id);
               
-              const { error: oldUpdateError } = await supabase
-                .from('page_content')
-                .update({ 
-                  content_value: JSON.stringify(oldContentData),
-                  updated_at: new Date().toISOString()
-                })
-                .eq('id', oldContent.id);
-              
-              if (oldUpdateError) {
-                console.error('[SEO Editor] Failed to update old segment:', oldUpdateError);
-              } else {
-                console.log('[SEO Editor] Converted old H1 to H2 in segment:', oldH1Source.key);
+              if (oldIdx !== -1) {
+                // Move title to subtitle
+                if (segments[oldIdx].data.titleLine1) {
+                  segments[oldIdx].data.subtitle = segments[oldIdx].data.titleLine1 + (segments[oldIdx].data.titleLine2 ? ' ' + segments[oldIdx].data.titleLine2 : '');
+                  segments[oldIdx].data.titleLine1 = '';
+                  segments[oldIdx].data.titleLine2 = '';
+                } else if (segments[oldIdx].data.title) {
+                  segments[oldIdx].data.subtitle = segments[oldIdx].data.title;
+                  segments[oldIdx].data.title = '';
+                }
                 
-                // Add old H1 info to changelog
+                if (segments[oldIdx].data.hasOwnProperty('useH1')) {
+                  segments[oldIdx].data.useH1 = false;
+                }
+                
+                await supabase
+                  .from('page_content')
+                  .update({ 
+                    content_value: JSON.stringify(segments),
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', pageSegmentsEntry.id);
+                
                 changeLogEntry.oldH1 = {
                   text: oldH1Text || '',
-                  segment: {
-                    key: oldH1Source.key,
-                    label: oldH1Source.label
-                  },
+                  segment: { key: oldH1Source.key, label: oldH1Source.label },
                   action: 'Zu H2 konvertiert'
                 };
               }
+            } catch (e) {
+              console.error('[SEO Editor] Failed to update old segment in page_segments:', e);
             }
-          } catch (parseError) {
-            console.error('[SEO Editor] Failed to parse old segment content:', parseError);
+          }
+        } else {
+          const oldContent = pageContent.find(item => item.section_key === oldH1Source.key);
+          if (oldContent) {
+            try {
+              const oldContentData = JSON.parse(oldContent.content_value);
+              if (oldContentData.title) {
+                oldContentData.subtitle = oldContentData.title;
+                oldContentData.title = '';
+                if (oldContentData.headingLevel === 'h1') {
+                  oldContentData.headingLevel = 'h2';
+                }
+                
+                await supabase
+                  .from('page_content')
+                  .update({ 
+                    content_value: JSON.stringify(oldContentData),
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', oldContent.id);
+                
+                console.log('[SEO Editor] Converted old H1 to H2 in segment:', oldH1Source.key);
+                changeLogEntry.oldH1 = {
+                  text: oldH1Text || '',
+                  segment: { key: oldH1Source.key, label: oldH1Source.label },
+                  action: 'Zu H2 konvertiert'
+                };
+              }
+            } catch (parseError) {
+              console.error('[SEO Editor] Failed to parse old segment content:', parseError);
+            }
           }
         }
       }
@@ -900,7 +1007,7 @@ export const SEOEditor = ({
       // Set the changelog for display
       setH1ChangeLog(changeLogEntry);
       
-      toast.success(`H1 erfolgreich in "${targetSegment.segment_key}" gesetzt`);
+      toast.success(`H1 erfolgreich in "${getSegmentLabel(targetSegment.segment_type, targetSegment.segment_key)}" (ID: ${targetSegment.segment_id}) gesetzt`);
       
       // Refresh page content
       const { data: refreshedContent } = await supabase
