@@ -915,27 +915,34 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Button>
             </div>
 
-            {/* Background Removal Checkbox - Only show for EN since images are shared */}
+            {/* Background Removal Toggle - Only show for EN since images are shared */}
             {language === 'en' && (
-              <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg border border-purple-400 shadow-lg shadow-purple-500/30">
+              <Button
+                type="button"
+                onClick={() => setRemoveBackgroundEnabled(!removeBackgroundEnabled)}
+                className={`w-full justify-start gap-3 h-auto py-4 px-5 text-left ${
+                  removeBackgroundEnabled 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30' 
+                    : 'bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-gray-300'
+                }`}
+              >
                 <Checkbox
-                  id="remove-background-gallery"
                   checked={removeBackgroundEnabled}
                   onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
-                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-purple-600 h-5 w-5"
+                  className="border-white data-[state=checked]:bg-white data-[state=checked]:text-purple-600 h-5 w-5 pointer-events-none"
                 />
                 <div className="flex-1">
-                  <Label htmlFor="remove-background-gallery" className="text-white cursor-pointer flex items-center gap-2 text-base font-semibold">
+                  <div className="flex items-center gap-2 text-base font-semibold">
                     <GeminiIcon className="w-5 h-5" /> Auto-Remove Background (AI)
-                  </Label>
-                  <p className="text-sm text-white/80 mt-1">
+                  </div>
+                  <p className={`text-sm mt-1 ${removeBackgroundEnabled ? 'text-white/80' : 'text-gray-400'}`}>
                     Automatically removes the background when uploading new images
                   </p>
                 </div>
                 {isRemovingBackground && (
                   <Loader2 className="w-6 h-6 text-white animate-spin" />
                 )}
-              </div>
+              </Button>
             )}
 
             {localData.images.map((image, index) => (
