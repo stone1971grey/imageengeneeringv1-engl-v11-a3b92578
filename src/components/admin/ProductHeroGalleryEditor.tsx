@@ -62,14 +62,19 @@ interface ProductHeroGalleryEditorProps {
   pageSlug: string;
   segmentId: number;
   language?: string;
+  /** If H1 is defined in another segment (e.g. Intro), pass the source info here */
+  externalH1Source?: { type: string; key: string; label: string } | null;
 }
 
-const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId, language = 'en' }: ProductHeroGalleryEditorProps) => {
+const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId, language = 'en', externalH1Source }: ProductHeroGalleryEditorProps) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [removingBackgroundIndex, setRemovingBackgroundIndex] = useState<number | null>(null);
+  
+  // Track if H1 is defined elsewhere (e.g., in Intro segment)
+  const [detectedH1Source, setDetectedH1Source] = useState<{ type: string; key: string; label: string } | null>(null);
   
   // Initialize with default data structure - do NOT use data prop to avoid shared state
   const [localData, setLocalData] = useState<ProductHeroGalleryData>({
@@ -90,8 +95,57 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     imageMaxHeight: null
   });
 
+  // Check if H1 is defined in an Intro segment
+  const checkExternalH1 = async () => {
+    try {
+      // Check segment_registry for intro segments
+      const { data: registryData } = await supabase
+        .from('segment_registry')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('segment_type', 'intro')
+        .eq('deleted', false)
+        .limit(1);
+      
+      if (registryData && registryData.length > 0) {
+        const introRegistry = registryData[0];
+        
+        // Check if the intro has a title (H1)
+        const { data: introContent } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', introRegistry.segment_key)
+          .eq('language', language)
+          .maybeSingle();
+        
+        if (introContent?.content_value) {
+          try {
+            const introData = JSON.parse(introContent.content_value);
+            if (introData.title && introData.headingLevel === 'h1') {
+              setDetectedH1Source({
+                type: 'intro',
+                key: introRegistry.segment_key,
+                label: `Intro (ID: ${introRegistry.segment_id})`
+              });
+              return;
+            }
+          } catch (e) {
+            console.error('[PHG Editor] Failed to parse intro content:', e);
+          }
+        }
+      }
+      
+      // No external H1 found
+      setDetectedH1Source(null);
+    } catch (error) {
+      console.error('[PHG Editor] Error checking external H1:', error);
+    }
+  };
+
   useEffect(() => {
     loadContent();
+    checkExternalH1();
 
     const handleExternalTranslate = () => {
       handleTranslate();
@@ -101,6 +155,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     window.addEventListener('product-hero-gallery-translate', handleExternalTranslate);
     return () => window.removeEventListener('product-hero-gallery-translate', handleExternalTranslate);
   }, [pageSlug, segmentId, language]);
+  
+  // Use prop if provided, otherwise use detected source
+  const effectiveH1Source = externalH1Source || detectedH1Source;
 
 
   const loadContent = async () => {
@@ -664,8 +721,33 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
           {/* Content Tab */}
           <TabsContent value="content" className="space-y-4">
+            {/* H1 Warning Banner - shown when H1 is defined elsewhere */}
+            {effectiveH1Source && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <span className="text-amber-400 text-sm">⚠️</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-amber-400">
+                      H1 ist extern definiert
+                    </p>
+                    <p className="text-xs text-amber-400/80 mt-1">
+                      Die H1-Überschrift dieser Seite wird im <strong>{effectiveH1Source.label}</strong>-Segment definiert.
+                      Title und Subtitle hier werden als <strong>H2</strong> angezeigt oder können leer gelassen werden.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-2">
-              <Label>Title (H1 – Zeile 1)</Label>
+              <Label className="flex items-center gap-2">
+                {effectiveH1Source ? 'Title (H2 – Zeile 1)' : 'Title (H1 – Zeile 1)'}
+                {effectiveH1Source && (
+                  <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">H1 → H2</span>
+                )}
+              </Label>
               <Input
                 value={localData.title}
                 onChange={(e) => {
@@ -673,12 +755,17 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   setLocalData(updatedData);
                   onChange(updatedData);
                 }}
-                placeholder="Product Name"
+                placeholder={effectiveH1Source ? "Optional – kann leer bleiben" : "Product Name"}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Subtitle (H1 – Zeile 2)</Label>
+              <Label className="flex items-center gap-2">
+                {effectiveH1Source ? 'Subtitle (H2 – Zeile 2)' : 'Subtitle (H1 – Zeile 2)'}
+                {effectiveH1Source && (
+                  <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">H1 → H2</span>
+                )}
+              </Label>
               <Input
                 value={localData.subtitle}
                 onChange={(e) => {
@@ -686,7 +773,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   setLocalData(updatedData);
                   onChange(updatedData);
                 }}
-                placeholder="Product Variants"
+                placeholder={effectiveH1Source ? "Optional – kann leer bleiben" : "Product Variants"}
               />
             </div>
 
