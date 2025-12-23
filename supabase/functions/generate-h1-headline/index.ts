@@ -113,9 +113,10 @@ VALID SEGMENT TYPES (use ONLY these):
 IMPORTANT PLACEMENT RULES:
 1. NEVER suggest creating a new "full-hero" - it dramatically changes page character
 2. If a product-hero, product-hero-gallery, or action-hero already exists, USE IT (don't create new)
-3. If NO suitable hero segment exists, suggest creating an "intro" segment as the BEST alternative
-4. Always prefer EXISTING segments over creating new ones
-5. There is NO segment type called just "hero" - use "product-hero" instead
+3. If an "intro" segment ALREADY EXISTS, ALWAYS USE IT (createNew: false) - reference by its key and id!
+4. Only suggest creating a NEW intro if no suitable segment exists at all
+5. Always prefer EXISTING segments over creating new ones
+6. There is NO segment type called just "hero" - use "product-hero" instead
 
 PLACEMENT OPTIONS (provide 2-3 ranked options):
 For each H1 suggestion, provide placement options ranked from best to acceptable:
@@ -124,9 +125,11 @@ For each H1 suggestion, provide placement options ranked from best to acceptable
    - Reference by segmentKey and segmentId
    - createNew: false
    
-2. ALTERNATIVE - Create Intro segment (intro)
-   - Does not change page character
-   - Great for SEO (contains description too)
+2. ALTERNATIVE - Use EXISTING intro segment if available
+   - Reference by segmentKey and segmentId
+   - createNew: false
+   
+3. LAST RESORT - Create NEW Intro segment (only if NO suitable segment exists)
    - createNew: true
    - suggestedTabPosition: 2 (usually after hero)
 
@@ -151,11 +154,11 @@ Reply ONLY with a JSON object:
         {
           "rank": 2,
           "segmentType": "intro",
-          "segmentKey": null,
-          "segmentId": null,
-          "createNew": true,
+          "segmentKey": "intro_500",
+          "segmentId": 500,
+          "createNew": false,
           "suggestedTabPosition": 2,
-          "note": "Alternative: Create new Intro segment after hero - minimal impact on page design"
+          "note": "Alternative: Use existing Intro segment"
         }
       ],
       "priority": 1
@@ -163,6 +166,10 @@ Reply ONLY with a JSON object:
   ]
 }`;
 
+    // Check if there's an existing intro segment
+    const existingIntro = normalizedSegments.find((s: any) => s.type === 'intro');
+    const hasExistingIntro = !!existingIntro;
+    
     const userPrompt = `Create 3-5 optimized H1 headline suggestions for this page. 
 ${focusKeyword ? `The focus keyword "${focusKeyword}" MUST appear EXACTLY in each headline.` : 'No focus keyword set - create general H1 suggestions.'}
 
@@ -172,12 +179,16 @@ Consider: keyword position (start is best), character count (40-60 ideal), clari
 CRITICAL PLACEMENT RULES:
 1. NEVER suggest creating a new full-hero segment - it changes the page character too much
 2. ALWAYS prefer EXISTING hero segments (product-hero, product-hero-gallery, full-hero, action-hero)
-3. If you need to suggest creating a new segment, ONLY suggest "intro" - it has minimal design impact
+3. ${hasExistingIntro 
+  ? `An INTRO segment ALREADY EXISTS (Key: ${existingIntro.key}, ID: ${existingIntro.id}) - ALWAYS use it with createNew: false!`
+  : 'If you need to suggest creating a new segment, ONLY suggest "intro" - it has minimal design impact'}
 4. There is NO segment type called just "hero" - use "product-hero" for product pages
 
 FOR EACH HEADLINE, provide 2-3 placement options:
 - FIRST: Use an EXISTING hero segment if available (reference by key and id, createNew: false)
-- SECOND: Create an "intro" segment if no suitable hero exists (createNew: true)
+- SECOND: ${hasExistingIntro 
+  ? `Use the EXISTING intro segment (Key: ${existingIntro.key}, ID: ${existingIntro.id}, createNew: false)`
+  : 'Create an "intro" segment if no suitable hero exists (createNew: true)'}
 
 Available segments on this page:
 ${normalizedSegments.length > 0
