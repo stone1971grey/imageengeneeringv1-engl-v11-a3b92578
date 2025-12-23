@@ -609,14 +609,36 @@ export const SEOEditor = ({
     setShowH1Suggestions(false);
 
     try {
-      // Get available segments for placement suggestions
-      const availableSegments = segmentRegistry
-        .filter(seg => !seg.deleted)
-        .map(seg => ({
-          type: seg.segment_type,
-          key: seg.segment_key,
-          id: seg.segment_id
-        }));
+      // Get available segments from actual page_content (not segment_registry which can be stale)
+      // This ensures we use the ACTUAL segments that exist on the page
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      let availableSegments: Array<{ type: string; key: string; id: string | number }> = [];
+      
+      if (pageSegmentsEntry) {
+        try {
+          const parsedSegments = JSON.parse(pageSegmentsEntry.content_value);
+          availableSegments = parsedSegments.map((seg: any) => ({
+            type: seg.type || seg.segmentType || 'unknown',
+            key: seg.segmentKey || seg.id || '',
+            id: seg.segmentId || seg.id || seg.segmentKey || ''
+          }));
+          console.log('[SEO Editor] Using actual segments from page_content:', availableSegments);
+        } catch (parseError) {
+          console.error('[SEO Editor] Failed to parse page_segments:', parseError);
+        }
+      }
+      
+      // Fallback to segment_registry only if page_content has no segments
+      if (availableSegments.length === 0) {
+        availableSegments = segmentRegistry
+          .filter(seg => !seg.deleted)
+          .map(seg => ({
+            type: seg.segment_type,
+            key: seg.segment_key,
+            id: seg.segment_id
+          }));
+        console.log('[SEO Editor] Fallback to segment_registry:', availableSegments);
+      }
 
       const pageData = {
         title: data.title,
