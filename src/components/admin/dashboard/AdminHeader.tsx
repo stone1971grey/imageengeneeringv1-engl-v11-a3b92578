@@ -381,10 +381,12 @@ export const AdminHeader = ({
             {isAdmin && selectedPage && setIsContentAutomationOpen && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-400 text-white hover:from-fuchsia-600 hover:via-pink-600 hover:to-rose-500 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="flex items-center gap-2 bg-violet-700 text-white hover:bg-violet-800 shadow-soft hover:shadow-lg"
                 onClick={() => setIsContentAutomationOpen(!isContentAutomationOpen)}
               >
-                <GeminiIcon className="h-5 w-5 text-white" />
+                <div className="p-0.5 rounded bg-gradient-to-r from-fuchsia-500 via-pink-400 to-cyan-400">
+                  <GeminiIcon className="h-4 w-4 text-white" />
+                </div>
                 Content Automation
               </Button>
             )}

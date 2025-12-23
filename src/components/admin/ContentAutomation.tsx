@@ -379,6 +379,38 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
 
       if (tabError) throw tabError;
 
+      // Save 301 redirect if checkbox is checked
+      if (createRedirect && sourceUrl) {
+        // Build target URL from page slug and language
+        const targetUrl = `/${language}/${pageSlug}`;
+        
+        // Extract path from source URL (remove domain)
+        let sourceUrlPath = sourceUrl;
+        try {
+          const urlObj = new URL(sourceUrl);
+          sourceUrlPath = urlObj.pathname;
+        } catch {
+          // If it's already a path, use as-is
+        }
+
+        const { error: redirectError } = await supabase
+          .from('redirects')
+          .insert({
+            source_url: sourceUrlPath,
+            target_url: targetUrl,
+            redirect_type: 301,
+            is_active: true,
+            notes: `Auto-created via Content Automation for page: ${pageSlug}`,
+          });
+
+        if (redirectError) {
+          console.error('Error creating redirect:', redirectError);
+          toast.error('Content imported, but redirect could not be saved');
+        } else {
+          toast.success(`301 redirect created: ${sourceUrlPath} → ${targetUrl}`);
+        }
+      }
+
       toast.success(`Successfully imported ${newSegments.length} segments!`);
       onImportComplete?.();
 
