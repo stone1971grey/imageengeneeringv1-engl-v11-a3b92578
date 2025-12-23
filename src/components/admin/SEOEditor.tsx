@@ -7,9 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
+import { RedirectManager } from "./RedirectManager";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { GeminiIcon } from "@/components/GeminiIcon";
@@ -126,6 +127,7 @@ export const SEOEditor = ({
   } | null>(null);
   const [isApplyingH1, setIsApplyingH1] = useState(false);
   const [isCreatingSegment, setIsCreatingSegment] = useState(false);
+  const [isRedirectManagerOpen, setIsRedirectManagerOpen] = useState(false);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
@@ -2295,8 +2297,36 @@ export const SEOEditor = ({
               Only needed if this page is a duplicate of another
             </p>
           </div>
+
+          {/* Redirect Manager Button */}
+          <div className="p-5 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+                  <Link2 className="h-5 w-5 text-blue-400" />
+                  URL Redirects
+                </Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage 301/302 redirects for site migrations and SEO
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsRedirectManagerOpen(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              >
+                <Link2 className="h-4 w-4 mr-2" />
+                Open Redirect Manager
+              </Button>
+            </div>
+          </div>
         </TabsContent>
         )}
+
+        {/* Redirect Manager Dialog */}
+        <RedirectManager 
+          isOpen={isRedirectManagerOpen} 
+          onClose={() => setIsRedirectManagerOpen(false)} 
+        />
       </Tabs>
 
       {/* Save Button */}

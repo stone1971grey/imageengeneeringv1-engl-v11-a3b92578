@@ -407,7 +407,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           <div>
             <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
             <CardDescription className="text-gray-300 text-base mt-1">
-              Importiere Inhalte von externen URLs und erstelle Segmente automatisch
+              Import content from external URLs and create segments automatically
             </CardDescription>
           </div>
         </div>
@@ -420,8 +420,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             Source URL
           </Label>
           <p className="text-gray-400 text-sm">
-            Gib die URL der Quellseite ein, von der die Inhalte importiert werden sollen.
-            Bilder und PDFs sollten vorab im Media Management Ordner dieser Seite hinterlegt werden.
+            Enter the source page URL to import content from.
+            Images and PDFs should be uploaded to the Media Management folder beforehand.
           </p>
           <div className="flex gap-3">
             <Input
@@ -440,12 +440,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
               {isLoading ? (
                 <>
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Analysiere...
+                  Analyzing...
                 </>
               ) : (
                 <>
                   <Download className="h-5 w-5 mr-2" />
-                  Inhalte laden
+                  Fetch Content
                 </>
               )}
             </Button>
@@ -462,10 +462,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             <div className="flex-1">
               <Label htmlFor="createRedirect" className="text-white font-medium flex items-center gap-2 cursor-pointer">
                 <Link2 className="h-4 w-4 text-[#f9dc24]" />
-                301-Redirect eintragen
+                Create 301 Redirect
               </Label>
               <p className="text-gray-400 text-sm mt-0.5">
-                Die Source-URL wird als permanente Weiterleitung zur neuen Seite gespeichert (SEO-Einstellungen)
+                The source URL will be saved as a permanent redirect to the new page (SEO Settings)
               </p>
             </div>
           </div>
