@@ -528,13 +528,17 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         segments = JSON.parse(existingContent.content_value);
       }
 
-      const segmentIndex = segments.findIndex((s: any) => String(s.id) === String(segmentId));
+      // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((s: any) => String(s.id) === segmentIdStr);
 
       if (segmentIndex !== -1) {
+        // Ensure stored ID is always a string
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = localData;
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'product-hero-gallery',
           data: localData
         });

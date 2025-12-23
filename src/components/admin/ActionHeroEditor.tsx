@@ -217,8 +217,10 @@ const ActionHeroEditorComponent = ({
         (s: any) => String(s.id) === String(segmentId)
       );
 
+      // CRITICAL: Always use String() for IDs to prevent duplicates
+      const segmentIdStr = String(segmentId);
       const updatedSegment = {
-        id: segmentId,
+        id: segmentIdStr,
         type: "action-hero",
         data: {
           title,

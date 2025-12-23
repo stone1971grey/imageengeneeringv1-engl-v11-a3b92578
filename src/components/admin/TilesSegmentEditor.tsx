@@ -245,8 +245,9 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         segments = JSON.parse(existingData.content_value);
       }
 
-      // Find and update the tiles segment
-      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === segmentIdStr);
       const updatedSegmentData = {
         title,
         description,
@@ -255,11 +256,12 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
       };
 
       if (segmentIndex >= 0) {
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = updatedSegmentData;
       } else {
         // Create new segment entry if it doesn't exist
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'tiles',
           data: updatedSegmentData
         });

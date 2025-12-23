@@ -370,7 +370,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         segments = JSON.parse(existingContent.content_value);
       }
 
-      const segmentIndex = segments.findIndex((s: any) => s.id === segmentId);
+      // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
+      const segmentIdStr = String(segmentId);
+      const segmentIndex = segments.findIndex((s: any) => String(s.id) === segmentIdStr);
       const updatedData = {
         hero_title: title,
         hero_subtitle: subtitle,
@@ -386,10 +388,12 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
       };
 
       if (segmentIndex !== -1) {
+        // Ensure stored ID is always a string
+        segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = updatedData;
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'hero',
           data: updatedData
         });
@@ -435,8 +439,10 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       if (tabOrderData) {
         const tabOrder = JSON.parse(tabOrderData.content_value);
-        if (!tabOrder.includes(segmentId)) {
-          tabOrder.push(segmentId);
+        // CRITICAL: Always use String() for tab_order entries
+        const segmentIdStrForTab = String(segmentId);
+        if (!tabOrder.includes(segmentIdStrForTab)) {
+          tabOrder.push(segmentIdStrForTab);
           await supabase
             .from("page_content")
             .upsert({

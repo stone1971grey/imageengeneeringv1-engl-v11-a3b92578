@@ -245,15 +245,18 @@ const VideoSegmentEditorComponent = ({
         String(seg.id || seg.segment_key || '') === String(segmentId)
       );
 
+      // CRITICAL: Always use String() for IDs to prevent duplicates
+      const segmentIdStr = String(segmentId);
       if (index >= 0) {
         segments[index] = {
           ...segments[index],
+          id: segmentIdStr,
           type: segments[index].type || 'video',
           data: updatedData,
         };
       } else {
         segments.push({
-          id: segmentId,
+          id: segmentIdStr,
           type: 'video',
           data: updatedData,
         });
