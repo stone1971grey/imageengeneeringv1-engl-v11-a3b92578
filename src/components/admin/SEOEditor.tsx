@@ -62,6 +62,18 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
   const [showKeywordSuggestions, setShowKeywordSuggestions] = useState(false);
 
+  // Smart H1 Headline state
+  const [isGeneratingH1, setIsGeneratingH1] = useState(false);
+  const [h1Suggestions, setH1Suggestions] = useState<Array<{
+    headline: string;
+    reason: string;
+    characterCount: number;
+    keywordPosition: string;
+    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string } | null;
+    priority: number;
+  }>>([]);
+  const [showH1Suggestions, setShowH1Suggestions] = useState(false);
+
   // Load page content and segment registry
   useEffect(() => {
     const loadPageData = async () => {
@@ -519,6 +531,75 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     handleChange('focusKeyword', keyword);
     setShowKeywordSuggestions(false);
     toast.success(`Focus Keyword "${keyword}" ausgewählt`);
+  };
+
+  // Generate Smart H1 Headlines using AI
+  const handleGenerateH1Headlines = async () => {
+    setIsGeneratingH1(true);
+    setH1Suggestions([]);
+    setShowH1Suggestions(false);
+
+    try {
+      // Get available segments for placement suggestions
+      const availableSegments = segmentRegistry
+        .filter(seg => !seg.deleted)
+        .map(seg => ({
+          type: seg.segment_type,
+          key: seg.segment_key,
+          id: seg.segment_id
+        }));
+
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        currentH1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+      };
+
+      console.log('[SEO Editor] Generating H1 headlines with data:', pageData);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-h1-headline', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword,
+          segments: availableSegments
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating H1:', error);
+        toast.error('Fehler beim Generieren der H1: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated H1 suggestions:', result.suggestions);
+        setH1Suggestions(result.suggestions);
+        setShowH1Suggestions(true);
+        toast.success(`${result.suggestions.length} H1-Vorschläge generiert`);
+      } else {
+        toast.error('Keine H1-Vorschläge generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unerwarteter Fehler beim Generieren der H1');
+    } finally {
+      setIsGeneratingH1(false);
+    }
+  };
+
+  const handleSelectH1 = (headline: string) => {
+    handleChange('h1', headline);
+    setShowH1Suggestions(false);
+    toast.success(`H1 "${headline}" ausgewählt`);
   };
 
   const getStatusIcon = (status: boolean) => {
@@ -1128,6 +1209,137 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             
             <p className="text-xs text-muted-foreground mt-2">
               Main keyword for this page – should appear in Title, Description, and Slug
+            </p>
+          </div>
+
+          {/* Smart H1 Headline Generator */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground">
+                H1 Headline Optimization
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+                {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            
+            {/* Current H1 Display */}
+            <div className="mb-4 p-4 bg-muted/20 border border-border/50 rounded-md">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-medium text-muted-foreground">Current H1</p>
+                {data.h1 && (
+                  <span className={`text-xs font-medium ${
+                    data.h1.length >= 20 && data.h1.length <= 70 ? 'text-green-400' : 
+                    data.h1.length < 20 ? 'text-yellow-400' : 'text-red-400'
+                  }`}>
+                    {data.h1.length} characters {data.h1.length >= 20 && data.h1.length <= 70 ? '✓' : ''}
+                  </span>
+                )}
+              </div>
+              {data.h1 ? (
+                <p className="text-base font-medium">{highlightKeyword(data.h1, data.focusKeyword || '')}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No H1 found. Add a Full Hero, Intro or Action Hero segment.</p>
+              )}
+              {h1SourceInfo && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Source: {h1SourceInfo.label} ({h1SourceInfo.key})
+                </p>
+              )}
+            </div>
+
+            {/* Generate Button */}
+            <Button
+              onClick={handleGenerateH1Headlines}
+              disabled={isGeneratingH1}
+              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              {isGeneratingH1 ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analysiere...
+                </>
+              ) : (
+                <>
+                  <GeminiIcon className="h-4 w-4 mr-2" />
+                  Smart H1 Generator
+                </>
+              )}
+            </Button>
+            
+            {/* H1 Suggestions */}
+            {showH1Suggestions && h1Suggestions.length > 0 && (
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-foreground">AI H1 Suggestions:</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowH1Suggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {h1Suggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 p-4 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                      onClick={() => handleSelectH1(suggestion.headline)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-sm font-semibold text-purple-400">
+                          {suggestion.priority}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
+                            "{suggestion.headline}"
+                          </p>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className={`text-xs px-2 py-0.5 rounded ${
+                              suggestion.characterCount >= 20 && suggestion.characterCount <= 70 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {suggestion.characterCount} chars
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                              FKW: {suggestion.keywordPosition}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                            {suggestion.reason}
+                          </p>
+                          {suggestion.placementSuggestion && (
+                            <div className="mt-2 p-2 bg-muted/30 rounded text-xs">
+                              <span className="font-medium text-purple-400">Placement: </span>
+                              <span className="text-muted-foreground">{suggestion.placementSuggestion.note}</span>
+                              {suggestion.placementSuggestion.segmentKey && (
+                                <span className="text-muted-foreground"> ({suggestion.placementSuggestion.segmentKey})</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-shrink-0 h-8 px-3 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+                        >
+                          Select
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <p className="text-xs text-muted-foreground mt-2">
+              Ideal H1: 20-70 characters, contains Focus Keyword at the start
             </p>
           </div>
 
