@@ -1,8 +1,55 @@
 interface GeminiIconProps {
   className?: string;
+  rainbow?: boolean;
 }
 
-export const GeminiIcon = ({ className = "h-4 w-4" }: GeminiIconProps) => {
+export const GeminiIcon = ({ className = "h-4 w-4", rainbow = false }: GeminiIconProps) => {
+  if (rainbow) {
+    return (
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 24 24" 
+        className={className}
+      >
+        <defs>
+          <linearGradient id="geminiRainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FF6B6B" />
+            <stop offset="25%" stopColor="#FFE66D" />
+            <stop offset="50%" stopColor="#4ECDC4" />
+            <stop offset="75%" stopColor="#A06CD5" />
+            <stop offset="100%" stopColor="#FF6B6B" />
+          </linearGradient>
+          <linearGradient id="geminiRainbow2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#A06CD5" />
+            <stop offset="33%" stopColor="#4ECDC4" />
+            <stop offset="66%" stopColor="#FFE66D" />
+            <stop offset="100%" stopColor="#FF6B6B" />
+          </linearGradient>
+          <linearGradient id="geminiRainbow3" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#4ECDC4" />
+            <stop offset="50%" stopColor="#A06CD5" />
+            <stop offset="100%" stopColor="#FF6B6B" />
+          </linearGradient>
+        </defs>
+        {/* Main sparkle */}
+        <path 
+          d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" 
+          fill="url(#geminiRainbow)"
+        />
+        {/* Top right sparkle */}
+        <path 
+          d="M17 6L17.8 8.2L20 9L17.8 9.8L17 12L16.2 9.8L14 9L16.2 8.2L17 6Z" 
+          fill="url(#geminiRainbow2)"
+        />
+        {/* Bottom left sparkle */}
+        <path 
+          d="M7 14L7.5 15.5L9 16L7.5 16.5L7 18L6.5 16.5L5 16L6.5 15.5L7 14Z" 
+          fill="url(#geminiRainbow3)"
+        />
+      </svg>
+    );
+  }
+
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
