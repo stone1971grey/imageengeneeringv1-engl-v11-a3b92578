@@ -940,9 +940,9 @@ const AdminDashboard = () => {
     setFooterButtonText(result.footerButtonText);
     setSeoData(result.seoData);
     
-    // Process tab order with filtering
+    // Process tab order with filtering - use pageSegments as source of truth
     const reverseRegistry = (window as any).__segmentKeyRegistry || {};
-    const { validOrder, wasFiltered } = filterTabOrder(result.tabOrder, reverseRegistry);
+    const { validOrder, wasFiltered } = filterTabOrder(result.tabOrder, reverseRegistry, result.pageSegments);
     
     if (wasFiltered && user) {
       await saveCleanedTabOrder(resolvedPageSlug || selectedPage, validOrder, user.id);
