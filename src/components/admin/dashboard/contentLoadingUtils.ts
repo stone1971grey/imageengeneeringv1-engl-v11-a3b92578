@@ -317,19 +317,51 @@ export function parseContentItems(
 
 /**
  * Filter tab order to remove deleted segments
+ * IMPORTANT: This should only filter based on EXISTING pageSegments, not segment_registry
+ * The reverseRegistry is optional validation - if empty, trust pageSegments as source of truth
  */
 export function filterTabOrder(
   tabOrder: string[],
-  reverseRegistry: Record<string, string>
+  reverseRegistry: Record<string, string>,
+  pageSegments?: any[]
 ): { validOrder: string[]; wasFiltered: boolean } {
+  // If pageSegments is provided, use those IDs as the source of truth
+  if (pageSegments && pageSegments.length > 0) {
+    const pageSegmentIds = pageSegments.map(seg => String(seg.id));
+    const validOrder = tabOrder.filter((tabId: string) => pageSegmentIds.includes(String(tabId)));
+    const wasFiltered = validOrder.length !== tabOrder.length;
+    
+    if (wasFiltered) {
+      console.log('[filterTabOrder] Filtered tab order based on pageSegments:', {
+        original: tabOrder,
+        filtered: validOrder,
+        removed: tabOrder.filter(id => !pageSegmentIds.includes(String(id)))
+      });
+    }
+    
+    return { validOrder, wasFiltered };
+  }
+  
+  // Fallback to reverseRegistry if no pageSegments
   const validSegmentIds = Object.keys(reverseRegistry);
   
+  // If reverseRegistry is empty, return original tab order unchanged
+  // This prevents accidentally filtering out all tabs when registry isn't loaded yet
   if (validSegmentIds.length === 0) {
+    console.log('[filterTabOrder] No reverseRegistry available, returning original tabOrder');
     return { validOrder: tabOrder, wasFiltered: false };
   }
   
   const validOrder = tabOrder.filter((tabId: string) => validSegmentIds.includes(tabId));
   const wasFiltered = validOrder.length !== tabOrder.length;
+  
+  if (wasFiltered) {
+    console.log('[filterTabOrder] Filtered tab order based on reverseRegistry:', {
+      original: tabOrder,
+      filtered: validOrder,
+      removed: tabOrder.filter(id => !validSegmentIds.includes(id))
+    });
+  }
   
   return { validOrder, wasFiltered };
 }
@@ -340,7 +372,7 @@ export function filterTabOrder(
 export function rebuildTabOrderFromSegments(pageSegments: any[]): string[] {
   return pageSegments
     .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
-    .map(seg => seg.id);
+    .map(seg => String(seg.id));
 }
 
 /**
