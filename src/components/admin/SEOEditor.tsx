@@ -175,7 +175,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
     
     // Determine H1 heading dynamically with priority
-    // Priority: 1. Intro Title > 2. Full Hero > 3. Product Hero Gallery > 4. Action Hero
+    // Priority: 1. Intro Title > 2. Full Hero > 3. Product Hero Gallery > 4. Product Hero (hero) > 5. Action Hero
     let autoH1 = '';
     let h1Source: { type: string; key: string; id: string | number; label: string } | null = null;
     
@@ -256,7 +256,41 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       }
     }
     
-    // 4. Check Action Hero segment
+    // 4. Check Product Hero segment (legacy "hero" type that stores data in page_segments JSON)
+    if (!autoH1) {
+      const productHeroRegistry = segmentRegistry.find(seg => seg.segment_type === 'hero' && !seg.deleted);
+      if (productHeroRegistry) {
+        // Product Hero stores data in page_segments JSON, not in individual section_keys
+        const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+        if (pageSegmentsEntry) {
+          try {
+            const segments = JSON.parse(pageSegmentsEntry.content_value);
+            const heroSegment = segments.find((seg: any) => 
+              seg.type === 'hero' && String(seg.id) === String(productHeroRegistry.segment_id)
+            );
+            if (heroSegment?.data) {
+              const title = heroSegment.data.hero_title || '';
+              const subtitle = heroSegment.data.hero_subtitle || '';
+              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+              if (combinedTitle) {
+                autoH1 = combinedTitle;
+                h1Source = {
+                  type: 'hero',
+                  key: productHeroRegistry.segment_key,
+                  id: productHeroRegistry.segment_id,
+                  label: 'Product Hero'
+                };
+                console.log('[SEO Editor] H1 from Product Hero:', autoH1);
+              }
+            }
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse product hero for H1:', e);
+          }
+        }
+      }
+    }
+    
+    // 5. Check Action Hero segment
     if (!autoH1) {
       const actionHeroRegistry = segmentRegistry.find(seg => seg.segment_type === 'action-hero' && !seg.deleted);
       if (actionHeroRegistry) {
@@ -782,7 +816,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             
             {/* Priority Explanation */}
             <p className="text-sm text-muted-foreground mt-3">
-              <span className="font-medium">Auto-detect Priorität:</span> Intro → Full Hero → Product Hero Gallery → Action Hero
+              <span className="font-medium">Auto-detect Priorität:</span> Intro → Full Hero → Product Hero Gallery → Product Hero → Action Hero
             </p>
           </div>
         </TabsContent>
