@@ -127,10 +127,25 @@ export const SEOEditor = ({
   const [isApplyingH1, setIsApplyingH1] = useState(false);
   const [isCreatingSegment, setIsCreatingSegment] = useState(false);
   
-  // Collapsible state for SEO Health Check and SERP Preview
+  // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
-  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(true);
-  const [isSerpPreviewOpen, setIsSerpPreviewOpen] = useState(true);
+  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-healthcheck-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  const [isSerpPreviewOpen, setIsSerpPreviewOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-serp-preview-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  
+  // Persist collapsible states to localStorage
+  useEffect(() => {
+    localStorage.setItem('seo-healthcheck-open', String(isHealthCheckOpen));
+  }, [isHealthCheckOpen]);
+  
+  useEffect(() => {
+    localStorage.setItem('seo-serp-preview-open', String(isSerpPreviewOpen));
+  }, [isSerpPreviewOpen]);
   
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
@@ -1233,36 +1248,36 @@ export const SEOEditor = ({
     <div className="space-y-6">
       {/* SEO Health Check - Collapsible */}
       <Collapsible open={isHealthCheckOpen} onOpenChange={setIsHealthCheckOpen}>
-        <div className="p-4 bg-background border rounded-lg">
+        <div className="rounded-lg overflow-hidden border border-border">
           <CollapsibleTrigger asChild>
-            <button className="flex items-center justify-between w-full text-left">
-              <div className="flex items-center gap-2">
+            <button className="flex items-center justify-between w-full text-left p-4 bg-zinc-800/70 hover:bg-zinc-800 transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
                 <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                <h3 className="text-xl font-semibold">SEO Health Check</h3>
+                <h3 className="text-lg font-semibold">SEO Health Check</h3>
               </div>
-              <div className="flex items-center gap-2">
-                <div className={`h-2.5 w-2.5 rounded-full ${
+              <div className="flex items-center gap-3">
+                <div className={`h-3 w-3 rounded-full ${
                   isAdvancedMode
                     ? (Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
                        Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500')
                     : (basicPassedCount >= 4 ? 'bg-green-500' : 
                        basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
                 }`} />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-muted-foreground">
                   {isAdvancedMode 
                     ? `${Object.values(checks).filter(Boolean).length}/10 Checks`
                     : `${basicPassedCount}/5 Checks`
                   }
                 </span>
                 {isAdvancedMode && (
-                  <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
                 )}
-                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isHealthCheckOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isHealthCheckOpen ? 'rotate-180' : ''}`} />
               </div>
             </button>
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="pt-4">
+          <CollapsibleContent className="p-4 bg-background border-t border-border">
             {/* Toggle Buttons for Basic/Advanced - Only show in Advanced mode */}
             {isAdvancedMode && (
               <div className="flex gap-2 mb-4">
@@ -1368,14 +1383,23 @@ export const SEOEditor = ({
 
       {/* SERP Preview - Collapsible */}
       <Collapsible open={isSerpPreviewOpen} onOpenChange={setIsSerpPreviewOpen}>
-        <div className="border rounded-lg overflow-hidden">
+        <div className="rounded-lg overflow-hidden border border-border">
           <CollapsibleTrigger asChild>
-            <button className="flex items-center justify-between w-full text-left p-4 bg-background hover:bg-muted/30 transition-colors">
-              <span className="font-semibold">SERP Preview</span>
-              <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isSerpPreviewOpen ? 'rotate-180' : ''}`} />
+            <button className="flex items-center justify-between w-full text-left p-4 bg-zinc-800/70 hover:bg-zinc-800 transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <span className="text-lg font-semibold">SERP Preview</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Google Suche Vorschau</span>
+                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isSerpPreviewOpen ? 'rotate-180' : ''}`} />
+              </div>
             </button>
           </CollapsibleTrigger>
-          <CollapsibleContent>
+          <CollapsibleContent className="border-t border-border">
             <SERPPreview
               title={data.title || ''}
               description={data.metaDescription || ''}
@@ -1387,13 +1411,13 @@ export const SEOEditor = ({
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
-        <TabsList className={`grid w-full mb-6 bg-muted ${isAdvancedMode ? 'grid-cols-3' : 'grid-cols-2'}`}>
-          <TabsTrigger value="basics" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
-          <TabsTrigger value="social" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
+        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
+          <TabsTrigger value="social" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
           {isAdvancedMode && (
-            <TabsTrigger value="advanced" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-1">
+            <TabsTrigger value="advanced" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
               Advanced
-              <GeminiIcon className="h-3 w-3 ml-1" />
+              <GeminiIcon className="h-4 w-4" />
             </TabsTrigger>
           )}
         </TabsList>
@@ -1513,7 +1537,7 @@ export const SEOEditor = ({
                 className="rounded-l-none h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Only lowercase letters, numbers and hyphens
             </p>
           </div>
@@ -1589,7 +1613,7 @@ export const SEOEditor = ({
               placeholder="Leave empty = use SEO Title"
               className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Title for social media shares. Falls back to SEO Title.
             </p>
           </div>
@@ -1610,7 +1634,7 @@ export const SEOEditor = ({
               className="min-h-[80px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
               rows={3}
             />
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Description for social media shares. Falls back to Meta Description.
             </p>
           </div>
@@ -1696,7 +1720,7 @@ export const SEOEditor = ({
                 />
               </div>
             )}
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Image for social shares (1200×630px recommended)
             </p>
           </div>
@@ -1721,7 +1745,7 @@ export const SEOEditor = ({
                 <SelectItem value="summary">Summary</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               "Summary Large Image" is recommended for better visibility
             </p>
           </div>
@@ -1814,7 +1838,7 @@ export const SEOEditor = ({
               </div>
             )}
             
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Main keyword for this page – should appear in Title, Description, and Slug
             </p>
           </div>
@@ -2160,7 +2184,7 @@ export const SEOEditor = ({
               </div>
             )}
             
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Ideal H1: 20-70 characters, contains Focus Keyword at the start
             </p>
           </div>
@@ -2200,7 +2224,7 @@ export const SEOEditor = ({
                 </p>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Auto-detected from first content segment
             </p>
           </div>
@@ -2220,7 +2244,7 @@ export const SEOEditor = ({
               placeholder="https://www.image-engineering.de/your-page"
               className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-3">
               Only needed if this page is a duplicate of another
             </p>
           </div>
