@@ -784,21 +784,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                   {/* H1 Text - larger */}
                   <p className="text-lg font-medium text-foreground">{data.h1}</p>
                   
-                  {/* Source Badge - Yellow */}
+                  {/* Source Badge - simplified */}
                   {h1SourceInfo && (
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">Quelle:</span>
                       <Badge className="bg-[#f9dc24] text-black font-medium text-sm px-3 py-1">
-                        {h1SourceInfo.label}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/40">
-                        ID: {h1SourceInfo.id}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
-                        Key: {h1SourceInfo.key}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
-                        Type: {h1SourceInfo.type}
+                        {h1SourceInfo.label} ({h1SourceInfo.id})
                       </Badge>
                     </div>
                   )}
