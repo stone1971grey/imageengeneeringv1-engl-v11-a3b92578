@@ -75,6 +75,66 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     video: true,
   });
   const [isImporting, setIsImporting] = useState(false);
+  const [isSavingRedirect, setIsSavingRedirect] = useState(false);
+
+  const handleSaveRedirect = async () => {
+    if (!sourceUrl) {
+      toast.error('Please enter a source URL first');
+      return;
+    }
+
+    setIsSavingRedirect(true);
+
+    try {
+      // Build target URL from page slug and language
+      const targetUrl = `/${language}/${pageSlug}`;
+      
+      // Extract path from source URL (remove domain)
+      let sourceUrlPath = sourceUrl;
+      try {
+        const urlObj = new URL(sourceUrl);
+        sourceUrlPath = urlObj.pathname;
+      } catch {
+        // If it's already a path, use as-is
+      }
+
+      // Check if redirect already exists
+      const { data: existing } = await supabase
+        .from('redirects')
+        .select('id')
+        .eq('source_url', sourceUrlPath)
+        .maybeSingle();
+
+      if (existing) {
+        toast.info('Redirect already exists for this source URL');
+        setIsSavingRedirect(false);
+        return;
+      }
+
+      const { error: redirectError } = await supabase
+        .from('redirects')
+        .insert({
+          source_url: sourceUrlPath,
+          target_url: targetUrl,
+          redirect_type: 301,
+          is_active: true,
+          notes: `Created via Content Automation for page: ${pageSlug}`,
+        });
+
+      if (redirectError) {
+        console.error('Error creating redirect:', redirectError);
+        toast.error('Failed to save redirect');
+      } else {
+        toast.success(`301 redirect saved: ${sourceUrlPath} → ${targetUrl}`);
+        setCreateRedirect(true); // Mark checkbox as checked
+      }
+    } catch (error) {
+      console.error('Error saving redirect:', error);
+      toast.error('Failed to save redirect');
+    } finally {
+      setIsSavingRedirect(false);
+    }
+  };
 
   const handleFetchContent = async () => {
     if (!sourceUrl) {
@@ -483,7 +543,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             </Button>
           </div>
 
-          {/* Redirect Checkbox */}
+          {/* Redirect Checkbox with Save Button */}
           <div className="flex items-center gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600 mt-4">
             <Checkbox
               id="createRedirect"
@@ -500,6 +560,21 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
                 The source URL will be saved as a permanent redirect to the new page (SEO Settings)
               </p>
             </div>
+            <Button
+              onClick={handleSaveRedirect}
+              disabled={!sourceUrl || isSavingRedirect}
+              size="sm"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              {isSavingRedirect ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Check className="h-4 w-4 mr-1" />
+                  Save Redirect
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
