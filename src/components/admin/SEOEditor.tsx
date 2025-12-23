@@ -173,12 +173,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
     
-    // Determine H1 heading dynamically
+    // Determine H1 heading dynamically with extended priority
+    // Priority: 1. Intro Title > 2. Full Hero > 3. Product Hero Gallery > 4. page_segments JSON
     let autoH1 = '';
     
-    // Priority for H1: Intro Title > Hero Title Lines
+    // 1. Check Intro segment first (highest priority)
     if (introRegistry && !introRegistry.deleted) {
-      // Get Intro title for H1
       const introContent = pageContent.find(item => item.section_key === introRegistry.segment_key);
       if (introContent) {
         try {
@@ -189,8 +189,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           console.error('[SEO Editor] Failed to parse intro for H1:', e);
         }
       }
-    } else {
-      // Fallback: Get Full Hero title lines
+    }
+    
+    // 2. Check Full Hero segment
+    if (!autoH1) {
       const fullHeroEntry = pageContent.find(item => item.section_key.startsWith('full_hero_'));
       if (fullHeroEntry) {
         try {
@@ -198,26 +200,84 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           const titleLine1 = fullHeroData.titleLine1 || '';
           const titleLine2 = fullHeroData.titleLine2 || '';
           autoH1 = [titleLine1, titleLine2].filter(Boolean).join(' ');
-          console.log('[SEO Editor] H1 from Hero titles:', autoH1);
+          console.log('[SEO Editor] H1 from Full Hero titles:', autoH1);
         } catch (e) {
-          console.error('[SEO Editor] Failed to parse hero for H1:', e);
+          console.error('[SEO Editor] Failed to parse full hero for H1:', e);
         }
       }
     }
     
-    // Auto-set H1 if different
-    if (autoH1 && data.h1 !== autoH1) {
-      console.log('[SEO Editor] Auto-setting H1 to:', autoH1);
+    // 3. Check Product Hero Gallery segment
+    if (!autoH1) {
+      const productHeroGalleryRegistry = segmentRegistry.find(seg => seg.segment_type === 'product-hero-gallery' && !seg.deleted);
+      if (productHeroGalleryRegistry) {
+        const phgContent = pageContent.find(item => item.section_key === productHeroGalleryRegistry.segment_key);
+        if (phgContent) {
+          try {
+            const phgData = JSON.parse(phgContent.content_value);
+            const title = phgData.title || '';
+            const subtitle = phgData.subtitle || '';
+            autoH1 = [title, subtitle].filter(Boolean).join(' ');
+            console.log('[SEO Editor] H1 from Product Hero Gallery:', autoH1);
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
+          }
+        }
+      }
+    }
+    
+    // 4. Check page_segments JSON (legacy format)
+    if (!autoH1) {
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          // Find first hero segment in the array
+          const heroSegment = segments.find((seg: any) => seg.type === 'hero');
+          if (heroSegment?.data) {
+            const heroTitle = heroSegment.data.hero_title || '';
+            const heroSubtitle = heroSegment.data.hero_subtitle || '';
+            autoH1 = [heroTitle, heroSubtitle].filter(Boolean).join(' ').trim();
+            console.log('[SEO Editor] H1 from page_segments JSON:', autoH1);
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse page_segments for H1:', e);
+        }
+      }
+    }
+    
+    // 5. Check Action Hero segment
+    if (!autoH1) {
+      const actionHeroRegistry = segmentRegistry.find(seg => seg.segment_type === 'action-hero' && !seg.deleted);
+      if (actionHeroRegistry) {
+        const actionHeroContent = pageContent.find(item => item.section_key === actionHeroRegistry.segment_key);
+        if (actionHeroContent) {
+          try {
+            const actionHeroData = JSON.parse(actionHeroContent.content_value);
+            autoH1 = actionHeroData.title || '';
+            console.log('[SEO Editor] H1 from Action Hero:', autoH1);
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse action hero for H1:', e);
+          }
+        }
+      }
+    }
+    
+    // Update H1 field - if different OR if we need to clear it
+    if (data.h1 !== autoH1) {
+      console.log('[SEO Editor] Updating H1 to:', autoH1 || '(empty)');
       onChange({ ...data, h1: autoH1 });
     }
     
     // Check if keyword is in H1
     const keywordInH1 = keyword && autoH1 ? autoH1.toLowerCase().includes(keyword) : false;
-    console.log('[SEO Editor] H1 Keyword Check:', {
+    // Check if H1 is actually present
+    const hasH1 = !!autoH1;
+    console.log('[SEO Editor] H1 Detection Result:', {
       keyword,
-      autoH1,
+      autoH1: autoH1 || '(none)',
       keywordInH1,
-      hasH1: !!data.h1,
+      hasH1,
       hasFocusKeyword: !!data.focusKeyword
     });
     
@@ -314,7 +374,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     setChecks({
       titleLength,
       descriptionLength,
-      hasH1: true, // Could be enhanced with actual H1 detection
+      hasH1,
       hasInternalLinks,
       hasExternalLinks,
       keywordInTitle,
@@ -331,7 +391,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
       hasInternalLinks,
-      hasExternalLinks
+      hasExternalLinks,
+      hasH1
     });
   }, [data, pageSegments, pageContent, segmentRegistry]);
 
@@ -653,7 +714,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           {/* H1 Heading */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+          <div className={`p-5 rounded-lg ${data.h1 ? 'bg-zinc-800/50 border border-zinc-700' : 'bg-red-500/10 border border-red-500/30'}`}>
             <div className="flex items-center justify-between mb-3">
               <Label className="text-base font-semibold text-foreground">
                 H1 Heading
@@ -665,8 +726,13 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 )}
               </div>
             </div>
-            <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md text-sm text-foreground/80">
-              {data.h1 || <span className="text-muted-foreground italic">Auto-detected from Intro or Hero...</span>}
+            <div className={`px-4 py-3 rounded-md text-sm ${data.h1 ? 'bg-muted/20 border border-border/50 text-foreground/80' : 'bg-red-500/20 border border-red-500/30'}`}>
+              {data.h1 || (
+                <span className="flex items-center gap-2 text-red-400">
+                  <AlertCircle className="h-4 w-4" />
+                  Keine H1 gefunden – bitte Intro, Hero oder Product Hero Gallery Segment hinzufügen
+                </span>
+              )}
             </div>
             {data.h1 && data.focusKeyword && (
               <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
@@ -674,7 +740,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </div>
             )}
             <p className="text-xs text-muted-foreground mt-2">
-              Auto-detected from first Intro or Hero segment
+              Auto-detect aus: Intro Title → Full Hero → Product Hero Gallery → Action Hero
             </p>
           </div>
         </TabsContent>
