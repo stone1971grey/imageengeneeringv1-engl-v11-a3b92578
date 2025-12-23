@@ -241,21 +241,24 @@ const AdminDashboard = () => {
     }
   };
   
-  // Restore activeTab from localStorage when navigating back to the page
-  // This effect runs when the component mounts or when selectedPage changes
+  // Restore activeTab from localStorage IMMEDIATELY when selectedPage changes
+  // This runs before content is loaded, so the tab is set early
+  const restoredTabRef = useRef<string | null>(null);
+  
   useEffect(() => {
     if (selectedPage) {
       const pageKey = selectedPage || 'index';
       const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
-      console.log("[AdminDashboard] Navigation restore check - pageKey:", pageKey, "savedTab:", savedTab, "currentTab:", activeTab);
+      console.log("[AdminDashboard] Early tab restore - pageKey:", pageKey, "savedTab:", savedTab);
       
       if (savedTab) {
-        // Always restore saved tab immediately on page change
-        console.log("[AdminDashboard] Immediately restoring saved tab on navigation:", savedTab);
+        restoredTabRef.current = savedTab; // Mark this as the intended tab
         setActiveTabState(savedTab);
+      } else {
+        restoredTabRef.current = null;
       }
     }
-  }, [selectedPage]); // Only depend on selectedPage, not tabOrder
+  }, [selectedPage]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -954,18 +957,24 @@ const AdminDashboard = () => {
     }
     setTabOrder(validOrder);
     
-    // Set active tab - always prioritize saved tab
+    // Set active tab - prioritize the already-restored tab from localStorage
     const pageKey = selectedPage || 'index';
     const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
     const specialTabs = ["footer", "seo", "version-history"];
     const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || specialTabs.includes(savedTab));
     
-    console.log("[AdminDashboard] Content loaded - pageKey:", pageKey, "savedTab:", savedTab, "isValid:", isValidSavedTab);
+    console.log("[AdminDashboard] Content loaded - pageKey:", pageKey, "savedTab:", savedTab, "isValid:", isValidSavedTab, "restoredTabRef:", restoredTabRef.current);
     
-    if (isValidSavedTab) {
+    // If we already restored a tab early (before content load), and it's valid, keep it
+    if (restoredTabRef.current && (validOrder.includes(restoredTabRef.current) || specialTabs.includes(restoredTabRef.current))) {
+      console.log("[AdminDashboard] Keeping early-restored tab:", restoredTabRef.current);
+      // Tab was already set, just make sure it stays
+      setActiveTabState(restoredTabRef.current);
+    } else if (isValidSavedTab) {
       console.log("[AdminDashboard] Restoring saved tab from content load:", savedTab);
       setActiveTabState(savedTab);
     } else if (validOrder.length > 0) {
+      console.log("[AdminDashboard] No valid saved tab, using first tab:", validOrder[0]);
       setActiveTabState(validOrder[0]);
       localStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
     }
