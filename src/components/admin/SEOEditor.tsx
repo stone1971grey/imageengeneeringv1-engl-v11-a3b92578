@@ -40,6 +40,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     titleLength: false,
     descriptionLength: false,
     hasH1: true,
+    hasInternalLinks: false,
+    hasExternalLinks: false,
     keywordInTitle: false,
     keywordInDescription: false,
     keywordInSlug: false,
@@ -291,10 +293,30 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       onChange({ ...data, introduction: combinedIntroText });
     }
 
+    // Check for internal and external links in page content
+    let hasInternalLinks = false;
+    let hasExternalLinks = false;
+    
+    // Scan all page content for links
+    pageContent.forEach(item => {
+      const content = item.content_value || '';
+      // Check for internal links (relative paths or same domain)
+      if (content.includes('href="/') || content.includes('href="./') || content.includes('href="#')) {
+        hasInternalLinks = true;
+      }
+      // Check for external links (http/https)
+      const externalLinkPattern = /href=["'](https?:\/\/(?!localhost)[^"']+)["']/gi;
+      if (externalLinkPattern.test(content)) {
+        hasExternalLinks = true;
+      }
+    });
+
     setChecks({
       titleLength,
       descriptionLength,
       hasH1: true, // Could be enhanced with actual H1 detection
+      hasInternalLinks,
+      hasExternalLinks,
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
@@ -307,7 +329,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
-      keywordInIntroduction
+      keywordInIntroduction,
+      hasInternalLinks,
+      hasExternalLinks
     });
   }, [data, pageSegments, pageContent, segmentRegistry]);
 
@@ -377,11 +401,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </h3>
           <div className="flex items-center gap-2">
             <div className={`h-2.5 w-2.5 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 6 ? 'bg-green-500' : 
-              Object.values(checks).filter(Boolean).length >= 4 ? 'bg-yellow-500' : 'bg-red-500'
+              Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
+              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-medium">
-              {Object.values(checks).filter(Boolean).length}/8 Checks
+              {Object.values(checks).filter(Boolean).length}/10 Checks
             </span>
           </div>
         </div>
@@ -407,6 +431,18 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             }`}>
               {getStatusIcon(checks.hasH1)}
               <span className="text-sm font-medium">H1 Present</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.hasInternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.hasInternalLinks)}
+              <span className="text-sm font-medium">Internal Links</span>
+            </div>
+            <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+              checks.hasExternalLinks ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+            }`}>
+              {getStatusIcon(checks.hasExternalLinks)}
+              <span className="text-sm font-medium">External Links</span>
             </div>
           </div>
 
