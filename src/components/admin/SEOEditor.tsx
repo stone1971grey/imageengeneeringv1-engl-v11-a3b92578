@@ -86,15 +86,23 @@ export const SEOEditor = ({
     reason: string;
     characterCount: number;
     keywordPosition: string;
-    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string } | null;
+    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string; segmentId?: number } | null;
     priority: number;
   }>>([]);
   const [showH1Suggestions, setShowH1Suggestions] = useState(false);
   const [selectedH1Suggestion, setSelectedH1Suggestion] = useState<{
     headline: string;
-    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string } | null;
+    placementSuggestion: { segmentType: string; segmentKey: string | null; note: string; segmentId?: number } | null;
   } | null>(null);
   const [isApplyingH1, setIsApplyingH1] = useState(false);
+  
+  // H1 Change Log - documentation of what was changed
+  const [h1ChangeLog, setH1ChangeLog] = useState<{
+    timestamp: string;
+    newH1: string;
+    targetSegment: { id: number; key: string; type: string; label: string };
+    oldH1?: { text: string; segment: { key: string; label: string }; action: string };
+  } | null>(null);
 
   // Load page content and segment registry
   useEffect(() => {
@@ -619,13 +627,54 @@ export const SEOEditor = ({
   };
 
   const handleSelectH1 = (suggestion: typeof h1Suggestions[0]) => {
+    // Find segment ID from registry if not provided
+    const segmentKey = suggestion.placementSuggestion?.segmentKey;
+    const segmentType = suggestion.placementSuggestion?.segmentType;
+    
+    let segmentId: number | undefined = suggestion.placementSuggestion?.segmentId;
+    if (!segmentId && (segmentKey || segmentType)) {
+      const foundSegment = segmentRegistry.find(seg => 
+        (segmentKey && seg.segment_key === segmentKey && !seg.deleted) ||
+        (!segmentKey && segmentType && seg.segment_type === segmentType && !seg.deleted)
+      );
+      segmentId = foundSegment?.segment_id;
+    }
+    
     handleChange('h1', suggestion.headline);
     setSelectedH1Suggestion({
       headline: suggestion.headline,
-      placementSuggestion: suggestion.placementSuggestion
+      placementSuggestion: suggestion.placementSuggestion ? {
+        ...suggestion.placementSuggestion,
+        segmentId
+      } : null
     });
     setShowH1Suggestions(false);
+    setH1ChangeLog(null); // Clear previous changelog
     toast.success(`H1 "${suggestion.headline}" ausgewählt`);
+  };
+
+  // Helper to get readable segment label
+  const getSegmentLabel = (segmentType: string, segmentKey: string): string => {
+    const typeLabels: Record<string, string> = {
+      'full_hero': 'Full Hero',
+      'full-hero': 'Full Hero',
+      'action-hero': 'Action Hero',
+      'intro': 'Intro',
+      'tiles': 'Tiles',
+      'image-text': 'Image-Text',
+      'banner': 'Banner',
+      'banner-p': 'Banner P',
+      'faq': 'FAQ',
+      'specification': 'Specification',
+      'table': 'Table',
+      'video': 'Video',
+      'news': 'News',
+      'events': 'Events',
+      'downloads': 'Downloads',
+      'products': 'Products',
+      'feature-overview': 'Feature Overview',
+    };
+    return typeLabels[segmentType] || segmentType;
   };
 
   // Apply H1 to the suggested segment and convert old H1 to H2
@@ -633,6 +682,7 @@ export const SEOEditor = ({
     if (!selectedH1Suggestion) return;
     
     setIsApplyingH1(true);
+    setH1ChangeLog(null);
     
     try {
       const targetSegmentKey = selectedH1Suggestion.placementSuggestion?.segmentKey;
@@ -641,6 +691,7 @@ export const SEOEditor = ({
       
       // Find current H1 source to potentially convert to H2
       const oldH1Source = h1SourceInfo;
+      const oldH1Text = data.h1;
       
       console.log('[SEO Editor] Applying H1:', {
         newH1,
@@ -706,6 +757,18 @@ export const SEOEditor = ({
         }
       }
 
+      // Prepare changelog entry
+      let changeLogEntry: typeof h1ChangeLog = {
+        timestamp: new Date().toISOString(),
+        newH1,
+        targetSegment: {
+          id: targetSegment.segment_id,
+          key: targetSegment.segment_key,
+          type: targetSegment.segment_type,
+          label: getSegmentLabel(targetSegment.segment_type, targetSegment.segment_key)
+        }
+      };
+
       // If old H1 is in a different segment, convert it to H2
       if (oldH1Source && oldH1Source.key !== targetSegment.segment_key) {
         const oldContent = pageContent.find(item => item.section_key === oldH1Source.key);
@@ -732,7 +795,16 @@ export const SEOEditor = ({
                 console.error('[SEO Editor] Failed to update old segment:', oldUpdateError);
               } else {
                 console.log('[SEO Editor] Converted old H1 to H2 in segment:', oldH1Source.key);
-                toast.info(`Alte H1 in "${oldH1Source.label}" wurde zu H2 konvertiert`);
+                
+                // Add old H1 info to changelog
+                changeLogEntry.oldH1 = {
+                  text: oldH1Text || '',
+                  segment: {
+                    key: oldH1Source.key,
+                    label: oldH1Source.label
+                  },
+                  action: 'Zu H2 konvertiert'
+                };
               }
             }
           } catch (parseError) {
@@ -741,6 +813,9 @@ export const SEOEditor = ({
         }
       }
 
+      // Set the changelog for display
+      setH1ChangeLog(changeLogEntry);
+      
       toast.success(`H1 erfolgreich in "${targetSegment.segment_key}" gesetzt`);
       
       // Refresh page content
@@ -753,7 +828,10 @@ export const SEOEditor = ({
         setPageContent(refreshedContent);
       }
       
-      // Clear selection after applying
+      // Update the h1 in the SEO data (this syncs Basic and Advanced)
+      handleChange('h1', newH1);
+      
+      // Clear selection after applying (but keep changelog visible)
       setSelectedH1Suggestion(null);
       
     } catch (error) {
@@ -1450,18 +1528,47 @@ export const SEOEditor = ({
                 </p>
                 
                 {selectedH1Suggestion.placementSuggestion && (
-                  <div className="mb-3 p-3 bg-muted/30 rounded-md">
-                    <p className="text-sm font-medium text-purple-400 mb-1">Empfohlene Platzierung:</p>
-                    <p className="text-sm text-muted-foreground">{selectedH1Suggestion.placementSuggestion.note}</p>
-                    {selectedH1Suggestion.placementSuggestion.segmentKey && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Segment: <span className="font-mono text-purple-400">{selectedH1Suggestion.placementSuggestion.segmentKey}</span>
-                      </p>
-                    )}
+                  <div className="mb-3 p-3 bg-muted/30 rounded-md border border-purple-500/20">
+                    <p className="text-sm font-medium text-purple-400 mb-2">📍 Empfohlene Platzierung:</p>
+                    <p className="text-sm text-muted-foreground mb-2">{selectedH1Suggestion.placementSuggestion.note}</p>
+                    
+                    {/* Segment Details Box */}
+                    <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-muted-foreground">Segment-Typ:</span>
+                          <p className="font-medium text-foreground">
+                            {getSegmentLabel(selectedH1Suggestion.placementSuggestion.segmentType, selectedH1Suggestion.placementSuggestion.segmentKey || '')}
+                          </p>
+                        </div>
+                        {selectedH1Suggestion.placementSuggestion.segmentId && (
+                          <div>
+                            <span className="text-muted-foreground">Segment-ID:</span>
+                            <p className="font-mono font-medium text-purple-400">
+                              #{selectedH1Suggestion.placementSuggestion.segmentId}
+                            </p>
+                          </div>
+                        )}
+                        {selectedH1Suggestion.placementSuggestion.segmentKey && (
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground">Segment-Key:</span>
+                            <p className="font-mono font-medium text-purple-400 break-all">
+                              {selectedH1Suggestion.placementSuggestion.segmentKey}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
                     {h1SourceInfo && selectedH1Suggestion.placementSuggestion.segmentKey !== h1SourceInfo.key && (
-                      <p className="text-xs text-yellow-400 mt-2">
-                        ⚠️ Aktuelle H1 in "{h1SourceInfo.label}" wird zu H2 konvertiert
-                      </p>
+                      <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-xs">
+                        <p className="text-yellow-400 font-medium">
+                          ⚠️ Bestehende H1 wird angepasst:
+                        </p>
+                        <p className="text-yellow-400/80 mt-1">
+                          H1 in "{h1SourceInfo.label}" ({h1SourceInfo.key}) → wird zu H2 konvertiert
+                        </p>
+                      </div>
                     )}
                   </div>
                 )}
@@ -1483,6 +1590,61 @@ export const SEOEditor = ({
                     </>
                   )}
                 </Button>
+              </div>
+            )}
+            
+            {/* H1 Change Log - Documentation of applied changes */}
+            {h1ChangeLog && (
+              <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium text-blue-400">📋 Änderungsprotokoll</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setH1ChangeLog(null)}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-3 text-sm">
+                  {/* Timestamp */}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>Angewendet am:</span>
+                    <span className="font-mono">{new Date(h1ChangeLog.timestamp).toLocaleString('de-DE')}</span>
+                  </div>
+                  
+                  {/* New H1 */}
+                  <div className="p-3 bg-green-500/10 border border-green-500/20 rounded">
+                    <p className="text-xs text-green-400 font-medium mb-1">✅ Neue H1 gesetzt:</p>
+                    <p className="text-foreground font-semibold">"{h1ChangeLog.newH1}"</p>
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      <span>Ziel-Segment: </span>
+                      <span className="font-medium text-green-400">{h1ChangeLog.targetSegment.label}</span>
+                      <span className="text-muted-foreground"> (ID: #{h1ChangeLog.targetSegment.id}, Key: {h1ChangeLog.targetSegment.key})</span>
+                    </div>
+                  </div>
+                  
+                  {/* Old H1 conversion if applicable */}
+                  {h1ChangeLog.oldH1 && (
+                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded">
+                      <p className="text-xs text-yellow-400 font-medium mb-1">🔄 Vorherige H1 konvertiert:</p>
+                      <p className="text-foreground">"{h1ChangeLog.oldH1.text}"</p>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        <span>Segment: </span>
+                        <span className="font-medium text-yellow-400">{h1ChangeLog.oldH1.segment.label}</span>
+                        <span> ({h1ChangeLog.oldH1.segment.key})</span>
+                        <span className="text-yellow-400 ml-2">→ {h1ChangeLog.oldH1.action}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Info about Basic/Advanced sync */}
+                  <div className="p-2 bg-muted/30 rounded text-xs text-muted-foreground">
+                    <p>💡 Die H1 wurde sowohl im Segment als auch in den SEO-Einstellungen (Basic & Advanced) aktualisiert.</p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1551,15 +1713,38 @@ export const SEOEditor = ({
                           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                             {suggestion.reason}
                           </p>
-                          {suggestion.placementSuggestion && (
-                            <div className="mt-2 p-2 bg-muted/30 rounded text-xs">
-                              <span className="font-medium text-purple-400">Placement: </span>
-                              <span className="text-muted-foreground">{suggestion.placementSuggestion.note}</span>
-                              {suggestion.placementSuggestion.segmentKey && (
-                                <span className="text-muted-foreground"> ({suggestion.placementSuggestion.segmentKey})</span>
-                              )}
-                            </div>
-                          )}
+                          {suggestion.placementSuggestion && (() => {
+                            // Find segment ID from registry
+                            const segKey = suggestion.placementSuggestion.segmentKey;
+                            const segType = suggestion.placementSuggestion.segmentType;
+                            const foundSeg = segmentRegistry.find(seg => 
+                              (segKey && seg.segment_key === segKey && !seg.deleted) ||
+                              (!segKey && segType && seg.segment_type === segType && !seg.deleted)
+                            );
+                            const segId = foundSeg?.segment_id;
+                            
+                            return (
+                              <div className="mt-2 p-2 bg-muted/30 rounded text-xs border border-purple-500/10">
+                                <span className="font-medium text-purple-400">📍 Platzierung: </span>
+                                <span className="text-muted-foreground">{suggestion.placementSuggestion.note}</span>
+                                <div className="mt-1 flex flex-wrap gap-2">
+                                  <span className="px-1.5 py-0.5 bg-purple-500/10 rounded text-purple-400">
+                                    {getSegmentLabel(segType, segKey || '')}
+                                  </span>
+                                  {segId && (
+                                    <span className="px-1.5 py-0.5 bg-muted/50 rounded font-mono">
+                                      ID: #{segId}
+                                    </span>
+                                  )}
+                                  {segKey && (
+                                    <span className="px-1.5 py-0.5 bg-muted/50 rounded font-mono text-muted-foreground">
+                                      {segKey}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
                         <Button
                           variant="ghost"
