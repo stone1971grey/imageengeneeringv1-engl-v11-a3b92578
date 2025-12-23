@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, Sparkles } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database } from "lucide-react";
+import { GeminiIcon } from "@/components/GeminiIcon";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -380,10 +381,10 @@ export const AdminHeader = ({
             {isAdmin && selectedPage && setIsContentAutomationOpen && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setIsContentAutomationOpen(!isContentAutomationOpen)}
               >
-                <Sparkles className="h-4 w-4" />
+                <GeminiIcon className="h-5 w-5" rainbow />
                 Content Automation
               </Button>
             )}

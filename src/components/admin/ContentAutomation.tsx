@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { GeminiIcon } from '@/components/GeminiIcon';
 import { 
   Globe, 
   Download, 
@@ -20,7 +21,8 @@ import {
   Check,
   AlertCircle,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Link2
 } from 'lucide-react';
 
 interface ParsedContent {
@@ -45,6 +47,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   const [sourceUrl, setSourceUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
+  const [createRedirect, setCreateRedirect] = useState(false);
   const [selectedSegments, setSelectedSegments] = useState<{
     productHero: boolean;
     intro: boolean;
@@ -384,57 +387,77 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   const filteredDownloads = parsedContent?.downloads.filter(d => d.language === language) || [];
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#f9dc24]/20 rounded-lg">
-            <Sparkles className="h-6 w-6 text-[#f9dc24]" />
+    <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border-gray-600 shadow-2xl">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-xl border border-white/10">
+            <GeminiIcon className="h-8 w-8" rainbow />
           </div>
           <div>
-            <CardTitle className="text-white text-xl">Content Automation</CardTitle>
-            <CardDescription className="text-gray-400">
-              Import content from external URLs and create segments automatically
+            <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
+            <CardDescription className="text-gray-300 text-base mt-1">
+              Importiere Inhalte von externen URLs und erstelle Segmente automatisch
             </CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* URL Input */}
-        <div className="space-y-2">
-          <Label htmlFor="sourceUrl" className="text-white flex items-center gap-2">
-            <Globe className="h-4 w-4" />
+        <div className="space-y-3">
+          <Label htmlFor="sourceUrl" className="text-white text-lg flex items-center gap-2 font-medium">
+            <Globe className="h-5 w-5 text-[#f9dc24]" />
             Source URL
           </Label>
-          <div className="flex gap-2">
+          <p className="text-gray-400 text-sm">
+            Gib die URL der Quellseite ein, von der die Inhalte importiert werden sollen.
+            Bilder und PDFs sollten vorab im Media Management Ordner dieser Seite hinterlegt werden.
+          </p>
+          <div className="flex gap-3">
             <Input
               id="sourceUrl"
               type="url"
               value={sourceUrl}
               onChange={(e) => setSourceUrl(e.target.value)}
               placeholder="https://www.example.com/products/your-product"
-              className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 flex-1"
+              className="bg-gray-700/80 border-gray-500 text-white placeholder:text-gray-400 flex-1 h-12 text-base px-4 focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
             <Button
               onClick={handleFetchContent}
               disabled={isLoading || !sourceUrl}
-              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+              className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] text-black hover:from-[#f5c800] hover:to-[#f9dc24] font-semibold h-12 px-6"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Fetching...
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Analysiere...
                 </>
               ) : (
                 <>
-                  <Download className="h-4 w-4 mr-2" />
-                  Fetch Content
+                  <Download className="h-5 w-5 mr-2" />
+                  Inhalte laden
                 </>
               )}
             </Button>
           </div>
-          <p className="text-xs text-gray-500">
-            Note: Images and PDFs should be pre-uploaded to the Media Management folder for this page.
-          </p>
+
+          {/* Redirect Checkbox */}
+          <div className="flex items-center gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600 mt-4">
+            <Checkbox
+              id="createRedirect"
+              checked={createRedirect}
+              onCheckedChange={(checked) => setCreateRedirect(checked === true)}
+              className="border-gray-400 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+            />
+            <div className="flex-1">
+              <Label htmlFor="createRedirect" className="text-white font-medium flex items-center gap-2 cursor-pointer">
+                <Link2 className="h-4 w-4 text-[#f9dc24]" />
+                301-Redirect eintragen
+              </Label>
+              <p className="text-gray-400 text-sm mt-0.5">
+                Die Source-URL wird als permanente Weiterleitung zur neuen Seite gespeichert (SEO-Einstellungen)
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Parsed Content Preview */}
