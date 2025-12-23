@@ -915,26 +915,28 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Button>
             </div>
 
-            {/* Background Removal Checkbox */}
-            <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-500/30">
-              <Checkbox
-                id="remove-background-gallery"
-                checked={removeBackgroundEnabled}
-                onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
-                className="border-purple-400 data-[state=checked]:bg-purple-600"
-              />
-              <div className="flex-1">
-                <Label htmlFor="remove-background-gallery" className="text-white cursor-pointer flex items-center gap-2">
-                  <GeminiIcon className="w-4 h-4" /> Auto-Remove Background (AI)
-                </Label>
-                <p className="text-xs text-gray-400 mt-1">
-                  Automatically removes the background when uploading new images
-                </p>
+            {/* Background Removal Checkbox - Only show for EN since images are shared */}
+            {language === 'en' && (
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg border border-purple-500/30">
+                <Checkbox
+                  id="remove-background-gallery"
+                  checked={removeBackgroundEnabled}
+                  onCheckedChange={(checked) => setRemoveBackgroundEnabled(checked === true)}
+                  className="border-purple-400 data-[state=checked]:bg-purple-600"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="remove-background-gallery" className="text-white cursor-pointer flex items-center gap-2">
+                    <GeminiIcon className="w-4 h-4" /> Auto-Remove Background (AI)
+                  </Label>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Automatically removes the background when uploading new images
+                  </p>
+                </div>
+                {isRemovingBackground && (
+                  <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+                )}
               </div>
-              {isRemovingBackground && (
-                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
-              )}
-            </div>
+            )}
 
             {localData.images.map((image, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
