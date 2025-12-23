@@ -195,11 +195,11 @@ export function parseContentItems(
         try {
           const segments = JSON.parse(item.content_value);
           
-          if (segments && segments.length > 0) {
+          if (segments && Array.isArray(segments) && segments.length > 0) {
             // Sort by position
             const sortedSegments = [...segments].sort((a, b) => {
-              const posA = typeof a.position === 'number' ? a.position : 999;
-              const posB = typeof b.position === 'number' ? b.position : 999;
+              const posA = typeof a?.position === 'number' ? a.position : 999;
+              const posB = typeof b?.position === 'number' ? b.position : 999;
               if (posA === posB) {
                 return segments.indexOf(a) - segments.indexOf(b);
               }
@@ -208,17 +208,23 @@ export function parseContentItems(
             
             // Ensure all segments have numeric IDs
             segmentsWithIds = sortedSegments.map((seg: any, idx: number) => {
-              if (!seg.id || (typeof seg.id !== 'number' && !seg.id.match(/^\d+$/))) {
+              if (!seg) return null;
+              
+              const segId = seg.id;
+              const isNumericId = segId && (typeof segId === 'number' || (typeof segId === 'string' && /^\d+$/.test(segId)));
+              
+              if (!isNumericId) {
                 needsSegmentUpdate = true;
                 const registryId = segmentRegistry[seg.type];
                 return { ...seg, id: registryId ? String(registryId) : String(10 + idx), position: idx };
               }
               return { ...seg, position: seg.position ?? idx };
-            });
+            }).filter(Boolean); // Remove any null entries
             
             pageSegments = segmentsWithIds;
           }
-        } catch {
+        } catch (e) {
+          console.error('[parseContentItems] Error parsing page_segments:', e);
           pageSegments = [];
         }
         break;
@@ -321,21 +327,28 @@ export function parseContentItems(
  * The reverseRegistry is optional validation - if empty, trust pageSegments as source of truth
  */
 export function filterTabOrder(
-  tabOrder: string[],
+  tabOrder: string[] | undefined | null,
   reverseRegistry: Record<string, string>,
   pageSegments?: any[]
 ): { validOrder: string[]; wasFiltered: boolean } {
+  // Guard against undefined/null tabOrder
+  const safeTabOrder = Array.isArray(tabOrder) ? tabOrder : [];
+  
+  if (safeTabOrder.length === 0) {
+    return { validOrder: [], wasFiltered: false };
+  }
+  
   // If pageSegments is provided, use those IDs as the source of truth
-  if (pageSegments && pageSegments.length > 0) {
+  if (pageSegments && Array.isArray(pageSegments) && pageSegments.length > 0) {
     const pageSegmentIds = pageSegments.map(seg => String(seg.id));
-    const validOrder = tabOrder.filter((tabId: string) => pageSegmentIds.includes(String(tabId)));
-    const wasFiltered = validOrder.length !== tabOrder.length;
+    const validOrder = safeTabOrder.filter((tabId: string) => pageSegmentIds.includes(String(tabId)));
+    const wasFiltered = validOrder.length !== safeTabOrder.length;
     
     if (wasFiltered) {
       console.log('[filterTabOrder] Filtered tab order based on pageSegments:', {
-        original: tabOrder,
+        original: safeTabOrder,
         filtered: validOrder,
-        removed: tabOrder.filter(id => !pageSegmentIds.includes(String(id)))
+        removed: safeTabOrder.filter(id => !pageSegmentIds.includes(String(id)))
       });
     }
     
@@ -343,23 +356,23 @@ export function filterTabOrder(
   }
   
   // Fallback to reverseRegistry if no pageSegments
-  const validSegmentIds = Object.keys(reverseRegistry);
+  const validSegmentIds = Object.keys(reverseRegistry || {});
   
   // If reverseRegistry is empty, return original tab order unchanged
   // This prevents accidentally filtering out all tabs when registry isn't loaded yet
   if (validSegmentIds.length === 0) {
     console.log('[filterTabOrder] No reverseRegistry available, returning original tabOrder');
-    return { validOrder: tabOrder, wasFiltered: false };
+    return { validOrder: safeTabOrder, wasFiltered: false };
   }
   
-  const validOrder = tabOrder.filter((tabId: string) => validSegmentIds.includes(tabId));
-  const wasFiltered = validOrder.length !== tabOrder.length;
+  const validOrder = safeTabOrder.filter((tabId: string) => validSegmentIds.includes(tabId));
+  const wasFiltered = validOrder.length !== safeTabOrder.length;
   
   if (wasFiltered) {
     console.log('[filterTabOrder] Filtered tab order based on reverseRegistry:', {
-      original: tabOrder,
+      original: safeTabOrder,
       filtered: validOrder,
-      removed: tabOrder.filter(id => !validSegmentIds.includes(id))
+      removed: safeTabOrder.filter(id => !validSegmentIds.includes(id))
     });
   }
   
@@ -369,9 +382,14 @@ export function filterTabOrder(
 /**
  * Rebuild tab order from segments if empty
  */
-export function rebuildTabOrderFromSegments(pageSegments: any[]): string[] {
+export function rebuildTabOrderFromSegments(pageSegments: any[] | undefined | null): string[] {
+  // Guard against undefined/null pageSegments
+  if (!pageSegments || !Array.isArray(pageSegments)) {
+    return [];
+  }
+  
   return pageSegments
-    .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
+    .filter(seg => seg && seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
     .map(seg => String(seg.id));
 }
 
