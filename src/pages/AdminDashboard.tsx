@@ -229,28 +229,28 @@ const AdminDashboard = () => {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Wrapper to persist activeTab to sessionStorage
+  // Wrapper to persist activeTab to localStorage (persists across page navigations)
   // Use selectedPage (from URL) as key since it's available immediately
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
     // Use selectedPage directly since it's from URL and always available
     const pageKey = selectedPage || 'index';
     if (tab) {
-      sessionStorage.setItem(`admin-activeTab-${pageKey}`, tab);
+      localStorage.setItem(`admin-activeTab-${pageKey}`, tab);
       console.log("[AdminDashboard] Saved activeTab:", tab, "for page:", pageKey);
     }
   };
   
-  // Restore activeTab from sessionStorage on page load
+  // Restore activeTab from localStorage on page load
   // This runs after tabOrder is loaded
   useEffect(() => {
     const pageKey = selectedPage || 'index';
     const safeTabOrder = tabOrder || [];
     if (safeTabOrder.length > 0) {
-      const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+      const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
       console.log("[AdminDashboard] Restore check - pageKey:", pageKey, "savedTab:", savedTab, "currentActiveTab:", activeTab);
-      if (savedTab && safeTabOrder.includes(savedTab)) {
-        console.log("[AdminDashboard] Restoring tab from sessionStorage:", savedTab);
+      if (savedTab && (safeTabOrder.includes(savedTab) || savedTab === "footer")) {
+        console.log("[AdminDashboard] Restoring tab from localStorage:", savedTab);
         setActiveTabState(savedTab);
       }
     }
@@ -956,13 +956,13 @@ const AdminDashboard = () => {
     // Set active tab
     if (validOrder.length > 0) {
       const pageKey = selectedPage || 'index';
-      const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+      const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
       const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || savedTab === "footer");
       if (isValidSavedTab) {
         setActiveTabState(savedTab);
       } else {
         setActiveTabState(validOrder[0]);
-        sessionStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
+        localStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
       }
     }
     
