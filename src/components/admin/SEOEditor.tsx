@@ -769,9 +769,34 @@ export const SEOEditor = ({
       }
     }
     
+    // CRITICAL: Check for EXISTING Intro segments in both page_content AND segment_registry
+    // Intro segments are stored DIRECTLY in page_content, NOT in page_segments JSON
+    const existingIntroRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro' && !seg.deleted);
+    const existingIntroContent = existingIntroRegistry 
+      ? pageContent.find(item => item.section_key === existingIntroRegistry.segment_key)
+      : null;
+    
+    console.log('[SEO Editor] Checking for existing Intro:', {
+      existingIntroRegistry,
+      existingIntroContent: existingIntroContent ? { key: existingIntroContent.section_key } : null
+    });
+    
     allPlacementOptions = allPlacementOptions.map(opt => {
-      // First try to find by key in actual segments
-      if (opt.segmentKey) {
+      // IMPORTANT: If this option suggests "intro" with createNew=true,
+      // but we ALREADY have an intro segment, convert it to use the existing one
+      if (opt.segmentType === 'intro' && opt.createNew && existingIntroRegistry && existingIntroContent) {
+        console.log('[SEO Editor] Converting "create new intro" to "use existing intro"');
+        return {
+          ...opt,
+          segmentKey: existingIntroRegistry.segment_key,
+          segmentId: existingIntroRegistry.segment_id,
+          createNew: false,
+          note: `H1 in bestehendes Intro-Segment übernehmen (ID: ${existingIntroRegistry.segment_id})`
+        };
+      }
+      
+      // First try to find by key in actual segments (for non-intro segments)
+      if (opt.segmentKey && opt.segmentType !== 'intro') {
         const foundInContent = actualSegments.find((seg: any) => 
           seg.id === opt.segmentKey || 
           seg.segmentKey === opt.segmentKey
@@ -785,7 +810,7 @@ export const SEOEditor = ({
       }
       
       // If segment type matches, find first matching segment in actual content
-      if (!opt.segmentId && opt.segmentType) {
+      if (!opt.segmentId && opt.segmentType && opt.segmentType !== 'intro') {
         const typesToMatch = [opt.segmentType];
         if (opt.segmentType === 'product-hero' || opt.segmentType === 'product-hero-gallery') {
           typesToMatch.push('hero');
@@ -935,7 +960,152 @@ export const SEOEditor = ({
         pageContentCount: pageContent.length
       });
 
-      // Get page_segments entry first - we'll need it anyway
+      // SPECIAL HANDLING: Intro segments are stored DIRECTLY in page_content, NOT in page_segments
+      if (targetSegmentType === 'intro' && targetSegmentKey) {
+        console.log('[SEO Editor] Intro segment detected - using direct page_content update');
+        
+        // Find the intro content directly
+        const introContent = pageContent.find(item => item.section_key === targetSegmentKey);
+        
+        if (!introContent) {
+          toast.error(`Intro-Segment nicht gefunden: ${targetSegmentKey}`, { duration: 5000 });
+          setIsApplyingH1(false);
+          return;
+        }
+        
+        try {
+          const introData = JSON.parse(introContent.content_value);
+          console.log('[SEO Editor] Current Intro data:', introData);
+          
+          // Update the title to the new H1
+          introData.title = newH1;
+          introData.headingLevel = 'h1';
+          
+          // Save the updated intro content
+          const { error: updateError } = await supabase
+            .from('page_content')
+            .update({ 
+              content_value: JSON.stringify(introData),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', introContent.id);
+          
+          if (updateError) {
+            console.error('[SEO Editor] Failed to save intro:', updateError);
+            toast.error(`Speichern fehlgeschlagen: ${updateError.message}`, { duration: 5000 });
+            setIsApplyingH1(false);
+            return;
+          }
+          
+          console.log('[SEO Editor] Successfully saved Intro with updated H1');
+          
+          // Build target segment info for changelog
+          const targetSegmentInfo = {
+            id: targetSegmentId || 0,
+            key: targetSegmentKey,
+            type: 'intro',
+            label: 'Intro'
+          };
+
+          // Prepare changelog entry
+          let changeLogEntry: typeof h1ChangeLog = {
+            timestamp: new Date().toISOString(),
+            newH1,
+            targetSegment: {
+              id: typeof targetSegmentInfo.id === 'string' ? parseInt(targetSegmentInfo.id) || 0 : (targetSegmentInfo.id as number),
+              key: targetSegmentInfo.key,
+              type: targetSegmentInfo.type,
+              label: targetSegmentInfo.label
+            }
+          };
+
+          // If old H1 is in a different segment, convert it to H2
+          if (oldH1Source && oldH1Source.key !== targetSegmentKey) {
+            // Handle old H1 conversion (same logic as below)
+            if (isPageSegmentType(oldH1Source.type)) {
+              const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+              if (pageSegmentsEntry) {
+                try {
+                  const segments = JSON.parse(pageSegmentsEntry.content_value);
+                  const oldIdx = segments.findIndex((seg: any) => seg.id === oldH1Source.key || seg.id === oldH1Source.id);
+                  
+                  if (oldIdx !== -1) {
+                    if (segments[oldIdx].data.titleLine1) {
+                      segments[oldIdx].data.subtitle = segments[oldIdx].data.titleLine1 + (segments[oldIdx].data.titleLine2 ? ' ' + segments[oldIdx].data.titleLine2 : '');
+                      segments[oldIdx].data.titleLine1 = '';
+                      segments[oldIdx].data.titleLine2 = '';
+                    } else if (segments[oldIdx].data.title) {
+                      segments[oldIdx].data.subtitle = segments[oldIdx].data.title;
+                      segments[oldIdx].data.title = '';
+                    }
+                    
+                    if (segments[oldIdx].data.hasOwnProperty('useH1')) {
+                      segments[oldIdx].data.useH1 = false;
+                    }
+                    
+                    await supabase
+                      .from('page_content')
+                      .update({ 
+                        content_value: JSON.stringify(segments),
+                        updated_at: new Date().toISOString()
+                      })
+                      .eq('id', pageSegmentsEntry.id);
+                    
+                    changeLogEntry.oldH1 = {
+                      text: oldH1Text || '',
+                      segment: { key: oldH1Source.key, label: oldH1Source.label },
+                      action: 'Zu H2 konvertiert'
+                    };
+                  }
+                } catch (e) {
+                  console.error('[SEO Editor] Failed to update old segment in page_segments:', e);
+                }
+              }
+            }
+          }
+
+          // Set the changelog for display
+          setH1ChangeLog(changeLogEntry);
+          
+          toast.success(`H1 erfolgreich in Intro-Segment (ID: ${targetSegmentId}) gesetzt`);
+          
+          // Refresh page content
+          const { data: refreshedContent } = await supabase
+            .from('page_content')
+            .select('*')
+            .eq('page_slug', pageSlug)
+            .eq('language', editorLanguage);
+          
+          if (refreshedContent) {
+            setPageContent(refreshedContent);
+          }
+          
+          // Update the h1 in the SEO data
+          const updatedData = { ...data, h1: newH1 };
+          onChange(updatedData);
+          
+          // Clear selection after applying
+          setSelectedH1Suggestion(null);
+          
+          // Auto-save
+          console.log('[SEO Editor] Auto-saving SEO changes after Intro H1 update...');
+          setTimeout(() => {
+            onSave();
+            toast.success('H1 automatisch gespeichert', { duration: 3000 });
+          }, 100);
+          
+          setIsApplyingH1(false);
+          return;
+          
+        } catch (parseError) {
+          console.error('[SEO Editor] Failed to parse intro content:', parseError);
+          toast.error('Fehler beim Parsen des Intro-Segments', { duration: 5000 });
+          setIsApplyingH1(false);
+          return;
+        }
+      }
+
+      // For NON-INTRO segments: use page_segments JSON
       const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
       
       if (!pageSegmentsEntry) {
