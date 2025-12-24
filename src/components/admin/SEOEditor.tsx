@@ -965,44 +965,69 @@ export const SEOEditor = ({
         pageContentCount: pageContent.length
       });
 
-      // SPECIAL HANDLING: Intro segments are stored DIRECTLY in page_content, NOT in page_segments
-      if (targetSegmentType === 'intro' && targetSegmentKey) {
-        console.log('[SEO Editor] Intro segment detected - using direct page_content update');
+      // SPECIAL HANDLING: Intro segments are stored INSIDE page_segments array, NOT as separate section_key
+      if (targetSegmentType === 'intro' && targetSegmentId) {
+        console.log('[SEO Editor] Intro segment detected - searching in page_segments array');
         
-        // Find the intro content directly
-        const introContent = pageContent.find(item => item.section_key === targetSegmentKey);
+        // Load page_segments content
+        const { data: pageSegmentsRow, error: loadError } = await supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', editorLanguage)
+          .maybeSingle();
         
-        if (!introContent) {
-          toast.error(`Intro-Segment nicht gefunden: ${targetSegmentKey}`, { duration: 5000 });
+        if (loadError || !pageSegmentsRow) {
+          console.error('[SEO Editor] Failed to load page_segments:', loadError);
+          toast.error(`page_segments nicht gefunden für ${pageSlug}`, { duration: 5000 });
           setIsApplyingH1(false);
           return;
         }
         
         try {
-          const introData = JSON.parse(introContent.content_value);
-          console.log('[SEO Editor] Current Intro data:', introData);
+          const segments = JSON.parse(pageSegmentsRow.content_value);
+          console.log('[SEO Editor] Looking for intro segment with ID:', targetSegmentId);
           
-          // Update the title to the new H1
-          introData.title = newH1;
-          introData.headingLevel = 'h1';
+          // Find the intro segment by its ID in the page_segments array
+          const introIndex = segments.findIndex((seg: any) => 
+            String(seg.id) === String(targetSegmentId) && seg.type === 'intro'
+          );
           
-          // Save the updated intro content
+          if (introIndex === -1) {
+            console.error('[SEO Editor] Intro segment not found in page_segments. Available segments:', 
+              segments.map((s: any) => ({ id: s.id, type: s.type })));
+            toast.error(`Intro-Segment ${targetSegmentId} nicht in page_segments gefunden`, { duration: 5000 });
+            setIsApplyingH1(false);
+            return;
+          }
+          
+          // Update the intro segment in the array
+          segments[introIndex].data = {
+            ...segments[introIndex].data,
+            title: newH1,
+            headingLevel: 'h1'
+          };
+          
+          console.log('[SEO Editor] Updated intro segment:', segments[introIndex]);
+          
+          // Save the updated page_segments
           const { error: updateError } = await supabase
             .from('page_content')
             .update({ 
-              content_value: JSON.stringify(introData),
+              content_value: JSON.stringify(segments),
               updated_at: new Date().toISOString()
             })
-            .eq('id', introContent.id);
+            .eq('id', pageSegmentsRow.id);
           
           if (updateError) {
-            console.error('[SEO Editor] Failed to save intro:', updateError);
+            console.error('[SEO Editor] Failed to save page_segments:', updateError);
             toast.error(`Speichern fehlgeschlagen: ${updateError.message}`, { duration: 5000 });
             setIsApplyingH1(false);
             return;
           }
           
-          console.log('[SEO Editor] Successfully saved Intro with updated H1');
+          console.log('[SEO Editor] Successfully saved Intro with updated H1 in page_segments');
           
           // Build target segment info for changelog
           const targetSegmentInfo = {
@@ -2000,11 +2025,23 @@ export const SEOEditor = ({
         <TabsContent value="advanced" className="space-y-4">
           
           {/* Focus Keyword */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+          <div className={`p-5 border rounded-lg transition-colors ${
+            data.focusKeyword 
+              ? 'bg-green-500/5 border-green-500/30' 
+              : 'bg-zinc-800/50 border-zinc-700'
+          }`}>
             <div className="flex items-center justify-between mb-3">
-              <Label htmlFor="focus-keyword" className="text-base font-semibold text-foreground">
-                Focus Keyword (FKW)
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="focus-keyword" className="text-base font-semibold text-foreground">
+                  Focus Keyword (FKW)
+                </Label>
+                {data.focusKeyword && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
               </div>
@@ -2016,7 +2053,11 @@ export const SEOEditor = ({
                 value={data.focusKeyword || ''}
                 onChange={(e) => handleChange('focusKeyword', e.target.value)}
                 placeholder="e.g. camera testing software"
-                className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 flex-1"
+                className={`h-11 flex-1 ${
+                  data.focusKeyword 
+                    ? 'bg-green-500/10 border-green-500/30 focus:border-green-500 focus:ring-green-500/20' 
+                    : 'bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20'
+                }`}
               />
               <Button
                 onClick={handleGenerateFocusKeywords}
