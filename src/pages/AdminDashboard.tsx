@@ -362,7 +362,10 @@ const AdminDashboard = () => {
     ogTitle: '',
     ogDescription: '',
     ogImage: '',
-    twitterCard: 'summary_large_image'
+    twitterCard: 'summary_large_image',
+    h1: '',
+    h1Locked: false,
+    introduction: ''
   });
   const [isCreateCMSDialogOpen, setIsCreateCMSDialogOpen] = useState(false);
   const [isCopyPageDialogOpen, setIsCopyPageDialogOpen] = useState(false);
@@ -602,7 +605,9 @@ const AdminDashboard = () => {
         ogDescription: '',
         ogImage: '',
         twitterCard: 'summary_large_image',
-        h1Locked: false
+        h1: '',
+        h1Locked: false,
+        introduction: ''
       });
       
       // Comprehensive error handler for page loading
