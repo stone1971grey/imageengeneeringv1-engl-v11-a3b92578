@@ -38,3 +38,6 @@ verify_jwt = true
 
 [functions.generate-h1-headline]
 verify_jwt = true
+
+[functions.generate-intro-text]
+verify_jwt = true
