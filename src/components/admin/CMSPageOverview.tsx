@@ -147,14 +147,27 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
       
-      // Find the most recently edited page
-      const { data: latestEditData } = await supabase
+      // Find the second most recently edited page (not the current one being viewed)
+      // We get the top 2 and use the second one, as the first is likely the page currently open
+      const { data: latestEditDataList } = await supabase
         .from("page_content")
         .select("page_slug, updated_at")
         .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(10);
       
+      // Get unique page slugs from recent edits
+      const uniqueRecentEdits: { page_slug: string; updated_at: string }[] = [];
+      const seenSlugs = new Set<string>();
+      for (const edit of latestEditDataList || []) {
+        if (!seenSlugs.has(edit.page_slug)) {
+          seenSlugs.add(edit.page_slug);
+          uniqueRecentEdits.push(edit);
+        }
+        if (uniqueRecentEdits.length >= 2) break;
+      }
+      
+      // Use the second unique page (the one edited before the current)
+      const latestEditData = uniqueRecentEdits.length >= 2 ? uniqueRecentEdits[1] : uniqueRecentEdits[0] || null;
       const latestEditedSlug = latestEditData?.page_slug || null;
       const latestEditedTime = latestEditData?.updated_at || null;
 
