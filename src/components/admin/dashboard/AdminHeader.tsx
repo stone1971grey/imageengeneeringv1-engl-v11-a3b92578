@@ -396,7 +396,7 @@ export const AdminHeader = ({
               title="Page Actions" 
               icon={Layers} 
               colorClass="bg-sky-500"
-              defaultOpen={true}
+              defaultOpen={false}
             >
               <Button
                 variant="decision"
