@@ -918,6 +918,25 @@ const AdminDashboard = () => {
       }
     }
 
+    // CRITICAL FIX: Always load seo_settings from 'en' as fallback if not in current language data
+    // SEO settings are language-independent and should always be available
+    const hasSeoInCurrentLang = data?.some(item => item.section_key === 'seo_settings');
+    if (!hasSeoInCurrentLang) {
+      console.log('[AdminDashboard] SEO settings not found in current language, loading from EN fallback');
+      const { data: seoFallback } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", querySlug)
+        .eq("section_key", "seo_settings")
+        .eq("language", "en")
+        .maybeSingle();
+      
+      if (seoFallback) {
+        data = [...(data || []), seoFallback];
+        console.log('[AdminDashboard] SEO settings loaded from EN fallback:', seoFallback.content_value?.substring(0, 100));
+      }
+    }
+
     if (error) {
       toast.error("Error loading content");
       return;

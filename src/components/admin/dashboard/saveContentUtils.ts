@@ -215,19 +215,24 @@ export async function saveFooterSection(
 }
 
 // Save SEO settings
+// CRITICAL: SEO settings are language-independent, so we always save to 'en' as the master
+// This ensures focusKeyword, h1, etc. are never lost when switching languages
 export async function saveSEOSettings(
   context: SaveContext,
   seoData: any
 ): Promise<boolean> {
   try {
+    const pageSlug = context.resolvedPageSlug || context.selectedPage;
+    
+    // Always save to 'en' as the master SEO settings (language-independent)
     await supabase
       .from("page_content")
       .upsert({
-        page_slug: context.resolvedPageSlug || context.selectedPage,
+        page_slug: pageSlug,
         section_key: "seo_settings",
         content_type: "json",
         content_value: JSON.stringify(seoData),
-        language: context.editorLanguage,
+        language: 'en', // Always save as 'en' - SEO is language-independent
         updated_at: new Date().toISOString(),
         updated_by: context.userId
       }, { onConflict: 'page_slug,section_key,language' });
