@@ -418,25 +418,38 @@ export async function deleteSegment(
 
     // Clean up file_segment_mappings - remove this segment ID from any image mappings
     try {
-      // Find all mappings that include this segment ID
+      // Search for both string and numeric versions of the segment ID
+      const segmentIdStr = String(segmentId);
+      const segmentIdNum = parseInt(segmentId, 10);
+      
+      // Find all mappings that include this segment ID (as string)
       const { data: mappingsToClean } = await supabase
         .from("file_segment_mappings")
-        .select("id, segment_ids")
-        .contains("segment_ids", [segmentId]);
+        .select("id, segment_ids");
 
       if (mappingsToClean && mappingsToClean.length > 0) {
-        for (const mapping of mappingsToClean) {
-          const updatedSegmentIds = (mapping.segment_ids as string[]).filter(id => id !== segmentId);
+        const affectedMappings = mappingsToClean.filter(mapping => {
+          const ids = mapping.segment_ids as (string | number)[];
+          return ids.some(id => String(id) === segmentIdStr || id === segmentIdNum);
+        });
+        
+        for (const mapping of affectedMappings) {
+          const updatedSegmentIds = (mapping.segment_ids as (string | number)[])
+            .filter(id => String(id) !== segmentIdStr && id !== segmentIdNum)
+            .map(id => String(id)); // Ensure all IDs are strings
           
           await supabase
             .from("file_segment_mappings")
-            .update({ 
+            .update({
               segment_ids: updatedSegmentIds,
               updated_at: new Date().toISOString()
             })
             .eq("id", mapping.id);
         }
-        console.log(`[deleteSegment] Cleaned up ${mappingsToClean.length} file_segment_mappings for segment ${segmentId}`);
+        
+        if (affectedMappings.length > 0) {
+          console.log(`[deleteSegment] Cleaned up ${affectedMappings.length} file_segment_mappings for segment ${segmentId}`);
+        }
       }
     } catch (mappingError) {
       console.error("[deleteSegment] Error cleaning up file_segment_mappings:", mappingError);
