@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 // User and Session types are now handled by useAdminAuth hook
-import { Save, Plus, Trash2, GripVertical, Eye, Copy, PlayCircle, Upload, FileText, Zap, Shield, Monitor, Camera, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, History as HistoryIcon } from "lucide-react";
+import { Save, Plus, Trash2, GripVertical, Eye, Copy, PlayCircle, Upload, FileText, Zap, Shield, Monitor, Camera, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette, History as HistoryIcon, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -1478,7 +1478,15 @@ const AdminDashboard = () => {
 
         {/* SEO Editor - Conditional Rendering */}
         {isSEOEditorOpen && selectedPage && (
-          <Card className="mb-8">
+          <Card className="mb-8 relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
+              onClick={() => setIsSEOEditorOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
             <CardHeader>
               <CardTitle>SEO Settings for {selectedPage}</CardTitle>
               <CardDescription className="text-xl text-white">
@@ -1500,14 +1508,30 @@ const AdminDashboard = () => {
 
         {/* Glossary Manager - Conditional Rendering */}
         {isGlossaryOpen && (
-          <div className="mb-8">
+          <div className="mb-8 relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
+              onClick={() => setIsGlossaryOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
             <GlossaryManager />
           </div>
         )}
 
         {/* Content Automation - Conditional Rendering */}
         {isContentAutomationOpen && selectedPage && (
-          <div className="mb-8">
+          <div className="mb-8 relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
+              onClick={() => setIsContentAutomationOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
             <ContentAutomation
               pageSlug={resolvedPageSlug || selectedPage}
               language={editorLanguage}
