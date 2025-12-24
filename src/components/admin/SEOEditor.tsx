@@ -324,23 +324,27 @@ export const SEOEditor = ({
     let h1Source: { type: string; key: string; id: string | number; label: string } | null = null;
     
     // 1. Check Intro segment first (highest priority)
+    // IMPORTANT: Intro segments are stored INSIDE page_segments JSON array, NOT as separate section_keys
     if (introRegistry && !introRegistry.deleted) {
-      const introContent = pageContent.find(item => item.section_key === introRegistry.segment_key);
-      if (introContent) {
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry) {
         try {
-          const introData = JSON.parse(introContent.content_value);
-          if (introData.title) {
-            autoH1 = introData.title;
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          const introSegment = segments.find((seg: any) => 
+            seg.type === 'intro' && String(seg.id) === String(introRegistry.segment_id)
+          );
+          if (introSegment?.data?.title) {
+            autoH1 = introSegment.data.title;
             h1Source = {
               type: 'intro',
               key: introRegistry.segment_key,
               id: introRegistry.segment_id,
               label: 'Intro'
             };
-            console.log('[SEO Editor] H1 from Intro title:', autoH1);
+            console.log('[SEO Editor] H1 from Intro title (in page_segments):', autoH1);
           }
         } catch (e) {
-          console.error('[SEO Editor] Failed to parse intro for H1:', e);
+          console.error('[SEO Editor] Failed to parse page_segments for intro H1:', e);
         }
       }
     }
@@ -487,24 +491,32 @@ export const SEOEditor = ({
     if (activeSegmentType && activeSegmentKey) {
       if (activeSegmentType === 'intro') {
         // For intro: ONLY use description (no title) - highest priority
-        // Intro segment stores data as JSON in a single content field
-        const introContent = pageContent.find(item => item.section_key === activeSegmentKey);
+        // IMPORTANT: Intro segments are stored INSIDE page_segments JSON array, NOT as separate section_keys
+        const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
         
-        console.log('[SEO Editor] Looking for intro content with key:', activeSegmentKey);
-        console.log('[SEO Editor] Found intro content:', introContent);
+        console.log('[SEO Editor] Looking for intro content in page_segments');
         
-        if (introContent) {
+        if (pageSegmentsEntry) {
           try {
-            const introData = JSON.parse(introContent.content_value);
-            console.log('[SEO Editor] Parsed intro data:', introData);
-            introTitle = ''; // Never use title for Intro segment
-            introDescription = introData.description || '';
-            console.log('[SEO Editor] Extracted intro description:', introDescription);
+            const segments = JSON.parse(pageSegmentsEntry.content_value);
+            // Find the intro segment by ID from the registry
+            const introSegmentId = introRegistry?.segment_id;
+            const introSegment = segments.find((seg: any) => 
+              seg.type === 'intro' && String(seg.id) === String(introSegmentId)
+            );
+            
+            console.log('[SEO Editor] Found intro segment in page_segments:', introSegment);
+            
+            if (introSegment?.data) {
+              introTitle = ''; // Never use title for Intro segment in Introduction display
+              introDescription = introSegment.data.description || '';
+              console.log('[SEO Editor] Extracted intro description from page_segments:', introDescription);
+            }
           } catch (e) {
-            console.error('[SEO Editor] Failed to parse intro content:', e);
+            console.error('[SEO Editor] Failed to parse page_segments for intro:', e);
           }
         } else {
-          console.warn('[SEO Editor] No intro content found for key:', activeSegmentKey);
+          console.warn('[SEO Editor] No page_segments found for page:', pageSlug);
         }
       } else if (activeSegmentType === 'tiles') {
         // For tiles, look for applications_title/description in page_content
