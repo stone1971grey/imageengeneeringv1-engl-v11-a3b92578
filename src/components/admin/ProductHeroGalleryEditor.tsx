@@ -1042,21 +1042,21 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   </Button>
                 )}
 
-                {/* Image Metadata Display */}
-                {image.metadata && (
+                {/* Image Metadata Display - Always show when image URL exists */}
+                {image.imageUrl && (
                   <div className="bg-gray-900 rounded-lg p-3 space-y-2">
                     <h5 className="font-medium text-sm text-white">Image Information</h5>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
                         <span className="font-medium text-gray-400">Original Name:</span>
-                        <p className="text-white truncate" title={image.metadata.originalFileName}>
-                          {image.metadata.originalFileName}
+                        <p className="text-white truncate" title={image.metadata?.originalFileName || image.imageUrl.split('/').pop() || ''}>
+                          {image.metadata?.originalFileName || image.imageUrl.split('/').pop() || '—'}
                         </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-400">Dimensions:</span>
                         <p className="text-white">
-                          {typeof image.metadata.width === 'number' && typeof image.metadata.height === 'number'
+                          {typeof image.metadata?.width === 'number' && typeof image.metadata?.height === 'number' && image.metadata.width > 0
                             ? `${image.metadata.width} × ${image.metadata.height} px`
                             : '—'}
                         </p>
@@ -1064,19 +1064,24 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                       <div>
                         <span className="font-medium text-gray-400">File Size:</span>
                         <p className="text-white">
-                          {typeof image.metadata.fileSizeKB === 'number'
+                          {typeof image.metadata?.fileSizeKB === 'number' && image.metadata.fileSizeKB > 0
                             ? formatFileSize(image.metadata.fileSizeKB)
                             : '—'}
                         </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-400">Format:</span>
-                        <p className="text-white">{image.metadata.format || '—'}</p>
+                        <p className="text-white">
+                          {image.metadata?.format || (() => {
+                            const ext = image.imageUrl.split('.').pop()?.toUpperCase();
+                            return ext && ['PNG', 'JPG', 'JPEG', 'WEBP', 'GIF', 'SVG'].includes(ext) ? ext : '—';
+                          })()}
+                        </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-400">Uploaded:</span>
                         <p className="text-white">
-                          {image.metadata.uploadDate
+                          {image.metadata?.uploadDate
                             ? formatUploadDate(image.metadata.uploadDate)
                             : '—'}
                         </p>
@@ -1084,7 +1089,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                       <div>
                         <span className="font-medium text-gray-400">Storage URL:</span>
                         {(() => {
-                          const storageUrl = image.metadata.url || image.imageUrl;
+                          const storageUrl = image.metadata?.url || image.imageUrl;
                           if (!storageUrl) {
                             return <p className="text-white text-xs">—</p>;
                           }
@@ -1181,15 +1186,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                     value={image.title}
                     onChange={(e) => handleImageChange(index, 'title', e.target.value)}
                     placeholder="Image title"
-                  />
-                </div>
-
-                <div>
-                  <Label>Image Description (optional)</Label>
-                  <Input
-                    value={image.description}
-                    onChange={(e) => handleImageChange(index, 'description', e.target.value)}
-                    placeholder="Image description"
                   />
                 </div>
               </div>
