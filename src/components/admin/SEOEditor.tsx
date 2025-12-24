@@ -132,6 +132,19 @@ export const SEOEditor = ({
   const [isRedirectManagerOpen, setIsRedirectManagerOpen] = useState(false);
   const [pageRedirects, setPageRedirects] = useState<Array<{ id: string; source_url: string; target_url: string; redirect_type: number; notes: string | null }>>([]);
   
+  // Smart Intro state
+  const [isGeneratingIntro, setIsGeneratingIntro] = useState(false);
+  const [generatedIntro, setGeneratedIntro] = useState<{
+    introText: string;
+    wordCount: number;
+    keyphrasePosition: string;
+    keyphraseCount: number;
+    sentenceCount: number;
+    reason: string;
+  } | null>(null);
+  const [showGeneratedIntro, setShowGeneratedIntro] = useState(false);
+  const [isApplyingIntro, setIsApplyingIntro] = useState(false);
+  
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
@@ -730,6 +743,205 @@ export const SEOEditor = ({
       toast.error('Unerwarteter Fehler beim Generieren der H1');
     } finally {
       setIsGeneratingH1(false);
+    }
+  };
+
+  // Generate Smart Intro Text using AI
+  const handleGenerateIntroText = async () => {
+    setIsGeneratingIntro(true);
+    setGeneratedIntro(null);
+    setShowGeneratedIntro(false);
+
+    try {
+      // Collect page content for context
+      let segmentContent = '';
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          // Extract text content from segments for context
+          segmentContent = segments.map((seg: any) => {
+            const data = seg.data || {};
+            return [
+              data.title, data.titleLine1, data.titleLine2,
+              data.subtitle, data.description, data.text
+            ].filter(Boolean).join(' ');
+          }).filter(Boolean).join(' ').slice(0, 1000); // Limit context
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse page_segments for context:', e);
+        }
+      }
+
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        h1: data.h1,
+        currentIntro: introductionText.description || '',
+        slug: data.slug,
+        pageSlug: pageSlug,
+        segmentContent
+      };
+
+      console.log('[SEO Editor] Generating intro text with data:', pageData);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-intro-text', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword,
+          language: editorLanguage
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating intro:', error);
+        toast.error('Fehler beim Generieren des Intros: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.introText) {
+        console.log('[SEO Editor] Generated intro:', result);
+        setGeneratedIntro(result);
+        setShowGeneratedIntro(true);
+        toast.success('Intro-Text erfolgreich generiert');
+      } else {
+        toast.error('Kein Intro-Text generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unerwarteter Fehler beim Generieren des Intros');
+    } finally {
+      setIsGeneratingIntro(false);
+    }
+  };
+
+  // Apply generated intro to the Intro segment
+  const handleApplyIntroToSegment = async () => {
+    if (!generatedIntro) {
+      toast.error('Kein generierter Intro-Text vorhanden.');
+      return;
+    }
+
+    if (isApplyingIntro) {
+      return;
+    }
+
+    setIsApplyingIntro(true);
+
+    try {
+      // Find the intro segment
+      const existingIntroRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro' && !seg.deleted);
+      
+      if (!existingIntroRegistry) {
+        toast.error('Kein Intro-Segment gefunden. Bitte zuerst ein Intro-Segment erstellen.', { duration: 5000 });
+        setIsApplyingIntro(false);
+        return;
+      }
+
+      // Load page_segments content
+      const { data: pageSegmentsRow, error: loadError } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', editorLanguage)
+        .maybeSingle();
+
+      if (loadError || !pageSegmentsRow) {
+        console.error('[SEO Editor] Failed to load page_segments:', loadError);
+        toast.error('page_segments nicht gefunden', { duration: 5000 });
+        setIsApplyingIntro(false);
+        return;
+      }
+
+      try {
+        const segments = JSON.parse(pageSegmentsRow.content_value);
+        const introSegmentId = existingIntroRegistry.segment_id;
+        
+        console.log('[SEO Editor] Looking for intro segment with ID:', introSegmentId);
+        
+        // Find the intro segment by its ID
+        const introIndex = segments.findIndex((seg: any) => 
+          String(seg.id) === String(introSegmentId) && seg.type === 'intro'
+        );
+        
+        if (introIndex === -1) {
+          console.error('[SEO Editor] Intro segment not found in page_segments');
+          toast.error('Intro-Segment nicht in page_segments gefunden', { duration: 5000 });
+          setIsApplyingIntro(false);
+          return;
+        }
+        
+        // Update the intro segment description
+        segments[introIndex].data = {
+          ...segments[introIndex].data,
+          description: generatedIntro.introText
+        };
+        
+        console.log('[SEO Editor] Updated intro segment with new description:', segments[introIndex]);
+        
+        // Save the updated page_segments
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({ 
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsRow.id);
+        
+        if (updateError) {
+          console.error('[SEO Editor] Failed to save page_segments:', updateError);
+          toast.error(`Speichern fehlgeschlagen: ${updateError.message}`, { duration: 5000 });
+          setIsApplyingIntro(false);
+          return;
+        }
+        
+        console.log('[SEO Editor] Successfully saved Intro with new description');
+        
+        toast.success(`Intro-Text erfolgreich in Segment ${introSegmentId} übernommen`);
+        
+        // Refresh page content
+        const { data: refreshedContent } = await supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('language', editorLanguage);
+        
+        if (refreshedContent) {
+          setPageContent(refreshedContent);
+        }
+        
+        // Update the introduction text display
+        setIntroductionText(prev => ({
+          ...prev,
+          description: generatedIntro.introText
+        }));
+        
+        // Clear selection after applying
+        setShowGeneratedIntro(false);
+        setGeneratedIntro(null);
+        
+        // Auto-save SEO changes
+        console.log('[SEO Editor] Auto-saving SEO changes after Intro update...');
+        setTimeout(() => {
+          onSave();
+          toast.success('Intro automatisch gespeichert', { duration: 3000 });
+        }, 100);
+        
+      } catch (parseError) {
+        console.error('[SEO Editor] Failed to parse page_segments:', parseError);
+        toast.error('Fehler beim Parsen der page_segments', { duration: 5000 });
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Error applying intro:', error);
+      toast.error('Fehler beim Anwenden des Intros');
+    } finally {
+      setIsApplyingIntro(false);
     }
   };
 
@@ -2512,7 +2724,9 @@ export const SEOEditor = ({
                 )}
               </div>
             </div>
-            <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md">
+            
+            {/* Current Intro Display */}
+            <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md mb-4">
               {introductionText.title && (
                 <div className="mb-3">
                   <p className="text-xs font-medium text-muted-foreground mb-1">Title</p>
@@ -2521,7 +2735,19 @@ export const SEOEditor = ({
               )}
               {introductionText.description && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Description</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-medium text-muted-foreground">Description</p>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                      introductionText.description.trim().split(/\s+/).length >= 40 && 
+                      introductionText.description.trim().split(/\s+/).length <= 80
+                        ? 'bg-green-500/20 text-green-400'
+                        : introductionText.description.trim().split(/\s+/).length > 80
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {introductionText.description.trim().split(/\s+/).length} Wörter
+                    </span>
+                  </div>
                   <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
                 </div>
               )}
@@ -2531,8 +2757,101 @@ export const SEOEditor = ({
                 </p>
               )}
             </div>
+
+            {/* Generated Intro Display */}
+            {showGeneratedIntro && generatedIntro && (
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium text-green-400">✓ Generierter Intro-Text</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowGeneratedIntro(false);
+                      setGeneratedIntro(null);
+                    }}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <div className="mb-3">
+                  <p className="text-base text-foreground whitespace-pre-wrap leading-relaxed">
+                    {data.focusKeyword 
+                      ? highlightKeyword(generatedIntro.introText, data.focusKeyword)
+                      : generatedIntro.introText
+                    }
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <Badge variant="outline" className={`text-xs ${
+                    generatedIntro.wordCount >= 40 && generatedIntro.wordCount <= 80
+                      ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                      : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                  }`}>
+                    {generatedIntro.wordCount} Wörter
+                  </Badge>
+                  <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                    {generatedIntro.sentenceCount} Sätze
+                  </Badge>
+                  {data.focusKeyword && (
+                    <Badge variant="outline" className={`text-xs ${
+                      generatedIntro.keyphraseCount === 1
+                        ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                        : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                    }`}>
+                      FKW: {generatedIntro.keyphrasePosition}
+                    </Badge>
+                  )}
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-4">{generatedIntro.reason}</p>
+                
+                <Button
+                  onClick={handleApplyIntroToSegment}
+                  disabled={isApplyingIntro}
+                  className="w-full h-10 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isApplyingIntro ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Wird übernommen...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Intro in Segment übernehmen
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+            
+            {/* Smart Intro Button */}
+            <div className="flex justify-end">
+              <Button
+                onClick={handleGenerateIntroText}
+                disabled={isGeneratingIntro}
+                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isGeneratingIntro ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generiere...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart Intro
+                  </>
+                )}
+              </Button>
+            </div>
+            
             <p className="text-sm text-muted-foreground mt-3">
-              Auto-detected from first content segment
+              Optimal: 40-80 Wörter, Focus Keyphrase im ersten Satz (erste 10-15 Wörter)
             </p>
           </div>
 
