@@ -719,21 +719,21 @@ const DynamicCMSPage = () => {
       case "hero":
         // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
         // Meta Navigation (falls vorhanden) ist ~60px hoch
-        // Dazu kommt der gewünschte Abstand: small/medium/large/xlarge
+        // Dazu kommt der gewünschte Abstand: small/medium/large/xlarge (50px weniger als zuvor)
         const heroTopSpacing = segment.data?.hero_top_spacing || 'medium';
         const topSpacingClass = hasMetaNavigation
           ? (
-              heroTopSpacing === 'small' ? 'pt-[180px]' :      // 90px Nav + 60px MetaNav + 30px
-              heroTopSpacing === 'large' ? 'pt-[240px]' :      // 90px Nav + 60px MetaNav + 90px
-              heroTopSpacing === 'xlarge' ? 'pt-[270px]' :     // 90px Nav + 60px MetaNav + 120px
-              'pt-[210px]'
-            )                                                   // medium default: 90 + 60 + 60
+              heroTopSpacing === 'small' ? 'pt-[130px]' :      // 180 - 50 = 130px
+              heroTopSpacing === 'large' ? 'pt-[190px]' :      // 240 - 50 = 190px
+              heroTopSpacing === 'xlarge' ? 'pt-[220px]' :     // 270 - 50 = 220px
+              'pt-[160px]'
+            )                                                   // medium: 210 - 50 = 160px
           : (
-              heroTopSpacing === 'small' ? 'pt-[120px]' :      // 90px Nav + 30px = 120px
-              heroTopSpacing === 'large' ? 'pt-[160px]' :      // 90px Nav + 70px = 160px
-              heroTopSpacing === 'xlarge' ? 'pt-[180px]' :     // 90px Nav + 90px = 180px
-              'pt-[140px]'
-            );                                                  // 90px Nav + 50px = 140px (medium default)
+              heroTopSpacing === 'small' ? 'pt-[70px]' :       // 120 - 50 = 70px
+              heroTopSpacing === 'large' ? 'pt-[110px]' :      // 160 - 50 = 110px
+              heroTopSpacing === 'xlarge' ? 'pt-[130px]' :     // 180 - 50 = 130px
+              'pt-[90px]'
+            );                                                  // medium: 140 - 50 = 90px
         
         return (
           <section
