@@ -97,9 +97,10 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
   // Check if H1 is defined in an Intro segment
   const checkExternalH1 = async () => {
+    console.log('[PHG Editor] checkExternalH1 called for pageSlug:', pageSlug, 'language:', language);
     try {
       // Check segment_registry for intro segments
-      const { data: registryData } = await supabase
+      const { data: registryData, error: registryError } = await supabase
         .from('segment_registry')
         .select('*')
         .eq('page_slug', pageSlug)
@@ -107,11 +108,14 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         .eq('deleted', false)
         .limit(1);
       
+      console.log('[PHG Editor] Registry query result:', { registryData, registryError });
+      
       if (registryData && registryData.length > 0) {
         const introRegistry = registryData[0];
+        console.log('[PHG Editor] Found intro in registry:', introRegistry);
         
         // Intro content is stored inside page_segments, not as separate section_key
-        const { data: pageSegmentsRow } = await supabase
+        const { data: pageSegmentsRow, error: contentError } = await supabase
           .from('page_content')
           .select('content_value')
           .eq('page_slug', pageSlug)
@@ -119,27 +123,44 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           .eq('language', language)
           .maybeSingle();
         
+        console.log('[PHG Editor] page_segments query result:', { 
+          hasData: !!pageSegmentsRow, 
+          contentError,
+          contentLength: pageSegmentsRow?.content_value?.length 
+        });
+        
         if (pageSegmentsRow?.content_value) {
           try {
             const segments = JSON.parse(pageSegmentsRow.content_value);
+            console.log('[PHG Editor] Parsed segments:', segments.map((s: any) => ({ id: s.id, type: s.type })));
+            
             // Find the intro segment by its ID
             const introSegment = segments.find((seg: any) => 
               String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
             );
             
+            console.log('[PHG Editor] Looking for segment_id:', introRegistry.segment_id, 'Found:', introSegment);
+            
             if (introSegment?.data?.title && introSegment.data.headingLevel === 'h1') {
+              console.log('[PHG Editor] ✅ Found external H1 in Intro segment:', introRegistry.segment_id);
               setDetectedH1Source({
                 type: 'intro',
                 key: introRegistry.segment_key,
                 label: `Intro (ID: ${introRegistry.segment_id})`
               });
-              console.log('[PHG Editor] Found external H1 in Intro segment:', introRegistry.segment_id);
               return;
+            } else {
+              console.log('[PHG Editor] Intro segment found but no H1:', {
+                hasTitle: !!introSegment?.data?.title,
+                headingLevel: introSegment?.data?.headingLevel
+              });
             }
           } catch (e) {
             console.error('[PHG Editor] Failed to parse page_segments:', e);
           }
         }
+      } else {
+        console.log('[PHG Editor] No intro segment found in registry for:', pageSlug);
       }
       
       // No external H1 found
