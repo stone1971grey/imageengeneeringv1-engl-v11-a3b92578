@@ -66,14 +66,14 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
 
   // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
   // Meta Navigation (wenn vorhanden) ist ~60px hoch
-  // Reduziertes Top-Spacing: small = 40px, medium = 60px, large = 80px, extra-large = 100px
+  // Top-Spacing: small = 40px, medium = 60px, large = 80px, extra-large = 100px (jeweils 50px weniger als Gallery)
   const getTopPaddingClass = () => {
     switch (topSpacing) {
-      case 'small': return hasMetaNavigation ? 'pt-[100px]' : 'pt-[40px]';         // 80px weniger
-      case 'medium': return hasMetaNavigation ? 'pt-[120px]' : 'pt-[60px]';        // 80px weniger
-      case 'large': return hasMetaNavigation ? 'pt-[140px]' : 'pt-[80px]';         // 80px weniger
-      case 'extra-large': return hasMetaNavigation ? 'pt-[160px]' : 'pt-[100px]';  // 80px weniger
-      default: return hasMetaNavigation ? 'pt-[120px]' : 'pt-[60px]';              // medium als default
+      case 'small': return hasMetaNavigation ? 'pt-[140px]' : 'pt-[40px]';
+      case 'medium': return hasMetaNavigation ? 'pt-[160px]' : 'pt-[60px]';
+      case 'large': return hasMetaNavigation ? 'pt-[180px]' : 'pt-[80px]';
+      case 'extra-large': return hasMetaNavigation ? 'pt-[200px]' : 'pt-[100px]';
+      default: return hasMetaNavigation ? 'pt-[160px]' : 'pt-[60px]';
     }
   };
 
