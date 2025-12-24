@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope, Link2, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope, Link2, ArrowUp, ArrowDown, ArrowUpDown, History } from "lucide-react";
 import { ShortcutEditor, ShortcutBadge } from "./ShortcutEditor";
 import {
   DndContext,
@@ -77,6 +77,7 @@ export const CMSPageOverview = () => {
   const [sortColumn, setSortColumn] = useState<'page_id' | 'category' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [hasChildren, setHasChildren] = useState(false);
+  const [latestEditedPage, setLatestEditedPage] = useState<{ page: CMSPage; updatedAt: string } | null>(null);
 
   // Load saved search query from localStorage on mount
   useEffect(() => {
@@ -142,9 +143,20 @@ export const CMSPageOverview = () => {
       // Load languages per page from page_content
       const { data: contentData, error: contentError } = await supabase
         .from("page_content")
-        .select("page_slug, language");
+        .select("page_slug, language, updated_at");
 
       if (contentError) throw contentError;
+      
+      // Find the most recently edited page
+      const { data: latestEditData } = await supabase
+        .from("page_content")
+        .select("page_slug, updated_at")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      const latestEditedSlug = latestEditData?.page_slug || null;
+      const latestEditedTime = latestEditData?.updated_at || null;
 
       // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
       const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
@@ -195,6 +207,18 @@ export const CMSPageOverview = () => {
 
       setPages(enrichedPages);
       setFilteredPages(enrichedPages);
+      
+      // Set latest edited page info
+      if (latestEditedSlug) {
+        const latestPage = enrichedPages.find(p => p.page_slug === latestEditedSlug);
+        if (latestPage && latestEditedTime) {
+          setLatestEditedPage({ page: latestPage, updatedAt: latestEditedTime });
+        } else {
+          setLatestEditedPage(null);
+        }
+      } else {
+        setLatestEditedPage(null);
+      }
     } catch (error) {
       console.error("Error loading CMS pages:", error);
       toast.error("Failed to load pages");
@@ -1031,6 +1055,40 @@ export const CMSPageOverview = () => {
             <strong className="text-white">Drag & Drop:</strong> Obere Hälfte = Als Geschwister | Untere Hälfte = Als Kind
           </span>
         </div>
+
+        {/* Latest Edited Page - Yellow Highlighted */}
+        {latestEditedPage && (
+          <div className="mb-4 p-3 bg-[#f9dc24]/10 border-2 border-[#f9dc24] rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <History className="h-4 w-4 text-[#f9dc24]" />
+                  <span className="text-xs font-semibold text-[#f9dc24] uppercase tracking-wide">Latest Edited</span>
+                </div>
+                <div className="h-4 w-px bg-gray-600" />
+                <span className="text-sm font-mono text-gray-400">ID: {latestEditedPage.page.page_id}</span>
+                <span className="text-sm font-bold text-white">{latestEditedPage.page.page_title}</span>
+                <span className="text-xs text-gray-500 truncate max-w-[200px]">/{latestEditedPage.page.page_slug}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">
+                  {new Date(latestEditedPage.updatedAt).toLocaleString('de-DE', { 
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                  })}
+                </span>
+                <Link
+                  to={getEditUrl(latestEditedPage.page.page_slug)}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-1 px-2 py-1 bg-[#f9dc24] text-black text-xs font-semibold rounded hover:bg-[#f9dc24]/80 transition-colors"
+                >
+                  <Edit className="h-3 w-3" />
+                  Edit
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-4">
