@@ -157,7 +157,6 @@ export const SEOEditor = ({
   const [isApplyingIntro, setIsApplyingIntro] = useState(false);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
-  const [healthCheckView, setHealthCheckView] = useState<'basic' | 'advanced'>('basic');
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
     const saved = localStorage.getItem('seo-healthcheck-open');
     return saved !== null ? saved === 'true' : false; // Default: collapsed
@@ -1797,9 +1796,12 @@ export const SEOEditor = ({
 
   // Calculate basic and advanced check counts
   const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
-  const advancedChecks = [checks.keywordInTitle, checks.keywordInDescription, checks.keywordInSlug, checks.keywordInH1, checks.keywordInIntroduction];
+  // Advanced includes focusKeyword defined + all the FKW position checks
+  const advancedChecks = [!!data.focusKeyword, checks.keywordInTitle, checks.keywordInDescription, checks.keywordInSlug, checks.keywordInH1, checks.keywordInIntroduction];
   const basicPassedCount = basicChecks.filter(Boolean).length;
   const advancedPassedCount = advancedChecks.filter(Boolean).length;
+  const totalPassedCount = basicPassedCount + advancedPassedCount;
+  const totalChecks = basicChecks.length + advancedChecks.length; // 5 + 6 = 11
 
   return (
     <div className="space-y-6">
@@ -1815,14 +1817,14 @@ export const SEOEditor = ({
               <div className="flex items-center gap-3">
                 <div className={`h-3 w-3 rounded-full ${
                   isAdvancedMode
-                    ? (Object.values(checks).filter(Boolean).length >= 8 ? 'bg-green-500' : 
-                       Object.values(checks).filter(Boolean).length >= 5 ? 'bg-yellow-500' : 'bg-red-500')
+                    ? (totalPassedCount >= 9 ? 'bg-green-500' : 
+                       totalPassedCount >= 6 ? 'bg-yellow-500' : 'bg-red-500')
                     : (basicPassedCount >= 4 ? 'bg-green-500' : 
                        basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
                 }`} />
                 <span className="text-sm font-medium text-muted-foreground">
                   {isAdvancedMode 
-                    ? `${Object.values(checks).filter(Boolean).length}/10 Checks`
+                    ? `${totalPassedCount}/${totalChecks} Checks`
                     : `${basicPassedCount}/5 Checks`
                   }
                 </span>
@@ -1835,36 +1837,10 @@ export const SEOEditor = ({
           </CollapsibleTrigger>
 
           <CollapsibleContent className="p-4 bg-background border-t border-border">
-            {/* Toggle Buttons for Basic/Advanced - Only show in Advanced mode */}
-            {isAdvancedMode && (
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setHealthCheckView('basic')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    healthCheckView === 'basic' 
-                      ? 'bg-[#f9dc24] text-black' 
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  Basic ({basicPassedCount}/5)
-                </button>
-                <button
-                  onClick={() => setHealthCheckView('advanced')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    healthCheckView === 'advanced' 
-                      ? 'bg-[#f9dc24] text-black' 
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  Advanced ({advancedPassedCount}/5)
-                </button>
-              </div>
-            )}
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Basic Health Check - Always visible */}
               <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Basic ({basicPassedCount}/5)</h4>
                 <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                   checks.titleLength ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
                 }`}>
@@ -1897,10 +1873,10 @@ export const SEOEditor = ({
                 </div>
               </div>
 
-              {/* Advanced Health Check - Only visible in Advanced mode when Advanced tab is selected */}
-              {isAdvancedMode && healthCheckView === 'advanced' && (
+              {/* Advanced Health Check - Only visible in Advanced mode */}
+              {isAdvancedMode && (
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount}/6)</h4>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                     data.focusKeyword ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
                   }`}>
