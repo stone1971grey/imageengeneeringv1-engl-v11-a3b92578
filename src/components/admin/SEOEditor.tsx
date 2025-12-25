@@ -3676,7 +3676,11 @@ export const SEOEditor = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-4 bg-muted/20 rounded-lg text-center">
+                  <div className="p-4 bg-pink-500/10 border border-pink-500/30 rounded-lg text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+                      <span className="text-sm font-medium text-pink-400">Analysis Complete</span>
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       No internal link opportunities found. Add more text content or try "Possible Internal Links" for content suggestions.
                     </p>
