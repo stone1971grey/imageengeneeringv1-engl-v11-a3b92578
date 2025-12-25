@@ -143,6 +143,16 @@ export const SEOEditor = ({
   }>>([]);
   const [showTitleSuggestions, setShowTitleSuggestions] = useState(false);
   
+  // Smart Description state
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [descriptionSuggestions, setDescriptionSuggestions] = useState<Array<{
+    description: string;
+    characterCount: number;
+    reason: string;
+    priority: number;
+  }>>([]);
+  const [showDescriptionSuggestions, setShowDescriptionSuggestions] = useState(false);
+  
   // Smart Intro state
   const [isGeneratingIntro, setIsGeneratingIntro] = useState(false);
   const [generatedIntro, setGeneratedIntro] = useState<{
@@ -740,6 +750,66 @@ export const SEOEditor = ({
     handleChange('title', title);
     setShowTitleSuggestions(false);
     toast.success(`Title "${title.substring(0, 30)}..." übernommen`);
+  };
+
+  // Generate Smart SEO Descriptions using AI
+  const handleGenerateSEODescriptions = async () => {
+    setIsGeneratingDescription(true);
+    setDescriptionSuggestions([]);
+    setShowDescriptionSuggestions(false);
+
+    try {
+      const pageData = {
+        title: data.title,
+        description: data.metaDescription,
+        h1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+        introText: introductionText.description,
+      };
+
+      console.log('[SEO Editor] Generating SEO descriptions with data:', pageData);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-seo-description', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating descriptions:', error);
+        toast.error('Fehler beim Generieren der Descriptions: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated descriptions:', result.suggestions);
+        setDescriptionSuggestions(result.suggestions);
+        setShowDescriptionSuggestions(true);
+        toast.success(`${result.suggestions.length} Description-Vorschläge generiert`);
+      } else {
+        toast.error('Keine Descriptions generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unerwarteter Fehler beim Generieren der Descriptions');
+    } finally {
+      setIsGeneratingDescription(false);
+    }
+  };
+
+  const handleSelectDescription = (description: string) => {
+    handleChange('metaDescription', description);
+    setShowDescriptionSuggestions(false);
+    toast.success(`Description übernommen`);
   };
 
   // Generate Smart H1 Headlines using AI
@@ -2544,7 +2614,148 @@ export const SEOEditor = ({
             </p>
           </div>
 
-          {/* Smart H1 Headline Generator */}
+          {/* Smart Description Optimization */}
+          <div className={`p-5 border rounded-lg transition-colors ${
+            data.metaDescription && data.metaDescription.length >= 120 && data.metaDescription.length <= 160 && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase())
+              ? 'bg-green-500/5 border-green-500/30' 
+              : 'bg-zinc-800/50 border-zinc-700'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  Optimized Description
+                </Label>
+                {/* Optimiert Badge: shown when length is 120-160 AND FKW is included */}
+                {data.metaDescription && data.metaDescription.length >= 120 && data.metaDescription.length <= 160 && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+                {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            
+            {/* Description Input with Smart Button */}
+            <div className="flex gap-2">
+              <Textarea
+                value={data.metaDescription || ''}
+                onChange={(e) => handleChange('metaDescription', e.target.value)}
+                placeholder="e.g. Discover professional camera testing solutions for automotive, medical, and security industries. Get accurate image quality analysis."
+                className={`min-h-[80px] flex-1 ${
+                  data.metaDescription && data.metaDescription.length >= 120 && data.metaDescription.length <= 160 && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase())
+                    ? 'bg-green-500/10 border-green-500/30 focus:border-green-500 focus:ring-green-500/20' 
+                    : 'bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20'
+                }`}
+              />
+              <Button
+                onClick={handleGenerateSEODescriptions}
+                disabled={isGeneratingDescription}
+                className="h-auto min-w-[180px] self-start bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isGeneratingDescription ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generiere...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart Description
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {/* Character count indicator */}
+            <div className="flex items-center justify-between mt-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 
+                  ? 'bg-green-500/20 text-green-400' 
+                  : (data.metaDescription?.length || 0) > 160 
+                  ? 'bg-red-500/20 text-red-400' 
+                  : (data.metaDescription?.length || 0) >= 100
+                  ? 'bg-yellow-500/20 text-yellow-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}>
+                {data.metaDescription?.length || 0}/160 Zeichen
+                {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 && ' ✓'}
+              </span>
+              <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
+            </div>
+            
+            {/* FKW Highlight Preview */}
+            {data.metaDescription && data.focusKeyword && (
+              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+                {highlightKeyword(data.metaDescription, data.focusKeyword)}
+              </div>
+            )}
+            
+            {/* Description Suggestions */}
+            {showDescriptionSuggestions && descriptionSuggestions.length > 0 && (
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-foreground">AI Suggestions:</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDescriptionSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {descriptionSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                      onClick={() => handleSelectDescription(suggestion.description)}
+                    >
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-sm font-semibold text-purple-400">
+                        {suggestion.priority}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-medium text-foreground group-hover:text-purple-400 transition-colors">
+                            {suggestion.description}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className={`shrink-0 text-xs ${
+                            suggestion.characterCount >= 120 && suggestion.characterCount <= 160
+                              ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                          }`}>
+                            {suggestion.characterCount} Zeichen
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed mt-1">
+                          {suggestion.reason}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0 h-8 px-3 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+                      >
+                        Select
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <p className="text-sm text-muted-foreground mt-3">
+              Optimierte Meta Description mit Focus Keyword – Ideal: 120-160 Zeichen
+            </p>
+          </div>
           <div className={`p-5 border rounded-lg transition-colors ${
             data.h1 && data.h1.length >= 40 && data.h1.length <= 70 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
               ? 'bg-green-500/5 border-green-500/30' 
