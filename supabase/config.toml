@@ -41,3 +41,9 @@ verify_jwt = true
 
 [functions.generate-intro-text]
 verify_jwt = true
+
+[functions.generate-seo-title]
+verify_jwt = true
+
+[functions.generate-seo-description]
+verify_jwt = true
