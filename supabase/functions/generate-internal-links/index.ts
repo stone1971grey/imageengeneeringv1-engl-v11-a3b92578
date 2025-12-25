@@ -118,13 +118,18 @@ serve(async (req) => {
 
     const systemPrompt = `You are an SEO expert analyzing content to suggest internal links.
 
-TASK: Analyze the page content and suggest 3-5 internal links that would:
-1. Improve user navigation and experience
-2. Distribute link equity to important pages
-3. Connect topically related content
-4. Use natural anchor text (not "click here" or "read more")
+TASK: Analyze the page content and suggest 4-6 internal links in TWO categories:
 
-AVAILABLE PAGES TO LINK TO:
+CATEGORY 1 - ACTIONABLE LINKS (priority 1-3):
+Links to pages that EXIST in the available pages list.
+These can be applied immediately.
+
+CATEGORY 2 - CONTENT RECOMMENDATIONS (priority 4-6):
+Suggest potential content pages that SHOULD exist for better linking.
+These are aspirational - pages that would improve the site's internal link structure.
+For these, invent meaningful slugs based on the topic.
+
+AVAILABLE PAGES TO LINK TO (for Category 1):
 ${JSON.stringify(pagesContext, null, 2)}
 
 RESPONSE FORMAT:
@@ -136,17 +141,31 @@ Return ONLY a JSON array with link suggestions:
     "targetTitle": "Target Page Title",
     "segmentKey": "segment_key_where_text_appears",
     "reason": "Brief explanation why this link makes sense",
-    "priority": 1
+    "priority": 1,
+    "isRecommendation": false
+  },
+  {
+    "anchorText": "text that could benefit from a link",
+    "targetSlug": "suggested-future-page-slug",
+    "targetTitle": "Suggested Page Title",
+    "segmentKey": "segment_key",
+    "reason": "This content would benefit from a dedicated page about X",
+    "priority": 4,
+    "isRecommendation": true
   }
 ]
 
 RULES:
-- anchorText must be EXACT text that exists in the content
-- Only suggest links where there's topical relevance
-- Prefer linking to pages with related topics
-- Don't suggest links if no good matches exist
-- Maximum 5 suggestions, minimum 0 if no good matches
-- Priority 1 = most important link`;
+- For Category 1: anchorText must be EXACT text that exists in the content
+- For Category 1: targetSlug MUST be from the available pages list
+- For Category 2: suggest meaningful future content even if pages don't exist
+- Always return at least 2 suggestions from each category if possible
+- Maximum 6 suggestions total
+- Priority 1-3 = actionable links, Priority 4-6 = recommendations`;
+
+    const segmentsText = textSegments.length > 0 
+      ? textSegments.map(s => `[${s.key}] (${s.type}): ${s.text.substring(0, 500)}`).join('\n\n')
+      : 'No text segments found - analyze the page topic based on the slug and suggest relevant links.';
 
     const userPrompt = `Analyze this page content and suggest internal links:
 
@@ -154,9 +173,9 @@ PAGE: ${pageSlug}
 FOCUS KEYWORD: ${focusKeyword || 'not defined'}
 
 TEXT SEGMENTS:
-${textSegments.map(s => `[${s.key}] (${s.type}): ${s.text.substring(0, 500)}`).join('\n\n')}
+${segmentsText}
 
-Suggest internal links to relevant pages from the available pages list. Return only the JSON array.`;
+Suggest BOTH actionable links to existing pages AND content recommendations for future pages. Return only the JSON array with at least 4 suggestions.`;
 
     console.log('[Internal Links] Calling AI for link suggestions...');
 
@@ -233,21 +252,25 @@ Suggest internal links to relevant pages from the available pages list. Return o
     const existingSlugs = new Set((allPages || []).map(p => p.page_slug));
     
     const validSuggestions = suggestions
-      .filter((s: any) => s.anchorText && s.targetSlug && s.segmentKey)
+      .filter((s: any) => s.anchorText && s.targetSlug)
       .map((s: any, index: number) => {
+        // Check if it's marked as recommendation by AI, or if page doesn't exist
+        const isRecommendation = s.isRecommendation === true || s.priority > 3;
         const exists = existingSlugs.has(s.targetSlug);
+        
         return {
           anchorText: s.anchorText.trim(),
           targetSlug: s.targetSlug,
           targetTitle: s.targetTitle || s.targetSlug,
-          segmentKey: s.segmentKey,
+          segmentKey: s.segmentKey || 'content',
           reason: s.reason || 'Topically related content',
           priority: s.priority || index + 1,
-          targetExists: exists
+          targetExists: exists,
+          isRecommendation: isRecommendation || !exists
         };
       })
       .sort((a: any, b: any) => a.priority - b.priority)
-      .slice(0, 5);
+      .slice(0, 6);
 
     console.log('[Internal Links] Generated suggestions:', validSuggestions);
 
