@@ -2606,7 +2606,7 @@ export const SEOEditor = ({
               )}
               {h1SourceInfo && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  Source: {h1SourceInfo.label} ({h1SourceInfo.key})
+                  Source: {h1SourceInfo.label} ({h1SourceInfo.key}) – Segment ID: {h1SourceInfo.id}
                 </p>
               )}
               {/* Unlock button for locked H1 */}
