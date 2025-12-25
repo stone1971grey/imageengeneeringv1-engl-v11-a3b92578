@@ -2425,53 +2425,60 @@ export const SEOEditor = ({
               </div>
             </div>
             
-            {/* Current Title Display */}
-            <div className="mb-4 p-4 bg-muted/20 border border-border/50 rounded-md">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-medium text-muted-foreground">Current Title</p>
-                {data.title && (
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                      data.title.length >= 50 && data.title.length <= 60 
-                        ? 'bg-green-500/20 text-green-400' 
-                        : data.title.length > 60 
-                        ? 'bg-red-500/20 text-red-400' 
-                        : data.title.length >= 40
-                        ? 'bg-yellow-500/20 text-yellow-400'
-                        : 'bg-red-500/20 text-red-400'
-                    }`}>
-                      {data.title.length}/60 Zeichen
-                      {data.title.length >= 50 && data.title.length <= 60 && ' ✓'}
-                    </span>
-                    <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
-                  </div>
+            {/* Title Input with Smart Button */}
+            <div className="flex gap-2">
+              <Input
+                value={data.title || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
+                className={`h-11 flex-1 ${
+                  data.title && data.title.length >= 50 && data.title.length <= 60 && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase())
+                    ? 'bg-green-500/10 border-green-500/30 focus:border-green-500 focus:ring-green-500/20' 
+                    : 'bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20'
+                }`}
+              />
+              <Button
+                onClick={handleGenerateSEOTitles}
+                disabled={isGeneratingTitle}
+                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isGeneratingTitle ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generiere...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart Title
+                  </>
                 )}
-              </div>
-              {data.title ? (
-                <p className="text-base font-medium">{highlightKeyword(data.title, data.focusKeyword || '')}</p>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">Kein Title gesetzt. Verwende Smart Title zur Generierung.</p>
-              )}
+              </Button>
             </div>
-
-            {/* Smart Title Button */}
-            <Button
-              onClick={handleGenerateSEOTitles}
-              disabled={isGeneratingTitle}
-              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-            >
-              {isGeneratingTitle ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Generiere Titles...
-                </>
-              ) : (
-                <>
-                  <GeminiIcon className="h-4 w-4 mr-2" />
-                  Smart Title
-                </>
-              )}
-            </Button>
+            
+            {/* Character count indicator */}
+            <div className="flex items-center justify-between mt-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60 
+                  ? 'bg-green-500/20 text-green-400' 
+                  : (data.title?.length || 0) > 60 
+                  ? 'bg-red-500/20 text-red-400' 
+                  : (data.title?.length || 0) >= 40
+                  ? 'bg-yellow-500/20 text-yellow-400'
+                  : 'bg-red-500/20 text-red-400'
+              }`}>
+                {data.title?.length || 0}/60 Zeichen
+                {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60 && ' ✓'}
+              </span>
+              <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
+            </div>
+            
+            {/* FKW Highlight Preview */}
+            {data.title && data.focusKeyword && (
+              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
+                {highlightKeyword(data.title, data.focusKeyword)}
+              </div>
+            )}
             
             {/* Title Suggestions */}
             {showTitleSuggestions && titleSuggestions.length > 0 && (
@@ -2538,11 +2545,23 @@ export const SEOEditor = ({
           </div>
 
           {/* Smart H1 Headline Generator */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+          <div className={`p-5 border rounded-lg transition-colors ${
+            data.h1 && data.h1.length >= 40 && data.h1.length <= 70 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
+              ? 'bg-green-500/5 border-green-500/30' 
+              : 'bg-zinc-800/50 border-zinc-700'
+          }`}>
             <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground">
-                H1 Headline Optimization
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  H1 Headline Optimization
+                </Label>
+                {data.h1 && data.h1.length >= 40 && data.h1.length <= 70 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
                 {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
@@ -2906,11 +2925,31 @@ export const SEOEditor = ({
           </div>
 
           {/* Introduction Text */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+          <div className={`p-5 border rounded-lg transition-colors ${
+            introductionText.description && 
+            introductionText.description.trim().split(/\s+/).length >= 40 && 
+            introductionText.description.trim().split(/\s+/).length <= 80 && 
+            data.focusKeyword && 
+            introductionText.description.toLowerCase().includes(data.focusKeyword.toLowerCase())
+              ? 'bg-green-500/5 border-green-500/30' 
+              : 'bg-zinc-800/50 border-zinc-700'
+          }`}>
             <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground">
-                Introduction Text
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  Introduction Text
+                </Label>
+                {introductionText.description && 
+                 introductionText.description.trim().split(/\s+/).length >= 40 && 
+                 introductionText.description.trim().split(/\s+/).length <= 80 && 
+                 data.focusKeyword && 
+                 introductionText.description.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
                 {(introductionText.title || introductionText.description) && data.focusKeyword && (
