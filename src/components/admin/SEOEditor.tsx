@@ -1082,6 +1082,7 @@ export const SEOEditor = ({
         targetSlug: suggestion.targetSlug,
         targetTitle: suggestion.targetTitle,
         segmentKey: suggestion.segmentKey,
+        segmentId: suggestion.segmentId,
         segmentField: suggestion.segmentField,
         segmentType: suggestion.segmentType,
         appliedAt: new Date().toISOString()
