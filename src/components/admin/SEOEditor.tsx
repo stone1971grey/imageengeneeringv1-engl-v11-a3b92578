@@ -166,6 +166,19 @@ export const SEOEditor = ({
   const [showGeneratedIntro, setShowGeneratedIntro] = useState(false);
   const [isApplyingIntro, setIsApplyingIntro] = useState(false);
   
+  // Smart Internal Links state
+  const [isGeneratingInternalLinks, setIsGeneratingInternalLinks] = useState(false);
+  const [internalLinkSuggestions, setInternalLinkSuggestions] = useState<Array<{
+    anchorText: string;
+    targetSlug: string;
+    targetTitle: string;
+    segmentKey: string;
+    reason: string;
+    priority: number;
+    applied?: boolean;
+  }>>([]);
+  const [showInternalLinkSuggestions, setShowInternalLinkSuggestions] = useState(false);
+  
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
     const saved = localStorage.getItem('seo-healthcheck-open');
@@ -809,7 +822,137 @@ export const SEOEditor = ({
   const handleSelectDescription = (description: string) => {
     handleChange('metaDescription', description);
     setShowDescriptionSuggestions(false);
-    toast.success(`Description übernommen`);
+    toast.success(`Description applied`);
+  };
+
+  // Generate Smart Internal Links using AI
+  const handleGenerateInternalLinks = async () => {
+    setIsGeneratingInternalLinks(true);
+    setInternalLinkSuggestions([]);
+    setShowInternalLinkSuggestions(false);
+
+    try {
+      console.log('[SEO Editor] Generating internal link suggestions for:', pageSlug);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-internal-links', {
+        body: { 
+          pageSlug,
+          focusKeyword: data.focusKeyword,
+          language: editorLanguage
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating internal links:', error);
+        toast.error('Error generating link suggestions: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated internal link suggestions:', result.suggestions);
+        setInternalLinkSuggestions(result.suggestions.map((s: any) => ({ ...s, applied: false })));
+        setShowInternalLinkSuggestions(true);
+        
+        if (result.suggestions.length === 0) {
+          toast.info('No suitable internal link opportunities found');
+        } else {
+          toast.success(`${result.suggestions.length} internal link suggestions generated`);
+        }
+      } else {
+        toast.info('No suggestions generated');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unexpected error generating link suggestions');
+    } finally {
+      setIsGeneratingInternalLinks(false);
+    }
+  };
+
+  const handleApplyInternalLink = async (suggestion: typeof internalLinkSuggestions[0], index: number) => {
+    try {
+      // Find the segment content
+      const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
+      if (!segmentEntry) {
+        toast.error(`Segment ${suggestion.segmentKey} not found`);
+        return;
+      }
+
+      let updatedContent = segmentEntry.content_value;
+      let contentObj: any;
+
+      try {
+        contentObj = JSON.parse(segmentEntry.content_value);
+      } catch {
+        toast.error('Cannot parse segment content');
+        return;
+      }
+
+      // Find and replace the anchor text with a link
+      const linkHtml = `<a href="/${editorLanguage}/${suggestion.targetSlug}" class="internal-link">${suggestion.anchorText}</a>`;
+
+      // Check different text fields where the anchor might be
+      let linkInserted = false;
+      const textFields = ['introText', 'description', 'subtitle', 'content'];
+
+      for (const field of textFields) {
+        if (contentObj[field] && typeof contentObj[field] === 'string') {
+          if (contentObj[field].includes(suggestion.anchorText)) {
+            // Replace first occurrence only
+            contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
+            linkInserted = true;
+            break;
+          }
+        }
+      }
+
+      if (!linkInserted) {
+        toast.error(`Could not find "${suggestion.anchorText}" in segment ${suggestion.segmentKey}`);
+        return;
+      }
+
+      updatedContent = JSON.stringify(contentObj);
+
+      // Save to database
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: updatedContent,
+          updated_at: new Date().toISOString()
+        })
+        .eq('page_slug', pageSlug)
+        .eq('section_key', suggestion.segmentKey)
+        .eq('language', editorLanguage);
+
+      if (saveError) {
+        console.error('[SEO Editor] Error saving link:', saveError);
+        toast.error('Error saving link: ' + saveError.message);
+        return;
+      }
+
+      // Update local state
+      const updatedSuggestions = [...internalLinkSuggestions];
+      updatedSuggestions[index] = { ...suggestion, applied: true };
+      setInternalLinkSuggestions(updatedSuggestions);
+
+      // Update pageContent locally
+      setPageContent(prev => prev.map(item => 
+        item.section_key === suggestion.segmentKey 
+          ? { ...item, content_value: updatedContent }
+          : item
+      ));
+
+      toast.success(`Link to "${suggestion.targetTitle}" applied!`);
+    } catch (error) {
+      console.error('[SEO Editor] Error applying link:', error);
+      toast.error('Error applying link');
+    }
   };
 
   // Generate Smart H1 Headlines using AI
@@ -3298,8 +3441,135 @@ export const SEOEditor = ({
             </div>
             
             <p className="text-sm text-muted-foreground mt-3">
-              Optimal: 40-80 Wörter, Focus Keyphrase im ersten Satz (erste 10-15 Wörter)
+              Optimal: 40-80 words, Focus Keyphrase in first sentence (first 10-15 words)
             </p>
+          </div>
+
+          {/* Smart Internal Links */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  Internal Links
+                </Label>
+                <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                  AI-Powered
+                </Badge>
+              </div>
+              <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-4">
+              Analyze your page content and get AI suggestions for internal links to improve SEO and user navigation.
+            </p>
+            
+            {/* Generate Button */}
+            <div className="flex justify-end mb-4">
+              <Button
+                onClick={handleGenerateInternalLinks}
+                disabled={isGeneratingInternalLinks}
+                className="h-11 min-w-[180px] bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
+              >
+                {isGeneratingInternalLinks ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Smart Internal Links
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {/* Link Suggestions */}
+            {showInternalLinkSuggestions && internalLinkSuggestions.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-foreground">Link Suggestions:</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowInternalLinkSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {internalLinkSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg border transition-colors ${
+                        suggestion.applied 
+                          ? 'bg-green-500/10 border-green-500/30' 
+                          : 'bg-muted/30 border-border/50 hover:border-blue-500/50 hover:bg-blue-500/5'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                          suggestion.applied 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-blue-400'
+                        }`}>
+                          {suggestion.applied ? '✓' : suggestion.priority}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm text-muted-foreground">Link text:</span>
+                            <span className="font-medium text-foreground bg-blue-500/10 px-2 py-0.5 rounded">
+                              "{suggestion.anchorText}"
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm text-muted-foreground">Target:</span>
+                            <span className="font-medium text-blue-400">
+                              {suggestion.targetTitle}
+                            </span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              /{editorLanguage}/{suggestion.targetSlug}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm text-muted-foreground">Segment:</span>
+                            <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
+                              {suggestion.segmentKey}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {suggestion.reason}
+                          </p>
+                        </div>
+                        {!suggestion.applied && (
+                          <Button
+                            onClick={() => handleApplyInternalLink(suggestion, index)}
+                            size="sm"
+                            className="flex-shrink-0 h-8 px-4 bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            Apply Link
+                          </Button>
+                        )}
+                        {suggestion.applied && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                            Applied ✓
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {showInternalLinkSuggestions && internalLinkSuggestions.length === 0 && !isGeneratingInternalLinks && (
+              <div className="p-4 bg-muted/20 rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  No internal link opportunities found. Add more text content to your page for better suggestions.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Canonical URL */}

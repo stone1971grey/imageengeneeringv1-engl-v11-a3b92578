@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.generate-seo-description]
 verify_jwt = true
+
+[functions.generate-internal-links]
+verify_jwt = true
