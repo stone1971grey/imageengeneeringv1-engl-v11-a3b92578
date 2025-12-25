@@ -229,17 +229,23 @@ Suggest internal links to relevant pages from the available pages list. Return o
       });
     }
 
-    // Validate and enrich suggestions
+    // Validate and enrich suggestions with existence check
+    const existingSlugs = new Set((allPages || []).map(p => p.page_slug));
+    
     const validSuggestions = suggestions
       .filter((s: any) => s.anchorText && s.targetSlug && s.segmentKey)
-      .map((s: any, index: number) => ({
-        anchorText: s.anchorText.trim(),
-        targetSlug: s.targetSlug,
-        targetTitle: s.targetTitle || s.targetSlug,
-        segmentKey: s.segmentKey,
-        reason: s.reason || 'Topically related content',
-        priority: s.priority || index + 1
-      }))
+      .map((s: any, index: number) => {
+        const exists = existingSlugs.has(s.targetSlug);
+        return {
+          anchorText: s.anchorText.trim(),
+          targetSlug: s.targetSlug,
+          targetTitle: s.targetTitle || s.targetSlug,
+          segmentKey: s.segmentKey,
+          reason: s.reason || 'Topically related content',
+          priority: s.priority || index + 1,
+          targetExists: exists
+        };
+      })
       .sort((a: any, b: any) => a.priority - b.priority)
       .slice(0, 5);
 

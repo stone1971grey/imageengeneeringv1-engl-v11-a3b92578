@@ -177,6 +177,7 @@ export const SEOEditor = ({
     reason: string;
     priority: number;
     applied?: boolean;
+    targetExists?: boolean;
   }>>([]);
   const [showInternalLinkSuggestions, setShowInternalLinkSuggestions] = useState(false);
   
@@ -3572,14 +3573,24 @@ export const SEOEditor = ({
                             {suggestion.reason}
                           </p>
                         </div>
-                        {!suggestion.applied && (
+                        {/* Apply Link Button - only for existing targets */}
+                        {!suggestion.applied && suggestion.targetExists && (
                           <Button
                             onClick={() => handleApplyInternalLink(suggestion, index)}
                             size="sm"
-                            className="flex-shrink-0 h-8 px-4 bg-blue-600 hover:bg-blue-700 text-white"
+                            className="flex-shrink-0 h-8 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                           >
                             Apply Link
                           </Button>
+                        )}
+                        {/* Suggestion Badge - for non-existing targets */}
+                        {!suggestion.applied && !suggestion.targetExists && (
+                          <div className="flex flex-col items-end gap-1">
+                            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                              Seite fehlt
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">Empfehlung</span>
+                          </div>
                         )}
                         {suggestion.applied && (
                           <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
