@@ -3987,15 +3987,19 @@ export const SEOEditor = ({
                             
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <span className="text-sm text-muted-foreground">Segment:</span>
-                              {suggestion.segmentId && (
+                              <code className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-foreground">
+                                {suggestion.segmentKey}
+                              </code>
+                              {suggestion.segmentId ? (
                                 <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
                                   ID: {suggestion.segmentId}
                                 </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
+                                  Footer-Feld
+                                </Badge>
                               )}
-                              <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
-                                {suggestion.segmentKey}
-                              </span>
-                              {suggestion.segmentType && (
+                              {suggestion.segmentType && suggestion.segmentType !== 'text' && (
                                 <Badge variant="outline" className="text-xs bg-zinc-500/10 text-zinc-400 border-zinc-500/30">
                                   {suggestion.segmentType}
                                 </Badge>
