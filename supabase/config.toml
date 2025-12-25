@@ -50,3 +50,6 @@ verify_jwt = true
 
 [functions.generate-internal-links]
 verify_jwt = true
+
+[functions.suggest-content-links]
+verify_jwt = true

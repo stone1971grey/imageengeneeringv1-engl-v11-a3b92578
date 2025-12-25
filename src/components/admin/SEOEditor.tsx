@@ -177,10 +177,20 @@ export const SEOEditor = ({
     reason: string;
     priority: number;
     applied?: boolean;
-    targetExists?: boolean;
-    isRecommendation?: boolean;
   }>>([]);
   const [showInternalLinkSuggestions, setShowInternalLinkSuggestions] = useState(false);
+  
+  // Possible Content Links state (for content suggestions)
+  const [isGeneratingContentLinks, setIsGeneratingContentLinks] = useState(false);
+  const [contentLinkSuggestions, setContentLinkSuggestions] = useState<Array<{
+    suggestedSlug: string;
+    suggestedTitle: string;
+    segmentType: string;
+    reason: string;
+    priority: number;
+    parentSlug?: string | null;
+  }>>([]);
+  const [showContentLinkSuggestions, setShowContentLinkSuggestions] = useState(false);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
@@ -977,6 +987,56 @@ export const SEOEditor = ({
     } catch (error) {
       console.error('[SEO Editor] Error applying link:', error);
       toast.error('Error applying link');
+    }
+  };
+
+  // Generate Content Link Suggestions (pages/segments that should be created)
+  const handleGenerateContentLinks = async () => {
+    setIsGeneratingContentLinks(true);
+    setContentLinkSuggestions([]);
+    setShowContentLinkSuggestions(false);
+
+    try {
+      console.log('[SEO Editor] Generating content link suggestions for:', pageSlug);
+
+      const { data: result, error } = await supabase.functions.invoke('suggest-content-links', {
+        body: { 
+          pageSlug,
+          focusKeyword: data.focusKeyword,
+          language: editorLanguage
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating content links:', error);
+        toast.error('Error generating content suggestions: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated content link suggestions:', result.suggestions);
+        setContentLinkSuggestions(result.suggestions);
+        setShowContentLinkSuggestions(true);
+        
+        if (result.suggestions.length === 0) {
+          toast.info('No content suggestions found');
+        } else {
+          toast.success(`${result.suggestions.length} content suggestions generated`);
+        }
+      } else {
+        toast.info('No suggestions generated');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unexpected error generating content suggestions');
+    } finally {
+      setIsGeneratingContentLinks(false);
     }
   };
 
@@ -3484,7 +3544,7 @@ export const SEOEditor = ({
                 <Label className="text-base font-semibold text-foreground">
                   Internal Links
                 </Label>
-                <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                <Badge variant="outline" className="text-xs bg-pink-500/10 text-pink-400 border-pink-500/30">
                   AI-Powered
                 </Badge>
               </div>
@@ -3492,15 +3552,16 @@ export const SEOEditor = ({
             </div>
             
             <p className="text-sm text-muted-foreground mb-4">
-              Analyze your page content and get AI suggestions for internal links to improve SEO and user navigation.
+              Find actionable internal links for existing content, or get suggestions for new pages to create.
             </p>
             
-            {/* Generate Button */}
-            <div className="flex justify-end mb-4">
+            {/* Two Button Row */}
+            <div className="flex gap-3 mb-4">
+              {/* Smart Internal Links Button (Pink) - for existing links */}
               <Button
                 onClick={handleGenerateInternalLinks}
                 disabled={isGeneratingInternalLinks}
-                className="h-11 min-w-[180px] bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
+                className="flex-1 h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingInternalLinks ? (
                   <>
@@ -3514,13 +3575,36 @@ export const SEOEditor = ({
                   </>
                 )}
               </Button>
+              
+              {/* Possible Internal Links Button (Blue) - for content suggestions */}
+              <Button
+                onClick={handleGenerateContentLinks}
+                disabled={isGeneratingContentLinks}
+                variant="outline"
+                className="flex-1 h-11 border-blue-500/50 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500"
+              >
+                {isGeneratingContentLinks ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="h-4 w-4 mr-2" />
+                    Possible Internal Links
+                  </>
+                )}
+              </Button>
             </div>
             
-            {/* Link Suggestions */}
-            {showInternalLinkSuggestions && internalLinkSuggestions.length > 0 && (
-              <div className="space-y-3">
+            {/* Actionable Link Suggestions (from Smart Internal Links) */}
+            {showInternalLinkSuggestions && (
+              <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-medium text-foreground">Link Suggestions:</p>
+                  <p className="text-base font-medium text-foreground flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+                    Actionable Links:
+                  </p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -3530,9 +3614,10 @@ export const SEOEditor = ({
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <div className="space-y-3">
-                  {internalLinkSuggestions.length > 0 ? (
-                    internalLinkSuggestions.map((suggestion, index) => (
+                
+                {internalLinkSuggestions.length > 0 ? (
+                  <div className="space-y-3">
+                    {internalLinkSuggestions.map((suggestion, index) => (
                       <div
                         key={index}
                         className={`p-4 rounded-lg border transition-colors ${
@@ -3588,23 +3673,91 @@ export const SEOEditor = ({
                           )}
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="p-4 bg-muted/20 rounded-lg text-center">
-                      <p className="text-sm text-muted-foreground">
-                        Keine passenden Links gefunden. Füge mehr Textinhalt hinzu oder prüfe, ob passende Zielseiten existieren.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-muted/20 rounded-lg text-center">
+                    <p className="text-sm text-muted-foreground">
+                      No internal link opportunities found. Add more text content or try "Possible Internal Links" for content suggestions.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             
-            {showInternalLinkSuggestions && internalLinkSuggestions.length === 0 && !isGeneratingInternalLinks && (
-              <div className="p-4 bg-muted/20 rounded-lg text-center">
-                <p className="text-sm text-muted-foreground">
-                  No internal link opportunities found. Add more text content to your page for better suggestions.
-                </p>
+            {/* Content Suggestions (from Possible Internal Links) */}
+            {showContentLinkSuggestions && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-foreground flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                    Content Suggestions:
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowContentLinkSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                {contentLinkSuggestions.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-xs text-muted-foreground italic">
+                      Diese Seiten/Segmente sollten erstellt werden, um die interne Verlinkung zu verbessern:
+                    </p>
+                    {contentLinkSuggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold text-blue-400">
+                            {suggestion.priority}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-medium text-foreground">
+                                {suggestion.suggestedTitle}
+                              </span>
+                              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                {suggestion.segmentType}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">Slug:</span>
+                              <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-blue-400">
+                                /{suggestion.suggestedSlug}
+                              </span>
+                            </div>
+                            {suggestion.parentSlug && (
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sm text-muted-foreground">Parent:</span>
+                                <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
+                                  {suggestion.parentSlug}
+                                </span>
+                              </div>
+                            )}
+                            <p className="text-sm text-muted-foreground">
+                              {suggestion.reason}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                            Seite fehlt
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-muted/20 rounded-lg text-center">
+                    <p className="text-sm text-muted-foreground">
+                      No content suggestions found. Your site structure may already be comprehensive.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
