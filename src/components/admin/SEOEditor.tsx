@@ -7,7 +7,17 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2 } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { RedirectManager } from "./RedirectManager";
@@ -194,6 +204,13 @@ export const SEOEditor = ({
     segmentType?: string;
     appliedAt: string;
   }>>([]);
+  
+  // Delete confirmation state for internal links
+  const [linkToDelete, setLinkToDelete] = useState<{
+    suggestion: typeof internalLinkSuggestions[0];
+    index: number;
+  } | null>(null);
+  const [isDeletingLink, setIsDeletingLink] = useState(false);
   
   // Possible Content Links state (for content suggestions)
   const [isGeneratingContentLinks, setIsGeneratingContentLinks] = useState(false);
@@ -1139,6 +1156,169 @@ export const SEOEditor = ({
     } catch (error) {
       console.error('[SEO Editor] Error applying link:', error);
       toast.error('Fehler beim Anwenden des Links');
+    }
+  };
+
+  // Delete an applied internal link
+  const handleDeleteInternalLink = async () => {
+    if (!linkToDelete) return;
+    
+    const { suggestion, index } = linkToDelete;
+    setIsDeletingLink(true);
+    
+    try {
+      // Find the segment content
+      const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
+      if (!segmentEntry) {
+        toast.error(`Segment ${suggestion.segmentKey} nicht gefunden`);
+        setIsDeletingLink(false);
+        setLinkToDelete(null);
+        return;
+      }
+
+      let updatedContent = segmentEntry.content_value;
+      let linkRemoved = false;
+      
+      // Build the link patterns to search for
+      const linkPatterns = [
+        `<a href="/${editorLanguage}/${suggestion.targetSlug}" class="internal-link">${suggestion.anchorText}</a>`,
+        `<a href="/${suggestion.targetSlug}" class="internal-link">${suggestion.anchorText}</a>`,
+        new RegExp(`<a[^>]*href="[^"]*${suggestion.targetSlug}"[^>]*>${suggestion.anchorText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</a>`, 'gi')
+      ];
+
+      // Try to parse as JSON first
+      try {
+        const contentObj = JSON.parse(segmentEntry.content_value);
+        
+        // Check different text fields where the link might be
+        const textFields = ['introText', 'description', 'subtitle', 'content', 'text', 'cta_description', 'button_text'];
+
+        for (const field of textFields) {
+          if (contentObj[field] && typeof contentObj[field] === 'string') {
+            let fieldValue = contentObj[field];
+            
+            // Try each pattern
+            for (const pattern of linkPatterns) {
+              if (typeof pattern === 'string') {
+                if (fieldValue.includes(pattern)) {
+                  fieldValue = fieldValue.replace(pattern, suggestion.anchorText);
+                  linkRemoved = true;
+                  break;
+                }
+              } else {
+                if (pattern.test(fieldValue)) {
+                  fieldValue = fieldValue.replace(pattern, suggestion.anchorText);
+                  linkRemoved = true;
+                  break;
+                }
+              }
+            }
+            
+            if (linkRemoved) {
+              contentObj[field] = fieldValue;
+              break;
+            }
+          }
+        }
+        
+        if (linkRemoved) {
+          updatedContent = JSON.stringify(contentObj);
+        }
+      } catch {
+        // Not JSON - treat as plain text/HTML string
+        for (const pattern of linkPatterns) {
+          if (typeof pattern === 'string') {
+            if (updatedContent.includes(pattern)) {
+              updatedContent = updatedContent.replace(pattern, suggestion.anchorText);
+              linkRemoved = true;
+              break;
+            }
+          } else {
+            if (pattern.test(updatedContent)) {
+              updatedContent = updatedContent.replace(pattern, suggestion.anchorText);
+              linkRemoved = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!linkRemoved) {
+        console.warn('[SEO Editor] Link pattern not found in content, removing from tracking anyway');
+      }
+
+      // Save to database
+      if (linkRemoved) {
+        const { error: saveError } = await supabase
+          .from('page_content')
+          .update({ 
+            content_value: updatedContent,
+            updated_at: new Date().toISOString()
+          })
+          .eq('page_slug', pageSlug)
+          .eq('section_key', suggestion.segmentKey)
+          .eq('language', editorLanguage);
+
+        if (saveError) {
+          console.error('[SEO Editor] Error saving content after link removal:', saveError);
+          toast.error('Fehler beim Speichern: ' + saveError.message);
+          setIsDeletingLink(false);
+          setLinkToDelete(null);
+          return;
+        }
+
+        // Update pageContent locally
+        setPageContent(prev => prev.map(item => 
+          item.section_key === suggestion.segmentKey 
+            ? { ...item, content_value: updatedContent }
+            : item
+        ));
+      }
+
+      // Update local state - remove from suggestions
+      const updatedSuggestions = internalLinkSuggestions.filter((_, i) => i !== index);
+      setInternalLinkSuggestions(updatedSuggestions);
+
+      // Remove from appliedInternalLinks
+      const updatedAppliedLinks = appliedInternalLinks.filter(
+        link => !(link.targetSlug === suggestion.targetSlug && link.segmentKey === suggestion.segmentKey)
+      );
+      setAppliedInternalLinks(updatedAppliedLinks);
+      
+      // Update persisted applied links in database
+      const { data: existingEntry } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_applied_internal_links')
+        .eq('language', editorLanguage)
+        .single();
+      
+      if (existingEntry) {
+        if (updatedAppliedLinks.length > 0) {
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(updatedAppliedLinks),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingEntry.id);
+        } else {
+          // Delete the entry if no applied links remain
+          await supabase
+            .from('page_content')
+            .delete()
+            .eq('id', existingEntry.id);
+        }
+      }
+
+      toast.success(`Link zu "${suggestion.targetTitle}" wurde entfernt`);
+    } catch (error) {
+      console.error('[SEO Editor] Error deleting link:', error);
+      toast.error('Fehler beim Löschen des Links');
+    } finally {
+      setIsDeletingLink(false);
+      setLinkToDelete(null);
     }
   };
 
@@ -3851,9 +4031,20 @@ export const SEOEditor = ({
                             </Button>
                           )}
                           {suggestion.applied && (
-                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                              Applied ✓
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                Applied ✓
+                              </Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setLinkToDelete({ suggestion, index })}
+                                className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                title="Link entfernen"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -3872,6 +4063,43 @@ export const SEOEditor = ({
                 )}
               </div>
             )}
+            
+            {/* Delete Link Confirmation Dialog */}
+            <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Internen Link entfernen?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <p>
+                      Möchtest du den Link zu <strong className="text-foreground">"{linkToDelete?.suggestion.targetTitle}"</strong> wirklich entfernen?
+                    </p>
+                    <p className="text-sm">
+                      Der Link wird aus dem Segment <code className="bg-muted px-1 py-0.5 rounded">{linkToDelete?.suggestion.segmentKey}</code> entfernt und der Anchor-Text "{linkToDelete?.suggestion.anchorText}" wird wieder als normaler Text angezeigt.
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isDeletingLink}>Abbrechen</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteInternalLink}
+                    disabled={isDeletingLink}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {isDeletingLink ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Wird entfernt...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Link entfernen
+                      </>
+                    )}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             
             {/* Content Suggestions (from Possible Internal Links) */}
             {showContentLinkSuggestions && (
