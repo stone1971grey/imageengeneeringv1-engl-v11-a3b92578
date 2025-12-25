@@ -915,44 +915,48 @@ export const SEOEditor = ({
       // Find the segment content
       const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
       if (!segmentEntry) {
-        toast.error(`Segment ${suggestion.segmentKey} not found`);
+        toast.error(`Segment ${suggestion.segmentKey} nicht gefunden`);
         return;
       }
 
       let updatedContent = segmentEntry.content_value;
-      let contentObj: any;
-
-      try {
-        contentObj = JSON.parse(segmentEntry.content_value);
-      } catch {
-        toast.error('Cannot parse segment content');
-        return;
-      }
-
-      // Find and replace the anchor text with a link
+      let linkInserted = false;
+      
+      // Build the link HTML
       const linkHtml = `<a href="/${editorLanguage}/${suggestion.targetSlug}" class="internal-link">${suggestion.anchorText}</a>`;
 
-      // Check different text fields where the anchor might be
-      let linkInserted = false;
-      const textFields = ['introText', 'description', 'subtitle', 'content'];
+      // Try to parse as JSON first
+      try {
+        const contentObj = JSON.parse(segmentEntry.content_value);
+        
+        // Check different text fields where the anchor might be
+        const textFields = ['introText', 'description', 'subtitle', 'content', 'text', 'cta_description', 'button_text'];
 
-      for (const field of textFields) {
-        if (contentObj[field] && typeof contentObj[field] === 'string') {
-          if (contentObj[field].includes(suggestion.anchorText)) {
-            // Replace first occurrence only
-            contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
-            linkInserted = true;
-            break;
+        for (const field of textFields) {
+          if (contentObj[field] && typeof contentObj[field] === 'string') {
+            if (contentObj[field].includes(suggestion.anchorText)) {
+              contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
+              linkInserted = true;
+              break;
+            }
           }
+        }
+        
+        if (linkInserted) {
+          updatedContent = JSON.stringify(contentObj);
+        }
+      } catch {
+        // Not JSON - treat as plain text/HTML string
+        if (updatedContent.includes(suggestion.anchorText)) {
+          updatedContent = updatedContent.replace(suggestion.anchorText, linkHtml);
+          linkInserted = true;
         }
       }
 
       if (!linkInserted) {
-        toast.error(`Could not find "${suggestion.anchorText}" in segment ${suggestion.segmentKey}`);
+        toast.error(`Anchor-Text "${suggestion.anchorText}" nicht in Segment ${suggestion.segmentKey} gefunden`);
         return;
       }
-
-      updatedContent = JSON.stringify(contentObj);
 
       // Save to database
       const { error: saveError } = await supabase
@@ -967,7 +971,7 @@ export const SEOEditor = ({
 
       if (saveError) {
         console.error('[SEO Editor] Error saving link:', saveError);
-        toast.error('Error saving link: ' + saveError.message);
+        toast.error('Fehler beim Speichern: ' + saveError.message);
         return;
       }
 
@@ -983,10 +987,10 @@ export const SEOEditor = ({
           : item
       ));
 
-      toast.success(`Link to "${suggestion.targetTitle}" applied!`);
+      toast.success(`Link zu "${suggestion.targetTitle}" eingefügt!`);
     } catch (error) {
       console.error('[SEO Editor] Error applying link:', error);
-      toast.error('Error applying link');
+      toast.error('Fehler beim Anwenden des Links');
     }
   };
 
