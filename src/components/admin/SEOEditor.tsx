@@ -3531,109 +3531,69 @@ export const SEOEditor = ({
                   </Button>
                 </div>
                 <div className="space-y-3">
-                  {/* Actionable Links Section */}
-                  {internalLinkSuggestions.filter(s => s.targetExists && !s.isRecommendation).length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-sm font-medium text-green-400 mb-2">✓ Anwendbare Links:</p>
-                      {internalLinkSuggestions.filter(s => s.targetExists && !s.isRecommendation).map((suggestion, index) => {
-                        const originalIndex = internalLinkSuggestions.findIndex(s => s === suggestion);
-                        return (
-                          <div
-                            key={index}
-                            className={`p-4 rounded-lg border transition-colors mb-2 ${
-                              suggestion.applied 
-                                ? 'bg-green-500/10 border-green-500/30' 
-                                : 'bg-muted/30 border-border/50 hover:border-pink-500/50 hover:bg-pink-500/5'
-                            }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
-                                suggestion.applied 
-                                  ? 'bg-green-500/20 text-green-400' 
-                                  : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-pink-400'
-                              }`}>
-                                {suggestion.applied ? '✓' : suggestion.priority}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-sm text-muted-foreground">Link text:</span>
-                                  <span className="font-medium text-foreground bg-pink-500/10 px-2 py-0.5 rounded">
-                                    "{suggestion.anchorText}"
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-sm text-muted-foreground">Target:</span>
-                                  <span className="font-medium text-pink-400">
-                                    {suggestion.targetTitle}
-                                  </span>
-                                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                                    existiert
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                  {suggestion.reason}
-                                </p>
-                              </div>
-                              {!suggestion.applied && (
-                                <Button
-                                  onClick={() => handleApplyInternalLink(suggestion, originalIndex)}
-                                  size="sm"
-                                  className="flex-shrink-0 h-8 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                                >
-                                  Apply Link
-                                </Button>
-                              )}
-                              {suggestion.applied && (
-                                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                                  Applied ✓
-                                </Badge>
-                              )}
-                            </div>
+                  {internalLinkSuggestions.length > 0 ? (
+                    internalLinkSuggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg border transition-colors ${
+                          suggestion.applied 
+                            ? 'bg-green-500/10 border-green-500/30' 
+                            : 'bg-muted/30 border-border/50 hover:border-pink-500/50 hover:bg-pink-500/5'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                            suggestion.applied 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-pink-400'
+                          }`}>
+                            {suggestion.applied ? '✓' : suggestion.priority}
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                  
-                  {/* Recommendations Section */}
-                  {internalLinkSuggestions.filter(s => !s.targetExists || s.isRecommendation).length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-blue-400 mb-2">💡 Content-Empfehlungen:</p>
-                      {internalLinkSuggestions.filter(s => !s.targetExists || s.isRecommendation).map((suggestion, index) => (
-                        <div
-                          key={index}
-                          className="p-4 rounded-lg border transition-colors mb-2 bg-blue-500/5 border-blue-500/20"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-blue-400">
-                              {suggestion.priority}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">Link text:</span>
+                              <span className="font-medium text-foreground bg-pink-500/10 px-2 py-0.5 rounded">
+                                "{suggestion.anchorText}"
+                              </span>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-sm text-muted-foreground">Link text:</span>
-                                <span className="font-medium text-foreground bg-blue-500/10 px-2 py-0.5 rounded">
-                                  "{suggestion.anchorText}"
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-sm text-muted-foreground">Vorgeschlagene Seite:</span>
-                                <span className="font-medium text-blue-400">
-                                  {suggestion.targetTitle}
-                                </span>
-                                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
-                                  Seite fehlt
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                {suggestion.reason}
-                              </p>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">Target:</span>
+                              <span className="font-medium text-pink-400">
+                                {suggestion.targetTitle}
+                              </span>
                             </div>
-                            <div className="flex flex-col items-end gap-1">
-                              <span className="text-xs text-blue-400 font-medium">Empfehlung</span>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">Segment:</span>
+                              <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
+                                {suggestion.segmentKey}
+                              </span>
                             </div>
+                            <p className="text-sm text-muted-foreground">
+                              {suggestion.reason}
+                            </p>
                           </div>
+                          {!suggestion.applied && (
+                            <Button
+                              onClick={() => handleApplyInternalLink(suggestion, index)}
+                              size="sm"
+                              className="flex-shrink-0 h-8 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                            >
+                              Apply Link
+                            </Button>
+                          )}
+                          {suggestion.applied && (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              Applied ✓
+                            </Badge>
+                          )}
                         </div>
-                      ))}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-muted/20 rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground">
+                        Keine passenden Links gefunden. Füge mehr Textinhalt hinzu oder prüfe, ob passende Zielseiten existieren.
+                      </p>
                     </div>
                   )}
                 </div>

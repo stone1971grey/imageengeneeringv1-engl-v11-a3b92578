@@ -107,6 +107,10 @@ serve(async (req) => {
     }
 
     console.log('[Internal Links] Found', textSegments.length, 'text segments to analyze');
+    
+    // Get list of valid segment keys for this page
+    const validSegmentKeys = textSegments.map(s => s.key);
+    console.log('[Internal Links] Valid segment keys:', validSegmentKeys);
 
     // Build available pages context for AI
     const pagesContext = (allPages || []).map(p => ({
@@ -116,66 +120,63 @@ serve(async (req) => {
       parent: p.parent_slug || ''
     }));
 
+    // If no text segments found, return early with only recommendations
+    if (textSegments.length === 0) {
+      console.log('[Internal Links] No text segments found - returning recommendations only');
+      
+      return new Response(JSON.stringify({ 
+        suggestions: [],
+        analyzedSegments: 0,
+        availablePages: allPages?.length || 0,
+        message: 'No text content found on this page. Add content segments (Intro, Description, etc.) to enable internal linking suggestions.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const systemPrompt = `You are an SEO expert analyzing content to suggest internal links.
 
-TASK: Analyze the page content and suggest 4-6 internal links in TWO categories:
+TASK: Analyze the page content and suggest internal links.
 
-CATEGORY 1 - ACTIONABLE LINKS (priority 1-3):
-Links to pages that EXIST in the available pages list.
-These can be applied immediately.
+CRITICAL RULES:
+1. segmentKey MUST be one of these EXACT keys from the page: ${JSON.stringify(validSegmentKeys)}
+2. anchorText MUST be EXACT text that exists in the corresponding segment
+3. targetSlug MUST be from the available pages list below
+4. Do NOT invent segment keys or anchor text that doesn't exist
 
-CATEGORY 2 - CONTENT RECOMMENDATIONS (priority 4-6):
-Suggest potential content pages that SHOULD exist for better linking.
-These are aspirational - pages that would improve the site's internal link structure.
-For these, invent meaningful slugs based on the topic.
-
-AVAILABLE PAGES TO LINK TO (for Category 1):
+AVAILABLE PAGES TO LINK TO:
 ${JSON.stringify(pagesContext, null, 2)}
+
+AVAILABLE SEGMENTS ON THIS PAGE:
+${textSegments.map(s => `- Key: "${s.key}" | Type: ${s.type} | Content: "${s.text.substring(0, 200)}..."`).join('\n')}
 
 RESPONSE FORMAT:
 Return ONLY a JSON array with link suggestions:
 [
   {
-    "anchorText": "exact text from content to turn into a link",
-    "targetSlug": "target-page-slug",
+    "anchorText": "exact text from the segment content",
+    "targetSlug": "target-page-slug-from-list",
     "targetTitle": "Target Page Title",
-    "segmentKey": "segment_key_where_text_appears",
+    "segmentKey": "exact_segment_key_from_list",
     "reason": "Brief explanation why this link makes sense",
-    "priority": 1,
-    "isRecommendation": false
-  },
-  {
-    "anchorText": "text that could benefit from a link",
-    "targetSlug": "suggested-future-page-slug",
-    "targetTitle": "Suggested Page Title",
-    "segmentKey": "segment_key",
-    "reason": "This content would benefit from a dedicated page about X",
-    "priority": 4,
-    "isRecommendation": true
+    "priority": 1
   }
 ]
 
 RULES:
-- For Category 1: anchorText must be EXACT text that exists in the content
-- For Category 1: targetSlug MUST be from the available pages list
-- For Category 2: suggest meaningful future content even if pages don't exist
-- Always return at least 2 suggestions from each category if possible
-- Maximum 6 suggestions total
-- Priority 1-3 = actionable links, Priority 4-6 = recommendations`;
+- ONLY suggest links where you can find EXACT matching text in the segment content
+- ONLY use segment keys from the provided list
+- ONLY link to pages from the available pages list
+- Maximum 4 suggestions
+- Priority 1 = most important link
+- If no good matches exist, return an empty array []`;
 
-    const segmentsText = textSegments.length > 0 
-      ? textSegments.map(s => `[${s.key}] (${s.type}): ${s.text.substring(0, 500)}`).join('\n\n')
-      : 'No text segments found - analyze the page topic based on the slug and suggest relevant links.';
-
-    const userPrompt = `Analyze this page content and suggest internal links:
+    const userPrompt = `Analyze this page content and suggest internal links.
 
 PAGE: ${pageSlug}
 FOCUS KEYWORD: ${focusKeyword || 'not defined'}
 
-TEXT SEGMENTS:
-${segmentsText}
-
-Suggest BOTH actionable links to existing pages AND content recommendations for future pages. Return only the JSON array with at least 4 suggestions.`;
+Find exact text phrases in the segments that could link to related pages. Return only valid suggestions where the anchor text EXISTS in the segment content.`;
 
     console.log('[Internal Links] Calling AI for link suggestions...');
 
@@ -248,29 +249,41 @@ Suggest BOTH actionable links to existing pages AND content recommendations for 
       });
     }
 
-    // Validate and enrich suggestions with existence check
+    // Validate suggestions: segment key AND target slug must exist
     const existingSlugs = new Set((allPages || []).map(p => p.page_slug));
+    const validSegmentKeySet = new Set(validSegmentKeys);
     
     const validSuggestions = suggestions
-      .filter((s: any) => s.anchorText && s.targetSlug)
-      .map((s: any, index: number) => {
-        // Check if it's marked as recommendation by AI, or if page doesn't exist
-        const isRecommendation = s.isRecommendation === true || s.priority > 3;
-        const exists = existingSlugs.has(s.targetSlug);
+      .filter((s: any) => {
+        // Must have anchor text and target slug
+        if (!s.anchorText || !s.targetSlug) return false;
         
-        return {
-          anchorText: s.anchorText.trim(),
-          targetSlug: s.targetSlug,
-          targetTitle: s.targetTitle || s.targetSlug,
-          segmentKey: s.segmentKey || 'content',
-          reason: s.reason || 'Topically related content',
-          priority: s.priority || index + 1,
-          targetExists: exists,
-          isRecommendation: isRecommendation || !exists
-        };
+        // Segment key must exist on this page
+        if (!validSegmentKeySet.has(s.segmentKey)) {
+          console.log('[Internal Links] Rejecting suggestion - invalid segment key:', s.segmentKey);
+          return false;
+        }
+        
+        // Target page must exist
+        if (!existingSlugs.has(s.targetSlug)) {
+          console.log('[Internal Links] Rejecting suggestion - target page not found:', s.targetSlug);
+          return false;
+        }
+        
+        return true;
       })
+      .map((s: any, index: number) => ({
+        anchorText: s.anchorText.trim(),
+        targetSlug: s.targetSlug,
+        targetTitle: s.targetTitle || s.targetSlug,
+        segmentKey: s.segmentKey,
+        reason: s.reason || 'Topically related content',
+        priority: s.priority || index + 1,
+        targetExists: true,
+        isRecommendation: false
+      }))
       .sort((a: any, b: any) => a.priority - b.priority)
-      .slice(0, 6);
+      .slice(0, 4);
 
     console.log('[Internal Links] Generated suggestions:', validSuggestions);
 
