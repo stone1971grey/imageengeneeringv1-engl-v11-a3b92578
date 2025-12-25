@@ -1088,24 +1088,48 @@ export const SEOEditor = ({
       const updatedAppliedLinks = [...appliedInternalLinks, newAppliedLink];
       setAppliedInternalLinks(updatedAppliedLinks);
       
-      // Upsert the applied links to page_content
-      const { error: upsertError } = await supabase
+      // Persist the applied links to page_content - check if exists first
+      const { data: existingEntry } = await supabase
         .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: 'seo_applied_internal_links',
-          language: editorLanguage,
-          content_type: 'json',
-          content_value: JSON.stringify(updatedAppliedLinks),
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_applied_internal_links')
+        .eq('language', editorLanguage)
+        .single();
       
-      if (upsertError) {
-        console.error('[SEO Editor] Error persisting applied links:', upsertError);
+      if (existingEntry) {
+        // Update existing entry
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(updatedAppliedLinks),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingEntry.id);
+        
+        if (updateError) {
+          console.error('[SEO Editor] Error updating applied links:', updateError);
+        } else {
+          console.log('[SEO Editor] Updated applied internal links:', updatedAppliedLinks.length);
+        }
       } else {
-        console.log('[SEO Editor] Persisted applied internal links:', updatedAppliedLinks.length);
+        // Insert new entry
+        const { error: insertError } = await supabase
+          .from('page_content')
+          .insert({
+            page_slug: pageSlug,
+            section_key: 'seo_applied_internal_links',
+            language: editorLanguage,
+            content_type: 'json',
+            content_value: JSON.stringify(updatedAppliedLinks),
+            updated_at: new Date().toISOString()
+          });
+        
+        if (insertError) {
+          console.error('[SEO Editor] Error inserting applied links:', insertError);
+        } else {
+          console.log('[SEO Editor] Inserted applied internal links:', updatedAppliedLinks.length);
+        }
       }
 
       toast.success(`Link zu "${suggestion.targetTitle}" eingefügt!`);
