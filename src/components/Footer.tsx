@@ -172,11 +172,16 @@ const Footer = () => {
             ? footerContent.footer_cta_title 
             : t.footer.cta[pageType]}
         </h2>
-        <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
-          {hasCMSContent && footerContent.footer_cta_description 
-            ? footerContent.footer_cta_description 
-            : t.footer.ctaDesc[pageType]}
-        </p>
+        {hasCMSContent && footerContent.footer_cta_description ? (
+          <p 
+            className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+            dangerouslySetInnerHTML={{ __html: footerContent.footer_cta_description }}
+          />
+        ) : (
+          <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
+            {t.footer.ctaDesc[pageType]}
+          </p>
+        )}
       </div>
 
       {/* Contact & Team Quote Section */}
@@ -196,11 +201,16 @@ const Footer = () => {
                   ? footerContent.footer_contact_subline 
                   : t.footer.contactSubline[pageType]}
               </p>
-              <p className="text-white leading-relaxed">
-                {hasCMSContent && footerContent.footer_contact_description 
-                  ? footerContent.footer_contact_description 
-                  : t.footer.contactDesc[pageType]}
-              </p>
+              {hasCMSContent && footerContent.footer_contact_description ? (
+                <p 
+                  className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                  dangerouslySetInnerHTML={{ __html: footerContent.footer_contact_description }}
+                />
+              ) : (
+                <p className="text-white leading-relaxed">
+                  {t.footer.contactDesc[pageType]}
+                </p>
+              )}
             </div>
 
             <div className="space-y-4">              
