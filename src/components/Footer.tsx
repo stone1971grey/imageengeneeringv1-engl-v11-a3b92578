@@ -235,11 +235,16 @@ const Footer = () => {
               </div>
             </div>
 
-            <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-              {hasCMSContent && footerContent.footer_button_text 
-                ? footerContent.footer_button_text 
-                : t.footer.button[pageType]}
-            </Button>
+            {hasCMSContent && footerContent.footer_button_text ? (
+              <Button 
+                className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 [&_a]:text-black [&_a]:no-underline"
+                dangerouslySetInnerHTML={{ __html: footerContent.footer_button_text }}
+              />
+            ) : (
+              <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                {t.footer.button[pageType]}
+              </Button>
+            )}
           </div>
 
           {/* Right Column - Team Quote */}
@@ -262,11 +267,16 @@ const Footer = () => {
                  />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <blockquote className="text-lg text-white leading-relaxed mb-4">
-                  "{hasCMSContent && footerContent.footer_team_quote 
-                    ? footerContent.footer_team_quote 
-                    : t.footer.teamQuote[pageType]}"
-                </blockquote>
+                {hasCMSContent && footerContent.footer_team_quote ? (
+                  <blockquote 
+                    className="text-lg text-white leading-relaxed mb-4 [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                    dangerouslySetInnerHTML={{ __html: `"${footerContent.footer_team_quote}"` }}
+                  />
+                ) : (
+                  <blockquote className="text-lg text-white leading-relaxed mb-4">
+                    "{t.footer.teamQuote[pageType]}"
+                  </blockquote>
+                )}
                 <cite className="text-white not-italic">
                   <div className="font-semibold text-white">
                     {hasCMSContent && footerContent.footer_team_name 
