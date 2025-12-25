@@ -57,7 +57,7 @@ serve(async (req) => {
 
     // Extract text content from segments for analysis
     let textContent = '';
-    const textSegments: Array<{ key: string; text: string; type: string }> = [];
+    const textSegments: Array<{ key: string; text: string; type: string; field: string }> = [];
 
     if (contentData) {
       for (const item of contentData) {
@@ -72,7 +72,8 @@ serve(async (req) => {
             textSegments.push({ 
               key: item.section_key, 
               text: parsed.introText.replace(/<[^>]*>/g, ''), 
-              type: 'intro' 
+              type: 'intro',
+              field: 'introText'
             });
             textContent += parsed.introText.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -80,7 +81,8 @@ serve(async (req) => {
             textSegments.push({ 
               key: item.section_key, 
               text: parsed.description.replace(/<[^>]*>/g, ''), 
-              type: 'description' 
+              type: 'description',
+              field: 'description'
             });
             textContent += parsed.description.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -88,7 +90,8 @@ serve(async (req) => {
             textSegments.push({ 
               key: item.section_key, 
               text: parsed.subtitle, 
-              type: 'subtitle' 
+              type: 'subtitle',
+              field: 'subtitle'
             });
             textContent += parsed.subtitle + '\n';
           }
@@ -98,7 +101,8 @@ serve(async (req) => {
             textSegments.push({ 
               key: item.section_key, 
               text: item.content_value.replace(/<[^>]*>/g, ''), 
-              type: 'text' 
+              type: 'text',
+              field: 'raw'
             });
             textContent += item.content_value.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -272,16 +276,39 @@ Find exact text phrases in the segments that could link to related pages. Return
         
         return true;
       })
-      .map((s: any, index: number) => ({
-        anchorText: s.anchorText.trim(),
-        targetSlug: s.targetSlug,
-        targetTitle: s.targetTitle || s.targetSlug,
-        segmentKey: s.segmentKey,
-        reason: s.reason || 'Topically related content',
-        priority: s.priority || index + 1,
-        targetExists: true,
-        isRecommendation: false
-      }))
+      .map((s: any, index: number) => {
+        // Find the segment and extract context around anchor text
+        const segment = textSegments.find(seg => seg.key === s.segmentKey);
+        let contextPreview = '';
+        let segmentField = segment?.field || 'unknown';
+        let segmentType = segment?.type || 'unknown';
+        
+        if (segment && segment.text) {
+          const anchorIndex = segment.text.indexOf(s.anchorText.trim());
+          if (anchorIndex !== -1) {
+            // Get ~40 chars before and after the anchor text
+            const start = Math.max(0, anchorIndex - 40);
+            const end = Math.min(segment.text.length, anchorIndex + s.anchorText.length + 40);
+            const before = segment.text.substring(start, anchorIndex);
+            const after = segment.text.substring(anchorIndex + s.anchorText.length, end);
+            contextPreview = `${start > 0 ? '...' : ''}${before}[${s.anchorText.trim()}]${after}${end < segment.text.length ? '...' : ''}`;
+          }
+        }
+        
+        return {
+          anchorText: s.anchorText.trim(),
+          targetSlug: s.targetSlug,
+          targetTitle: s.targetTitle || s.targetSlug,
+          segmentKey: s.segmentKey,
+          segmentField,
+          segmentType,
+          contextPreview,
+          reason: s.reason || 'Topically related content',
+          priority: s.priority || index + 1,
+          targetExists: true,
+          isRecommendation: false
+        };
+      })
       .sort((a: any, b: any) => a.priority - b.priority)
       .slice(0, 4);
 

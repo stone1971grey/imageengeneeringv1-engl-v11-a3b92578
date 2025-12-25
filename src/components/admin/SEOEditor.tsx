@@ -174,6 +174,9 @@ export const SEOEditor = ({
     targetSlug: string;
     targetTitle: string;
     segmentKey: string;
+    segmentField?: string;
+    segmentType?: string;
+    contextPreview?: string;
     reason: string;
     priority: number;
     applied?: boolean;
@@ -3639,25 +3642,47 @@ export const SEOEditor = ({
                             {suggestion.applied ? '✓' : suggestion.priority}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm text-muted-foreground">Link text:</span>
-                              <span className="font-medium text-foreground bg-pink-500/10 px-2 py-0.5 rounded">
-                                "{suggestion.anchorText}"
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm text-muted-foreground">Target:</span>
-                              <span className="font-medium text-pink-400">
-                                {suggestion.targetTitle}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-2">
+                            {/* Context Preview - shows where the link will be inserted */}
+                            {suggestion.contextPreview && (
+                              <div className="mb-3 p-2 bg-muted/30 rounded border border-border/30">
+                                <span className="text-xs text-muted-foreground block mb-1">Textkontext:</span>
+                                <p className="text-sm font-mono leading-relaxed">
+                                  {suggestion.contextPreview.split(/\[|\]/).map((part, i) => 
+                                    i === 1 ? (
+                                      <span key={i} className="bg-pink-500/30 text-pink-300 px-1 rounded font-semibold">
+                                        {part}
+                                      </span>
+                                    ) : (
+                                      <span key={i} className="text-muted-foreground">{part}</span>
+                                    )
+                                  )}
+                                </p>
+                              </div>
+                            )}
+                            
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
                               <span className="text-sm text-muted-foreground">Segment:</span>
                               <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
                                 {suggestion.segmentKey}
                               </span>
+                              {suggestion.segmentField && suggestion.segmentField !== 'raw' && (
+                                <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
+                                  Feld: {suggestion.segmentField}
+                                </Badge>
+                              )}
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">→ Link zu:</span>
+                              <span className="font-medium text-pink-400">
+                                {suggestion.targetTitle}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                (/{suggestion.targetSlug})
+                              </span>
+                            </div>
+                            
+                            <p className="text-sm text-muted-foreground italic">
                               {suggestion.reason}
                             </p>
                           </div>
