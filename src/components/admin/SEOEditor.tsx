@@ -80,6 +80,7 @@ export const SEOEditor = ({
   const [segmentRegistry, setSegmentRegistry] = useState<any[]>([]);
   const [heroImageUrl, setHeroImageUrl] = useState<string>('');
   const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
+  const [introSourceInfo, setIntroSourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   
   // Smart Focus Keyword state
   const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
@@ -576,6 +577,28 @@ export const SEOEditor = ({
         const descLower = introDescription.toLowerCase();
         keywordInIntroduction = titleLower.includes(keyword) || descLower.includes(keyword);
       }
+    }
+    
+    // Set intro source info for display
+    if (activeSegmentType && activeSegmentKey) {
+      const activeRegistry = activeSegmentType === 'intro' ? introRegistry 
+        : activeSegmentType === 'tiles' ? tilesRegistry 
+        : imageTextRegistry;
+      
+      const labelMap: Record<string, string> = {
+        'intro': 'Intro',
+        'tiles': 'Tiles',
+        'image-text': 'Image-Text'
+      };
+      
+      setIntroSourceInfo({
+        type: activeSegmentType,
+        key: activeSegmentKey,
+        id: activeRegistry?.segment_id || '',
+        label: labelMap[activeSegmentType] || activeSegmentType
+      });
+    } else {
+      setIntroSourceInfo(null);
     }
     
     setIntroductionText({ title: introTitle, description: introDescription });
@@ -2653,7 +2676,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEOTitles}
                 disabled={isGeneratingTitle}
-                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 min-w-[140px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingTitle ? (
                   <>
@@ -2799,7 +2822,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEODescriptions}
                 disabled={isGeneratingDescription}
-                className="h-auto min-w-[180px] self-start bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 min-w-[140px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingDescription ? (
                   <>
@@ -3314,6 +3337,13 @@ export const SEOEditor = ({
                 )}
               </div>
             </div>
+            
+            {/* Intro Source Info */}
+            {introSourceInfo && (
+              <p className="text-xs text-muted-foreground mb-3">
+                Source: {introSourceInfo.label} ({introSourceInfo.key}) – Segment ID: {introSourceInfo.id}
+              </p>
+            )}
             
             {/* Current Intro Display */}
             <div className="px-4 py-3 bg-muted/20 border border-border/50 rounded-md mb-4">
