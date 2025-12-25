@@ -174,6 +174,7 @@ export const SEOEditor = ({
     targetSlug: string;
     targetTitle: string;
     segmentKey: string;
+    segmentId?: number | null;
     segmentField?: string;
     segmentType?: string;
     contextPreview?: string;
@@ -188,6 +189,7 @@ export const SEOEditor = ({
     targetSlug: string;
     targetTitle: string;
     segmentKey: string;
+    segmentId?: number | null;
     segmentField?: string;
     segmentType?: string;
     appliedAt: string;
@@ -3804,9 +3806,19 @@ export const SEOEditor = ({
                             
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <span className="text-sm text-muted-foreground">Segment:</span>
+                              {suggestion.segmentId && (
+                                <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
+                                  ID: {suggestion.segmentId}
+                                </Badge>
+                              )}
                               <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
                                 {suggestion.segmentKey}
                               </span>
+                              {suggestion.segmentType && (
+                                <Badge variant="outline" className="text-xs bg-zinc-500/10 text-zinc-400 border-zinc-500/30">
+                                  {suggestion.segmentType}
+                                </Badge>
+                              )}
                               {suggestion.segmentField && suggestion.segmentField !== 'raw' && (
                                 <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
                                   Feld: {suggestion.segmentField}

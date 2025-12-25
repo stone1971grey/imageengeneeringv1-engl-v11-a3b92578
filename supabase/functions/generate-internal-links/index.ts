@@ -59,9 +59,31 @@ serve(async (req) => {
       console.error('[Internal Links] Error fetching content:', contentError);
     }
 
+    // Get segment registry to map segment keys to IDs
+    const { data: segmentRegistryData, error: segRegError } = await supabase
+      .from('segment_registry')
+      .select('segment_key, segment_id, segment_type')
+      .eq('page_slug', pageSlug)
+      .eq('deleted', false);
+
+    if (segRegError) {
+      console.error('[Internal Links] Error fetching segment registry:', segRegError);
+    }
+
+    // Create a map of segment_key to segment_id
+    const segmentKeyToIdMap: Record<string, number> = {};
+    const segmentKeyToTypeMap: Record<string, string> = {};
+    if (segmentRegistryData) {
+      for (const seg of segmentRegistryData) {
+        segmentKeyToIdMap[seg.segment_key] = seg.segment_id;
+        segmentKeyToTypeMap[seg.segment_key] = seg.segment_type;
+      }
+    }
+    console.log('[Internal Links] Segment key to ID map:', segmentKeyToIdMap);
+
     // Extract text content from segments for analysis
     let textContent = '';
-    const textSegments: Array<{ key: string; text: string; type: string; field: string }> = [];
+    const textSegments: Array<{ key: string; text: string; type: string; field: string; segmentId?: number }> = [];
 
     if (contentData) {
       for (const item of contentData) {
@@ -77,7 +99,8 @@ serve(async (req) => {
               key: item.section_key, 
               text: parsed.introText.replace(/<[^>]*>/g, ''), 
               type: 'intro',
-              field: 'introText'
+              field: 'introText',
+              segmentId: segmentKeyToIdMap[item.section_key]
             });
             textContent += parsed.introText.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -86,7 +109,8 @@ serve(async (req) => {
               key: item.section_key, 
               text: parsed.description.replace(/<[^>]*>/g, ''), 
               type: 'description',
-              field: 'description'
+              field: 'description',
+              segmentId: segmentKeyToIdMap[item.section_key]
             });
             textContent += parsed.description.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -95,7 +119,8 @@ serve(async (req) => {
               key: item.section_key, 
               text: parsed.subtitle, 
               type: 'subtitle',
-              field: 'subtitle'
+              field: 'subtitle',
+              segmentId: segmentKeyToIdMap[item.section_key]
             });
             textContent += parsed.subtitle + '\n';
           }
@@ -106,7 +131,8 @@ serve(async (req) => {
               key: item.section_key, 
               text: item.content_value.replace(/<[^>]*>/g, ''), 
               type: 'text',
-              field: 'raw'
+              field: 'raw',
+              segmentId: segmentKeyToIdMap[item.section_key]
             });
             textContent += item.content_value.replace(/<[^>]*>/g, '') + '\n';
           }
@@ -286,6 +312,7 @@ Find exact text phrases in the segments that could link to related pages. Return
         let contextPreview = '';
         let segmentField = segment?.field || 'unknown';
         let segmentType = segment?.type || 'unknown';
+        let segmentId = segment?.segmentId || segmentKeyToIdMap[s.segmentKey] || null;
         
         if (segment && segment.text) {
           const anchorIndex = segment.text.indexOf(s.anchorText.trim());
@@ -304,6 +331,7 @@ Find exact text phrases in the segments that could link to related pages. Return
           targetSlug: s.targetSlug,
           targetTitle: s.targetTitle || s.targetSlug,
           segmentKey: s.segmentKey,
+          segmentId,
           segmentField,
           segmentType,
           contextPreview,
