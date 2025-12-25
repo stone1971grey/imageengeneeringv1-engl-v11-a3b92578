@@ -23,13 +23,14 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { pageSlug, pageContent, focusKeyword, language = 'en' } = await req.json();
+    const { pageSlug, pageContent, focusKeyword, language = 'en', excludeTargets = [] } = await req.json();
 
     if (!pageSlug) {
       throw new Error('Page slug is required');
     }
 
     console.log('[Internal Links] Analyzing page:', pageSlug, 'language:', language);
+    console.log('[Internal Links] Excluding targets:', excludeTargets);
 
     // Get all available pages from page_registry
     const { data: allPages, error: pagesError } = await supabase
@@ -42,7 +43,10 @@ serve(async (req) => {
       throw new Error('Failed to fetch available pages');
     }
 
-    console.log('[Internal Links] Found', allPages?.length || 0, 'potential link targets');
+    // Filter out already linked pages
+    const filteredPages = (allPages || []).filter(p => !excludeTargets.includes(p.page_slug));
+
+    console.log('[Internal Links] Found', filteredPages.length, 'potential link targets (after excluding', excludeTargets.length, 'already linked)');
 
     // Get text content from the current page segments
     const { data: contentData, error: contentError } = await supabase
@@ -116,8 +120,8 @@ serve(async (req) => {
     const validSegmentKeys = textSegments.map(s => s.key);
     console.log('[Internal Links] Valid segment keys:', validSegmentKeys);
 
-    // Build available pages context for AI
-    const pagesContext = (allPages || []).map(p => ({
+    // Build available pages context for AI (use filtered pages, not all)
+    const pagesContext = filteredPages.map(p => ({
       slug: p.page_slug,
       title: p.page_title,
       description: p.flyout_description || '',
@@ -254,7 +258,7 @@ Find exact text phrases in the segments that could link to related pages. Return
     }
 
     // Validate suggestions: segment key AND target slug must exist
-    const existingSlugs = new Set((allPages || []).map(p => p.page_slug));
+    const existingSlugs = new Set(filteredPages.map(p => p.page_slug));
     const validSegmentKeySet = new Set(validSegmentKeys);
     
     const validSuggestions = suggestions

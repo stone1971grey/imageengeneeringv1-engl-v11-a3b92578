@@ -182,6 +182,16 @@ export const SEOEditor = ({
     applied?: boolean;
   }>>([]);
   const [showInternalLinkSuggestions, setShowInternalLinkSuggestions] = useState(false);
+  // Persisted applied links (loaded from database)
+  const [appliedInternalLinks, setAppliedInternalLinks] = useState<Array<{
+    anchorText: string;
+    targetSlug: string;
+    targetTitle: string;
+    segmentKey: string;
+    segmentField?: string;
+    segmentType?: string;
+    appliedAt: string;
+  }>>([]);
   
   // Possible Content Links state (for content suggestions)
   const [isGeneratingContentLinks, setIsGeneratingContentLinks] = useState(false);
@@ -289,6 +299,36 @@ export const SEOEditor = ({
       
       if (!registryError && registryData) {
         setSegmentRegistry(registryData);
+      }
+      
+      // Load persisted applied internal links
+      const { data: appliedLinksData, error: appliedLinksError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_applied_internal_links')
+        .eq('language', editorLanguage)
+        .single();
+      
+      if (!appliedLinksError && appliedLinksData) {
+        try {
+          const parsedLinks = JSON.parse(appliedLinksData.content_value);
+          if (Array.isArray(parsedLinks)) {
+            setAppliedInternalLinks(parsedLinks);
+            // Also set suggestions with applied status for display
+            setInternalLinkSuggestions(parsedLinks.map((link: any) => ({
+              ...link,
+              applied: true,
+              reason: 'Previously applied',
+              priority: 0,
+              contextPreview: ''
+            })));
+            setShowInternalLinkSuggestions(true);
+            console.log('[SEO Editor] Loaded applied internal links:', parsedLinks.length);
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse applied links:', e);
+        }
       }
     };
     
@@ -866,7 +906,8 @@ export const SEOEditor = ({
   // Generate Smart Internal Links using AI
   const handleGenerateInternalLinks = async () => {
     setIsGeneratingInternalLinks(true);
-    setInternalLinkSuggestions([]);
+    // Keep already applied links
+    const existingApplied = internalLinkSuggestions.filter(s => s.applied);
     setShowInternalLinkSuggestions(false);
 
     try {
@@ -876,38 +917,81 @@ export const SEOEditor = ({
         body: { 
           pageSlug,
           focusKeyword: data.focusKeyword,
-          language: editorLanguage
+          language: editorLanguage,
+          // Send already applied targets so AI can suggest different links
+          excludeTargets: appliedInternalLinks.map(l => l.targetSlug)
         }
       });
 
       if (error) {
         console.error('[SEO Editor] Error generating internal links:', error);
         toast.error('Error generating link suggestions: ' + error.message);
+        // Restore existing applied links on error
+        if (existingApplied.length > 0) {
+          setInternalLinkSuggestions(existingApplied);
+          setShowInternalLinkSuggestions(true);
+        }
         return;
       }
 
       if (result?.error) {
         console.error('[SEO Editor] API error:', result.error);
         toast.error(result.error);
+        if (existingApplied.length > 0) {
+          setInternalLinkSuggestions(existingApplied);
+          setShowInternalLinkSuggestions(true);
+        }
         return;
       }
 
       if (result?.suggestions && Array.isArray(result.suggestions)) {
         console.log('[SEO Editor] Generated internal link suggestions:', result.suggestions);
-        setInternalLinkSuggestions(result.suggestions.map((s: any) => ({ ...s, applied: false })));
+        // Combine already applied links with new suggestions
+        const newSuggestions = result.suggestions.map((s: any) => ({ ...s, applied: false }));
+        // Put applied links first, then new suggestions
+        const combinedSuggestions = [
+          ...appliedInternalLinks.map(link => ({
+            ...link,
+            applied: true,
+            reason: 'Previously applied',
+            priority: 0,
+            contextPreview: ''
+          })),
+          ...newSuggestions
+        ];
+        setInternalLinkSuggestions(combinedSuggestions);
         setShowInternalLinkSuggestions(true);
         
-        if (result.suggestions.length === 0) {
+        if (newSuggestions.length === 0 && appliedInternalLinks.length === 0) {
           toast.info('No suitable internal link opportunities found');
+        } else if (newSuggestions.length === 0 && appliedInternalLinks.length > 0) {
+          toast.info(`${appliedInternalLinks.length} applied link(s) shown. No new suggestions.`);
         } else {
-          toast.success(`${result.suggestions.length} internal link suggestions generated`);
+          toast.success(`${newSuggestions.length} new internal link suggestions + ${appliedInternalLinks.length} applied`);
         }
       } else {
-        toast.info('No suggestions generated');
+        // Show applied links even if no new suggestions
+        if (appliedInternalLinks.length > 0) {
+          setInternalLinkSuggestions(appliedInternalLinks.map(link => ({
+            ...link,
+            applied: true,
+            reason: 'Previously applied',
+            priority: 0,
+            contextPreview: ''
+          })));
+          setShowInternalLinkSuggestions(true);
+          toast.info(`${appliedInternalLinks.length} applied link(s). No new suggestions.`);
+        } else {
+          toast.info('No suggestions generated');
+        }
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
       toast.error('Unexpected error generating link suggestions');
+      if (existingApplied.length > 0) {
+        setInternalLinkSuggestions(existingApplied);
+        setShowInternalLinkSuggestions(true);
+      }
     } finally {
       setIsGeneratingInternalLinks(false);
     }
@@ -989,6 +1073,40 @@ export const SEOEditor = ({
           ? { ...item, content_value: updatedContent }
           : item
       ));
+
+      // Persist the applied link to database
+      const newAppliedLink = {
+        anchorText: suggestion.anchorText,
+        targetSlug: suggestion.targetSlug,
+        targetTitle: suggestion.targetTitle,
+        segmentKey: suggestion.segmentKey,
+        segmentField: suggestion.segmentField,
+        segmentType: suggestion.segmentType,
+        appliedAt: new Date().toISOString()
+      };
+      
+      const updatedAppliedLinks = [...appliedInternalLinks, newAppliedLink];
+      setAppliedInternalLinks(updatedAppliedLinks);
+      
+      // Upsert the applied links to page_content
+      const { error: upsertError } = await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: 'seo_applied_internal_links',
+          language: editorLanguage,
+          content_type: 'json',
+          content_value: JSON.stringify(updatedAppliedLinks),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
+      
+      if (upsertError) {
+        console.error('[SEO Editor] Error persisting applied links:', upsertError);
+      } else {
+        console.log('[SEO Editor] Persisted applied internal links:', updatedAppliedLinks.length);
+      }
 
       toast.success(`Link zu "${suggestion.targetTitle}" eingefügt!`);
     } catch (error) {
