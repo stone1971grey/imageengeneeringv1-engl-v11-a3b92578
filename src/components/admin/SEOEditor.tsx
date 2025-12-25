@@ -132,6 +132,17 @@ export const SEOEditor = ({
   const [isRedirectManagerOpen, setIsRedirectManagerOpen] = useState(false);
   const [pageRedirects, setPageRedirects] = useState<Array<{ id: string; source_url: string; target_url: string; redirect_type: number; notes: string | null }>>([]);
   
+  // Smart Title state
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+  const [titleSuggestions, setTitleSuggestions] = useState<Array<{
+    title: string;
+    characterCount: number;
+    reason: string;
+    keywordPosition: string;
+    priority: number;
+  }>>([]);
+  const [showTitleSuggestions, setShowTitleSuggestions] = useState(false);
+  
   // Smart Intro state
   const [isGeneratingIntro, setIsGeneratingIntro] = useState(false);
   const [generatedIntro, setGeneratedIntro] = useState<{
@@ -671,6 +682,65 @@ export const SEOEditor = ({
     handleChange('focusKeyword', keyword);
     setShowKeywordSuggestions(false);
     toast.success(`Focus Keyword "${keyword}" ausgewählt`);
+  };
+
+  // Generate Smart SEO Titles using AI
+  const handleGenerateSEOTitles = async () => {
+    setIsGeneratingTitle(true);
+    setTitleSuggestions([]);
+    setShowTitleSuggestions(false);
+
+    try {
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        h1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+      };
+
+      console.log('[SEO Editor] Generating SEO titles with data:', pageData);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-seo-title', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating titles:', error);
+        toast.error('Fehler beim Generieren der Titles: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.titles && Array.isArray(result.titles)) {
+        console.log('[SEO Editor] Generated titles:', result.titles);
+        setTitleSuggestions(result.titles);
+        setShowTitleSuggestions(true);
+        toast.success(`${result.titles.length} Title-Vorschläge generiert`);
+      } else {
+        toast.error('Keine Titles generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unerwarteter Fehler beim Generieren der Titles');
+    } finally {
+      setIsGeneratingTitle(false);
+    }
+  };
+
+  const handleSelectTitle = (title: string) => {
+    handleChange('title', title);
+    setShowTitleSuggestions(false);
+    toast.success(`Title "${title.substring(0, 30)}..." übernommen`);
   };
 
   // Generate Smart H1 Headlines using AI
@@ -2349,6 +2419,145 @@ export const SEOEditor = ({
             
             <p className="text-sm text-muted-foreground mt-3">
               Main keyword for this page – should appear in Title, Description, and Slug
+            </p>
+          </div>
+
+          {/* Smart Title Optimization */}
+          <div className={`p-5 border rounded-lg transition-colors ${
+            data.title && data.title.length >= 50 && data.title.length <= 60 && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase())
+              ? 'bg-green-500/5 border-green-500/30' 
+              : 'bg-zinc-800/50 border-zinc-700'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  Optimized Title
+                </Label>
+                {/* Optimiert Badge: shown when length is 50-60 AND FKW is included */}
+                {data.title && data.title.length >= 50 && data.title.length <= 60 && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Recommended</Badge>
+                {data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            
+            {/* Current Title Display */}
+            <div className="mb-4 p-4 bg-muted/20 border border-border/50 rounded-md">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-medium text-muted-foreground">Current Title</p>
+                {data.title && (
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                      data.title.length >= 50 && data.title.length <= 60 
+                        ? 'bg-green-500/20 text-green-400' 
+                        : data.title.length > 60 
+                        ? 'bg-red-500/20 text-red-400' 
+                        : data.title.length >= 40
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {data.title.length}/60 Zeichen
+                      {data.title.length >= 50 && data.title.length <= 60 && ' ✓'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
+                  </div>
+                )}
+              </div>
+              {data.title ? (
+                <p className="text-base font-medium">{highlightKeyword(data.title, data.focusKeyword || '')}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Kein Title gesetzt. Verwende Smart Title zur Generierung.</p>
+              )}
+            </div>
+
+            {/* Smart Title Button */}
+            <Button
+              onClick={handleGenerateSEOTitles}
+              disabled={isGeneratingTitle}
+              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              {isGeneratingTitle ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generiere Titles...
+                </>
+              ) : (
+                <>
+                  <GeminiIcon className="h-4 w-4 mr-2" />
+                  Smart Title
+                </>
+              )}
+            </Button>
+            
+            {/* Title Suggestions */}
+            {showTitleSuggestions && titleSuggestions.length > 0 && (
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-foreground">AI Suggestions:</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowTitleSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {titleSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors cursor-pointer group"
+                      onClick={() => handleSelectTitle(suggestion.title)}
+                    >
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-sm font-semibold text-purple-400">
+                        {suggestion.priority}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
+                            {suggestion.title}
+                          </p>
+                          <Badge className={`shrink-0 text-xs ${
+                            suggestion.characterCount >= 50 && suggestion.characterCount <= 60
+                              ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                          }`}>
+                            {suggestion.characterCount} Zeichen
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {suggestion.reason}
+                        </p>
+                        {suggestion.keywordPosition && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Keyword-Position: {suggestion.keywordPosition}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0 h-8 px-3 opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+                      >
+                        Select
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <p className="text-sm text-muted-foreground mt-3">
+              Optimierter Title mit Focus Keyword – Ideal: 50-60 Zeichen
             </p>
           </div>
 
