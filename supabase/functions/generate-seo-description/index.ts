@@ -35,40 +35,40 @@ Page Information:
 - Introduction Text: ${pageData.introText || 'Not available'}
 `.trim();
 
-    const systemPrompt = `Du bist ein SEO-Experte, der optimierte Meta-Descriptions für Webseiten erstellt.
+    const systemPrompt = `You are an SEO expert who creates optimized meta descriptions for websites.
 
-WICHTIGE REGELN:
-1. Die Description MUSS zwischen 120-160 Zeichen lang sein (optimal: 140-155)
-2. Das Focus Keyword "${focusKeyword || ''}" MUSS enthalten sein (wenn vorhanden)
-3. Die Description muss zum Klicken animieren (Call-to-Action)
-4. Nutze aktive Sprache und Verben
-5. Erwähne den Hauptnutzen/USP der Seite
-6. Keine Keyword-Stuffing
+IMPORTANT RULES:
+1. The description MUST be between 120-160 characters (optimal: 140-155)
+2. The focus keyword "${focusKeyword || ''}" MUST be included (if provided)
+3. The description must encourage clicks (Call-to-Action)
+4. Use active language and verbs
+5. Mention the main benefit/USP of the page
+6. No keyword stuffing
 
-FORMAT DER ANTWORT:
-Antworte NUR mit einem JSON-Array mit genau 3 Vorschlägen:
+RESPONSE FORMAT:
+Reply ONLY with a JSON array with exactly 3 suggestions:
 [
   {
-    "description": "Die optimierte Meta-Description hier",
+    "description": "The optimized meta description here",
     "characterCount": 145,
-    "reason": "Kurze Begründung warum diese Description gut ist",
+    "reason": "Brief explanation why this description is good",
     "priority": 1
   }
 ]
 
-Sortiere nach Qualität (priority 1 = beste Option).`;
+Sort by quality (priority 1 = best option).`;
 
-    const userPrompt = `Erstelle 3 optimierte Meta-Descriptions für diese Seite:
+    const userPrompt = `Create 3 optimized meta descriptions for this page:
 
 ${pageContext}
 
-ANFORDERUNGEN:
-- Länge: 120-160 Zeichen (optimal: 140-155)
-- Focus Keyword "${focusKeyword || ''}" muss enthalten sein
-- Klickanimierend und mit Call-to-Action
-- Professionell und informativ
+REQUIREMENTS:
+- Length: 120-160 characters (optimal: 140-155)
+- Focus keyword "${focusKeyword || ''}" must be included
+- Click-encouraging with call-to-action
+- Professional and informative
 
-Antworte NUR mit dem JSON-Array, kein anderer Text.`;
+Reply ONLY with the JSON array, no other text.`;
 
     console.log('Generating SEO descriptions with Lovable AI...');
 

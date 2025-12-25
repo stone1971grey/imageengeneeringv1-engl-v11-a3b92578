@@ -2629,7 +2629,7 @@ export const SEOEditor = ({
                 {data.metaDescription && data.metaDescription.length >= 120 && data.metaDescription.length <= 160 && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                    <span className="text-xs font-medium text-green-400">Optimized</span>
                   </div>
                 )}
               </div>
@@ -2661,7 +2661,7 @@ export const SEOEditor = ({
                 {isGeneratingDescription ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generiere...
+                    Generating...
                   </>
                 ) : (
                   <>
@@ -2683,7 +2683,7 @@ export const SEOEditor = ({
                   ? 'bg-yellow-500/20 text-yellow-400'
                   : 'bg-red-500/20 text-red-400'
               }`}>
-                {data.metaDescription?.length || 0}/160 Zeichen
+                {data.metaDescription?.length || 0}/160 characters
                 {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 && ' ✓'}
               </span>
               <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
@@ -2732,7 +2732,7 @@ export const SEOEditor = ({
                               ? 'bg-green-500/20 text-green-400 border-green-500/30'
                               : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
                           }`}>
-                            {suggestion.characterCount} Zeichen
+                            {suggestion.characterCount} characters
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed mt-1">
@@ -2753,7 +2753,7 @@ export const SEOEditor = ({
             )}
             
             <p className="text-sm text-muted-foreground mt-3">
-              Optimierte Meta Description mit Focus Keyword – Ideal: 120-160 Zeichen
+              Optimized Meta Description with Focus Keyword – Ideal: 120-160 characters
             </p>
           </div>
           <div className={`p-5 border rounded-lg transition-colors ${
