@@ -10,6 +10,7 @@ import { en } from "@/translations/en";
 import { type ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from "@/types/imageMetadata";
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
+import { ensureMediaFolderHierarchy, createOrUpdateFileMapping } from "@/utils/ensureMediaFolder";
 export type FooterEditorLanguage = "en" | "de" | "ja" | "ko" | "zh";
 
 interface FooterEditorProps {
@@ -321,9 +322,20 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
     setIsUploadingImage(true);
 
     try {
+      // STEP 1: Ensure the folder hierarchy exists in media_folders
+      const folderResult = await ensureMediaFolderHierarchy(pageSlug);
+      if (!folderResult) {
+        console.warn('[FooterEditor] Could not ensure folder hierarchy, uploading to root');
+      }
+
       const fileExt = file.name.split(".").pop();
       const fileName = `footer-team-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      
+      // STEP 2: Use the storage path from folder hierarchy
+      const storagePath = folderResult?.storagePath || pageSlug;
+      const filePath = storagePath ? `${storagePath}/${fileName}` : fileName;
+
+      console.log('[FooterEditor] Uploading image to path:', filePath);
 
       const { error: uploadError } = await supabase.storage
         .from("page-images")
@@ -345,6 +357,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
 
       const user = (await supabase.auth.getUser()).data.user;
 
+      // STEP 3: Save to page_content
       const { error: dbError } = await supabase
         .from("page_content")
         .upsert(
@@ -362,6 +375,11 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
 
       if (dbError) throw dbError;
 
+      // STEP 4: Create file_segment_mapping for proper Media Management assignment
+      const segmentIdentifier = `footer-${pageSlug}`;
+      await createOrUpdateFileMapping(filePath, segmentIdentifier, '');
+
+      console.log('[FooterEditor] Image uploaded to folder:', filePath, 'with segment:', segmentIdentifier);
       toast.success("Team image uploaded successfully!");
     } catch (error: any) {
       console.error("[FooterEditor] Error uploading image", error);
