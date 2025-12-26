@@ -875,6 +875,7 @@ const DynamicCMSPage = () => {
             id={segmentDbId?.toString() || ""}
             title={segment.data?.title || ""}
             rows={segment.data?.rows || []}
+            description={segment.data?.description}
           />
         );
 
