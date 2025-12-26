@@ -1816,12 +1816,8 @@ export const SEOEditor = ({
         console.error('[SEO Editor] Error persisting content suggestions:', persistError);
       }
 
-      // Build list of created segments for display
-      const createdSegmentsList = suggestedSegments.map((seg, idx) => (
-        <span key={idx} className="inline-block bg-green-600/20 text-green-300 px-1.5 py-0.5 rounded text-xs mr-1 mb-1">
-          {seg.type}
-        </span>
-      ));
+      // Log the segments that were created for debugging
+      console.log('[SEO Editor] Created segments:', suggestedSegments);
 
       toast.success(
         <div className="space-y-2">
@@ -1833,8 +1829,12 @@ export const SEOEditor = ({
           </div>
           <div>
             <span className="text-gray-300 text-xs block mb-1">Erstellte Segmente ({suggestedSegments.length}):</span>
-            <div className="flex flex-wrap">
-              {createdSegmentsList}
+            <div className="flex flex-wrap gap-1">
+              {suggestedSegments.map((seg: { type: string; content?: string }, idx: number) => (
+                <span key={idx} className="inline-block bg-green-600/20 text-green-300 px-1.5 py-0.5 rounded text-xs">
+                  {seg.type}
+                </span>
+              ))}
             </div>
           </div>
           {suggestion.linkPlacement && (
