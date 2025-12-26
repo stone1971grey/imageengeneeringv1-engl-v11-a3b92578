@@ -250,12 +250,51 @@ IMPORTANT:
 
     console.log('[Content Links] Raw AI response:', content);
 
-    // Parse JSON from response
+    // Parse JSON from response - handle markdown code blocks and truncated responses
     let suggestions = [];
     try {
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      // Remove markdown code blocks if present
+      let cleanedContent = content
+        .replace(/```json\s*/gi, '')
+        .replace(/```\s*/g, '')
+        .trim();
+      
+      // Try to find the JSON array
+      const jsonMatch = cleanedContent.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
-        suggestions = JSON.parse(jsonMatch[0]);
+        let jsonStr = jsonMatch[0];
+        
+        // Try to fix truncated JSON by finding the last complete object
+        try {
+          suggestions = JSON.parse(jsonStr);
+        } catch (initialError) {
+          console.log('[Content Links] Initial parse failed, trying to fix truncated JSON');
+          
+          // Find the last complete object (ends with })
+          const lastCompleteIdx = jsonStr.lastIndexOf('}');
+          if (lastCompleteIdx > 0) {
+            // Check if we need to close the array
+            const truncated = jsonStr.substring(0, lastCompleteIdx + 1);
+            // Count brackets to determine if we need to add closing bracket
+            const openBrackets = (truncated.match(/\[/g) || []).length;
+            const closeBrackets = (truncated.match(/\]/g) || []).length;
+            
+            let fixedJson = truncated;
+            if (openBrackets > closeBrackets) {
+              fixedJson = truncated + ']';
+            }
+            
+            try {
+              suggestions = JSON.parse(fixedJson);
+              console.log('[Content Links] Successfully parsed fixed JSON with', suggestions.length, 'suggestions');
+            } catch (fixError) {
+              console.error('[Content Links] Could not fix truncated JSON:', fixError);
+              throw initialError;
+            }
+          } else {
+            throw initialError;
+          }
+        }
       } else {
         throw new Error('No JSON array found in response');
       }
@@ -263,7 +302,7 @@ IMPORTANT:
       console.error('[Content Links] Failed to parse AI response:', parseError);
       return new Response(JSON.stringify({ 
         suggestions: [],
-        error: 'Failed to parse AI suggestions'
+        error: 'Failed to parse AI suggestions. Please try again.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
