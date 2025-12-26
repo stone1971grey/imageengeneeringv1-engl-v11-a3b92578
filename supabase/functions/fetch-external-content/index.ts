@@ -157,8 +157,8 @@ function parseFirecrawlContent(
   }
 
   // === DESCRIPTION ===
-  // The Octa Light Player page has clean content paragraphs at the start
-  // Extract them BEFORE any JSON gallery blocks appear
+  // Extract clean paragraphs from the markdown content
+  // The IE pages have navigation at start and JSON/gallery blocks later
   
   // Get meta description as fallback
   const metaDescription = (metadata.description || '').trim();
@@ -170,6 +170,7 @@ function parseFirecrawlContent(
     /\{[^{}]*"id":\d+,/,
     /\{[^{}]*"category":/,
     /gallery images/i,
+    /\[\s*\{/,  // Array of objects start
   ];
   
   let jsonStartIndex = markdown.length;
@@ -180,45 +181,64 @@ function parseFirecrawlContent(
     }
   }
   
-  // Also find where "Main Menu" navigation ends
-  const mainContentStart = markdown.indexOf('Our web shop is currently unavailable');
-  const contentAfterNav = mainContentStart > 0 
-    ? markdown.substring(mainContentStart) 
-    : markdown;
+  // Find where navigation/header content ends
+  // Try multiple patterns to find the main content start
+  const navEndPatterns = [
+    'Our web shop is currently unavailable',
+    '## ',  // First H2 heading often marks content start
+    /^#\s+[A-Z]/m,  // First H1 with capital letter
+  ];
   
-  // Recalculate JSON start in the content-after-nav portion
-  let cleanJsonStart = contentAfterNav.length;
-  for (const pattern of jsonPatterns) {
-    const match = contentAfterNav.search(pattern);
-    if (match > 0 && match < cleanJsonStart) {
-      cleanJsonStart = match;
+  let mainContentStart = 0;
+  for (const pattern of navEndPatterns) {
+    if (typeof pattern === 'string') {
+      const idx = markdown.indexOf(pattern);
+      if (idx > 0 && (mainContentStart === 0 || idx < mainContentStart)) {
+        // Skip past navigation items (Main Menu, Test Equipment, etc.)
+        if (pattern === '## ') {
+          mainContentStart = idx;
+        } else {
+          // Skip past the pattern itself
+          mainContentStart = idx + pattern.length;
+        }
+      }
+    } else {
+      const match = markdown.match(pattern);
+      if (match && match.index && match.index > 0) {
+        if (mainContentStart === 0 || match.index < mainContentStart) {
+          mainContentStart = match.index;
+        }
+      }
     }
   }
   
-  // Extract the clean portion between nav and gallery JSON
-  const cleanPortion = contentAfterNav.substring(0, cleanJsonStart);
-  console.log('[Firecrawl] Clean portion length:', cleanPortion.length);
-  console.log('[Firecrawl] Clean portion preview:', cleanPortion.slice(0, 500));
+  // Extract the portion between navigation and JSON
+  const contentPortion = markdown.substring(mainContentStart, jsonStartIndex);
+  console.log('[Firecrawl] Content portion start:', mainContentStart);
+  console.log('[Firecrawl] Content portion length:', contentPortion.length);
+  console.log('[Firecrawl] Content portion preview:', contentPortion.slice(0, 600));
   
-  // Process the clean portion - split by double newlines
+  // Process the content portion - split by double newlines
   const paragraphs: string[] = [];
-  const blocks = cleanPortion.split(/\n\n+/);
+  const blocks = contentPortion.split(/\n\n+/);
   
   for (const block of blocks) {
     let trimmed = block.trim();
     
     // Skip headers (will use for title)
     if (trimmed.startsWith('#')) continue;
-    // Skip "Main Menu" and navigation items
-    if (trimmed === '×' || trimmed === 'Test Equipment') continue;
+    // Skip navigation items
+    if (trimmed === '×' || trimmed === 'Test Equipment' || trimmed === 'Main Menu') continue;
     // Skip the shop notice
     if (trimmed.includes('web shop is currently unavailable')) continue;
     // Skip list items separately (will process as benefits)
     if (trimmed.match(/^[\-\*•]\s/)) continue;
     // Skip very short content
-    if (trimmed.length < 50) continue;
+    if (trimmed.length < 40) continue;
     // Skip footer content
     if (isFooterContent(trimmed)) continue;
+    // Skip navigation-like content
+    if (trimmed.match(/^(Home|Products|Equipment|Software|Services|Company|Contact)\s*$/i)) continue;
     
     // Clean markdown formatting
     let cleaned = trimmed
@@ -233,18 +253,19 @@ function parseFirecrawlContent(
       .trim();
     
     // Skip if too short after cleaning
-    if (cleaned.length < 50) continue;
+    if (cleaned.length < 40) continue;
     
-    // Skip if contains JSON artifacts (but allow normal backslashes after cleaning)
+    // Skip if contains JSON artifacts
     if (cleaned.includes('{"') || cleaned.includes('":"') || cleaned.includes('form_id')) continue;
     
+    // Skip if looks like a navigation path
+    if (cleaned.match(/^[A-Za-z\s]+>\s/)) continue;
+    
     paragraphs.push(cleaned);
+    console.log(`[Firecrawl] Extracted paragraph: ${cleaned.slice(0, 150)}...`);
   }
   
-  console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
-  for (let i = 0; i < Math.min(3, paragraphs.length); i++) {
-    console.log(`[Firecrawl] Paragraph ${i + 1}:`, paragraphs[i].slice(0, 200));
-  }
+  console.log('[Firecrawl] Total extracted paragraphs:', paragraphs.length);
   
   // Build description from paragraphs, fallback to meta
   if (paragraphs.length > 0) {
@@ -256,8 +277,8 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Final description length:', result.description.length);
   console.log('[Firecrawl] Description preview:', result.description.slice(0, 400));
   
-  // Use cleanPortion for further extraction
-  const cleanedMarkdown = cleanPortion;
+  // Use contentPortion for further extraction
+  const cleanedMarkdown = contentPortion;
 
   // === BENEFITS ===
   // Extract from markdown lists (lines starting with -, *, •)
