@@ -1,16 +1,25 @@
 # Offene Aufgaben - Stand 2025-12-26
 
-## 🟡 Offen: Bild-Lösch-Dialog für weitere Segment-Editoren
+## 🟡 Offen: Bild-Lösch-Dialog für ALLE Segment-Editoren
 
-**Problem:** Der Multi-Language Bild-Lösch-Dialog wurde für ActionHeroEditor, FullHeroEditor und ImageTextEditor implementiert. TilesSegmentEditor und BannerPEditor haben komplexere Multi-Bild-Strukturen und benötigen eine aufwändigere Implementierung.
+**Problem:** Der Multi-Language Bild-Lösch-Dialog (Rückfrage: "Alle Sprachen" oder "Nur diese Sprache") wurde bisher nur für folgende Editoren implementiert:
+- ✅ ActionHeroEditor
+- ✅ FullHeroEditor  
+- ✅ ImageTextEditor
+- ✅ FooterEditor
 
-**Betroffene Dateien:** 
-- `src/components/admin/TilesSegmentEditor.tsx`
-- `src/components/admin/BannerPEditor.tsx`
+**Noch zu implementieren:**
+- ❌ TilesSegmentEditor (komplexe Multi-Bild-Struktur)
+- ❌ BannerPEditor (komplexe Multi-Bild-Struktur)
+- ❌ ProductHeroEditor
+- ❌ ProductHeroGalleryEditor
+- ❌ NewsEditor (Bild-Feld)
+- ❌ EventsEditor (Bild-Feld)
+- ❌ DownloadsEditor (Bild-Feld)
 
 **Nächste Schritte:**
-- Dialog-Logik für Arrays von Bildern erweitern
-- Jeden Tile/Banner-Eintrag einzeln behandeln
+- Dialog-Logik für Arrays von Bildern erweitern (Tiles, Banner)
+- Einzelne Produkt/News/Event-Editoren mit MediaSelector-Dialog ausstatten
 
 ---
 
