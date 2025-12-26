@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { en } from "@/translations/en";
@@ -490,6 +490,25 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
           updated_at: new Date().toISOString(),
           updated_by: user.id,
         });
+      } else if (language === "en") {
+        // CRITICAL: If image is removed in default language (EN), remove it in ALL languages
+        // This ensures image deletion cascades to all language versions
+        const allLanguages: FooterEditorLanguage[] = ["en", "de", "ja", "ko", "zh"];
+        for (const lang of allLanguages) {
+          await supabase
+            .from("page_content")
+            .delete()
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "footer_team_image_url")
+            .eq("language", lang);
+          await supabase
+            .from("page_content")
+            .delete()
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "footer_team_image_metadata")
+            .eq("language", lang);
+        }
+        console.log("[FooterEditor] Image removed in EN - cascaded deletion to all languages");
       }
 
       if (teamImageMetadata) {
@@ -738,6 +757,29 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                     Provide a descriptive alt text for screen readers and search engines
                   </p>
                 </div>
+
+                {/* Remove Image Button - only visible in default language (EN) */}
+                {language === "en" && (
+                  <div className="mt-4 pt-4 border-t border-gray-700">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setTeamImageUrl("");
+                        setTeamImageMetadata(null);
+                        toast.info("Image removed. Save to apply changes to all languages.");
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Remove Image (all languages)
+                    </Button>
+                    <p className="text-gray-400 text-xs mt-2">
+                      Removing the image in English will also remove it from all other language versions when you save.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
