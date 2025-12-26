@@ -295,10 +295,22 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       const newSegments: any[] = [];
       let position = existingRegistry?.length || 0;
 
-      // Filter downloads by language
-      const filteredDownloads = parsedContent.downloads.filter(d => d.language === language);
+      // Filter downloads by language (include 'en' as fallback if current language has none)
+      let filteredDownloads = parsedContent.downloads.filter(d => d.language === language);
+      if (filteredDownloads.length === 0) {
+        filteredDownloads = parsedContent.downloads.filter(d => d.language === 'en');
+      }
 
-      // Product Hero / Intro (if not exists)
+      // Build rich description from all available content
+      const buildRichDescription = () => {
+        let desc = parsedContent.description || '';
+        if (parsedContent.benefits.length > 0 && desc.length < 300) {
+          desc += ' Key features include: ' + parsedContent.benefits.slice(0, 3).join(', ') + '.';
+        }
+        return desc;
+      };
+
+      // 1. Product Hero Gallery (with rich description)
       if (selectedSegments.productHero && !existingSegmentTypes.has('product-hero-gallery')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -310,29 +322,30 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'product-hero-gallery',
           data: {
             title: parsedContent.title,
-            subtitle: parsedContent.subtitle || 'Product',
-            description: parsedContent.description,
+            subtitle: parsedContent.subtitle || 'Professional Equipment',
+            description: buildRichDescription(),
             imagePosition: 'right',
             layoutRatio: '2-5',
             topSpacing: 'small',
-            cta1Text: 'Contact Sales',
+            cta1Text: language === 'de' ? 'Kontakt aufnehmen' : 'Contact Sales',
             cta1Link: '/contact',
             cta1Style: 'standard',
-            cta2Text: 'Learn More',
+            cta2Text: language === 'de' ? 'Spezifikationen' : 'View Specifications',
             cta2Link: '#specifications',
             cta2Style: 'outline-white',
-            images: [],
+            images: parsedContent.images.slice(0, 3).map(img => img.url),
             imageMaxWidth: 480,
           },
           position: position - 1,
         });
       }
 
-      // Intro with benefits
-      if (selectedSegments.intro && parsedContent.benefits.length > 0 && !existingSegmentTypes.has('intro')) {
+      // 2. Intro with comprehensive content (description + benefits)
+      if (selectedSegments.intro && !existingSegmentTypes.has('intro')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
           page_slug: pageSlug,
@@ -341,21 +354,39 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segment_type: 'intro',
           position: position++,
         });
-        const benefitsHtml = '<ul>' + parsedContent.benefits.map(b => `<li><strong>${b.split(' ').slice(0, 3).join(' ')}</strong> ${b.split(' ').slice(3).join(' ')}</li>`).join('') + '</ul>';
+        
+        // Build comprehensive intro HTML
+        let introHtml = '';
+        if (parsedContent.description) {
+          introHtml += `<p>${parsedContent.description}</p>`;
+        }
+        if (parsedContent.benefits.length > 0) {
+          introHtml += '<h3>' + (language === 'de' ? 'Hauptvorteile' : 'Key Benefits') + '</h3>';
+          introHtml += '<ul>' + parsedContent.benefits.map(b => {
+            const words = b.split(' ');
+            if (words.length > 3) {
+              return `<li><strong>${words.slice(0, 3).join(' ')}</strong> ${words.slice(3).join(' ')}</li>`;
+            }
+            return `<li>${b}</li>`;
+          }).join('') + '</ul>';
+        }
+        
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'intro',
           data: {
-            title: 'Key Benefits',
-            body: benefitsHtml,
+            headline: parsedContent.title,
+            headingLevel: 'h1',
+            introText: introHtml || `<p>${language === 'de' ? 'Willkommen zur Produktseite.' : 'Welcome to the product page.'}</p>`,
             alignment: 'left',
-            showDivider: false,
+            showDivider: true,
           },
           position: position - 1,
         });
       }
 
-      // Specifications
+      // 3. Specifications Table
       if (selectedSegments.specification && parsedContent.specifications.length > 0 && !existingSegmentTypes.has('specification')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -367,19 +398,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'specification',
           data: {
-            title: 'Technical Specifications',
+            title: language === 'de' ? 'Technische Spezifikationen' : 'Technical Specifications',
             rows: parsedContent.specifications.map(s => ({
               specification: s.name,
               value: s.value,
             })),
+            description: language === 'de' 
+              ? `Detaillierte technische Daten für ${parsedContent.title}.`
+              : `Detailed technical specifications for ${parsedContent.title}.`,
           },
           position: position - 1,
         });
       }
 
-      // Feature Overview (Use Cases)
+      // 4. Feature Overview (Use Cases / Applications)
       if (selectedSegments.featureOverview && parsedContent.useCases.length > 0 && !existingSegmentTypes.has('feature-overview')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -389,24 +424,40 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segment_type: 'feature-overview',
           position: position++,
         });
+        
+        // Ensure we have at least 4 items by duplicating or adding placeholders
+        let featureItems = parsedContent.useCases.slice(0, 6).map(uc => ({
+          title: uc.title,
+          description: uc.description,
+        }));
+        
+        // If we have fewer than 4, add generic ones based on benefits
+        while (featureItems.length < 4 && parsedContent.benefits.length > featureItems.length) {
+          const benefit = parsedContent.benefits[featureItems.length];
+          featureItems.push({
+            title: benefit.split(' ').slice(0, 4).join(' '),
+            description: benefit,
+          });
+        }
+        
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'feature-overview',
           data: {
-            title: 'Applications & Features',
-            subtext: '',
-            layout: '2',
-            rows: '2',
-            items: parsedContent.useCases.map(uc => ({
-              title: uc.title,
-              description: uc.description,
-            })),
+            title: language === 'de' ? 'Anwendungen & Features' : 'Applications & Features',
+            subtext: language === 'de' 
+              ? `Entdecken Sie die vielfältigen Einsatzmöglichkeiten von ${parsedContent.title}.`
+              : `Discover the versatile applications of ${parsedContent.title}.`,
+            layout: String(Math.min(featureItems.length, 3)),
+            rows: String(Math.ceil(featureItems.length / 3)),
+            items: featureItems,
           },
           position: position - 1,
         });
       }
 
-      // Downloads (Tiles)
+      // 5. Downloads (Tiles) - improved with better descriptions
       if (selectedSegments.downloads && filteredDownloads.length > 0 && !existingSegmentTypes.has('tiles')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -418,15 +469,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'tiles',
           data: {
-            title: 'Downloads',
+            title: language === 'de' ? 'Dokumentation & Downloads' : 'Documentation & Downloads',
             columns: String(Math.min(filteredDownloads.length, 3)),
             items: filteredDownloads.map(d => ({
               title: d.title,
-              description: d.description,
+              description: d.description || (language === 'de' ? 'Produktdokumentation' : 'Product documentation'),
               icon: 'FileText',
-              ctaText: 'Download PDF',
+              ctaText: language === 'de' ? 'PDF herunterladen' : 'Download PDF',
               ctaLink: d.url,
               showButton: true,
             })),
@@ -435,7 +487,75 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
       }
 
-      // Video
+      // 6. FAQ Segment (generated from benefits and use cases)
+      if (!existingSegmentTypes.has('faq') && (parsedContent.benefits.length >= 2 || parsedContent.useCases.length >= 2)) {
+        const segId = nextSegmentId++;
+        newRegistryEntries.push({
+          page_slug: pageSlug,
+          segment_id: segId,
+          segment_key: `content-auto-faq-${segId}`,
+          segment_type: 'faq',
+          position: position++,
+        });
+        
+        // Generate FAQs from content
+        const faqItems: { question: string; answer: string }[] = [];
+        
+        // Q1: What is this product?
+        faqItems.push({
+          question: language === 'de' 
+            ? `Was ist ${parsedContent.title}?` 
+            : `What is ${parsedContent.title}?`,
+          answer: parsedContent.description || (language === 'de' 
+            ? `${parsedContent.title} ist ein professionelles Produkt von Image Engineering.`
+            : `${parsedContent.title} is a professional product from Image Engineering.`),
+        });
+        
+        // Q2: What are the main benefits?
+        if (parsedContent.benefits.length > 0) {
+          faqItems.push({
+            question: language === 'de' 
+              ? `Welche Vorteile bietet ${parsedContent.title}?`
+              : `What are the benefits of ${parsedContent.title}?`,
+            answer: parsedContent.benefits.slice(0, 3).join('. ') + '.',
+          });
+        }
+        
+        // Q3: From use cases
+        if (parsedContent.useCases.length > 0) {
+          faqItems.push({
+            question: language === 'de'
+              ? `Welche Anwendungsbereiche gibt es?`
+              : `What are the typical applications?`,
+            answer: parsedContent.useCases.slice(0, 2).map(uc => `${uc.title}: ${uc.description}`).join(' '),
+          });
+        }
+        
+        // Q4: Standards/compatibility
+        faqItems.push({
+          question: language === 'de'
+            ? 'Welche Standards werden unterstützt?'
+            : 'What standards are supported?',
+          answer: language === 'de'
+            ? 'Image Engineering Produkte unterstützen internationale Standards wie ISO, IEEE und EMVA 1288.'
+            : 'Image Engineering products support international standards including ISO, IEEE, and EMVA 1288.',
+        });
+        
+        newSegments.push({
+          id: String(segId),
+          segmentId: String(segId),
+          type: 'faq',
+          data: {
+            headline: language === 'de' 
+              ? `Häufige Fragen zu ${parsedContent.title}`
+              : `Frequently Asked Questions about ${parsedContent.title}`,
+            items: faqItems,
+          },
+          position: position - 1,
+        });
+      }
+
+      // 7. Video Segment
       if (selectedSegments.video && parsedContent.videoUrl && !existingSegmentTypes.has('video')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -447,6 +567,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
         newSegments.push({
           id: String(segId),
+          segmentId: String(segId),
           type: 'video',
           data: {
             title: 'Product Video',
@@ -455,6 +576,35 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             autoplay: false,
             muted: true,
             loop: false,
+          },
+          position: position - 1,
+        });
+      }
+
+      // 8. Banner-P (CTA) Segment - Always add at the end
+      if (!existingSegmentTypes.has('banner-p')) {
+        const segId = nextSegmentId++;
+        newRegistryEntries.push({
+          page_slug: pageSlug,
+          segment_id: segId,
+          segment_key: `content-auto-cta-${segId}`,
+          segment_type: 'banner-p',
+          position: position++,
+        });
+        newSegments.push({
+          id: String(segId),
+          segmentId: String(segId),
+          type: 'banner-p',
+          data: {
+            headline: language === 'de' 
+              ? `Interesse an ${parsedContent.title}?`
+              : `Interested in ${parsedContent.title}?`,
+            description: language === 'de'
+              ? 'Kontaktieren Sie unser Expertenteam für eine individuelle Beratung und ein maßgeschneidertes Angebot.'
+              : 'Contact our expert team for personalized consultation and a tailored quote.',
+            ctaText: language === 'de' ? 'Kontakt aufnehmen' : 'Get in Touch',
+            ctaLink: '/contact',
+            variant: 'gradient',
           },
           position: position - 1,
         });
