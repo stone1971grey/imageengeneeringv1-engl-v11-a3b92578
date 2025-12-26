@@ -725,10 +725,11 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
                   const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(uploadPath);
                   console.log("[FooterEditor] Upload successful, URL:", publicUrl);
                   
-                  // Create file-segment mapping for Media Management
-                  const segmentIdentifier = segmentId ? String(segmentId) : `footer-${pageSlug}`;
-                  await createOrUpdateFileMapping(uploadPath, segmentIdentifier, "");
-                  console.log("[FooterEditor] File mapping created for:", uploadPath, "->", segmentIdentifier);
+                  // Create file-segment mapping for Media Management (use only segment ID)
+                  if (segmentId) {
+                    await createOrUpdateFileMapping(uploadPath, String(segmentId), "");
+                    console.log("[FooterEditor] File mapping created for:", uploadPath, "-> segment", segmentId);
+                  }
                   
                   const metadata = await extractImageMetadata(file, publicUrl);
                   setTeamImageUrl(publicUrl);
