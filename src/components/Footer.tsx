@@ -76,6 +76,7 @@ const Footer = () => {
         "footer_team_name",
         "footer_team_title",
         "footer_button_text",
+        "footer_button_url",
       ];
 
       let rows: any[] = [];
@@ -236,14 +237,19 @@ const Footer = () => {
             </div>
 
             {hasCMSContent && footerContent.footer_button_text ? (
-              <Button 
-                className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 [&_a]:text-black [&_a]:no-underline"
-                dangerouslySetInnerHTML={{ __html: footerContent.footer_button_text }}
-              />
+              <a href={footerContent.footer_button_url || "/contact"}>
+                <Button 
+                  className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  {footerContent.footer_button_text}
+                </Button>
+              </a>
             ) : (
-              <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                {t.footer.button[pageType]}
-              </Button>
+              <a href="/contact">
+                <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                  {t.footer.button[pageType]}
+                </Button>
+              </a>
             )}
           </div>
 
