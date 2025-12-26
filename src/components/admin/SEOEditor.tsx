@@ -4986,33 +4986,32 @@ export const SEOEditor = ({
                                         href={`/${suggestion.createdSlug || (suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-xs text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded transition-colors"
+                                        className="flex items-center justify-center gap-2 h-11 px-6 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors w-full"
                                       >
-                                        <ExternalLink className="h-3 w-3" />
+                                        <ExternalLink className="h-4 w-4" />
                                         Preview
                                       </a>
                                       
-                                      {/* AI Content Generator Button - Rainbow style */}
+                                      {/* AI Content Generator Button - Rainbow style, same size as Smart Intro */}
                                       {suggestion.contentGenerated ? (
-                                        <Badge className="flex-shrink-0 text-xs bg-purple-500 text-white border-0">
-                                          <Sparkles className="h-3 w-3 mr-1" />
+                                        <Badge className="flex items-center justify-center h-11 px-6 text-sm bg-purple-500 text-white border-0 w-full">
+                                          <Sparkles className="h-4 w-4 mr-2" />
                                           Content Generated
                                         </Badge>
                                       ) : (
                                         <Button
-                                          size="sm"
                                           onClick={() => handleGenerateClusterContent(suggestion, originalIndex)}
                                           disabled={suggestion.isGeneratingContent}
-                                          className="h-8 text-xs bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300"
+                                          className="h-11 w-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300"
                                         >
                                           {suggestion.isGeneratingContent ? (
                                             <>
-                                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                               Generiere...
                                             </>
                                           ) : (
                                             <>
-                                              <Sparkles className="h-3 w-3 mr-1" />
+                                              <Sparkles className="h-4 w-4 mr-2" />
                                               AI-Inhalte erstellen
                                             </>
                                           )}
