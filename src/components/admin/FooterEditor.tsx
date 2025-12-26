@@ -304,6 +304,42 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
         setFooterTeamTitle(translated.footer_team_title || englishMap.footer_team_title || "");
         setFooterButtonText(translated.footer_button_text || englishMap.footer_button_text || "");
 
+        // CRITICAL: Also copy the image from English version if it exists
+        if (englishMap.footer_team_image_url && !teamImageUrl) {
+          console.log("[FooterEditor] Copying image from EN:", englishMap.footer_team_image_url);
+          setTeamImageUrl(englishMap.footer_team_image_url);
+          
+          // Also load/create metadata for the image
+          if (englishMap.footer_team_image_metadata) {
+            try {
+              const parsed = JSON.parse(englishMap.footer_team_image_metadata);
+              setTeamImageMetadata(parsed);
+            } catch {
+              setTeamImageMetadata({
+                originalFileName: englishMap.footer_team_image_url.split('/').pop() || 'image',
+                width: 0,
+                height: 0,
+                fileSizeKB: 0,
+                format: englishMap.footer_team_image_url.split('.').pop() || 'unknown',
+                uploadDate: new Date().toISOString(),
+                url: englishMap.footer_team_image_url,
+                altText: ""
+              });
+            }
+          } else {
+            setTeamImageMetadata({
+              originalFileName: englishMap.footer_team_image_url.split('/').pop() || 'image',
+              width: 0,
+              height: 0,
+              fileSizeKB: 0,
+              format: englishMap.footer_team_image_url.split('.').pop() || 'unknown',
+              uploadDate: new Date().toISOString(),
+              url: englishMap.footer_team_image_url,
+              altText: ""
+            });
+          }
+        }
+
         toast.success("Footer content translated successfully");
       }
     } catch (error: any) {
