@@ -4978,10 +4978,24 @@ export const SEOEditor = ({
                                 <div className="flex flex-col items-end gap-2">
                                   {suggestion.saved ? (
                                     <>
-                                      <Badge className="flex-shrink-0 text-xs bg-green-500 text-white border-0">
-                                        <Check className="h-3 w-3 mr-1" />
-                                        Applied
-                                      </Badge>
+                                      <div className="flex items-center gap-2">
+                                        <Badge className="flex-shrink-0 text-xs bg-green-500 text-white border-0">
+                                          <Check className="h-3 w-3 mr-1" />
+                                          Applied
+                                        </Badge>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => {
+                                            setContentLinkSuggestions(prev => prev.filter((_, i) => i !== originalIndex));
+                                            toast.success('Vorschlag entfernt');
+                                          }}
+                                          className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                                          title="Vorschlag löschen"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
                                       <a
                                         href={`/${suggestion.createdSlug || (suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug)}`}
                                         target="_blank"
@@ -5017,24 +5031,9 @@ export const SEOEditor = ({
                                           )}
                                         </Button>
                                       )}
-                                      
-                                      {/* Delete Button for applied suggestions */}
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => {
-                                          setContentLinkSuggestions(prev => prev.filter((_, i) => i !== originalIndex));
-                                          toast.success('Vorschlag entfernt');
-                                        }}
-                                        className="h-11 w-full text-red-400 hover:text-red-300 hover:bg-red-500/20 border border-red-500/30"
-                                        title="Vorschlag aus Liste entfernen"
-                                      >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Entfernen
-                                      </Button>
                                     </>
                                   ) : (
-                                    <>
+                                    <div className="flex items-center gap-2">
                                       <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
                                         New Page
                                       </Badge>
@@ -5065,7 +5064,7 @@ export const SEOEditor = ({
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
-                                    </>
+                                    </div>
                                   )}
                                 </div>
                               </div>
