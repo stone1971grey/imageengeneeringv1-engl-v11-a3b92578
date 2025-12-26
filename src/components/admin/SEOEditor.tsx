@@ -1910,7 +1910,7 @@ export const SEOEditor = ({
         .select('content_value')
         .eq('page_slug', clusterPageSlug)
         .eq('section_key', 'page_segments')
-        .eq('language', 'en')
+        .eq('language', editorLanguage)
         .single();
 
       if (pageError) throw pageError;
@@ -1932,7 +1932,7 @@ export const SEOEditor = ({
           .select('content_value')
           .eq('page_slug', suggestion.parentSlug)
           .eq('section_key', 'seo')
-          .eq('language', 'en')
+          .eq('language', editorLanguage)
           .single();
         
         if (pillarData) {
@@ -1949,8 +1949,32 @@ export const SEOEditor = ({
         }
       }
 
+      // Try to get source URL from redirects table (set by Content Automation)
+      let sourceUrl = null;
+      const targetUrl = `/${editorLanguage}/${clusterPageSlug}`;
+      const { data: redirectData } = await supabase
+        .from('redirects')
+        .select('source_url, notes')
+        .eq('target_url', targetUrl)
+        .eq('is_active', true)
+        .single();
+      
+      if (redirectData?.source_url) {
+        // Reconstruct full URL from redirect notes or path
+        const notesMatch = redirectData.notes?.match(/Source: (https?:\/\/[^\s]+)/);
+        if (notesMatch) {
+          sourceUrl = notesMatch[1];
+        } else {
+          // Fallback: assume image-engineering.de domain
+          sourceUrl = `https://www.image-engineering.de${redirectData.source_url}`;
+        }
+        console.log('[SEO Editor] Found source URL from redirect:', sourceUrl);
+      }
+
       console.log('[SEO Editor] Generating content for cluster page:', clusterPageSlug);
       console.log('[SEO Editor] Segments to generate:', segmentsToGenerate.length);
+      console.log('[SEO Editor] Source URL:', sourceUrl);
+      console.log('[SEO Editor] Language:', editorLanguage);
 
       // Call edge function to generate content
       const { data: result, error: genError } = await supabase.functions.invoke('generate-cluster-content', {
@@ -1959,7 +1983,9 @@ export const SEOEditor = ({
           pageTitle: suggestion.suggestedTitle,
           parentPageSlug: suggestion.parentSlug,
           segments: segmentsToGenerate,
-          pillarPageContent: pillarContent
+          pillarPageContent: pillarContent,
+          sourceUrl: sourceUrl,
+          language: editorLanguage
         }
       });
 
