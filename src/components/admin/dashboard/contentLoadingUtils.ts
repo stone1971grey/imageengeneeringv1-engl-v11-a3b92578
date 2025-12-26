@@ -1,5 +1,21 @@
-// Content Loading Utilities for AdminDashboard
-// Extracted to reduce AdminDashboard.tsx file size
+/**
+ * Content Loading Utilities for AdminDashboard
+ * 
+ * ⚠️ CRITICAL DATA PROTECTION GUIDELINES FOR FUTURE DEVELOPERS:
+ * 
+ * 1. SEO Data Loading: 
+ *    - seoData is loaded via PRE-SCAN mechanism (lines ~127-160)
+ *    - DB values have HIGHEST priority over existingSeoData or defaults
+ *    - NEVER rely on existingSeoData alone - it may be empty during page switch
+ * 
+ * 2. Protected Fields (must NEVER be overwritten with empty values):
+ *    - focusKeyword, h1, h1Locked, introduction, title, metaDescription
+ * 
+ * 3. If modifying this file:
+ *    - Always test that Advanced SEO features persist across page switches
+ *    - Verify focusKeyword, h1, introduction are loaded from DB
+ *    - Check console logs for "[contentLoadingUtils] PRE-SCAN" messages
+ */
 
 import { supabase } from "@/integrations/supabase/client";
 
