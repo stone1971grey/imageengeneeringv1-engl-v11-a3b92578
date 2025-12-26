@@ -1775,9 +1775,21 @@ const AdminDashboard = () => {
                         : "bg-transparent hover:bg-muted"
                     }`}
                     onClick={() => {
-                      // Toggle: if on history go back, otherwise go to history
-                      if (activeTab === "version-history" && (tabOrder || []).length > 0) {
-                        setActiveTab((tabOrder || [])[0]);
+                      // Toggle: if on history go back to previous tab, otherwise go to history
+                      if (activeTab === "version-history") {
+                        // Go back to the first available content tab
+                        const availableTabs = (tabOrder || []).filter(t => t && t !== "version-history");
+                        if (availableTabs.length > 0) {
+                          setActiveTab(availableTabs[0]);
+                        } else {
+                          // Fallback to 'welcome' or first segment in pageSegments
+                          const firstSegment = pageSegments[0];
+                          if (firstSegment?.id) {
+                            setActiveTab(String(firstSegment.id));
+                          } else {
+                            setActiveTab("welcome");
+                          }
+                        }
                       } else {
                         setActiveTab("version-history");
                       }
