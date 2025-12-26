@@ -35,40 +35,41 @@ export async function ensureMediaFolderHierarchy(pageSlug: string): Promise<Fold
       return null;
     }
 
-    // Get Root folder ID
-    const { data: rootFolder, error: rootError } = await supabase
-      .from('media_folders')
-      .select('id')
-      .eq('name', 'Root')
-      .is('parent_id', null)
-      .maybeSingle();
-
-    if (rootError || !rootFolder) {
-      console.error('[ensureMediaFolderHierarchy] Root folder not found:', rootError);
-      return null;
-    }
-
-    let currentParentId = rootFolder.id;
+    let currentParentId: string | null = null;
     let currentStoragePath = '';
-    let lastFolderId = rootFolder.id;
+    let lastFolderId: string | null = null;
 
     // Traverse/create each level of the folder hierarchy
+    // Top-level folders have parent_id = null, subsequent levels have parent_id set
     for (let i = 0; i < pathParts.length; i++) {
       const folderName = pathParts[i];
       currentStoragePath = currentStoragePath ? `${currentStoragePath}/${folderName}` : folderName;
 
-      // Check if folder exists
-      const { data: existingFolder, error: checkError } = await supabase
+      // Check if folder exists - for first level, parent_id is null
+      let query = supabase
         .from('media_folders')
-        .select('id, storage_path')
-        .eq('parent_id', currentParentId)
-        .eq('storage_path', currentStoragePath)
-        .maybeSingle();
+        .select('id, storage_path');
+      
+      if (currentParentId === null) {
+        // First level - look for top-level folder by storage_path or name
+        query = query.is('parent_id', null);
+      } else {
+        query = query.eq('parent_id', currentParentId);
+      }
 
-      if (checkError && checkError.code !== 'PGRST116') {
+      const { data: existingFolders, error: checkError } = await query;
+
+      if (checkError) {
         console.error(`[ensureMediaFolderHierarchy] Error checking folder ${folderName}:`, checkError);
         return null;
       }
+
+      // Find matching folder - check storage_path first, then name
+      const existingFolder = existingFolders?.find(f => 
+        f.storage_path === currentStoragePath || 
+        f.storage_path === folderName ||
+        (i === 0 && existingFolders.some(ef => ef.storage_path?.startsWith(folderName)))
+      );
 
       if (existingFolder) {
         // Folder exists, continue to next level
@@ -99,10 +100,10 @@ export async function ensureMediaFolderHierarchy(pageSlug: string): Promise<Fold
       }
     }
 
-    return {
+    return lastFolderId ? {
       folderId: lastFolderId,
       storagePath: currentStoragePath
-    };
+    } : null;
   } catch (error) {
     console.error('[ensureMediaFolderHierarchy] Unexpected error:', error);
     return null;
