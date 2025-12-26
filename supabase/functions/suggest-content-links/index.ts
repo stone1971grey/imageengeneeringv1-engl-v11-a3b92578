@@ -102,12 +102,37 @@ serve(async (req) => {
       description: p.flyout_description || ''
     }));
 
+    // Get all segments on the current pillar page
+    const { data: segmentRegistry, error: segmentError } = await supabase
+      .from('segment_registry')
+      .select('segment_id, segment_key, segment_type, position')
+      .eq('page_slug', pageSlug)
+      .eq('deleted', false)
+      .order('position');
+
+    if (segmentError) {
+      console.error('[Content Links] Error fetching segments:', segmentError);
+    }
+
+    // Build segment context for AI
+    const segmentContext = (segmentRegistry || []).map(s => ({
+      id: s.segment_id,
+      key: s.segment_key,
+      type: s.segment_type,
+      position: s.position
+    }));
+
+    console.log('[Content Links] Found segments on page:', segmentContext.length);
+
     const systemPrompt = `You are an SEO and content strategy expert specializing in Topic Cluster / Pillar Page architecture. Your task is to suggest content improvements for this page which serves as a PILLAR PAGE in a topic cluster.
 
 CURRENT PAGE (PILLAR): ${pageSlug}
 CURRENT PAGE TITLE: ${currentPage?.page_title || 'Unknown'}
 PARENT: ${currentPage?.parent_slug || 'none'}
 FOCUS KEYWORD: ${focusKeyword || 'not defined'}
+
+SEGMENTS ON CURRENT PILLAR PAGE:
+${JSON.stringify(segmentContext, null, 2)}
 
 EXISTING PAGES (DO NOT suggest these, they already exist):
 ${JSON.stringify(existingPagesContext.map(p => p.slug), null, 2)}
@@ -121,6 +146,7 @@ TYPE 1 - NEW CLUSTER PAGES (suggestionType: "new_page"):
 - Completely NEW pages that should be created as cluster content around this pillar
 - These would be child/sibling pages that dive deeper into specific subtopics
 - They would link back to this pillar page and vice versa
+- CRITICAL: For each new cluster page, you MUST specify WHERE the link to this new page should be placed on the PILLAR page (linkPlacement)
 
 TYPE 2 - SEGMENT ENHANCEMENTS (suggestionType: "existing_segment"):
 - Sections/segments within EXISTING pages that should be enhanced or created
@@ -139,7 +165,19 @@ Return ONLY a JSON array:
     "segmentType": "page",
     "reason": "Why this cluster page supports the pillar and fills a content gap",
     "priority": 1,
-    "parentSlug": "${pageSlug}"
+    "parentSlug": "${pageSlug}",
+    "linkPlacement": {
+      "segmentId": 123,
+      "segmentKey": "segment_123_intro",
+      "segmentType": "intro",
+      "placementType": "inline_text|cta_button|navigation_link|feature_card",
+      "placementDescription": "Add link in the introText after the sentence about [specific topic]"
+    },
+    "suggestedSegments": [
+      {"type": "action-hero", "content": "Hero section with title and subtitle related to the cluster topic"},
+      {"type": "intro", "content": "Introduction text explaining the main concept"},
+      {"type": "faq", "content": "3-5 frequently asked questions about this topic"}
+    ]
   },
   {
     "suggestedSlug": "existing-page-slug",
@@ -155,9 +193,12 @@ Return ONLY a JSON array:
 
 IMPORTANT:
 - For new_page: suggestedSlug must be a NEW slug that doesn't exist
+- For new_page: linkPlacement MUST reference an existing segment from SEGMENTS ON CURRENT PILLAR PAGE
+- For new_page: suggestedSegments should contain 2-4 segment types that make sense for the new cluster page
 - For existing_segment: targetPageSlug must be an EXISTING page from the list
 - Priority 1 = most valuable
-- Be specific about segment types (intro, faq, specification, feature-overview, etc.)`;
+- placementType options: "inline_text" (add link in text), "cta_button" (use existing/new CTA), "navigation_link" (add to navigation), "feature_card" (add as feature item)
+- Be specific in placementDescription about exactly where the link should go`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -234,10 +275,12 @@ IMPORTANT:
     const validSuggestions = suggestions
       .filter((s: any) => {
         if (!s.suggestedSlug || !s.suggestedTitle) return false;
-        // Make sure the suggested page doesn't already exist
-        if (existingSlugs.has(s.suggestedSlug)) {
-          console.log('[Content Links] Rejecting - page already exists:', s.suggestedSlug);
-          return false;
+        // For new pages, make sure the suggested page doesn't already exist
+        if (s.suggestionType === 'new_page' || !s.suggestionType) {
+          if (existingSlugs.has(s.suggestedSlug)) {
+            console.log('[Content Links] Rejecting - page already exists:', s.suggestedSlug);
+            return false;
+          }
         }
         return true;
       })
@@ -245,12 +288,17 @@ IMPORTANT:
         suggestedSlug: s.suggestedSlug,
         suggestedTitle: s.suggestedTitle,
         segmentType: s.segmentType || 'page',
+        suggestionType: s.suggestionType || 'new_page',
         reason: s.reason || 'Would improve site coverage',
         priority: s.priority || index + 1,
-        parentSlug: s.parentSlug || null
+        parentSlug: s.parentSlug || null,
+        targetPageSlug: s.targetPageSlug || null,
+        // New fields for placement info
+        linkPlacement: s.linkPlacement || null,
+        suggestedSegments: s.suggestedSegments || null
       }))
       .sort((a: any, b: any) => a.priority - b.priority)
-      .slice(0, 6);
+      .slice(0, 8);
 
     console.log('[Content Links] Generated content suggestions:', validSuggestions);
 
