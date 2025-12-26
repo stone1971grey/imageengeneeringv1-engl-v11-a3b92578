@@ -88,64 +88,114 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
   } else {
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     if (titleMatch) {
-      result.title = cleanText(titleMatch[1].split('|')[0]);
+      result.title = cleanText(titleMatch[1].split('|')[0].split('-')[0]);
     }
   }
 
   // Extract subtitle (often in a specific class or following h1)
   const subtitleMatch = html.match(/class="[^"]*subtitle[^"]*"[^>]*>([^<]+)</i) ||
-                        html.match(/<h2[^>]*class="[^"]*product[^"]*"[^>]*>([^<]+)</i);
+                        html.match(/<h2[^>]*class="[^"]*product[^"]*"[^>]*>([^<]+)</i) ||
+                        html.match(/<span[^>]*class="[^"]*category[^"]*"[^>]*>([^<]+)</i);
   if (subtitleMatch) {
     result.subtitle = cleanText(subtitleMatch[1]);
   }
 
-  // Extract main description - look for first paragraph after intro
-  const descMatch = html.match(/<p[^>]*>([^<]{50,500})<\/p>/i);
-  if (descMatch) {
-    result.description = cleanText(descMatch[1]);
+  // Extract main description - look for multiple paragraphs and merge them
+  const descMatches = html.matchAll(/<p[^>]*>([^<]{30,1000})<\/p>/gi);
+  const descriptions: string[] = [];
+  for (const match of descMatches) {
+    const text = cleanText(match[1]);
+    // Filter out navigation, cookie, footer content
+    if (text.length > 40 && 
+        !text.toLowerCase().includes('cookie') && 
+        !text.toLowerCase().includes('privacy') &&
+        !text.toLowerCase().includes('newsletter') &&
+        !text.toLowerCase().includes('subscribe') &&
+        !text.toLowerCase().includes('copyright')) {
+      descriptions.push(text);
+      if (descriptions.length >= 4) break;
+    }
   }
+  result.description = descriptions.join(' ');
 
-  // Extract bullet points/benefits
+  // Extract bullet points/benefits from ALL lists, be thorough
   const ulMatches = html.matchAll(/<ul[^>]*>([\s\S]*?)<\/ul>/gi);
   for (const ulMatch of ulMatches) {
     const liMatches = ulMatch[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
     for (const liMatch of liMatches) {
       const text = cleanText(liMatch[1].replace(/<[^>]+>/g, ''));
-      if (text.length > 10 && text.length < 200 && !text.includes('http')) {
+      if (text.length > 10 && text.length < 400 && 
+          !text.includes('http') &&
+          !text.toLowerCase().includes('cookie') &&
+          !text.toLowerCase().includes('menu')) {
         result.benefits.push(text);
       }
     }
-    // Only take first meaningful list
-    if (result.benefits.length >= 3) break;
   }
+  // Also extract from ordered lists
+  const olMatches = html.matchAll(/<ol[^>]*>([\s\S]*?)<\/ol>/gi);
+  for (const olMatch of olMatches) {
+    const liMatches = olMatch[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+    for (const liMatch of liMatches) {
+      const text = cleanText(liMatch[1].replace(/<[^>]+>/g, ''));
+      if (text.length > 10 && text.length < 400 && !text.includes('http')) {
+        result.benefits.push(text);
+      }
+    }
+  }
+  // Deduplicate benefits
+  result.benefits = [...new Set(result.benefits)].slice(0, 15);
 
-  // Extract specifications table
-  const tableMatches = html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi);
-  for (const trMatch of tableMatches) {
-    const cells = trMatch[1].match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi);
-    if (cells && cells.length >= 2) {
-      const name = cleanText(cells[0].replace(/<[^>]+>/g, ''));
-      const value = cleanText(cells[1].replace(/<[^>]+>/g, ''));
-      if (name && value && name.length < 100 && value.length < 200) {
+  // Extract specifications table - more thorough, look for all tables
+  const tableMatches = html.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/gi);
+  for (const tableMatch of tableMatches) {
+    const trMatches = tableMatch[1].matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi);
+    for (const trMatch of trMatches) {
+      const cells = trMatch[1].match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi);
+      if (cells && cells.length >= 2) {
+        const name = cleanText(cells[0].replace(/<[^>]+>/g, ''));
+        const value = cleanText(cells[1].replace(/<[^>]+>/g, ''));
+        if (name && value && name.length < 150 && value.length < 300 && 
+            !name.toLowerCase().includes('cookie')) {
+          result.specifications.push({ name, value });
+        }
+      }
+    }
+  }
+  // Also try to extract from definition lists
+  const dlMatches = html.matchAll(/<dl[^>]*>([\s\S]*?)<\/dl>/gi);
+  for (const dlMatch of dlMatches) {
+    const dtMatches = [...dlMatch[1].matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi)];
+    const ddMatches = [...dlMatch[1].matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/gi)];
+    for (let i = 0; i < Math.min(dtMatches.length, ddMatches.length); i++) {
+      const name = cleanText(dtMatches[i][1].replace(/<[^>]+>/g, ''));
+      const value = cleanText(ddMatches[i][1].replace(/<[^>]+>/g, ''));
+      if (name && value) {
         result.specifications.push({ name, value });
       }
     }
   }
+  result.specifications = result.specifications.slice(0, 25);
 
-  // Extract use cases/features from h2/h3 sections
-  const sectionMatches = html.matchAll(/<h[23][^>]*>([^<]+)<\/h[23]>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
+  // Extract use cases/features from h2/h3/h4 sections
+  const sectionMatches = html.matchAll(/<h[234][^>]*>([^<]+)<\/h[234]>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
   for (const match of sectionMatches) {
     const title = cleanText(match[1]);
     const desc = cleanText(match[2].replace(/<[^>]+>/g, ''));
-    if (title.length > 5 && title.length < 100 && desc.length > 20 && desc.length < 500) {
+    if (title.length > 3 && title.length < 120 && desc.length > 15 && desc.length < 600) {
       // Skip navigation/generic sections
-      if (!title.toLowerCase().includes('menu') && 
-          !title.toLowerCase().includes('footer') &&
-          !title.toLowerCase().includes('contact')) {
+      const titleLower = title.toLowerCase();
+      if (!titleLower.includes('menu') && 
+          !titleLower.includes('footer') &&
+          !titleLower.includes('contact') &&
+          !titleLower.includes('cookie') &&
+          !titleLower.includes('newsletter') &&
+          !titleLower.includes('related') &&
+          !titleLower.includes('similar')) {
         result.useCases.push({ title, description: desc });
       }
     }
-    if (result.useCases.length >= 4) break;
+    if (result.useCases.length >= 8) break;
   }
 
   // Extract download links (PDF files)
