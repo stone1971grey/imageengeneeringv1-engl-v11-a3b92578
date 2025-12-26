@@ -157,90 +157,67 @@ function parseFirecrawlContent(
   }
 
   // === DESCRIPTION ===
-  // Clean the markdown AGGRESSIVELY before extraction
-  // The source website embeds complex JSON metadata that needs to be removed
+  // This website has embedded JSON that pollutes the markdown
+  // Strategy: Extract text BEFORE any JSON blocks, and use metadata as fallback
   
-  // First pass: Remove obvious JSON objects and their content
-  let cleanedMarkdown = markdown
-    // Remove any block that looks like JSON (starts with { and contains quotes)
-    .replace(/\{[^{}]*"[^{}]*\}/g, '')
-    // Remove escaped JSON blocks (common on this website)
-    .replace(/\{\\[^}]+\}/g, '')
-    // Remove blocks with escaped quotes that indicate JSON
-    .replace(/\{[^}]*\\"[^}]*\}/g, '')
-    // Remove image markdown completely (images are loaded from storage anyway)
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
-    // Remove standalone URLs
-    .replace(/https?:\/\/[^\s]+/g, '')
-    // Remove lines that are mostly special characters
-    .replace(/^[^a-zA-Z]*$/gm, '');
+  // Find the first JSON-like block and only use content before it
+  const jsonStartIndex = markdown.search(/\{[^{}]*"id":/);
+  const cleanPortion = jsonStartIndex > 0 ? markdown.substring(0, jsonStartIndex) : markdown;
   
-  // Second pass: Process line by line and filter aggressively
-  const lines = cleanedMarkdown.split('\n');
-  const cleanLines: string[] = [];
+  // Also try to extract from meta description (usually clean)
+  const metaDescription = metadata.description || '';
+  console.log('[Firecrawl] Meta description:', metaDescription.slice(0, 200));
   
-  for (const line of lines) {
-    const trimmed = line.trim();
-    
-    // Skip empty lines
-    if (!trimmed) continue;
-    
-    // Skip if contains ANY JSON indicators
-    if (trimmed.includes('":"') || trimmed.includes('\\":')) continue;
-    if (trimmed.includes('{"') || trimmed.includes('"}')) continue;
-    if (trimmed.includes('form_id') || trimmed.includes('thumbnail')) continue;
-    if (trimmed.includes('watermark') || trimmed.includes('imageId')) continue;
-    if (trimmed.includes('lightboxUrl') || trimmed.includes('hideInAll')) continue;
-    if (trimmed.includes('\\\\') || trimmed.includes('\\/')) continue;
-    
-    // Skip lines with too many special characters (likely JSON artifacts)
-    const specialCharCount = (trimmed.match(/[{}\[\]\\:,"]/g) || []).length;
-    if (specialCharCount > 5) continue;
-    
-    cleanLines.push(trimmed);
-  }
-  
-  cleanedMarkdown = cleanLines.join('\n');
-  
-  // Third pass: Extract paragraphs
+  // Process the clean portion of markdown
   const paragraphs: string[] = [];
-  const blocks = cleanedMarkdown.split(/\n\n+/);
+  const blocks = cleanPortion.split(/\n\n+/);
   
   for (const block of blocks) {
     let trimmed = block.trim();
     
-    // Skip headers
+    // Skip headers (will use for title)
     if (trimmed.startsWith('#')) continue;
-    // Skip list items (will be processed separately as benefits)
+    // Skip list items (will process as benefits)
     if (trimmed.match(/^[\-\*•]\s/)) continue;
-    // Skip short content
+    // Skip very short content
     if (trimmed.length < 40) continue;
-    
-    // Skip footer-like content
+    // Skip if looks like JSON
+    if (trimmed.includes('{"') || trimmed.includes('":"')) continue;
+    // Skip footer content
     if (isFooterContent(trimmed)) continue;
     
-    // Clean up markdown formatting
+    // Clean markdown formatting
     let cleaned = trimmed
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting, keep text
+      .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // Remove images
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links, keep text
       .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
       .replace(/\*([^*]+)\*/g, '$1') // Remove italic
       .replace(/`([^`]+)`/g, '$1') // Remove code
-      .replace(/^\s*>\s*/gm, '') // Remove blockquotes
       .replace(/\s{2,}/g, ' ') // Normalize spaces
       .trim();
     
-    // Final validation: must be mostly letters/spaces
-    const letterRatio = (cleaned.match(/[a-zA-ZäöüÄÖÜß\s]/g) || []).length / cleaned.length;
-    if (letterRatio < 0.7) continue;
+    // Skip if too short after cleaning
+    if (cleaned.length < 40) continue;
     
-    if (cleaned.length > 40 && cleaned.length < 2000) {
-      paragraphs.push(cleaned);
-    }
+    // Skip lines with backslashes (escaped content)
+    if (cleaned.includes('\\')) continue;
+    
+    paragraphs.push(cleaned);
   }
   
-  result.description = paragraphs.slice(0, 5).join('\n\n'); // Max 5 paragraphs
+  // Build description: use extracted paragraphs, or fall back to meta description
+  if (paragraphs.length > 0) {
+    result.description = paragraphs.slice(0, 4).join('\n\n');
+  } else if (metaDescription.length > 50) {
+    // Use meta description as fallback - it's usually clean
+    result.description = metaDescription;
+  }
+  
   console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
-  console.log('[Firecrawl] Description preview:', result.description.slice(0, 200));
+  console.log('[Firecrawl] Description preview:', result.description.slice(0, 300));
+  
+  // Use cleanPortion for further extraction
+  const cleanedMarkdown = cleanPortion;
 
   // === BENEFITS ===
   // Extract from markdown lists (lines starting with -, *, •)
