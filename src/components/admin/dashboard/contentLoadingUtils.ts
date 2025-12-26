@@ -284,13 +284,16 @@ export function parseContentItems(
       case "seo_settings":
         try {
           const seoSettings = JSON.parse(item.content_value);
+          console.log('[contentLoadingUtils] Parsed seo_settings from DB:', seoSettings);
+          console.log('[contentLoadingUtils] Existing seoData before merge:', seoData);
           seoData = {
             ...seoData,
             ...seoSettings,
             slug: seoSettings.slug || selectedPage
           };
-        } catch {
-          // Keep default SEO data
+          console.log('[contentLoadingUtils] Final seoData after merge:', seoData);
+        } catch (e) {
+          console.error('[contentLoadingUtils] Error parsing seo_settings:', e);
         }
         break;
       default:
