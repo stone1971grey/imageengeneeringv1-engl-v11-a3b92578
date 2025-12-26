@@ -51,7 +51,7 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [], descr
           {/* Description/Links section - renders HTML content including internal links */}
           {description && (
             <div 
-              className="mt-6 pt-6 border-t border-gray-200 prose prose-sm max-w-none text-[#555]"
+              className="mt-6 pt-6 border-t border-gray-200 text-[#555] [&_a]:inline-block [&_a]:font-semibold [&_a]:text-[#2D2D2D] [&_a]:underline [&_a]:decoration-2 [&_a]:bg-[#f9dc24]/30 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-[#f9dc24]/50 [&_a]:transition-colors"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           )}
