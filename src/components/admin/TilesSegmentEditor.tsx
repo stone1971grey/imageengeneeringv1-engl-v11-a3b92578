@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -365,12 +365,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
           <div>
             <Label htmlFor="tiles-desc" className="text-white">Section Description</Label>
-            <Textarea
-              id="tiles-desc"
+            <SimpleRichTextEditor
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="border-2 border-gray-600 bg-gray-800 text-white"
+              onChange={setDescription}
+              placeholder="Section description..."
             />
           </div>
 
@@ -596,11 +594,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
               <div>
                 <Label className="text-white">Description</Label>
-                <Textarea
+                <SimpleRichTextEditor
                   value={tile.description}
-                  onChange={(e) => handleTileChange(index, 'description', e.target.value)}
-                  rows={3}
-                  className="border-2 border-gray-600 bg-gray-800 text-white"
+                  onChange={(value) => handleTileChange(index, 'description', value)}
+                  placeholder="Tile description..."
                 />
               </div>
 
