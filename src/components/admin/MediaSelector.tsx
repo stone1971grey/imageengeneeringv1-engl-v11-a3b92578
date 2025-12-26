@@ -6,6 +6,8 @@ import { DataHubDialog } from "./DataHubDialog";
 interface MediaSelectorProps {
   onFileSelect: (file: File) => void;
   onMediaSelect: (url: string, metadata?: any) => void;
+  /** Optional callback when image is cleared via trash icon. If not provided, onMediaSelect('', undefined) is called */
+  onClear?: () => void;
   acceptedFileTypes?: string;
   label?: string;
   currentImageUrl?: string;
@@ -32,6 +34,7 @@ const isVideoUrl = (url: string): boolean => {
 export const MediaSelector = ({
   onFileSelect,
   onMediaSelect,
+  onClear,
   acceptedFileTypes = "image/*",
   label = "Image",
   currentImageUrl,
@@ -118,7 +121,13 @@ export const MediaSelector = ({
           )}
           <button
             type="button"
-            onClick={() => onMediaSelect('', undefined)}
+            onClick={() => {
+              if (onClear) {
+                onClear();
+              } else {
+                onMediaSelect('', undefined);
+              }
+            }}
             className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10"
             title={isVideo ? "Delete Video" : "Delete Image"}
           >

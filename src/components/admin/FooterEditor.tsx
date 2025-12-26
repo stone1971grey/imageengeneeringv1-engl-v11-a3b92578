@@ -3,7 +3,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { en } from "@/translations/en";
@@ -11,6 +10,16 @@ import { type ImageMetadata, extractImageMetadata, formatFileSize, formatUploadD
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 import { ensureMediaFolderHierarchy, createOrUpdateFileMapping } from "@/utils/ensureMediaFolder";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 export type FooterEditorLanguage = "en" | "de" | "ja" | "ko" | "zh";
 
 interface FooterEditorProps {
@@ -66,6 +75,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
   const [isSaving, setIsSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (!pageSlug) return;
@@ -490,26 +500,9 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
           updated_at: new Date().toISOString(),
           updated_by: user.id,
         });
-      } else if (language === "en") {
-        // CRITICAL: If image is removed in default language (EN), remove it in ALL languages
-        // This ensures image deletion cascades to all language versions
-        const allLanguages: FooterEditorLanguage[] = ["en", "de", "ja", "ko", "zh"];
-        for (const lang of allLanguages) {
-          await supabase
-            .from("page_content")
-            .delete()
-            .eq("page_slug", pageSlug)
-            .eq("section_key", "footer_team_image_url")
-            .eq("language", lang);
-          await supabase
-            .from("page_content")
-            .delete()
-            .eq("page_slug", pageSlug)
-            .eq("section_key", "footer_team_image_metadata")
-            .eq("language", lang);
-        }
-        console.log("[FooterEditor] Image removed in EN - cascaded deletion to all languages");
       }
+      // Note: Image deletion is handled directly via the trash icon dialog,
+      // so we don't need to cascade here during save
 
       if (teamImageMetadata) {
         rows.push({
@@ -701,7 +694,95 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                 });
                 toast.success("Image selected from Media");
               }}
+              onClear={() => {
+                // In English: Show dialog asking if delete in all languages
+                if (language === "en") {
+                  setShowDeleteDialog(true);
+                } else {
+                  // Non-English: just remove locally
+                  setTeamImageUrl("");
+                  setTeamImageMetadata(null);
+                  toast.info("Image removed for this language.");
+                }
+              }}
             />
+
+            {/* Delete Image Dialog - only for English */}
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <AlertDialogContent className="bg-gray-900 border-gray-700">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">Delete Team Image</AlertDialogTitle>
+                  <AlertDialogDescription className="text-gray-400">
+                    Do you want to delete this image only in English or in all language versions?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+                  <AlertDialogCancel className="bg-gray-700 text-white hover:bg-gray-600 border-none">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-yellow-500 text-black hover:bg-yellow-400"
+                    onClick={async () => {
+                      // Delete only in English
+                      setTeamImageUrl("");
+                      setTeamImageMetadata(null);
+                      
+                      // Also delete from database for EN only
+                      const user = (await supabase.auth.getUser()).data.user;
+                      if (user) {
+                        await supabase
+                          .from("page_content")
+                          .delete()
+                          .eq("page_slug", pageSlug)
+                          .eq("section_key", "footer_team_image_url")
+                          .eq("language", "en");
+                        await supabase
+                          .from("page_content")
+                          .delete()
+                          .eq("page_slug", pageSlug)
+                          .eq("section_key", "footer_team_image_metadata")
+                          .eq("language", "en");
+                      }
+                      toast.success("Image deleted for English only.");
+                      setShowDeleteDialog(false);
+                    }}
+                  >
+                    English only
+                  </AlertDialogAction>
+                  <AlertDialogAction
+                    className="bg-red-500 text-white hover:bg-red-600"
+                    onClick={async () => {
+                      // Delete in all languages
+                      setTeamImageUrl("");
+                      setTeamImageMetadata(null);
+                      
+                      const user = (await supabase.auth.getUser()).data.user;
+                      if (user) {
+                        const allLanguages: FooterEditorLanguage[] = ["en", "de", "ja", "ko", "zh"];
+                        for (const lang of allLanguages) {
+                          await supabase
+                            .from("page_content")
+                            .delete()
+                            .eq("page_slug", pageSlug)
+                            .eq("section_key", "footer_team_image_url")
+                            .eq("language", lang);
+                          await supabase
+                            .from("page_content")
+                            .delete()
+                            .eq("page_slug", pageSlug)
+                            .eq("section_key", "footer_team_image_metadata")
+                            .eq("language", lang);
+                        }
+                      }
+                      toast.success("Image deleted for all languages.");
+                      setShowDeleteDialog(false);
+                    }}
+                  >
+                    All languages
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             {teamImageMetadata && (
               <div className="mt-4 p-4 bg-gray-950 rounded-lg border-2 border-gray-600 space-y-2">
@@ -758,28 +839,6 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                   </p>
                 </div>
 
-                {/* Remove Image Button - only visible in default language (EN) */}
-                {language === "en" && (
-                  <div className="mt-4 pt-4 border-t border-gray-700">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setTeamImageUrl("");
-                        setTeamImageMetadata(null);
-                        toast.info("Image removed. Save to apply changes to all languages.");
-                      }}
-                      className="flex items-center gap-2"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Remove Image (all languages)
-                    </Button>
-                    <p className="text-gray-400 text-xs mt-2">
-                      Removing the image in English will also remove it from all other language versions when you save.
-                    </p>
-                  </div>
-                )}
               </div>
             )}
           </div>
