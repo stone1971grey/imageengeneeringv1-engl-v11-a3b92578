@@ -45,31 +45,19 @@ export async function ensureMediaFolderHierarchy(pageSlug: string): Promise<Fold
       const folderName = pathParts[i];
       currentStoragePath = currentStoragePath ? `${currentStoragePath}/${folderName}` : folderName;
 
-      // Check if folder exists - for first level, parent_id is null
-      let query = supabase
+      // Check if folder exists by exact storage_path match first (most reliable)
+      const { data: exactMatch, error: exactError } = await supabase
         .from('media_folders')
-        .select('id, storage_path');
-      
-      if (currentParentId === null) {
-        // First level - look for top-level folder by storage_path or name
-        query = query.is('parent_id', null);
-      } else {
-        query = query.eq('parent_id', currentParentId);
-      }
+        .select('id, storage_path, name')
+        .eq('storage_path', currentStoragePath)
+        .maybeSingle();
 
-      const { data: existingFolders, error: checkError } = await query;
-
-      if (checkError) {
-        console.error(`[ensureMediaFolderHierarchy] Error checking folder ${folderName}:`, checkError);
+      if (exactError && exactError.code !== 'PGRST116') {
+        console.error(`[ensureMediaFolderHierarchy] Error checking folder ${folderName}:`, exactError);
         return null;
       }
 
-      // Find matching folder - check storage_path first, then name
-      const existingFolder = existingFolders?.find(f => 
-        f.storage_path === currentStoragePath || 
-        f.storage_path === folderName ||
-        (i === 0 && existingFolders.some(ef => ef.storage_path?.startsWith(folderName)))
-      );
+      const existingFolder = exactMatch;
 
       if (existingFolder) {
         // Folder exists, continue to next level
