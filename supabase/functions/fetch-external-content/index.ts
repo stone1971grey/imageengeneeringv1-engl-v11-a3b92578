@@ -157,19 +157,50 @@ function parseFirecrawlContent(
   }
 
   // === DESCRIPTION ===
-  // This website has embedded JSON that pollutes the markdown
-  // PRIORITY: Use meta description first (it's always clean), then try markdown extraction
+  // The Octa Light Player page has clean content paragraphs at the start
+  // Extract them BEFORE any JSON gallery blocks appear
   
-  // Get meta description - it's usually clean and well-written
+  // Get meta description as fallback
   const metaDescription = (metadata.description || '').trim();
-  console.log('[Firecrawl] Meta description found:', metaDescription.length, 'chars');
-  console.log('[Firecrawl] Meta description content:', metaDescription);
+  console.log('[Firecrawl] Meta description:', metaDescription.slice(0, 200));
   
-  // Find the first JSON-like block and only use content before it
-  const jsonStartIndex = markdown.search(/\{[^{}]*"id":/);
-  const cleanPortion = jsonStartIndex > 0 ? markdown.substring(0, jsonStartIndex) : markdown;
+  // Find where JSON/gallery content starts (these pages have embedded JSON for galleries)
+  const jsonPatterns = [
+    /\{[^{}]*"form_id":/,
+    /\{[^{}]*"id":\d+,/,
+    /\{[^{}]*"category":/,
+    /gallery images/i,
+  ];
   
-  // Process the clean portion of markdown for additional paragraphs
+  let jsonStartIndex = markdown.length;
+  for (const pattern of jsonPatterns) {
+    const match = markdown.search(pattern);
+    if (match > 0 && match < jsonStartIndex) {
+      jsonStartIndex = match;
+    }
+  }
+  
+  // Also find where "Main Menu" navigation ends
+  const mainContentStart = markdown.indexOf('Our web shop is currently unavailable');
+  const contentAfterNav = mainContentStart > 0 
+    ? markdown.substring(mainContentStart) 
+    : markdown;
+  
+  // Recalculate JSON start in the content-after-nav portion
+  let cleanJsonStart = contentAfterNav.length;
+  for (const pattern of jsonPatterns) {
+    const match = contentAfterNav.search(pattern);
+    if (match > 0 && match < cleanJsonStart) {
+      cleanJsonStart = match;
+    }
+  }
+  
+  // Extract the clean portion between nav and gallery JSON
+  const cleanPortion = contentAfterNav.substring(0, cleanJsonStart);
+  console.log('[Firecrawl] Clean portion length:', cleanPortion.length);
+  console.log('[Firecrawl] Clean portion preview:', cleanPortion.slice(0, 500));
+  
+  // Process the clean portion - split by double newlines
   const paragraphs: string[] = [];
   const blocks = cleanPortion.split(/\n\n+/);
   
@@ -178,12 +209,14 @@ function parseFirecrawlContent(
     
     // Skip headers (will use for title)
     if (trimmed.startsWith('#')) continue;
-    // Skip list items (will process as benefits)
+    // Skip "Main Menu" and navigation items
+    if (trimmed === '×' || trimmed === 'Test Equipment') continue;
+    // Skip the shop notice
+    if (trimmed.includes('web shop is currently unavailable')) continue;
+    // Skip list items separately (will process as benefits)
     if (trimmed.match(/^[\-\*•]\s/)) continue;
     // Skip very short content
-    if (trimmed.length < 40) continue;
-    // Skip if looks like JSON
-    if (trimmed.includes('{"') || trimmed.includes('":"')) continue;
+    if (trimmed.length < 50) continue;
     // Skip footer content
     if (isFooterContent(trimmed)) continue;
     
@@ -194,36 +227,33 @@ function parseFirecrawlContent(
       .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
       .replace(/\*([^*]+)\*/g, '$1') // Remove italic
       .replace(/`([^`]+)`/g, '$1') // Remove code
+      .replace(/\\\*/g, '*') // Unescape asterisks
       .replace(/\s{2,}/g, ' ') // Normalize spaces
       .trim();
     
     // Skip if too short after cleaning
-    if (cleaned.length < 40) continue;
+    if (cleaned.length < 50) continue;
     
-    // Skip lines with backslashes (escaped content)
-    if (cleaned.includes('\\')) continue;
+    // Skip if contains JSON artifacts
+    if (cleaned.includes('{"') || cleaned.includes('":"') || cleaned.includes('form_id')) continue;
     
     paragraphs.push(cleaned);
   }
   
-  // PRIORITY: Use meta description first (it's always clean on this website)
-  // Then append any clean paragraphs we found
-  if (metaDescription.length > 30) {
-    // Use meta description as the primary description
-    result.description = metaDescription;
-    
-    // Optionally append first clean paragraph if different from meta
-    if (paragraphs.length > 0 && !metaDescription.includes(paragraphs[0].slice(0, 50))) {
-      result.description += '\n\n' + paragraphs[0];
-    }
-  } else if (paragraphs.length > 0) {
-    // Fallback to extracted paragraphs
-    result.description = paragraphs.slice(0, 4).join('\n\n');
+  console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
+  for (let i = 0; i < Math.min(3, paragraphs.length); i++) {
+    console.log(`[Firecrawl] Paragraph ${i + 1}:`, paragraphs[i].slice(0, 200));
   }
   
-  console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
+  // Build description from paragraphs, fallback to meta
+  if (paragraphs.length > 0) {
+    result.description = paragraphs.slice(0, 5).join('\n\n');
+  } else if (metaDescription.length > 30) {
+    result.description = metaDescription;
+  }
+  
   console.log('[Firecrawl] Final description length:', result.description.length);
-  console.log('[Firecrawl] Description preview:', result.description.slice(0, 300));
+  console.log('[Firecrawl] Description preview:', result.description.slice(0, 400));
   
   // Use cleanPortion for further extraction
   const cleanedMarkdown = cleanPortion;
