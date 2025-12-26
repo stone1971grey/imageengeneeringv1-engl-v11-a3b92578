@@ -157,62 +157,90 @@ function parseFirecrawlContent(
   }
 
   // === DESCRIPTION ===
-  // Clean the markdown thoroughly before extraction
+  // Clean the markdown AGGRESSIVELY before extraction
+  // The source website embeds complex JSON metadata that needs to be removed
+  
+  // First pass: Remove obvious JSON objects and their content
   let cleanedMarkdown = markdown
-    // Remove embedded JSON objects (common from gallery metadata)
-    .replace(/\{[^{}]*"id":\s*\d+[^{}]*\}/g, '')
-    .replace(/\{[^{}]*"form_id":\s*\d+[^{}]*\}/g, '')
-    .replace(/\{\\?"id\\?":\s*\d+[^}]*\}/g, '')
-    // Remove escaped JSON
+    // Remove any block that looks like JSON (starts with { and contains quotes)
+    .replace(/\{[^{}]*"[^{}]*\}/g, '')
+    // Remove escaped JSON blocks (common on this website)
     .replace(/\{\\[^}]+\}/g, '')
-    // Remove image markdown with URLs (but keep alt text)
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
-    // Remove empty lines created by removals
-    .replace(/\n{3,}/g, '\n\n');
+    // Remove blocks with escaped quotes that indicate JSON
+    .replace(/\{[^}]*\\"[^}]*\}/g, '')
+    // Remove image markdown completely (images are loaded from storage anyway)
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    // Remove standalone URLs
+    .replace(/https?:\/\/[^\s]+/g, '')
+    // Remove lines that are mostly special characters
+    .replace(/^[^a-zA-Z]*$/gm, '');
   
+  // Second pass: Process line by line and filter aggressively
+  const lines = cleanedMarkdown.split('\n');
+  const cleanLines: string[] = [];
+  
+  for (const line of lines) {
+    const trimmed = line.trim();
+    
+    // Skip empty lines
+    if (!trimmed) continue;
+    
+    // Skip if contains ANY JSON indicators
+    if (trimmed.includes('":"') || trimmed.includes('\\":')) continue;
+    if (trimmed.includes('{"') || trimmed.includes('"}')) continue;
+    if (trimmed.includes('form_id') || trimmed.includes('thumbnail')) continue;
+    if (trimmed.includes('watermark') || trimmed.includes('imageId')) continue;
+    if (trimmed.includes('lightboxUrl') || trimmed.includes('hideInAll')) continue;
+    if (trimmed.includes('\\\\') || trimmed.includes('\\/')) continue;
+    
+    // Skip lines with too many special characters (likely JSON artifacts)
+    const specialCharCount = (trimmed.match(/[{}\[\]\\:,"]/g) || []).length;
+    if (specialCharCount > 5) continue;
+    
+    cleanLines.push(trimmed);
+  }
+  
+  cleanedMarkdown = cleanLines.join('\n');
+  
+  // Third pass: Extract paragraphs
   const paragraphs: string[] = [];
-  
-  // Split markdown by double newlines and process each block
   const blocks = cleanedMarkdown.split(/\n\n+/);
+  
   for (const block of blocks) {
     let trimmed = block.trim();
     
-    // Skip if block contains JSON-like content
-    if (trimmed.includes('"form_id"') || trimmed.includes('\\"id\\"') || trimmed.includes('{"id":')) continue;
-    if (trimmed.includes('thumbnail_url') || trimmed.includes('watermark_name')) continue;
-    
-    // Skip headers, lists, links-only lines, short lines
+    // Skip headers
     if (trimmed.startsWith('#')) continue;
-    if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•')) continue;
-    if (trimmed.match(/^\[.*\]\(.*\)$/)) continue; // Only a link
-    if (trimmed.length < 50) continue;
+    // Skip list items (will be processed separately as benefits)
+    if (trimmed.match(/^[\-\*•]\s/)) continue;
+    // Skip short content
+    if (trimmed.length < 40) continue;
     
     // Skip footer-like content
     if (isFooterContent(trimmed)) continue;
     
-    // Clean up markdown formatting but keep text
+    // Clean up markdown formatting
     let cleaned = trimmed
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting, keep text
       .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
       .replace(/\*([^*]+)\*/g, '$1') // Remove italic
       .replace(/`([^`]+)`/g, '$1') // Remove code
       .replace(/^\s*>\s*/gm, '') // Remove blockquotes
-      .replace(/\\\\/g, '') // Remove escaped backslashes
-      .replace(/\\n/g, ' ') // Remove escaped newlines
-      .replace(/\\"/g, '"') // Unescape quotes
       .replace(/\s{2,}/g, ' ') // Normalize spaces
       .trim();
     
-    // Final check: skip if still contains JSON artifacts
-    if (cleaned.includes('":') || cleaned.includes('{"') || cleaned.includes('"}')) continue;
+    // Final validation: must be mostly letters/spaces
+    const letterRatio = (cleaned.match(/[a-zA-ZäöüÄÖÜß\s]/g) || []).length / cleaned.length;
+    if (letterRatio < 0.7) continue;
     
-    if (cleaned.length > 50 && cleaned.length < 2000) {
+    if (cleaned.length > 40 && cleaned.length < 2000) {
       paragraphs.push(cleaned);
     }
   }
   
   result.description = paragraphs.slice(0, 5).join('\n\n'); // Max 5 paragraphs
   console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
+  console.log('[Firecrawl] Description preview:', result.description.slice(0, 200));
 
   // === BENEFITS ===
   // Extract from markdown lists (lines starting with -, *, •)
@@ -224,12 +252,15 @@ function parseFirecrawlContent(
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
-      .replace(/\\\\/g, '')
-      .replace(/\\"/g, '"')
       .trim();
     
-    // Skip if contains JSON artifacts
-    if (text.includes('":') || text.includes('{"') || text.includes('form_id')) continue;
+    // Skip if contains ANY JSON indicators or special chars
+    if (text.includes('":') || text.includes('{"') || text.includes('\\')) continue;
+    if (text.includes('form_id') || text.includes('thumbnail')) continue;
+    
+    // Must have good letter ratio
+    const letterRatio = (text.match(/[a-zA-ZäöüÄÖÜß\s]/g) || []).length / text.length;
+    if (letterRatio < 0.8) continue;
     
     if (text.length > 15 && text.length < 400 && !isFooterContent(text)) {
       listItems.push(text);
@@ -240,7 +271,7 @@ function parseFirecrawlContent(
   if (listItems.length < 3 && result.description.length > 100) {
     const sentences = result.description
       .split(/[.!?]\s+/)
-      .filter(s => s.length > 30 && s.length < 300 && !s.includes('":'))
+      .filter(s => s.length > 30 && s.length < 300)
       .map(s => s.trim() + (s.endsWith('.') ? '' : '.'));
     
     listItems.push(...sentences.slice(0, 8 - listItems.length));
