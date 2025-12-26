@@ -4548,14 +4548,14 @@ export const SEOEditor = ({
                       if (newPages.length === 0) return null;
                       
                       return (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                            <p className="text-sm font-semibold text-blue-400">
+                            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                            <p className="text-base font-bold text-blue-400">
                               New Cluster Pages ({newPages.length})
                             </p>
                           </div>
-                          <p className="text-xs text-muted-foreground italic pl-5">
+                          <p className="text-sm text-muted-foreground italic pl-6">
                             Neue Seiten, die als Cluster-Content um diese Pillar-Page erstellt werden sollten:
                           </p>
                           {newPages.map((suggestion, index) => {
@@ -4583,8 +4583,8 @@ export const SEOEditor = ({
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                    <span className={`font-medium ${suggestion.saved ? 'text-green-400' : 'text-foreground'}`}>
+                                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                    <span className={`text-base font-semibold ${suggestion.saved ? 'text-green-400' : 'text-foreground'}`}>
                                       {suggestion.suggestedTitle}
                                     </span>
                                     <Badge variant="outline" className={`text-xs ${
@@ -4743,14 +4743,14 @@ export const SEOEditor = ({
                       if (segmentEnhancements.length === 0) return null;
                       
                       return (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                            <p className="text-sm font-semibold text-amber-400">
+                            <div className="w-4 h-4 rounded-full bg-amber-500"></div>
+                            <p className="text-base font-bold text-amber-400">
                               Segment Enhancements ({segmentEnhancements.length})
                             </p>
                           </div>
-                          <p className="text-xs text-muted-foreground italic pl-5">
+                          <p className="text-sm text-muted-foreground italic pl-6">
                             Segmente in bestehenden Seiten, die ergänzt oder erstellt werden sollten:
                           </p>
                           {segmentEnhancements.map((suggestion, index) => (
@@ -4767,8 +4767,8 @@ export const SEOEditor = ({
                                   {suggestion.priority}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="font-medium text-foreground">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-base font-semibold text-foreground">
                                       {suggestion.suggestedTitle}
                                     </span>
                                     <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
