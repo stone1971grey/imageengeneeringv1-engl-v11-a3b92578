@@ -153,7 +153,7 @@ TYPE 2 - SEGMENT ENHANCEMENTS (suggestionType: "existing_segment"):
 - These are content gaps in pages that already exist
 - Specify which existing page the segment should be added to
 
-Suggest 3-4 of each type (6-8 total).
+Suggest 2-3 of each type (4-6 total). Keep suggestedSegments arrays BRIEF (2-3 items max, with short content descriptions).
 
 RESPONSE FORMAT:
 Return ONLY a JSON array:
@@ -213,7 +213,7 @@ IMPORTANT:
           { role: 'user', content: 'Analyze the page and suggest new content that should be created to enable better internal linking.' }
         ],
         temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: 4000,
       }),
     });
 
