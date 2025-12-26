@@ -1080,6 +1080,17 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
                   acceptedFileTypes="image/*"
                   label="Background Image *"
                   currentImageUrl={imageUrl}
+                  enableDeleteDialog={true}
+                  pageSlug={pageSlug}
+                  segmentId={String(segmentId)}
+                  imageField="imageUrl"
+                  language={language}
+                  imageLabel="Background Image"
+                  onClear={() => {
+                    setImageUrl("");
+                    setImageAlt("");
+                    setImageMetadata(null);
+                  }}
                 />
 
                 <div className="space-y-2">

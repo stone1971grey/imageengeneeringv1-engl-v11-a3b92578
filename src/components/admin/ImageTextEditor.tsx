@@ -697,6 +697,16 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               onMediaSelect={handleHeroMediaSelect}
               currentImageUrl={heroImageUrl}
               label=""
+              enableDeleteDialog={true}
+              pageSlug={pageSlug}
+              segmentId={segmentId}
+              imageField="heroImageUrl"
+              language={language}
+              imageLabel="Section Image"
+              onClear={() => {
+                setHeroImageUrl("");
+                setHeroImageMetadata(null);
+              }}
             />
             
             {heroImageMetadata && (

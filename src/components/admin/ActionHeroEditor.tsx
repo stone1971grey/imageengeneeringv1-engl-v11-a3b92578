@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, FolderOpen, Trash2, AlertTriangle } from "lucide-react";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
+import { SegmentImageDeleteDialog } from "@/components/admin/ImageDeleteDialog";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 import { syncAltTextToMediaManagement, getSegmentCountForImage } from "@/utils/syncAltTextToMediaManagement";
@@ -41,6 +42,7 @@ const ActionHeroEditorComponent = ({
   const [isTranslating, setIsTranslating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [segmentCount, setSegmentCount] = useState<number>(0);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Normalize language code
   const normalizedLang = language?.split('-')[0] || 'en';
@@ -433,8 +435,15 @@ const ActionHeroEditorComponent = ({
                 size="icon"
                 className="absolute top-2 right-2 h-8 w-8"
                 onClick={() => {
-                  setBackgroundImage("");
-                  setAltText("");
+                  // In English: Show dialog asking if delete in all languages
+                  if (normalizedLang === "en") {
+                    setShowDeleteDialog(true);
+                  } else {
+                    // Non-English: just remove locally
+                    setBackgroundImage("");
+                    setAltText("");
+                    toast.info("Image removed for this language.");
+                  }
                 }}
               >
                 <Trash2 className="h-4 w-4" />
@@ -443,6 +452,21 @@ const ActionHeroEditorComponent = ({
             <div className="mt-1 text-sm text-muted-foreground truncate">
               {backgroundImage}
             </div>
+            
+            {/* Delete Image Dialog */}
+            <SegmentImageDeleteDialog
+              isOpen={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
+              pageSlug={pageSlug}
+              segmentId={segmentId}
+              imageField="backgroundImage"
+              language={normalizedLang}
+              imageLabel="Background Image"
+              onDeleteComplete={() => {
+                setBackgroundImage("");
+                setAltText("");
+              }}
+            />
           </div>
         )}
       </div>
