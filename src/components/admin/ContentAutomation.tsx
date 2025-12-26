@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { GeminiIcon } from '@/components/GeminiIcon';
+import { FirecrawlIcon } from '@/components/FirecrawlIcon';
 import { 
   Globe, 
   Download, 
@@ -741,8 +741,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border-gray-600 shadow-2xl">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl">
-            <GeminiIcon className="h-8 w-8 text-white" />
+          <div className="p-3 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl">
+            <FirecrawlIcon className="h-8 w-8 text-white" />
           </div>
           <div>
             <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
