@@ -124,23 +124,39 @@ export function parseContentItems(
   let footerTeamName = "";
   let footerTeamTitle = "";
   let footerButtonText = "";
-  // Initialize seoData with proper defaults - don't rely on existingSeoData which may be empty during page switch
+  // CRITICAL: First, pre-scan data array for seo_settings to get database values
+  // This ensures we get the saved values BEFORE any merging with potentially empty existingSeoData
+  let dbSeoSettings: any = null;
+  data?.forEach((item: ContentItem) => {
+    if (item.section_key === "seo_settings") {
+      try {
+        dbSeoSettings = JSON.parse(item.content_value);
+        console.log('[contentLoadingUtils] PRE-SCAN: Found seo_settings in DB:', dbSeoSettings);
+      } catch (e) {
+        console.error('[contentLoadingUtils] PRE-SCAN: Error parsing seo_settings:', e);
+      }
+    }
+  });
+
+  // Initialize seoData: prioritize DB values, then existingSeoData, then defaults
+  // This ensures saved focusKeyword, h1, etc. are never lost during page switch
   let seoData = {
-    title: existingSeoData?.title || '',
-    metaDescription: existingSeoData?.metaDescription || '',
-    slug: existingSeoData?.slug || selectedPage,
-    canonical: existingSeoData?.canonical || '',
-    robotsIndex: existingSeoData?.robotsIndex || 'index',
-    robotsFollow: existingSeoData?.robotsFollow || 'follow',
-    focusKeyword: existingSeoData?.focusKeyword || '',
-    ogTitle: existingSeoData?.ogTitle || '',
-    ogDescription: existingSeoData?.ogDescription || '',
-    ogImage: existingSeoData?.ogImage || '',
-    twitterCard: existingSeoData?.twitterCard || 'summary_large_image',
-    h1: existingSeoData?.h1 || '',
-    h1Locked: existingSeoData?.h1Locked || false,
-    introduction: existingSeoData?.introduction || ''
+    title: dbSeoSettings?.title || existingSeoData?.title || '',
+    metaDescription: dbSeoSettings?.metaDescription || existingSeoData?.metaDescription || '',
+    slug: dbSeoSettings?.slug || existingSeoData?.slug || selectedPage,
+    canonical: dbSeoSettings?.canonical || existingSeoData?.canonical || '',
+    robotsIndex: dbSeoSettings?.robotsIndex || existingSeoData?.robotsIndex || 'index',
+    robotsFollow: dbSeoSettings?.robotsFollow || existingSeoData?.robotsFollow || 'follow',
+    focusKeyword: dbSeoSettings?.focusKeyword || existingSeoData?.focusKeyword || '',
+    ogTitle: dbSeoSettings?.ogTitle || existingSeoData?.ogTitle || '',
+    ogDescription: dbSeoSettings?.ogDescription || existingSeoData?.ogDescription || '',
+    ogImage: dbSeoSettings?.ogImage || existingSeoData?.ogImage || '',
+    twitterCard: dbSeoSettings?.twitterCard || existingSeoData?.twitterCard || 'summary_large_image',
+    h1: dbSeoSettings?.h1 || existingSeoData?.h1 || '',
+    h1Locked: dbSeoSettings?.h1Locked ?? existingSeoData?.h1Locked ?? false,
+    introduction: dbSeoSettings?.introduction || existingSeoData?.introduction || ''
   };
+  console.log('[contentLoadingUtils] Initialized seoData with DB priority:', seoData);
   let needsSegmentUpdate = false;
   let segmentsWithIds: any[] = [];
 
@@ -282,19 +298,8 @@ export function parseContentItems(
         footerButtonText = item.content_value;
         break;
       case "seo_settings":
-        try {
-          const seoSettings = JSON.parse(item.content_value);
-          console.log('[contentLoadingUtils] Parsed seo_settings from DB:', seoSettings);
-          console.log('[contentLoadingUtils] Existing seoData before merge:', seoData);
-          seoData = {
-            ...seoData,
-            ...seoSettings,
-            slug: seoSettings.slug || selectedPage
-          };
-          console.log('[contentLoadingUtils] Final seoData after merge:', seoData);
-        } catch (e) {
-          console.error('[contentLoadingUtils] Error parsing seo_settings:', e);
-        }
+        // Already processed in pre-scan above - skip to avoid double processing
+        console.log('[contentLoadingUtils] seo_settings already processed in pre-scan, skipping');
         break;
       default:
         contentMap[item.section_key] = item.content_value;
