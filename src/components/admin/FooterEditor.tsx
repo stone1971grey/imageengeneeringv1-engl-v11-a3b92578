@@ -58,7 +58,7 @@ const getEnglishDefaults = (): FooterContentMap => ({
   footer_button_text: en.footer.button.default,
 });
 
-const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps) => {
+const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: FooterEditorProps) => {
   const [footerCtaTitle, setFooterCtaTitle] = useState("");
   const [footerCtaDescription, setFooterCtaDescription] = useState("");
   const [footerContactHeadline, setFooterContactHeadline] = useState("");
@@ -697,20 +697,39 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                   return;
                 }
                 setIsUploadingImage(true);
-                console.log("[FooterEditor] Starting upload...");
+                console.log("[FooterEditor] Starting upload for pageSlug:", pageSlug);
                 try {
+                  // Ensure folder hierarchy exists and get the storage path
+                  const folderResult = await ensureMediaFolderHierarchy(pageSlug);
+                  console.log("[FooterEditor] Folder result:", folderResult);
+                  
                   const fileExt = file.name.split(".").pop();
-                  const fileName = `footer-team-${Date.now()}.${fileExt}`;
-                  console.log("[FooterEditor] Uploading to:", fileName);
+                  const baseFileName = `footer-team-${Date.now()}.${fileExt}`;
+                  
+                  // Use folder path if available, otherwise fallback to root
+                  const uploadPath = folderResult?.storagePath 
+                    ? `${folderResult.storagePath}/${baseFileName}`
+                    : baseFileName;
+                  
+                  console.log("[FooterEditor] Uploading to path:", uploadPath);
+                  
                   const { error: uploadError } = await supabase.storage
                     .from("page-images")
-                    .upload(fileName, file, { cacheControl: "3600", upsert: false });
+                    .upload(uploadPath, file, { cacheControl: "3600", upsert: false });
+                  
                   if (uploadError) {
                     console.error("[FooterEditor] Upload error:", uploadError);
                     throw uploadError;
                   }
-                  const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(fileName);
+                  
+                  const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(uploadPath);
                   console.log("[FooterEditor] Upload successful, URL:", publicUrl);
+                  
+                  // Create file-segment mapping for Media Management
+                  const segmentIdentifier = segmentId ? String(segmentId) : `footer-${pageSlug}`;
+                  await createOrUpdateFileMapping(uploadPath, segmentIdentifier, "");
+                  console.log("[FooterEditor] File mapping created for:", uploadPath, "->", segmentIdentifier);
+                  
                   const metadata = await extractImageMetadata(file, publicUrl);
                   setTeamImageUrl(publicUrl);
                   setTeamImageMetadata({ ...metadata, altText: "" });
