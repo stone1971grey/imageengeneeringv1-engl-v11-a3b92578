@@ -4313,15 +4313,31 @@ export const SEOEditor = ({
                               <code className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-foreground">
                                 {suggestion.segmentKey}
                               </code>
-                              {suggestion.segmentId ? (
-                                <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
-                                  ID {suggestion.segmentId}: {suggestion.segmentType || 'segment'}
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30 font-mono">
-                                  ID -: footer
-                                </Badge>
-                              )}
+                              {(() => {
+                                // For footer fields, get the actual footer segment ID from registry
+                                let displaySegmentId = suggestion.segmentId;
+                                let displaySegmentType = suggestion.segmentType || 'segment';
+                                
+                                if (!displaySegmentId && suggestion.segmentKey?.startsWith('footer')) {
+                                  const footerSegment = segmentRegistry.find(
+                                    s => s.segment_type === 'footer' && s.page_slug === pageSlug
+                                  );
+                                  if (footerSegment) {
+                                    displaySegmentId = footerSegment.segment_id;
+                                    displaySegmentType = 'footer';
+                                  }
+                                }
+                                
+                                return displaySegmentId ? (
+                                  <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
+                                    ID {displaySegmentId}: {displaySegmentType}
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30 font-mono">
+                                    ID -: {displaySegmentType}
+                                  </Badge>
+                                );
+                              })()}
                               {suggestion.segmentType && suggestion.segmentType !== 'text' && (
                                 <Badge variant="outline" className="text-xs bg-zinc-500/10 text-zinc-400 border-zinc-500/30">
                                   {suggestion.segmentType}
