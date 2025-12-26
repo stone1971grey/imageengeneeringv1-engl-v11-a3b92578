@@ -651,6 +651,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
               currentImageUrl={teamImageUrl}
               previewSize="small"
               onFileSelect={async (file) => {
+                console.log("[FooterEditor] onFileSelect triggered with file:", file.name, file.type, file.size);
                 if (!file.type.startsWith("image/")) {
                   toast.error("Please upload an image file");
                   return;
@@ -660,14 +661,20 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                   return;
                 }
                 setIsUploadingImage(true);
+                console.log("[FooterEditor] Starting upload...");
                 try {
                   const fileExt = file.name.split(".").pop();
                   const fileName = `footer-team-${Date.now()}.${fileExt}`;
+                  console.log("[FooterEditor] Uploading to:", fileName);
                   const { error: uploadError } = await supabase.storage
                     .from("page-images")
                     .upload(fileName, file, { cacheControl: "3600", upsert: false });
-                  if (uploadError) throw uploadError;
+                  if (uploadError) {
+                    console.error("[FooterEditor] Upload error:", uploadError);
+                    throw uploadError;
+                  }
                   const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(fileName);
+                  console.log("[FooterEditor] Upload successful, URL:", publicUrl);
                   const metadata = await extractImageMetadata(file, publicUrl);
                   setTeamImageUrl(publicUrl);
                   setTeamImageMetadata({ ...metadata, altText: "" });
