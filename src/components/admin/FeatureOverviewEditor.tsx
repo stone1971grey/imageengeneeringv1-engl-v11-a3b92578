@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { SimpleRichTextEditor } from '@/components/admin/SimpleRichTextEditor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -279,13 +279,10 @@ const FeatureOverviewEditorComponent = ({ pageSlug, segmentId, language, onSave 
 
           <div>
             <Label htmlFor="subtext" className="text-white">Subtext (optional)</Label>
-            <Textarea
-              id="subtext"
+            <SimpleRichTextEditor
               value={subtext}
-              onChange={(e) => setSubtext(e.target.value)}
+              onChange={setSubtext}
               placeholder="Optional description text below the title"
-              rows={2}
-              className="bg-gray-800 text-white border-gray-600"
             />
           </div>
 
@@ -373,13 +370,10 @@ const FeatureOverviewEditorComponent = ({ pageSlug, segmentId, language, onSave 
                 </div>
                 <div>
                   <Label htmlFor={`item-description-${index}`} className="text-white">Description</Label>
-                  <Textarea
-                    id={`item-description-${index}`}
+                  <SimpleRichTextEditor
                     value={item.description}
-                    onChange={(e) => updateItem(index, 'description', e.target.value)}
+                    onChange={(value) => updateItem(index, 'description', value)}
                     placeholder="Feature description"
-                    rows={3}
-                    className="bg-gray-800 text-white border-gray-600"
                   />
                 </div>
               </CardContent>
