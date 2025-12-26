@@ -1,8 +1,8 @@
 import { useState, useEffect, memo } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { en } from "@/translations/en";
@@ -41,6 +41,7 @@ const FOOTER_SECTION_KEYS = [
   "footer_team_name",
   "footer_team_title",
   "footer_button_text",
+  "footer_button_url",
 ] as const;
 
 type FooterSectionKey = (typeof FOOTER_SECTION_KEYS)[number];
@@ -56,6 +57,7 @@ const getEnglishDefaults = (): FooterContentMap => ({
   footer_team_name: en.footer.teamName.default,
   footer_team_title: en.footer.teamTitle.default,
   footer_button_text: en.footer.button.default,
+  footer_button_url: "/contact",
 });
 
 const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: FooterEditorProps) => {
@@ -68,6 +70,7 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
   const [footerTeamName, setFooterTeamName] = useState("");
   const [footerTeamTitle, setFooterTeamTitle] = useState("");
   const [footerButtonText, setFooterButtonText] = useState("");
+  const [footerButtonUrl, setFooterButtonUrl] = useState("");
   const [teamImageUrl, setTeamImageUrl] = useState("");
   const [teamImageMetadata, setTeamImageMetadata] = useState<ImageMetadata | null>(null);
 
@@ -106,6 +109,7 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
     setFooterTeamName(map.footer_team_name ?? "");
     setFooterTeamTitle(map.footer_team_title ?? "");
     setFooterButtonText(map.footer_button_text ?? "");
+    setFooterButtonUrl(map.footer_button_url ?? "");
 
     if (map.footer_team_image_url) {
       setTeamImageUrl(map.footer_team_image_url);
@@ -303,6 +307,8 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
         setFooterTeamName(translated.footer_team_name || englishMap.footer_team_name || "");
         setFooterTeamTitle(translated.footer_team_title || englishMap.footer_team_title || "");
         setFooterButtonText(translated.footer_button_text || englishMap.footer_button_text || "");
+        // Copy button URL from English (URLs don't need translation)
+        setFooterButtonUrl(englishMap.footer_button_url || "/contact");
 
         // CRITICAL: Also copy the image from English version if it exists
         if (englishMap.footer_team_image_url && !teamImageUrl) {
@@ -524,6 +530,15 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
           updated_at: new Date().toISOString(),
           updated_by: user.id,
         },
+        {
+          page_slug: pageSlug,
+          section_key: "footer_button_url",
+          content_type: "text",
+          content_value: footerButtonUrl,
+          language,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        },
       ];
 
       if (teamImageUrl) {
@@ -599,16 +614,14 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
           </div>
 
           <div>
-            <Label htmlFor="footer_cta_description" className="text-white">
+            <Label className="text-white">
               CTA Description
             </Label>
-            <Textarea
-              id="footer_cta_description"
+            <SimpleRichTextEditor
               value={footerCtaDescription}
-              onChange={(e) => setFooterCtaDescription(e.target.value)}
-              rows={3}
+              onChange={setFooterCtaDescription}
               placeholder="Describe your vision..."
-              className="border-2 border-gray-600"
+              storageKey={`footer-cta-desc-${pageSlug}`}
             />
           </div>
         </div>
@@ -646,16 +659,14 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
           </div>
 
           <div>
-            <Label htmlFor="footer_contact_description" className="text-white">
+            <Label className="text-white">
               Contact Description
             </Label>
-            <Textarea
-              id="footer_contact_description"
+            <SimpleRichTextEditor
               value={footerContactDescription}
-              onChange={(e) => setFooterContactDescription(e.target.value)}
-              rows={3}
+              onChange={setFooterContactDescription}
               placeholder="Contact description..."
-              className="border-2 border-gray-600"
+              storageKey={`footer-contact-desc-${pageSlug}`}
             />
           </div>
 
@@ -668,6 +679,19 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
               value={footerButtonText}
               onChange={(e) => setFooterButtonText(e.target.value)}
               placeholder="e.g., Get in contact with us"
+              className="border-2 border-gray-600"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="footer_button_url" className="text-white">
+              Button URL
+            </Label>
+            <Input
+              id="footer_button_url"
+              value={footerButtonUrl}
+              onChange={(e) => setFooterButtonUrl(e.target.value)}
+              placeholder="e.g., /contact or https://..."
               className="border-2 border-gray-600"
             />
           </div>
@@ -918,11 +942,10 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
             <Label htmlFor="footer_team_quote" className="text-white">
               Team Quote
             </Label>
-            <Textarea
+            <Input
               id="footer_team_quote"
               value={footerTeamQuote}
               onChange={(e) => setFooterTeamQuote(e.target.value)}
-              rows={3}
               placeholder="Team member's quote..."
               className="border-2 border-gray-600"
             />
