@@ -428,10 +428,11 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
       if (dbError) throw dbError;
 
       // STEP 4: Create file_segment_mapping for proper Media Management assignment
-      // Use short identifier: just "footer" + segment ID if available, otherwise page-based short ID
-      const shortPageId = pageSlug.split('/').pop() || pageSlug;
-      const segmentIdentifier = segmentId ? `footer-${segmentId}` : `footer-${shortPageId}`;
-      await createOrUpdateFileMapping(filePath, segmentIdentifier, '');
+      // Use ONLY the numeric segment ID - nothing else
+      const segmentIdentifier = segmentId ? String(segmentId) : '';
+      if (segmentIdentifier) {
+        await createOrUpdateFileMapping(filePath, segmentIdentifier, '');
+      }
 
       console.log('[FooterEditor] Image uploaded to folder:', filePath, 'with segment:', segmentIdentifier);
       toast.success("Team image uploaded successfully!");
@@ -751,11 +752,11 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
                   const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(uploadPath);
                   console.log("[FooterEditor] Upload successful, URL:", publicUrl);
                   
-                  // Create file-segment mapping for Media Management (use short identifier)
-                  const shortPageId = pageSlug.split('/').pop() || pageSlug;
-                  const mappingId = segmentId ? `footer-${segmentId}` : `footer-${shortPageId}`;
-                  await createOrUpdateFileMapping(uploadPath, mappingId, "");
-                  console.log("[FooterEditor] File mapping created for:", uploadPath, "-> segment", mappingId);
+                  // Create file-segment mapping for Media Management - use ONLY the numeric segment ID
+                  if (segmentId) {
+                    await createOrUpdateFileMapping(uploadPath, String(segmentId), "");
+                    console.log("[FooterEditor] File mapping created for:", uploadPath, "-> segment", segmentId);
+                  }
                   
                   const metadata = await extractImageMetadata(file, publicUrl);
                   setTeamImageUrl(publicUrl);
