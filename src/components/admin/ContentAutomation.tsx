@@ -234,10 +234,35 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     }
   };
 
+  // Helper function to generate download descriptions from title
+  const getDownloadDescriptionFromTitle = (title: string, lang: string): string => {
+    const lower = title.toLowerCase();
+    if (lower.includes('datasheet') || lower.includes('datenblatt') || lower.includes('specification')) {
+      return lang === 'de' ? 'Technische Spezifikationen und Produktdetails' : 'Technical specifications and product details';
+    }
+    if (lower.includes('manual') || lower.includes('anleitung') || lower.includes('guide')) {
+      return lang === 'de' ? 'Vollständige Bedienungsanleitung' : 'Complete operating instructions';
+    }
+    if (lower.includes('brochure') || lower.includes('broschüre') || lower.includes('flyer')) {
+      return lang === 'de' ? 'Produktübersicht und Features' : 'Product overview and features';
+    }
+    if (lower.includes('whitepaper') || lower.includes('white paper')) {
+      return lang === 'de' ? 'Technisches Whitepaper mit Analyse' : 'Technical whitepaper with in-depth analysis';
+    }
+    if (lower.includes('certificate') || lower.includes('zertifikat')) {
+      return lang === 'de' ? 'Produktzertifizierung' : 'Product certification documentation';
+    }
+    if (lower.includes('black') || lower.includes('standard') || lower.includes('white')) {
+      return lang === 'de' ? 'Produktdatenblatt' : 'Product datasheet';
+    }
+    return lang === 'de' ? 'Produktdokumentation' : 'Product documentation';
+  };
+
   const handleFetchContent = async () => {
     if (!sourceUrl) {
       toast.error('Please enter a URL');
       return;
+    }
     }
 
     setIsLoading(true);
@@ -295,11 +320,62 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       const newSegments: any[] = [];
       let position = existingRegistry?.length || 0;
 
+      // === LOAD MEDIA FROM STORAGE FOLDER ===
+      const storageBaseUrl = 'https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images';
+      const folderPath = pageSlug;
+      
+      // Fetch files from the product's media folder
+      const { data: storageFiles } = await supabase
+        .storage
+        .from('page-images')
+        .list(folderPath, { limit: 50, sortBy: { column: 'name', order: 'asc' } });
+      
+      // Separate images and PDFs from storage
+      const storageImages: { url: string; title: string }[] = [];
+      const storagePdfs: { url: string; title: string; filename: string }[] = [];
+      
+      if (storageFiles && storageFiles.length > 0) {
+        for (const file of storageFiles) {
+          if (file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+            // Image file
+            const imageUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+            const title = file.name
+              .replace(/\.(png|jpg|jpeg|webp|gif)$/i, '')
+              .replace(/[-_]/g, ' ')
+              .replace(/dummy/gi, parsedContent.title || 'Product Image');
+            storageImages.push({ url: imageUrl, title });
+          } else if (file.name.match(/\.pdf$/i)) {
+            // PDF file
+            const pdfUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+            const title = file.name
+              .replace(/\.pdf$/i, '')
+              .replace(/[-_]/g, ' ')
+              .replace(/([a-z])([A-Z])/g, '$1 $2');
+            storagePdfs.push({ url: pdfUrl, title, filename: file.name });
+          }
+        }
+      }
+      
+      console.log('[ContentAutomation] Found storage images:', storageImages.length);
+      console.log('[ContentAutomation] Found storage PDFs:', storagePdfs.length);
+
       // Filter downloads by language (include 'en' as fallback if current language has none)
+      // Merge with storage PDFs
       let filteredDownloads = parsedContent.downloads.filter(d => d.language === language);
       if (filteredDownloads.length === 0) {
         filteredDownloads = parsedContent.downloads.filter(d => d.language === 'en');
       }
+      
+      // Add storage PDFs to downloads (they take priority)
+      const storageDownloads = storagePdfs.map(pdf => ({
+        title: pdf.title,
+        description: getDownloadDescriptionFromTitle(pdf.title, language),
+        url: pdf.url,
+        language: language,
+      }));
+      
+      // Combine: storage PDFs first, then scraped downloads
+      const allDownloads = [...storageDownloads, ...filteredDownloads];
 
       // Build concise, clean description (max 2-3 sentences, no markdown artifacts)
       const buildCleanDescription = () => {
@@ -323,6 +399,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       };
 
       // 1. Product Hero Gallery (with concise description and proper image format)
+      // PRIORITY: Use storage images first, then fall back to scraped images
       if (selectedSegments.productHero && !existingSegmentTypes.has('product-hero-gallery')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -333,20 +410,37 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        // Convert images to proper ProductImage format
-        const heroImages = parsedContent.images.slice(0, 4).map((img, idx) => ({
-          imageUrl: img.url,
-          title: img.title || (idx === 0 ? parsedContent.title : `${parsedContent.title} - View ${idx + 1}`),
-          description: '',
-          maxWidth: null,
-          maxHeight: null,
-        }));
+        // Use storage images if available, otherwise use scraped images
+        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
+        let heroImages: { imageUrl: string; title: string; description: string; maxWidth: number | null; maxHeight: number | null }[] = [];
         
-        // If no images, add placeholder
+        if (storageImages.length > 0) {
+          // Use images from media folder
+          heroImages = storageImages.slice(0, 4).map((img, idx) => ({
+            imageUrl: img.url,
+            title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
+            description: '',
+            maxWidth: null,
+            maxHeight: null,
+          }));
+          console.log('[ContentAutomation] Using storage images for hero:', heroImages.length);
+        } else {
+          // Fall back to scraped images
+          heroImages = parsedContent.images.slice(0, 4).map((img, idx) => ({
+            imageUrl: img.url,
+            title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
+            description: '',
+            maxWidth: null,
+            maxHeight: null,
+          }));
+          console.log('[ContentAutomation] Using scraped images for hero:', heroImages.length);
+        }
+        
+        // If still no images, add placeholder
         if (heroImages.length === 0) {
           heroImages.push({
             imageUrl: '/placeholder.svg',
-            title: parsedContent.title,
+            title: cleanTitle,
             description: '',
             maxWidth: null,
             maxHeight: null,
@@ -533,8 +627,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
       }
 
-      // 5. Downloads (Tiles) - cleaned titles
-      if (selectedSegments.downloads && filteredDownloads.length > 0 && !existingSegmentTypes.has('tiles')) {
+      // 5. Downloads (Tiles) - USE allDownloads (storage PDFs + scraped)
+      if (selectedSegments.downloads && allDownloads.length > 0 && !existingSegmentTypes.has('tiles')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
           page_slug: pageSlug,
@@ -544,7 +638,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        const cleanedDownloads = filteredDownloads.slice(0, 6).map(d => ({
+        const cleanedDownloads = allDownloads.slice(0, 6).map(d => ({
           title: d.title.replace(/[*#_`\[\]]/g, '').replace(/[-_]/g, ' ').trim().substring(0, 60),
           description: (d.description || (language === 'de' ? 'Produktdokumentation' : 'Product documentation')).substring(0, 120),
           icon: 'FileText',
@@ -552,6 +646,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           ctaLink: d.url,
           showButton: true,
         }));
+        
+        console.log('[ContentAutomation] Downloads tiles using:', cleanedDownloads.length, 'items');
         
         newSegments.push({
           id: String(segId),
