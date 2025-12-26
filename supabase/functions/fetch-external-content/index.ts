@@ -157,13 +157,29 @@ function parseFirecrawlContent(
   }
 
   // === DESCRIPTION ===
-  // The markdown from Firecrawl is already clean - extract all paragraphs
+  // Clean the markdown thoroughly before extraction
+  let cleanedMarkdown = markdown
+    // Remove embedded JSON objects (common from gallery metadata)
+    .replace(/\{[^{}]*"id":\s*\d+[^{}]*\}/g, '')
+    .replace(/\{[^{}]*"form_id":\s*\d+[^{}]*\}/g, '')
+    .replace(/\{\\?"id\\?":\s*\d+[^}]*\}/g, '')
+    // Remove escaped JSON
+    .replace(/\{\\[^}]+\}/g, '')
+    // Remove image markdown with URLs (but keep alt text)
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+    // Remove empty lines created by removals
+    .replace(/\n{3,}/g, '\n\n');
+  
   const paragraphs: string[] = [];
   
   // Split markdown by double newlines and process each block
-  const blocks = markdown.split(/\n\n+/);
+  const blocks = cleanedMarkdown.split(/\n\n+/);
   for (const block of blocks) {
-    const trimmed = block.trim();
+    let trimmed = block.trim();
+    
+    // Skip if block contains JSON-like content
+    if (trimmed.includes('"form_id"') || trimmed.includes('\\"id\\"') || trimmed.includes('{"id":')) continue;
+    if (trimmed.includes('thumbnail_url') || trimmed.includes('watermark_name')) continue;
     
     // Skip headers, lists, links-only lines, short lines
     if (trimmed.startsWith('#')) continue;
@@ -175,32 +191,45 @@ function parseFirecrawlContent(
     if (isFooterContent(trimmed)) continue;
     
     // Clean up markdown formatting but keep text
-    const cleaned = trimmed
+    let cleaned = trimmed
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting, keep text
       .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
       .replace(/\*([^*]+)\*/g, '$1') // Remove italic
       .replace(/`([^`]+)`/g, '$1') // Remove code
       .replace(/^\s*>\s*/gm, '') // Remove blockquotes
+      .replace(/\\\\/g, '') // Remove escaped backslashes
+      .replace(/\\n/g, ' ') // Remove escaped newlines
+      .replace(/\\"/g, '"') // Unescape quotes
+      .replace(/\s{2,}/g, ' ') // Normalize spaces
       .trim();
     
-    if (cleaned.length > 50) {
+    // Final check: skip if still contains JSON artifacts
+    if (cleaned.includes('":') || cleaned.includes('{"') || cleaned.includes('"}')) continue;
+    
+    if (cleaned.length > 50 && cleaned.length < 2000) {
       paragraphs.push(cleaned);
     }
   }
   
-  result.description = paragraphs.join('\n\n');
+  result.description = paragraphs.slice(0, 5).join('\n\n'); // Max 5 paragraphs
   console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
 
   // === BENEFITS ===
   // Extract from markdown lists (lines starting with -, *, •)
+  // Use cleanedMarkdown which has JSON artifacts removed
   const listItems: string[] = [];
-  const listMatches = markdown.matchAll(/^[\-\*•]\s+(.+)$/gm);
+  const listMatches = cleanedMarkdown.matchAll(/^[\-\*•]\s+(.+)$/gm);
   for (const match of listMatches) {
-    const text = match[1]
+    let text = match[1]
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\\\\/g, '')
+      .replace(/\\"/g, '"')
       .trim();
+    
+    // Skip if contains JSON artifacts
+    if (text.includes('":') || text.includes('{"') || text.includes('form_id')) continue;
     
     if (text.length > 15 && text.length < 400 && !isFooterContent(text)) {
       listItems.push(text);
@@ -211,7 +240,7 @@ function parseFirecrawlContent(
   if (listItems.length < 3 && result.description.length > 100) {
     const sentences = result.description
       .split(/[.!?]\s+/)
-      .filter(s => s.length > 30 && s.length < 300)
+      .filter(s => s.length > 30 && s.length < 300 && !s.includes('":'))
       .map(s => s.trim() + (s.endsWith('.') ? '' : '.'));
     
     listItems.push(...sentences.slice(0, 8 - listItems.length));
@@ -221,9 +250,8 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Extracted benefits:', result.benefits.length);
 
   // === SPECIFICATIONS ===
-  // Look for table-like content in markdown (| col | col |)
-  const tableLines = markdown.split('\n').filter(line => line.includes('|') && line.trim().startsWith('|'));
-  let inTable = false;
+  // Look for table-like content in cleaned markdown (| col | col |)
+  const tableLines = cleanedMarkdown.split('\n').filter(line => line.includes('|') && line.trim().startsWith('|'));
   let isHeaderRow = true;
   
   for (const line of tableLines) {
@@ -235,8 +263,11 @@ function parseFirecrawlContent(
     
     const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
     if (cells.length >= 2 && !isHeaderRow) {
-      const name = cells[0].replace(/\*\*/g, '').trim();
-      const value = cells[1].replace(/\*\*/g, '').trim();
+      const name = cells[0].replace(/\*\*/g, '').replace(/\\\\/g, '').trim();
+      const value = cells[1].replace(/\*\*/g, '').replace(/\\\\/g, '').trim();
+      
+      // Skip JSON artifacts
+      if (name.includes('":') || value.includes('":')) continue;
       
       if (name && value && name.length < 150 && value.length < 300 && !isFooterContent(name)) {
         result.specifications.push({ name, value });
@@ -245,10 +276,13 @@ function parseFirecrawlContent(
   }
   
   // Also look for "key: value" or "key – value" patterns
-  const kvMatches = markdown.matchAll(/^[\*\-•]?\s*\*?\*?([^:\n\|]+?)\*?\*?\s*[:\-–]\s*(.+)$/gm);
+  const kvMatches = cleanedMarkdown.matchAll(/^[\*\-•]?\s*\*?\*?([^:\n\|]+?)\*?\*?\s*[:\-–]\s*(.+)$/gm);
   for (const match of kvMatches) {
-    const name = match[1].trim().replace(/\*\*/g, '');
-    const value = match[2].trim().replace(/\*\*/g, '');
+    let name = match[1].trim().replace(/\*\*/g, '').replace(/\\\\/g, '');
+    let value = match[2].trim().replace(/\*\*/g, '').replace(/\\\\/g, '');
+    
+    // Skip JSON artifacts
+    if (name.includes('"') || value.includes('{') || value.includes('}')) continue;
     
     // Skip if it looks like a sentence
     if (name.split(' ').length > 5) continue;
@@ -266,18 +300,26 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Extracted specifications:', result.specifications.length);
 
   // === USE CASES ===
-  // Look for H3/H4 sections with descriptions
-  const sectionMatches = markdown.matchAll(/^###?\s+(.+)\n+([^#]+)/gm);
+  // Look for H3/H4 sections with descriptions in cleaned markdown
+  const sectionMatches = cleanedMarkdown.matchAll(/^###?\s+(.+)\n+([^#]+)/gm);
   for (const match of sectionMatches) {
-    const title = match[1].trim().replace(/\*\*/g, '');
+    let title = match[1].trim().replace(/\*\*/g, '').replace(/\\\\/g, '');
     const content = match[2].trim();
     
+    // Skip JSON artifacts
+    if (title.includes('"') || title.includes('{')) continue;
+    
     // Get first paragraph as description
-    const firstPara = content.split('\n\n')[0]
+    let firstPara = content.split('\n\n')[0]
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\\\\/g, '')
+      .replace(/\\"/g, '"')
       .trim();
+    
+    // Skip if contains JSON artifacts
+    if (firstPara.includes('":') || firstPara.includes('{"')) continue;
     
     if (title.length > 3 && title.length < 120 && firstPara.length > 20 && !isFooterContent(title)) {
       result.useCases.push({ 
