@@ -1583,10 +1583,11 @@ export const SEOEditor = ({
         position: number;
       }> = [];
 
-      const pageSegments: Array<{
-        segmentId: number;
-        segmentKey: string;
+      const pageSegmentsForDb: Array<{
+        id: string;
         type: string;
+        data: Record<string, any>;
+        position: number;
       }> = [];
 
       for (let i = 0; i < suggestedSegments.length; i++) {
@@ -1602,46 +1603,75 @@ export const SEOEditor = ({
           position: i
         });
 
-        pageSegments.push({
-          segmentId,
-          segmentKey,
-          type: seg.type
-        });
-
-        // Create initial content for the segment
-        const initialContent: Record<string, any> = {};
+        // Create rich initial content for the segment based on type
+        const segmentData: Record<string, any> = {};
         
         switch (seg.type) {
           case 'action-hero':
-            initialContent.headline = suggestion.suggestedTitle;
-            initialContent.subline = seg.content;
+            segmentData.headline = suggestion.suggestedTitle;
+            segmentData.subline = seg.content || `Entdecken Sie detaillierte Informationen zu ${suggestion.suggestedTitle}`;
+            segmentData.alignment = 'center';
+            segmentData.backgroundStyle = 'gradient';
+            segmentData.ctaText = 'Mehr erfahren';
+            segmentData.ctaLink = '#intro';
             break;
           case 'intro':
-            initialContent.headline = suggestion.suggestedTitle;
-            initialContent.introText = `<p>${seg.content}</p>`;
+            segmentData.headline = suggestion.suggestedTitle;
+            segmentData.headingLevel = 'h1';
+            segmentData.introText = `<p>${seg.content || `Willkommen auf der Detailseite zu ${suggestion.suggestedTitle}. Hier finden Sie alle wichtigen Informationen, technische Daten und Anwendungsbeispiele.`}</p>`;
+            segmentData.alignment = 'left';
+            segmentData.showDivider = true;
             break;
           case 'faq':
-            initialContent.headline = 'Frequently Asked Questions';
-            initialContent.items = [
-              { question: 'Question 1 about ' + suggestion.suggestedTitle, answer: 'Answer coming soon.' },
-              { question: 'Question 2 about ' + suggestion.suggestedTitle, answer: 'Answer coming soon.' }
+            segmentData.headline = `Häufige Fragen zu ${suggestion.suggestedTitle}`;
+            segmentData.items = [
+              { 
+                question: `Was sind die Hauptvorteile von ${suggestion.suggestedTitle}?`, 
+                answer: seg.content || 'Antwort wird in Kürze ergänzt.' 
+              },
+              { 
+                question: `Für welche Anwendungen ist ${suggestion.suggestedTitle} geeignet?`, 
+                answer: 'Antwort wird in Kürze ergänzt.' 
+              },
+              { 
+                question: `Wie unterscheidet sich ${suggestion.suggestedTitle} von anderen Lösungen?`, 
+                answer: 'Antwort wird in Kürze ergänzt.' 
+              }
+            ];
+            break;
+          case 'specification':
+            segmentData.title = `Technische Spezifikationen: ${suggestion.suggestedTitle}`;
+            segmentData.rows = [
+              { specification: 'Kategorie', value: 'Wird ergänzt' },
+              { specification: 'Typ', value: 'Wird ergänzt' },
+              { specification: 'Merkmale', value: seg.content || 'Wird ergänzt' }
+            ];
+            segmentData.description = '';
+            break;
+          case 'feature-overview':
+            segmentData.title = `Features & Vorteile`;
+            segmentData.subtext = seg.content || `Die wichtigsten Merkmale von ${suggestion.suggestedTitle}`;
+            segmentData.layout = '2';
+            segmentData.rows = '2';
+            segmentData.items = [
+              { title: 'Feature 1', description: 'Beschreibung wird ergänzt.' },
+              { title: 'Feature 2', description: 'Beschreibung wird ergänzt.' },
+              { title: 'Feature 3', description: 'Beschreibung wird ergänzt.' },
+              { title: 'Feature 4', description: 'Beschreibung wird ergänzt.' }
             ];
             break;
           default:
-            initialContent.headline = suggestion.suggestedTitle;
-            initialContent.description = seg.content;
+            segmentData.headline = suggestion.suggestedTitle;
+            segmentData.description = seg.content || `Inhalt zu ${suggestion.suggestedTitle}`;
         }
 
-        // Insert segment content
-        await supabase
-          .from('page_content')
-          .insert({
-            page_slug: newSlug,
-            section_key: segmentKey,
-            content_type: 'json',
-            content_value: JSON.stringify(initialContent),
-            language: 'en'
-          });
+        // Add to page_segments array with correct format
+        pageSegmentsForDb.push({
+          id: String(segmentId),
+          type: seg.type,
+          data: segmentData,
+          position: i
+        });
       }
 
       // Step 4: Insert segment registry entries
@@ -1653,14 +1683,14 @@ export const SEOEditor = ({
         if (segmentError) throw segmentError;
       }
 
-      // Step 5: Create page_segments content
+      // Step 5: Create page_segments content with correct format including data
       await supabase
         .from('page_content')
         .insert({
           page_slug: newSlug,
           section_key: 'page_segments',
           content_type: 'json',
-          content_value: JSON.stringify(pageSegments),
+          content_value: JSON.stringify(pageSegmentsForDb),
           language: 'en'
         });
 
@@ -4773,23 +4803,38 @@ export const SEOEditor = ({
                                     </div>
                                   )}
                                   
-                                  {/* Suggested Segments */}
-                                  {suggestion.suggestedSegments && suggestion.suggestedSegments.length > 0 && !suggestion.saved && (
-                                    <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-md">
-                                      <p className="text-xs font-semibold text-blue-400 mb-2">
-                                        Vorgeschlagene Segmente:
+                                  {/* Suggested/Created Segments - show before AND after saving */}
+                                  {suggestion.suggestedSegments && suggestion.suggestedSegments.length > 0 && (
+                                    <div className={`mt-3 p-3 border rounded-md ${
+                                      suggestion.saved 
+                                        ? 'bg-green-500/10 border-green-500/30' 
+                                        : 'bg-blue-500/10 border-blue-500/20'
+                                    }`}>
+                                      <p className={`text-xs font-semibold mb-2 ${
+                                        suggestion.saved ? 'text-green-400' : 'text-blue-400'
+                                      }`}>
+                                        {suggestion.saved ? '✓ Erstellte Segmente:' : 'Vorgeschlagene Segmente:'}
                                       </p>
                                       <div className="flex flex-wrap gap-1.5">
-                                        {suggestion.suggestedSegments.map((seg, segIdx) => (
+                                        {suggestion.suggestedSegments.map((seg: { type: string; content?: string }, segIdx: number) => (
                                           <Badge 
                                             key={segIdx}
                                             variant="outline" 
-                                            className="text-xs bg-blue-500/10 text-blue-300 border-blue-500/30"
+                                            className={`text-xs ${
+                                              suggestion.saved 
+                                                ? 'bg-green-500/20 text-green-300 border-green-500/30' 
+                                                : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                                            }`}
                                           >
                                             {seg.type}
                                           </Badge>
                                         ))}
                                       </div>
+                                      {suggestion.saved && (
+                                        <p className="text-xs text-green-400/70 mt-2">
+                                          {suggestion.suggestedSegments.length} Segmente mit Platzhalter-Inhalten erstellt
+                                        </p>
+                                      )}
                                     </div>
                                   )}
                                   
