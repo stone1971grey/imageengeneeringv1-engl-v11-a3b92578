@@ -301,16 +301,28 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         filteredDownloads = parsedContent.downloads.filter(d => d.language === 'en');
       }
 
-      // Build rich description from all available content
-      const buildRichDescription = () => {
-        let desc = parsedContent.description || '';
-        if (parsedContent.benefits.length > 0 && desc.length < 300) {
-          desc += ' Key features include: ' + parsedContent.benefits.slice(0, 3).join(', ') + '.';
+      // Build concise, clean description (max 2-3 sentences, no markdown artifacts)
+      const buildCleanDescription = () => {
+        // Get first meaningful paragraph from description
+        const cleanDesc = parsedContent.description
+          .replace(/\n+/g, ' ')  // Replace newlines with spaces
+          .replace(/\s+/g, ' ')  // Normalize whitespace
+          .replace(/[#*_`]/g, '') // Remove markdown formatting
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting
+          .trim();
+        
+        // Split into sentences and take first 2-3
+        const sentences = cleanDesc.match(/[^.!?]+[.!?]+/g) || [cleanDesc];
+        const result = sentences.slice(0, 2).join(' ').trim();
+        
+        // Ensure max ~200 chars for hero
+        if (result.length > 250) {
+          return result.substring(0, 247) + '...';
         }
-        return desc;
+        return result || (language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.');
       };
 
-      // 1. Product Hero Gallery (with rich description)
+      // 1. Product Hero Gallery (with concise description and proper image format)
       if (selectedSegments.productHero && !existingSegmentTypes.has('product-hero-gallery')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -320,14 +332,35 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segment_type: 'product-hero-gallery',
           position: position++,
         });
+        
+        // Convert images to proper ProductImage format
+        const heroImages = parsedContent.images.slice(0, 4).map((img, idx) => ({
+          imageUrl: img.url,
+          title: img.title || (idx === 0 ? parsedContent.title : `${parsedContent.title} - View ${idx + 1}`),
+          description: '',
+          maxWidth: null,
+          maxHeight: null,
+        }));
+        
+        // If no images, add placeholder
+        if (heroImages.length === 0) {
+          heroImages.push({
+            imageUrl: '/placeholder.svg',
+            title: parsedContent.title,
+            description: '',
+            maxWidth: null,
+            maxHeight: null,
+          });
+        }
+        
         newSegments.push({
           id: String(segId),
           segmentId: String(segId),
           type: 'product-hero-gallery',
           data: {
-            title: parsedContent.title,
-            subtitle: parsedContent.subtitle || 'Professional Equipment',
-            description: buildRichDescription(),
+            title: parsedContent.title.replace(/[*#_`]/g, '').trim(),
+            subtitle: (parsedContent.subtitle || (language === 'de' ? 'Professionelle Lösung' : 'Professional Solution')).replace(/[*#_`]/g, '').trim(),
+            description: buildCleanDescription(),
             imagePosition: 'right',
             layoutRatio: '2-5',
             topSpacing: 'small',
@@ -337,14 +370,15 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             cta2Text: language === 'de' ? 'Spezifikationen' : 'View Specifications',
             cta2Link: '#specifications',
             cta2Style: 'outline-white',
-            images: parsedContent.images.slice(0, 3).map(img => img.url),
-            imageMaxWidth: 480,
+            images: heroImages,
+            imageMaxWidth: null,
+            imageMaxHeight: null,
           },
           position: position - 1,
         });
       }
 
-      // 2. Intro with comprehensive content (description + benefits)
+      // 2. Intro with comprehensive content (description + benefits) - CLEAN HTML
       if (selectedSegments.intro && !existingSegmentTypes.has('intro')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -355,30 +389,50 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        // Build comprehensive intro HTML
-        let introHtml = '';
-        if (parsedContent.description) {
-          introHtml += `<p>${parsedContent.description}</p>`;
-        }
+        // Helper to clean text from markdown artifacts
+        const cleanText = (text: string): string => {
+          return text
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Remove link formatting
+            .replace(/\*\*([^*]+)\*\*/g, '$1')        // Remove bold
+            .replace(/\*([^*]+)\*/g, '$1')            // Remove italic
+            .replace(/`([^`]+)`/g, '$1')              // Remove code
+            .replace(/[#*_`]/g, '')                   // Remove remaining markdown chars
+            .replace(/\n{3,}/g, '\n\n')               // Max 2 newlines
+            .trim();
+        };
+        
+        // Build clean intro HTML - split description into proper paragraphs
+        const descParagraphs = cleanText(parsedContent.description)
+          .split(/\n\n+/)
+          .filter(p => p.trim().length > 20)
+          .slice(0, 3)  // Max 3 paragraphs
+          .map(p => `<p>${p.trim()}</p>`)
+          .join('');
+        
+        // Add benefits as a clean list (max 6)
+        let benefitsHtml = '';
         if (parsedContent.benefits.length > 0) {
-          introHtml += '<h3>' + (language === 'de' ? 'Hauptvorteile' : 'Key Benefits') + '</h3>';
-          introHtml += '<ul>' + parsedContent.benefits.map(b => {
-            const words = b.split(' ');
-            if (words.length > 3) {
-              return `<li><strong>${words.slice(0, 3).join(' ')}</strong> ${words.slice(3).join(' ')}</li>`;
-            }
-            return `<li>${b}</li>`;
-          }).join('') + '</ul>';
+          const cleanBenefits = parsedContent.benefits
+            .slice(0, 6)
+            .map(b => cleanText(b))
+            .filter(b => b.length > 10 && b.length < 200);
+          
+          if (cleanBenefits.length > 0) {
+            benefitsHtml = '<h3>' + (language === 'de' ? 'Hauptvorteile' : 'Key Benefits') + '</h3>';
+            benefitsHtml += '<ul>' + cleanBenefits.map(b => `<li>${b}</li>`).join('') + '</ul>';
+          }
         }
+        
+        const cleanTitle = cleanText(parsedContent.title);
         
         newSegments.push({
           id: String(segId),
           segmentId: String(segId),
           type: 'intro',
           data: {
-            headline: parsedContent.title,
-            headingLevel: 'h1',
-            introText: introHtml || `<p>${language === 'de' ? 'Willkommen zur Produktseite.' : 'Welcome to the product page.'}</p>`,
+            headline: cleanTitle,
+            headingLevel: 'h2',  // h2 since Hero already has h1
+            introText: descParagraphs + benefitsHtml || `<p>${language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.'}</p>`,
             alignment: 'left',
             showDivider: true,
           },
@@ -386,7 +440,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
       }
 
-      // 3. Specifications Table
+      // 3. Specifications Table - clean values
       if (selectedSegments.specification && parsedContent.specifications.length > 0 && !existingSegmentTypes.has('specification')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -396,25 +450,34 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segment_type: 'specification',
           position: position++,
         });
+        
+        // Clean specification values from markdown artifacts
+        const cleanSpecs = parsedContent.specifications
+          .slice(0, 20)  // Max 20 specifications
+          .map(s => ({
+            specification: s.name.replace(/[*#_`\[\]]/g, '').trim(),
+            value: s.value.replace(/[*#_`\[\]]/g, '').replace(/\([^)]*\)/g, '').trim(),
+          }))
+          .filter(s => s.specification.length > 1 && s.value.length > 0);
+        
+        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
+        
         newSegments.push({
           id: String(segId),
           segmentId: String(segId),
           type: 'specification',
           data: {
             title: language === 'de' ? 'Technische Spezifikationen' : 'Technical Specifications',
-            rows: parsedContent.specifications.map(s => ({
-              specification: s.name,
-              value: s.value,
-            })),
+            rows: cleanSpecs,
             description: language === 'de' 
-              ? `Detaillierte technische Daten für ${parsedContent.title}.`
-              : `Detailed technical specifications for ${parsedContent.title}.`,
+              ? `Detaillierte technische Daten für ${cleanTitle}.`
+              : `Detailed technical specifications for ${cleanTitle}.`,
           },
           position: position - 1,
         });
       }
 
-      // 4. Feature Overview (Use Cases / Applications)
+      // 4. Feature Overview (Use Cases / Applications) - cleaned
       if (selectedSegments.featureOverview && parsedContent.useCases.length > 0 && !existingSegmentTypes.has('feature-overview')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -425,20 +488,33 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        // Ensure we have at least 4 items by duplicating or adding placeholders
+        // Clean and prepare feature items
+        const cleanFeatureText = (text: string): string => {
+          return text
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/[*#_`\[\]]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        };
+        
         let featureItems = parsedContent.useCases.slice(0, 6).map(uc => ({
-          title: uc.title,
-          description: uc.description,
+          title: cleanFeatureText(uc.title).substring(0, 80),
+          description: cleanFeatureText(uc.description).substring(0, 250),
         }));
         
-        // If we have fewer than 4, add generic ones based on benefits
-        while (featureItems.length < 4 && parsedContent.benefits.length > featureItems.length) {
-          const benefit = parsedContent.benefits[featureItems.length];
-          featureItems.push({
-            title: benefit.split(' ').slice(0, 4).join(' '),
-            description: benefit,
-          });
+        // If we have fewer than 3, add from benefits
+        while (featureItems.length < 3 && parsedContent.benefits.length > featureItems.length) {
+          const benefit = cleanFeatureText(parsedContent.benefits[featureItems.length]);
+          if (benefit.length > 20) {
+            const words = benefit.split(' ');
+            featureItems.push({
+              title: words.slice(0, 4).join(' '),
+              description: benefit,
+            });
+          }
         }
+        
+        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
         
         newSegments.push({
           id: String(segId),
@@ -447,8 +523,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           data: {
             title: language === 'de' ? 'Anwendungen & Features' : 'Applications & Features',
             subtext: language === 'de' 
-              ? `Entdecken Sie die vielfältigen Einsatzmöglichkeiten von ${parsedContent.title}.`
-              : `Discover the versatile applications of ${parsedContent.title}.`,
+              ? `Entdecken Sie die vielfältigen Einsatzmöglichkeiten von ${cleanTitle}.`
+              : `Discover the versatile applications of ${cleanTitle}.`,
             layout: String(Math.min(featureItems.length, 3)),
             rows: String(Math.ceil(featureItems.length / 3)),
             items: featureItems,
@@ -457,7 +533,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
       }
 
-      // 5. Downloads (Tiles) - improved with better descriptions
+      // 5. Downloads (Tiles) - cleaned titles
       if (selectedSegments.downloads && filteredDownloads.length > 0 && !existingSegmentTypes.has('tiles')) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -467,27 +543,30 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segment_type: 'tiles',
           position: position++,
         });
+        
+        const cleanedDownloads = filteredDownloads.slice(0, 6).map(d => ({
+          title: d.title.replace(/[*#_`\[\]]/g, '').replace(/[-_]/g, ' ').trim().substring(0, 60),
+          description: (d.description || (language === 'de' ? 'Produktdokumentation' : 'Product documentation')).substring(0, 120),
+          icon: 'FileText',
+          ctaText: language === 'de' ? 'PDF herunterladen' : 'Download PDF',
+          ctaLink: d.url,
+          showButton: true,
+        }));
+        
         newSegments.push({
           id: String(segId),
           segmentId: String(segId),
           type: 'tiles',
           data: {
             title: language === 'de' ? 'Dokumentation & Downloads' : 'Documentation & Downloads',
-            columns: String(Math.min(filteredDownloads.length, 3)),
-            items: filteredDownloads.map(d => ({
-              title: d.title,
-              description: d.description || (language === 'de' ? 'Produktdokumentation' : 'Product documentation'),
-              icon: 'FileText',
-              ctaText: language === 'de' ? 'PDF herunterladen' : 'Download PDF',
-              ctaLink: d.url,
-              showButton: true,
-            })),
+            columns: String(Math.min(cleanedDownloads.length, 3)),
+            items: cleanedDownloads,
           },
           position: position - 1,
         });
       }
 
-      // 6. FAQ Segment (generated from benefits and use cases)
+      // 6. FAQ Segment (generated from benefits and use cases) - cleaned
       if (!existingSegmentTypes.has('faq') && (parsedContent.benefits.length >= 2 || parsedContent.useCases.length >= 2)) {
         const segId = nextSegmentId++;
         newRegistryEntries.push({
@@ -498,36 +577,53 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
+        // Helper to clean FAQ text
+        const cleanFaqText = (text: string): string => {
+          return text
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/[*#_`\[\]]/g, '')
+            .replace(/\n+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        };
+        
+        const cleanTitle = cleanFaqText(parsedContent.title);
+        const cleanDescription = cleanFaqText(parsedContent.description);
+        
         // Generate FAQs from content
         const faqItems: { question: string; answer: string }[] = [];
         
         // Q1: What is this product?
         faqItems.push({
           question: language === 'de' 
-            ? `Was ist ${parsedContent.title}?` 
-            : `What is ${parsedContent.title}?`,
-          answer: parsedContent.description || (language === 'de' 
-            ? `${parsedContent.title} ist ein professionelles Produkt von Image Engineering.`
-            : `${parsedContent.title} is a professional product from Image Engineering.`),
+            ? `Was ist ${cleanTitle}?` 
+            : `What is ${cleanTitle}?`,
+          answer: cleanDescription.substring(0, 400) || (language === 'de' 
+            ? `${cleanTitle} ist ein professionelles Produkt von Image Engineering.`
+            : `${cleanTitle} is a professional product from Image Engineering.`),
         });
         
         // Q2: What are the main benefits?
         if (parsedContent.benefits.length > 0) {
+          const cleanBenefits = parsedContent.benefits.slice(0, 3).map(b => cleanFaqText(b));
           faqItems.push({
             question: language === 'de' 
-              ? `Welche Vorteile bietet ${parsedContent.title}?`
-              : `What are the benefits of ${parsedContent.title}?`,
-            answer: parsedContent.benefits.slice(0, 3).join('. ') + '.',
+              ? `Welche Vorteile bietet ${cleanTitle}?`
+              : `What are the benefits of ${cleanTitle}?`,
+            answer: cleanBenefits.join('. ') + '.',
           });
         }
         
         // Q3: From use cases
         if (parsedContent.useCases.length > 0) {
+          const cleanUseCases = parsedContent.useCases.slice(0, 2).map(uc => 
+            `${cleanFaqText(uc.title)}: ${cleanFaqText(uc.description).substring(0, 100)}`
+          );
           faqItems.push({
             question: language === 'de'
               ? `Welche Anwendungsbereiche gibt es?`
               : `What are the typical applications?`,
-            answer: parsedContent.useCases.slice(0, 2).map(uc => `${uc.title}: ${uc.description}`).join(' '),
+            answer: cleanUseCases.join(' '),
           });
         }
         
@@ -547,8 +643,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           type: 'faq',
           data: {
             headline: language === 'de' 
-              ? `Häufige Fragen zu ${parsedContent.title}`
-              : `Frequently Asked Questions about ${parsedContent.title}`,
+              ? `Häufige Fragen zu ${cleanTitle}`
+              : `Frequently Asked Questions about ${cleanTitle}`,
             items: faqItems,
           },
           position: position - 1,
@@ -582,8 +678,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       }
 
       // 8. Banner-P (CTA) Segment - Always add at the end
+      // BannerP uses: title, subtext, buttonText, buttonLink, buttonStyle
       if (!existingSegmentTypes.has('banner-p')) {
         const segId = nextSegmentId++;
+        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
         newRegistryEntries.push({
           page_slug: pageSlug,
           segment_id: segId,
@@ -596,15 +694,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           segmentId: String(segId),
           type: 'banner-p',
           data: {
-            headline: language === 'de' 
-              ? `Interesse an ${parsedContent.title}?`
-              : `Interested in ${parsedContent.title}?`,
-            description: language === 'de'
+            title: language === 'de' 
+              ? `Interesse an ${cleanTitle}?`
+              : `Interested in ${cleanTitle}?`,
+            subtext: language === 'de'
               ? 'Kontaktieren Sie unser Expertenteam für eine individuelle Beratung und ein maßgeschneidertes Angebot.'
               : 'Contact our expert team for personalized consultation and a tailored quote.',
-            ctaText: language === 'de' ? 'Kontakt aufnehmen' : 'Get in Touch',
-            ctaLink: '/contact',
-            variant: 'gradient',
+            buttonText: language === 'de' ? 'Kontakt aufnehmen' : 'Get in Touch',
+            buttonLink: '/contact',
+            buttonStyle: 'standard',
+            images: [],
           },
           position: position - 1,
         });
