@@ -9,6 +9,7 @@ import {
   TRAINING_EVENTS_PARENT_CATEGORY_BY_SLUG,
   INFO_HUB_PARENT_CATEGORY_BY_SLUG
 } from './AdminConstants';
+import { ensureMediaFolderHierarchy } from '@/utils/ensureMediaFolder';
 
 interface CreateCMSPageParams {
   slug: string;
@@ -293,6 +294,18 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
       console.log(`[createNewCMSPageWithSlug] No navigation category found for parent: ${parent_slug_value}`);
     }
 
+    // Create media folder hierarchy for the new page
+    try {
+      const folderResult = await ensureMediaFolderHierarchy(slug);
+      if (folderResult) {
+        toast.success(`✅ Media folder created: ${folderResult.storagePath}`);
+        console.log('[createNewCMSPageWithSlug] Media folder created:', folderResult);
+      }
+    } catch (folderError) {
+      console.error('[createNewCMSPageWithSlug] Error creating media folder:', folderError);
+      // Don't fail page creation if folder creation fails
+    }
+
     // Grant editor access if needed
     if (isEditor && !isAdmin) {
       await supabase
@@ -503,7 +516,19 @@ export async function createNewCMSPage(params: {
 
     if (contentError) throw contentError;
 
-    // 5. Grant editor access if needed
+    // 5. Create media folder hierarchy for the new page
+    try {
+      const folderResult = await ensureMediaFolderHierarchy(finalSlug);
+      if (folderResult) {
+        toast.success(`✅ Media folder created: ${folderResult.storagePath}`);
+        console.log('[createNewCMSPage] Media folder created:', folderResult);
+      }
+    } catch (folderError) {
+      console.error('[createNewCMSPage] Error creating media folder:', folderError);
+      // Don't fail page creation if folder creation fails
+    }
+
+    // 6. Grant editor access if needed
     if (isEditor && !isAdmin && userId) {
       const { error: accessError } = await supabase
         .from("editor_page_access")
@@ -519,7 +544,7 @@ export async function createNewCMSPage(params: {
       }
     }
 
-    // 6. Build hierarchical URL
+    // 7. Build hierarchical URL
     const hierarchicalUrl = `/${pageInfo.page_slug}`;
 
     toast.success(
