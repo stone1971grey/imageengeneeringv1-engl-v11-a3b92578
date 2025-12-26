@@ -1,4 +1,18 @@
-# Offene Aufgaben - Stand 2025-12-23
+# Offene Aufgaben - Stand 2025-12-26
+
+## 🟡 Offen: Bild-Lösch-Dialog für weitere Segment-Editoren
+
+**Problem:** Der Multi-Language Bild-Lösch-Dialog wurde für ActionHeroEditor, FullHeroEditor und ImageTextEditor implementiert. TilesSegmentEditor und BannerPEditor haben komplexere Multi-Bild-Strukturen und benötigen eine aufwändigere Implementierung.
+
+**Betroffene Dateien:** 
+- `src/components/admin/TilesSegmentEditor.tsx`
+- `src/components/admin/BannerPEditor.tsx`
+
+**Nächste Schritte:**
+- Dialog-Logik für Arrays von Bildern erweitern
+- Jeden Tile/Banner-Eintrag einzeln behandeln
+
+---
 
 ## 🔴 Kritisch: Tab-Persistierung im AdminDashboard
 
