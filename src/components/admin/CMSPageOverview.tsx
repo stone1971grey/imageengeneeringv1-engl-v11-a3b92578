@@ -273,14 +273,29 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
 
-      // Step 3: Delete from navigation_links
-      const { error: navError } = await supabase
+      // Step 3: Delete from navigation_links (both with and without leading slash)
+      const slugWithSlash = pageToDelete.page_slug.startsWith('/') 
+        ? pageToDelete.page_slug 
+        : `/${pageToDelete.page_slug}`;
+      const slugWithoutSlash = pageToDelete.page_slug.startsWith('/') 
+        ? pageToDelete.page_slug.slice(1) 
+        : pageToDelete.page_slug;
+      
+      // Delete both variants to ensure cleanup
+      const { error: navError1 } = await supabase
         .from('navigation_links')
         .delete()
-        .eq('slug', pageToDelete.page_slug);
+        .eq('slug', slugWithSlash);
 
-      if (navError) {
-        console.warn('Navigation links delete failed (might be empty):', navError);
+      const { error: navError2 } = await supabase
+        .from('navigation_links')
+        .delete()
+        .eq('slug', slugWithoutSlash);
+
+      if (navError1 && navError2) {
+        console.warn('Navigation links delete failed:', navError1, navError2);
+      } else {
+        console.log('Navigation links deleted for slug:', slugWithSlash, 'and', slugWithoutSlash);
       }
 
       // Step 4: Update child pages (set parent_slug to null)
