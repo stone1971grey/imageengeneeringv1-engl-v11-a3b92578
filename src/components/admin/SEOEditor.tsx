@@ -5017,6 +5017,21 @@ export const SEOEditor = ({
                                           )}
                                         </Button>
                                       )}
+                                      
+                                      {/* Delete Button for applied suggestions */}
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          setContentLinkSuggestions(prev => prev.filter((_, i) => i !== originalIndex));
+                                          toast.success('Vorschlag entfernt');
+                                        }}
+                                        className="h-11 w-full text-red-400 hover:text-red-300 hover:bg-red-500/20 border border-red-500/30"
+                                        title="Vorschlag aus Liste entfernen"
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Entfernen
+                                      </Button>
                                     </>
                                   ) : (
                                     <>
@@ -5037,6 +5052,18 @@ export const SEOEditor = ({
                                             Apply
                                           </>
                                         )}
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          setContentLinkSuggestions(prev => prev.filter((_, i) => i !== originalIndex));
+                                          toast.success('Vorschlag entfernt');
+                                        }}
+                                        className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                                        title="Vorschlag löschen"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
                                       </Button>
                                     </>
                                   )}
