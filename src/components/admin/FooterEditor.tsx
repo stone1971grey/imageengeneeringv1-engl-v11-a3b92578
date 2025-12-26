@@ -716,13 +716,18 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                     Do you want to delete this image only in English or in all language versions?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
-                  <AlertDialogCancel className="bg-gray-700 text-white hover:bg-gray-600 border-none">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    className="bg-gray-700 text-white hover:bg-gray-600 border-none"
+                    onClick={() => setShowDeleteDialog(false)}
+                  >
                     Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
+                  </Button>
+                  <Button
                     className="bg-yellow-500 text-black hover:bg-yellow-400"
                     onClick={async () => {
+                      console.log("[FooterEditor] Deleting image for English only...");
                       // Delete only in English
                       setTeamImageUrl("");
                       setTeamImageMetadata(null);
@@ -730,28 +735,30 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                       // Also delete from database for EN only
                       const user = (await supabase.auth.getUser()).data.user;
                       if (user) {
-                        await supabase
+                        const { error: error1 } = await supabase
                           .from("page_content")
                           .delete()
                           .eq("page_slug", pageSlug)
                           .eq("section_key", "footer_team_image_url")
                           .eq("language", "en");
-                        await supabase
+                        const { error: error2 } = await supabase
                           .from("page_content")
                           .delete()
                           .eq("page_slug", pageSlug)
                           .eq("section_key", "footer_team_image_metadata")
                           .eq("language", "en");
+                        console.log("[FooterEditor] Delete EN result:", { error1, error2 });
                       }
                       toast.success("Image deleted for English only.");
                       setShowDeleteDialog(false);
                     }}
                   >
                     English only
-                  </AlertDialogAction>
-                  <AlertDialogAction
+                  </Button>
+                  <Button
                     className="bg-red-500 text-white hover:bg-red-600"
                     onClick={async () => {
+                      console.log("[FooterEditor] Deleting image for ALL languages...");
                       // Delete in all languages
                       setTeamImageUrl("");
                       setTeamImageMetadata(null);
@@ -760,18 +767,19 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                       if (user) {
                         const allLanguages: FooterEditorLanguage[] = ["en", "de", "ja", "ko", "zh"];
                         for (const lang of allLanguages) {
-                          await supabase
+                          const { error: error1 } = await supabase
                             .from("page_content")
                             .delete()
                             .eq("page_slug", pageSlug)
                             .eq("section_key", "footer_team_image_url")
                             .eq("language", lang);
-                          await supabase
+                          const { error: error2 } = await supabase
                             .from("page_content")
                             .delete()
                             .eq("page_slug", pageSlug)
                             .eq("section_key", "footer_team_image_metadata")
                             .eq("language", lang);
+                          console.log(`[FooterEditor] Delete ${lang} result:`, { error1, error2 });
                         }
                       }
                       toast.success("Image deleted for all languages.");
@@ -779,8 +787,8 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                     }}
                   >
                     All languages
-                  </AlertDialogAction>
-                </AlertDialogFooter>
+                  </Button>
+                </div>
               </AlertDialogContent>
             </AlertDialog>
 
