@@ -234,24 +234,25 @@ const Footer = () => {
                 <Clock className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
                 <span className="text-foreground">{t.footer.officeHours}</span>
               </div>
-            </div>
 
-            <div className="pt-4">
-            {hasCMSContent && footerContent.footer_button_text ? (
-              <a href={footerContent.footer_button_url || "/contact"}>
-                <Button 
-                  className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {footerContent.footer_button_text}
-                </Button>
-              </a>
-            ) : (
-              <a href="/contact">
-                <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                  {t.footer.button[pageType]}
-                </Button>
-              </a>
-            )}
+              {/* Button - inside the space-y-4 container for consistent spacing */}
+              <div>
+                {hasCMSContent && footerContent.footer_button_text ? (
+                  <a href={footerContent.footer_button_url || "/contact"}>
+                    <Button 
+                      className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      {footerContent.footer_button_text}
+                    </Button>
+                  </a>
+                ) : (
+                  <a href="/contact">
+                    <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                      {t.footer.button[pageType]}
+                    </Button>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
