@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2 } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -224,6 +224,18 @@ export const SEOEditor = ({
     parentSlug?: string | null;
     targetPageSlug?: string | null;
     saved?: boolean;
+    linkPlacement?: {
+      segmentId: number;
+      segmentKey: string;
+      segmentType: string;
+      placementType: 'inline_text' | 'cta_button' | 'navigation_link' | 'feature_card';
+      placementDescription: string;
+    } | null;
+    suggestedSegments?: Array<{
+      type: string;
+      content: string;
+    }> | null;
+    isApplying?: boolean;
   }>>([]);
   const [showContentLinkSuggestions, setShowContentLinkSuggestions] = useState(false);
   const [isSavingContentSuggestions, setIsSavingContentSuggestions] = useState(false);
@@ -1503,6 +1515,184 @@ export const SEOEditor = ({
       toast.error('Failed to save content suggestions');
     } finally {
       setIsSavingContentSuggestions(false);
+    }
+  };
+
+  // Apply a Content Cluster Suggestion - create new page with segments
+  const handleApplyClusterSuggestion = async (suggestion: typeof contentLinkSuggestions[0], index: number) => {
+    if (suggestion.suggestionType !== 'new_page') {
+      toast.error('Only new page suggestions can be applied');
+      return;
+    }
+
+    // Mark as applying
+    setContentLinkSuggestions(prev => prev.map((s, i) => 
+      i === index ? { ...s, isApplying: true } : s
+    ));
+
+    try {
+      // Step 1: Get the next available page_id
+      const { data: maxPageId, error: maxError } = await supabase
+        .from('page_registry')
+        .select('page_id')
+        .order('page_id', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (maxError && maxError.code !== 'PGRST116') throw maxError;
+      
+      const newPageId = (maxPageId?.page_id || 0) + 1;
+      const newSlug = suggestion.parentSlug 
+        ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` 
+        : suggestion.suggestedSlug;
+
+      // Step 2: Create page registry entry
+      const { error: registryError } = await supabase
+        .from('page_registry')
+        .insert({
+          page_id: newPageId,
+          page_slug: newSlug,
+          page_title: suggestion.suggestedTitle,
+          parent_slug: suggestion.parentSlug || null,
+          position: 999
+        });
+
+      if (registryError) throw registryError;
+
+      console.log('[SEO Editor] Created page registry entry:', newSlug, 'ID:', newPageId);
+
+      // Step 3: Create segments for the new page
+      const suggestedSegments = suggestion.suggestedSegments || [
+        { type: 'action-hero', content: `Hero section for ${suggestion.suggestedTitle}` },
+        { type: 'intro', content: `Introduction about ${suggestion.suggestedTitle}` }
+      ];
+
+      const segmentsToCreate: Array<{
+        page_slug: string;
+        segment_type: string;
+        segment_key: string;
+        segment_id: number;
+        position: number;
+      }> = [];
+
+      const pageSegments: Array<{
+        segmentId: number;
+        segmentKey: string;
+        type: string;
+      }> = [];
+
+      for (let i = 0; i < suggestedSegments.length; i++) {
+        const seg = suggestedSegments[i];
+        const segmentId = newPageId * 100 + i + 1; // Generate unique segment ID
+        const segmentKey = `segment_${segmentId}_${seg.type}`;
+
+        segmentsToCreate.push({
+          page_slug: newSlug,
+          segment_type: seg.type,
+          segment_key: segmentKey,
+          segment_id: segmentId,
+          position: i
+        });
+
+        pageSegments.push({
+          segmentId,
+          segmentKey,
+          type: seg.type
+        });
+
+        // Create initial content for the segment
+        const initialContent: Record<string, any> = {};
+        
+        switch (seg.type) {
+          case 'action-hero':
+            initialContent.headline = suggestion.suggestedTitle;
+            initialContent.subline = seg.content;
+            break;
+          case 'intro':
+            initialContent.headline = suggestion.suggestedTitle;
+            initialContent.introText = `<p>${seg.content}</p>`;
+            break;
+          case 'faq':
+            initialContent.headline = 'Frequently Asked Questions';
+            initialContent.items = [
+              { question: 'Question 1 about ' + suggestion.suggestedTitle, answer: 'Answer coming soon.' },
+              { question: 'Question 2 about ' + suggestion.suggestedTitle, answer: 'Answer coming soon.' }
+            ];
+            break;
+          default:
+            initialContent.headline = suggestion.suggestedTitle;
+            initialContent.description = seg.content;
+        }
+
+        // Insert segment content
+        await supabase
+          .from('page_content')
+          .insert({
+            page_slug: newSlug,
+            section_key: segmentKey,
+            content_type: 'json',
+            content_value: JSON.stringify(initialContent),
+            language: 'en'
+          });
+      }
+
+      // Step 4: Insert segment registry entries
+      if (segmentsToCreate.length > 0) {
+        const { error: segmentError } = await supabase
+          .from('segment_registry')
+          .insert(segmentsToCreate);
+
+        if (segmentError) throw segmentError;
+      }
+
+      // Step 5: Create page_segments content
+      await supabase
+        .from('page_content')
+        .insert({
+          page_slug: newSlug,
+          section_key: 'page_segments',
+          content_type: 'json',
+          content_value: JSON.stringify(pageSegments),
+          language: 'en'
+        });
+
+      // Step 6: Create basic SEO entry
+      await supabase
+        .from('page_content')
+        .insert({
+          page_slug: newSlug,
+          section_key: 'seo',
+          content_type: 'json',
+          content_value: JSON.stringify({
+            title: suggestion.suggestedTitle,
+            description: suggestion.reason,
+            focusKeyword: '',
+            canonical: ''
+          }),
+          language: 'en'
+        });
+
+      console.log('[SEO Editor] Created segments for new page:', segmentsToCreate.length);
+
+      // Update suggestion state
+      setContentLinkSuggestions(prev => prev.map((s, i) => 
+        i === index ? { ...s, isApplying: false, saved: true } : s
+      ));
+
+      toast.success(
+        <div>
+          <strong>Cluster page created!</strong>
+          <br />
+          <span className="text-sm">/{newSlug} with {segmentsToCreate.length} segments</span>
+        </div>
+      );
+
+    } catch (error) {
+      console.error('[SEO Editor] Error creating cluster page:', error);
+      setContentLinkSuggestions(prev => prev.map((s, i) => 
+        i === index ? { ...s, isApplying: false } : s
+      ));
+      toast.error('Failed to create cluster page: ' + (error as Error).message);
     }
   };
 
@@ -4294,7 +4484,9 @@ export const SEOEditor = ({
                           <p className="text-xs text-muted-foreground italic pl-5">
                             Neue Seiten, die als Cluster-Content um diese Pillar-Page erstellt werden sollten:
                           </p>
-                          {newPages.map((suggestion, index) => (
+                          {newPages.map((suggestion, index) => {
+                            const originalIndex = contentLinkSuggestions.findIndex(s => s === suggestion);
+                            return (
                             <div
                               key={`new-${index}`}
                               className={`p-4 rounded-lg border transition-colors ${
@@ -4317,34 +4509,105 @@ export const SEOEditor = ({
                                     </Badge>
                                     {suggestion.saved && (
                                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                                        Saved ✓
+                                        Created ✓
                                       </Badge>
                                     )}
                                   </div>
                                   <div className="flex items-center gap-2 mb-2">
                                     <span className="text-sm text-muted-foreground">Slug:</span>
                                     <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-blue-400">
-                                      /{suggestion.suggestedSlug}
+                                      /{suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug}
                                     </span>
                                   </div>
                                   {suggestion.parentSlug && (
                                     <div className="flex items-center gap-2 mb-2">
                                       <span className="text-sm text-muted-foreground">Parent (Pillar):</span>
                                       <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-purple-400">
-                                        {suggestion.parentSlug}
+                                        /{suggestion.parentSlug}
                                       </span>
                                     </div>
                                   )}
-                                  <p className="text-sm text-muted-foreground">
+                                  
+                                  {/* Link Placement Info */}
+                                  {suggestion.linkPlacement && (
+                                    <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-md">
+                                      <p className="text-xs font-semibold text-purple-400 mb-2 flex items-center gap-1">
+                                        <LinkIcon className="h-3 w-3" />
+                                        Link-Platzierung auf Pillar-Page:
+                                      </p>
+                                      <div className="space-y-1 text-xs">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-muted-foreground">Segment:</span>
+                                          <code className="bg-muted/50 px-1.5 py-0.5 rounded text-purple-300">
+                                            {suggestion.linkPlacement.segmentType} (ID: {suggestion.linkPlacement.segmentId})
+                                          </code>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-muted-foreground">Typ:</span>
+                                          <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
+                                            {suggestion.linkPlacement.placementType.replace('_', ' ')}
+                                          </Badge>
+                                        </div>
+                                        <p className="text-muted-foreground mt-1 italic">
+                                          {suggestion.linkPlacement.placementDescription}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Suggested Segments */}
+                                  {suggestion.suggestedSegments && suggestion.suggestedSegments.length > 0 && (
+                                    <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-md">
+                                      <p className="text-xs font-semibold text-blue-400 mb-2">
+                                        Vorgeschlagene Segmente:
+                                      </p>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {suggestion.suggestedSegments.map((seg, segIdx) => (
+                                          <Badge 
+                                            key={segIdx}
+                                            variant="outline" 
+                                            className="text-xs bg-blue-500/10 text-blue-300 border-blue-500/30"
+                                          >
+                                            {seg.type}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  <p className="text-sm text-muted-foreground mt-3">
                                     {suggestion.reason}
                                   </p>
                                 </div>
-                                <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                                  New Page
-                                </Badge>
+                                
+                                {/* Action Column */}
+                                <div className="flex flex-col items-end gap-2">
+                                  <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                    New Page
+                                  </Badge>
+                                  
+                                  {!suggestion.saved && (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleApplyClusterSuggestion(suggestion, originalIndex)}
+                                      disabled={suggestion.isApplying}
+                                      className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
+                                    >
+                                      {suggestion.isApplying ? (
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                      ) : (
+                                        <>
+                                          <Plus className="h-3 w-3 mr-1" />
+                                          Apply
+                                        </>
+                                      )}
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       );
                     })()}
