@@ -81,73 +81,103 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
     images: [],
   };
 
+  // CRITICAL: Remove footer, header, nav, sidebar content BEFORE parsing
+  let cleanedHtml = html
+    // Remove footer sections completely
+    .replace(/<footer[\s\S]*?<\/footer>/gi, '')
+    .replace(/<div[^>]*class="[^"]*footer[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<section[^>]*id="[^"]*footer[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '')
+    .replace(/<div[^>]*id="[^"]*footer[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    // Remove navigation
+    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
+    .replace(/<header[\s\S]*?<\/header>/gi, '')
+    .replace(/<div[^>]*class="[^"]*navigation[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*class="[^"]*navbar[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*class="[^"]*nav-[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    // Remove sidebar
+    .replace(/<aside[\s\S]*?<\/aside>/gi, '')
+    .replace(/<div[^>]*class="[^"]*sidebar[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    // Remove cookie/privacy banners
+    .replace(/<div[^>]*class="[^"]*cookie[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*id="[^"]*cookie[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*class="[^"]*privacy[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*class="[^"]*consent[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    // Remove newsletter sections
+    .replace(/<div[^>]*class="[^"]*newsletter[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<section[^>]*class="[^"]*newsletter[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '')
+    // Remove related products/similar items sections
+    .replace(/<div[^>]*class="[^"]*related[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<section[^>]*class="[^"]*related[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '')
+    // Remove scripts and styles
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
+
+  console.log('HTML cleaned, removed footer/nav/sidebar content');
+
   // Extract title from h1 or title tag
-  const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  const h1Match = cleanedHtml.match(/<h1[^>]*>([^<]+)<\/h1>/i);
   if (h1Match) {
     result.title = cleanText(h1Match[1]);
   } else {
-    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const titleMatch = cleanedHtml.match(/<title[^>]*>([^<]+)<\/title>/i);
     if (titleMatch) {
       result.title = cleanText(titleMatch[1].split('|')[0].split('-')[0]);
     }
   }
+  console.log('Extracted title:', result.title);
 
   // Extract subtitle (often in a specific class or following h1)
-  const subtitleMatch = html.match(/class="[^"]*subtitle[^"]*"[^>]*>([^<]+)</i) ||
-                        html.match(/<h2[^>]*class="[^"]*product[^"]*"[^>]*>([^<]+)</i) ||
-                        html.match(/<span[^>]*class="[^"]*category[^"]*"[^>]*>([^<]+)</i);
+  const subtitleMatch = cleanedHtml.match(/class="[^"]*subtitle[^"]*"[^>]*>([^<]+)</i) ||
+                        cleanedHtml.match(/<h2[^>]*class="[^"]*product[^"]*"[^>]*>([^<]+)</i) ||
+                        cleanedHtml.match(/<span[^>]*class="[^"]*category[^"]*"[^>]*>([^<]+)</i);
   if (subtitleMatch) {
     result.subtitle = cleanText(subtitleMatch[1]);
   }
 
   // Extract main description - look for multiple paragraphs and merge them
-  const descMatches = html.matchAll(/<p[^>]*>([^<]{30,1000})<\/p>/gi);
+  const descMatches = cleanedHtml.matchAll(/<p[^>]*>([^<]{30,1000})<\/p>/gi);
   const descriptions: string[] = [];
   for (const match of descMatches) {
     const text = cleanText(match[1]);
-    // Filter out navigation, cookie, footer content
-    if (text.length > 40 && 
-        !text.toLowerCase().includes('cookie') && 
-        !text.toLowerCase().includes('privacy') &&
-        !text.toLowerCase().includes('newsletter') &&
-        !text.toLowerCase().includes('subscribe') &&
-        !text.toLowerCase().includes('copyright')) {
+    // Filter out navigation, cookie, footer content (double-check)
+    if (text.length > 40 && !isFooterContent(text)) {
       descriptions.push(text);
-      if (descriptions.length >= 4) break;
+      if (descriptions.length >= 5) break;
     }
   }
   result.description = descriptions.join(' ');
+  console.log('Extracted description length:', result.description.length);
 
   // Extract bullet points/benefits from ALL lists, be thorough
-  const ulMatches = html.matchAll(/<ul[^>]*>([\s\S]*?)<\/ul>/gi);
+  const ulMatches = cleanedHtml.matchAll(/<ul[^>]*>([\s\S]*?)<\/ul>/gi);
   for (const ulMatch of ulMatches) {
     const liMatches = ulMatch[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
     for (const liMatch of liMatches) {
       const text = cleanText(liMatch[1].replace(/<[^>]+>/g, ''));
       if (text.length > 10 && text.length < 400 && 
-          !text.includes('http') &&
-          !text.toLowerCase().includes('cookie') &&
-          !text.toLowerCase().includes('menu')) {
+          !text.includes('http') && !isFooterContent(text)) {
         result.benefits.push(text);
       }
     }
   }
   // Also extract from ordered lists
-  const olMatches = html.matchAll(/<ol[^>]*>([\s\S]*?)<\/ol>/gi);
+  const olMatches = cleanedHtml.matchAll(/<ol[^>]*>([\s\S]*?)<\/ol>/gi);
   for (const olMatch of olMatches) {
     const liMatches = olMatch[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
     for (const liMatch of liMatches) {
       const text = cleanText(liMatch[1].replace(/<[^>]+>/g, ''));
-      if (text.length > 10 && text.length < 400 && !text.includes('http')) {
+      if (text.length > 10 && text.length < 400 && !text.includes('http') && !isFooterContent(text)) {
         result.benefits.push(text);
       }
     }
   }
   // Deduplicate benefits
   result.benefits = [...new Set(result.benefits)].slice(0, 15);
+  console.log('Extracted benefits count:', result.benefits.length);
 
   // Extract specifications table - more thorough, look for all tables
-  const tableMatches = html.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/gi);
+  const tableMatches = cleanedHtml.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/gi);
   for (const tableMatch of tableMatches) {
     const trMatches = tableMatch[1].matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi);
     for (const trMatch of trMatches) {
@@ -156,50 +186,45 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
         const name = cleanText(cells[0].replace(/<[^>]+>/g, ''));
         const value = cleanText(cells[1].replace(/<[^>]+>/g, ''));
         if (name && value && name.length < 150 && value.length < 300 && 
-            !name.toLowerCase().includes('cookie')) {
+            !isFooterContent(name) && !isFooterContent(value)) {
           result.specifications.push({ name, value });
         }
       }
     }
   }
   // Also try to extract from definition lists
-  const dlMatches = html.matchAll(/<dl[^>]*>([\s\S]*?)<\/dl>/gi);
+  const dlMatches = cleanedHtml.matchAll(/<dl[^>]*>([\s\S]*?)<\/dl>/gi);
   for (const dlMatch of dlMatches) {
     const dtMatches = [...dlMatch[1].matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi)];
     const ddMatches = [...dlMatch[1].matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/gi)];
     for (let i = 0; i < Math.min(dtMatches.length, ddMatches.length); i++) {
       const name = cleanText(dtMatches[i][1].replace(/<[^>]+>/g, ''));
       const value = cleanText(ddMatches[i][1].replace(/<[^>]+>/g, ''));
-      if (name && value) {
+      if (name && value && !isFooterContent(name)) {
         result.specifications.push({ name, value });
       }
     }
   }
   result.specifications = result.specifications.slice(0, 25);
+  console.log('Extracted specifications count:', result.specifications.length);
 
   // Extract use cases/features from h2/h3/h4 sections
-  const sectionMatches = html.matchAll(/<h[234][^>]*>([^<]+)<\/h[234]>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
+  const sectionMatches = cleanedHtml.matchAll(/<h[234][^>]*>([^<]+)<\/h[234]>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
   for (const match of sectionMatches) {
     const title = cleanText(match[1]);
     const desc = cleanText(match[2].replace(/<[^>]+>/g, ''));
     if (title.length > 3 && title.length < 120 && desc.length > 15 && desc.length < 600) {
       // Skip navigation/generic sections
-      const titleLower = title.toLowerCase();
-      if (!titleLower.includes('menu') && 
-          !titleLower.includes('footer') &&
-          !titleLower.includes('contact') &&
-          !titleLower.includes('cookie') &&
-          !titleLower.includes('newsletter') &&
-          !titleLower.includes('related') &&
-          !titleLower.includes('similar')) {
+      if (!isFooterContent(title) && !isFooterContent(desc)) {
         result.useCases.push({ title, description: desc });
       }
     }
     if (result.useCases.length >= 8) break;
   }
+  console.log('Extracted useCases count:', result.useCases.length);
 
   // Extract download links (PDF files)
-  const pdfMatches = html.matchAll(/<a[^>]*href="([^"]*\.pdf)"[^>]*>([^<]*)</gi);
+  const pdfMatches = cleanedHtml.matchAll(/<a[^>]*href="([^"]*\.pdf)"[^>]*>([^<]*)</gi);
   for (const match of pdfMatches) {
     let pdfUrl = match[1];
     const title = cleanText(match[2]);
@@ -227,7 +252,7 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
     
     const detectedLang = isGerman ? 'de' : (isEnglish ? 'en' : language);
     
-    if (title.length > 3) {
+    if (title.length > 3 && !isFooterContent(title)) {
       result.downloads.push({
         title,
         description: getDownloadDescription(title),
@@ -236,26 +261,30 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
       });
     }
   }
+  console.log('Extracted downloads count:', result.downloads.length);
 
   // Extract video URL
-  const videoMatch = html.match(/href="([^"]*\.mp4)"/i) ||
-                     html.match(/src="([^"]*youtube[^"]*embed[^"]*)"/i) ||
-                     html.match(/data-video="([^"]*)"/i);
+  const videoMatch = cleanedHtml.match(/href="([^"]*\.mp4)"/i) ||
+                     cleanedHtml.match(/src="([^"]*youtube[^"]*embed[^"]*)"/i) ||
+                     cleanedHtml.match(/data-video="([^"]*)"/i);
   if (videoMatch) {
     result.videoUrl = videoMatch[1];
   }
 
-  // Extract images
-  const imgMatches = html.matchAll(/<img[^>]*src="([^"]*)"[^>]*(?:alt="([^"]*)")?/gi);
+  // Extract images (only from main content areas)
+  const imgMatches = cleanedHtml.matchAll(/<img[^>]*src="([^"]*)"[^>]*(?:alt="([^"]*)")?/gi);
   for (const match of imgMatches) {
     let imgUrl = match[1];
     const alt = match[2] || '';
     
-    // Filter out small icons, tracking pixels etc.
+    // Filter out small icons, tracking pixels, footer images etc.
     if (imgUrl.includes('icon') || 
         imgUrl.includes('logo') ||
         imgUrl.includes('pixel') ||
         imgUrl.includes('tracking') ||
+        imgUrl.includes('footer') ||
+        imgUrl.includes('social') ||
+        imgUrl.includes('badge') ||
         imgUrl.length < 10) continue;
     
     // Make URL absolute
@@ -272,8 +301,35 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
     
     if (result.images.length >= 10) break;
   }
+  console.log('Extracted images count:', result.images.length);
 
   return result;
+}
+
+// Helper function to detect footer/navigation/irrelevant content
+function isFooterContent(text: string): boolean {
+  const lower = text.toLowerCase();
+  const footerPatterns = [
+    'cookie', 'privacy', 'newsletter', 'subscribe', 'copyright', 
+    'all rights reserved', 'impressum', 'datenschutz', 'agb',
+    'terms of service', 'nutzungsbedingungen', 'kontakt', 'contact us',
+    'follow us', 'social media', 'facebook', 'twitter', 'linkedin', 'instagram',
+    'tel:', 'fax:', 'phone:', 'email:', 'address:', 'adresse:',
+    'menu', 'menü', 'navigation', 'sitemap', 'search', 'suche',
+    'login', 'register', 'anmelden', 'registrieren',
+    'similar products', 'related products', 'ähnliche produkte',
+    'you may also like', 'das könnte sie auch interessieren',
+    'back to top', 'nach oben', 'scroll to top',
+    'all products', 'alle produkte', 'product overview', 'produktübersicht',
+    'home', 'startseite', 'about us', 'über uns',
+    'careers', 'jobs', 'karriere', 'press', 'presse',
+    'legal notice', 'rechtliches', 'disclaimer', 'haftungsausschluss'
+  ];
+  
+  for (const pattern of footerPatterns) {
+    if (lower.includes(pattern)) return true;
+  }
+  return false;
 }
 
 function cleanText(text: string): string {
