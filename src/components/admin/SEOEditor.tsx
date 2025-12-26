@@ -1816,22 +1816,36 @@ export const SEOEditor = ({
         console.error('[SEO Editor] Error persisting content suggestions:', persistError);
       }
 
+      // Build list of created segments for display
+      const createdSegmentsList = suggestedSegments.map((seg, idx) => (
+        <span key={idx} className="inline-block bg-green-600/20 text-green-300 px-1.5 py-0.5 rounded text-xs mr-1 mb-1">
+          {seg.type}
+        </span>
+      ));
+
       toast.success(
-        <div>
-          <strong>Cluster page created!</strong>
-          <br />
-          <span className="text-sm">/{newSlug} with {segmentsToCreate.length} segments</span>
+        <div className="space-y-2">
+          <div>
+            <strong className="text-green-300">✓ Cluster page created!</strong>
+          </div>
+          <div className="text-sm">
+            <span className="text-gray-300">Page:</span> <span className="text-white font-medium">/{newSlug}</span>
+          </div>
+          <div>
+            <span className="text-gray-300 text-xs block mb-1">Erstellte Segmente ({suggestedSegments.length}):</span>
+            <div className="flex flex-wrap">
+              {createdSegmentsList}
+            </div>
+          </div>
           {suggestion.linkPlacement && (
-            <>
-              <br />
-              <span className="text-xs text-green-400">
-                {linkInserted 
-                  ? `Link in Segment ${suggestion.linkPlacement.segmentType} (ID ${suggestion.linkPlacement.segmentId}) → Feld "${insertedField}" eingefügt` 
-                  : `Link konnte nicht eingefügt werden - Segment ${suggestion.linkPlacement.segmentId} hat keine editierbaren Textfelder`}
-              </span>
-            </>
+            <div className="text-xs border-t border-green-600/30 pt-2 mt-2">
+              {linkInserted 
+                ? <span className="text-green-400">✓ Link in {suggestion.linkPlacement.segmentType} (ID {suggestion.linkPlacement.segmentId}) → "{insertedField}"</span>
+                : <span className="text-yellow-400">⚠ Link konnte nicht eingefügt werden</span>}
+            </div>
           )}
-        </div>
+        </div>,
+        { duration: 8000 }
       );
 
     } catch (error) {
