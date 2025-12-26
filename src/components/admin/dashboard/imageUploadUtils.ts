@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
+import { ensureMediaFolderHierarchy, createOrUpdateFileMapping } from '@/utils/ensureMediaFolder';
 
 // Types for upload context
 export interface UploadContext {
@@ -25,18 +26,38 @@ export function validateImageFile(file: File, maxSizeMB: number = 5): boolean {
   return true;
 }
 
-// Generic image upload function with optional folder path
+/**
+ * Generic image upload function with automatic folder hierarchy creation.
+ * 
+ * This function ensures:
+ * 1. The folder hierarchy exists in media_folders table
+ * 2. The file is uploaded to the correct storage path
+ * 3. The file_segment_mapping is created for Media Management
+ */
 export async function uploadImageToStorage(
   file: File,
   fileNamePrefix: string,
   bucketId: string = 'page-images',
-  folderPath?: string
+  folderPath?: string,
+  segmentId?: string | number
 ): Promise<{ publicUrl: string; metadata: ImageMetadata; filePath: string } | null> {
   try {
+    // STEP 1: Ensure folder hierarchy exists if folderPath is provided
+    let storagePath = folderPath;
+    if (folderPath) {
+      const folderResult = await ensureMediaFolderHierarchy(folderPath);
+      if (folderResult) {
+        storagePath = folderResult.storagePath;
+        console.log('[uploadImageToStorage] Folder hierarchy ensured:', storagePath);
+      }
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${fileNamePrefix}-${Date.now()}.${fileExt}`;
     // Use folder path if provided, otherwise upload to root
-    const filePath = folderPath ? `${folderPath}/${fileName}` : fileName;
+    const filePath = storagePath ? `${storagePath}/${fileName}` : fileName;
+
+    console.log('[uploadImageToStorage] Uploading to path:', filePath);
 
     const { error: uploadError } = await supabase.storage
       .from(bucketId)
@@ -52,6 +73,12 @@ export async function uploadImageToStorage(
       .getPublicUrl(filePath);
 
     const metadata = await extractImageMetadata(file, publicUrl);
+
+    // STEP 2: Create file_segment_mapping for Media Management
+    if (segmentId) {
+      await createOrUpdateFileMapping(filePath, String(segmentId), '');
+      console.log('[uploadImageToStorage] Created file mapping for segment:', segmentId);
+    }
 
     return { publicUrl, metadata: { ...metadata, altText: '' }, filePath };
   } catch (error: any) {
@@ -113,19 +140,14 @@ export async function handleHeroImageUpload(
 ): Promise<boolean> {
   if (!validateImageFile(file)) return false;
 
-  // Use page slug as folder path
+  // Use page slug as folder path - folder hierarchy will be created automatically
   const folderPath = context.resolvedPageSlug || context.selectedPage;
-  const result = await uploadImageToStorage(file, `hero`, 'page-images', folderPath);
+  const result = await uploadImageToStorage(file, `hero`, 'page-images', folderPath, segmentId);
   if (!result) return false;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   setHeroImageUrl(publicUrl);
   setHeroImageMetadata(metadata);
-
-  // Create file segment mapping
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   // Auto-sync to all languages
   const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
@@ -180,21 +202,16 @@ export async function handleTileImageUpload(
 ): Promise<any[] | null> {
   if (!validateImageFile(file)) return null;
 
-  // Use page slug + tiles as folder path
-  const folderPath = pageSlug ? `${pageSlug}` : 'tiles';
-  const result = await uploadImageToStorage(file, `tile-${segmentId || 'unknown'}-${tileIndex}`, 'page-images', folderPath);
+  // Use page slug as folder path - folder hierarchy will be created automatically
+  const folderPath = pageSlug || 'tiles';
+  const result = await uploadImageToStorage(file, `tile-${segmentId || 'unknown'}-${tileIndex}`, 'page-images', folderPath, segmentId);
   if (!result) return null;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   const newApps = [...applications];
   newApps[tileIndex].imageUrl = publicUrl;
   newApps[tileIndex].metadata = metadata;
   setApplications(newApps);
-
-  // Create file segment mapping
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   return newApps;
 }
@@ -211,18 +228,14 @@ export async function handleSolutionImageUploadUtil(
   if (!validateImageFile(file)) return false;
 
   const folderPath = pageSlug || '';
-  const result = await uploadImageToStorage(file, `solution-${segmentId || 'unknown'}-${index}`, 'page-images', folderPath || undefined);
+  const result = await uploadImageToStorage(file, `solution-${segmentId || 'unknown'}-${index}`, 'page-images', folderPath || undefined, segmentId);
   if (!result) return false;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   const newItems = [...solutionsItems];
   newItems[index].imageUrl = publicUrl;
   newItems[index].metadata = metadata;
   setSolutionsItems(newItems);
-
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   toast.success("Solution image uploaded successfully!");
   return true;
@@ -240,18 +253,14 @@ export async function handleImageTextHeroUpload(
   if (!validateImageFile(file)) return null;
 
   const folderPath = pageSlug || '';
-  const result = await uploadImageToStorage(file, `segment-${segmentId || segmentIndex}-hero`, 'page-images', folderPath || undefined);
+  const result = await uploadImageToStorage(file, `segment-${segmentId || segmentIndex}-hero`, 'page-images', folderPath || undefined, segmentId);
   if (!result) return null;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   const newSegments = [...pageSegments];
   newSegments[segmentIndex].data.heroImageUrl = publicUrl;
   newSegments[segmentIndex].data.heroImageMetadata = metadata;
   setPageSegments(newSegments);
-
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   return newSegments;
 }
@@ -269,18 +278,14 @@ export async function handleImageTextItemUpload(
   if (!validateImageFile(file)) return null;
 
   const folderPath = pageSlug || '';
-  const result = await uploadImageToStorage(file, `segment-${segmentId || segmentIndex}-item-${itemIndex}`, 'page-images', folderPath || undefined);
+  const result = await uploadImageToStorage(file, `segment-${segmentId || segmentIndex}-item-${itemIndex}`, 'page-images', folderPath || undefined, segmentId);
   if (!result) return null;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   const newSegments = [...pageSegments];
   newSegments[segmentIndex].data.items[itemIndex].imageUrl = publicUrl;
   newSegments[segmentIndex].data.items[itemIndex].metadata = metadata;
   setPageSegments(newSegments);
-
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   return newSegments;
 }
@@ -296,16 +301,13 @@ export async function handleFooterTeamImageUploadUtil(
   if (!validateImageFile(file)) return false;
 
   const folderPath = context.resolvedPageSlug || context.selectedPage;
-  const result = await uploadImageToStorage(file, `footer-team`, 'page-images', folderPath);
+  const segmentIdentifier = segmentId || `footer-${folderPath}`;
+  const result = await uploadImageToStorage(file, `footer-team`, 'page-images', folderPath, segmentIdentifier);
   if (!result) return false;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   setFooterTeamImageUrl(publicUrl);
   setFooterTeamImageMetadata(metadata);
-
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   try {
     await supabase
@@ -342,18 +344,14 @@ export async function handleBannerImageUploadUtil(
   if (!validateImageFile(file)) return false;
 
   const folderPath = pageSlug || '';
-  const result = await uploadImageToStorage(file, `banner-${segmentId || 'unknown'}-${index}`, 'page-images', folderPath || undefined);
+  const result = await uploadImageToStorage(file, `banner-${segmentId || 'unknown'}-${index}`, 'page-images', folderPath || undefined, segmentId);
   if (!result) return false;
 
-  const { publicUrl, metadata, filePath } = result;
+  const { publicUrl, metadata } = result;
   const newImages = [...bannerImages];
   newImages[index].url = publicUrl;
   newImages[index].metadata = { ...metadata, altText: newImages[index].alt || '' };
   setBannerImages(newImages);
-
-  if (segmentId) {
-    await createFileSegmentMapping(filePath, segmentId);
-  }
 
   toast.success("Banner image uploaded successfully!");
   return true;
