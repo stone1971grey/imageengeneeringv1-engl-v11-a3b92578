@@ -263,7 +263,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       toast.error('Please enter a URL');
       return;
     }
-    }
 
     setIsLoading(true);
     setParsedContent(null);
