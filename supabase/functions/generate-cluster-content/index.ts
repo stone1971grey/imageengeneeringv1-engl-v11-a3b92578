@@ -121,13 +121,16 @@ Schreibe professionelle, technisch fundierte Inhalte auf Deutsch.
       throw fetchError;
     }
 
-    // Parse and update segments
+    // Parse and update segments - match by segmentId field
     let pageSegments = JSON.parse(existingContent.content_value || '[]');
     
     for (const seg of pageSegments) {
-      const generatedData = generatedSegments[seg.id];
+      const segId = seg.segmentId || seg.id;
+      const generatedData = generatedSegments[segId];
       if (generatedData) {
-        seg.data = { ...seg.data, ...generatedData.data };
+        // Only merge data, don't overwrite with wrong segment type's data
+        seg.data = { ...generatedData.data };
+        console.log(`[generate-cluster-content] Updated segment ${segId} with ${generatedData.type} data`);
       }
     }
 

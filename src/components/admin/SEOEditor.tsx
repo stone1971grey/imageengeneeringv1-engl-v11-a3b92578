@@ -1917,9 +1917,9 @@ export const SEOEditor = ({
 
       const currentSegments = JSON.parse(pageData.content_value || '[]');
       
-      // Prepare segments for content generation
+      // Prepare segments for content generation - use segmentId field from page_segments structure
       const segmentsToGenerate = currentSegments.map((seg: any) => ({
-        id: seg.id,
+        id: seg.segmentId || seg.id,  // page_segments uses segmentId, not id
         type: seg.type,
         currentData: seg.data
       }));
