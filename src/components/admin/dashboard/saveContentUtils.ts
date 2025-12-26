@@ -215,14 +215,67 @@ export async function saveFooterSection(
 }
 
 // Save SEO settings
-// CRITICAL: SEO settings are language-independent, so we always save to 'en' as the master
-// This ensures focusKeyword, h1, etc. are never lost when switching languages
+/**
+ * CRITICAL: SEO Settings Save Function with Data Protection
+ * 
+ * ⚠️ IMPORTANT FOR FUTURE DEVELOPERS:
+ * This function protects against accidental data loss for SEO settings.
+ * 
+ * NEVER:
+ * - Reset seoData to empty values before calling this function
+ * - Pass seoData with empty focusKeyword/h1/introduction if DB has values
+ * - Call this function without first loading existing DB values
+ * 
+ * The function includes validation to prevent saving empty values when
+ * the database already contains non-empty values for critical fields.
+ */
 export async function saveSEOSettings(
   context: SaveContext,
   seoData: any
 ): Promise<boolean> {
   try {
     const pageSlug = context.resolvedPageSlug || context.selectedPage;
+    
+    // PROTECTION: Load existing SEO settings from DB first
+    const { data: existingData } = await supabase
+      .from("page_content")
+      .select("content_value")
+      .eq("page_slug", pageSlug)
+      .eq("section_key", "seo_settings")
+      .eq("language", "en")
+      .maybeSingle();
+    
+    let existingSeoSettings: any = {};
+    if (existingData?.content_value) {
+      try {
+        existingSeoSettings = JSON.parse(existingData.content_value);
+      } catch (e) {
+        console.error('[saveSEOSettings] Failed to parse existing SEO settings:', e);
+      }
+    }
+    
+    // CRITICAL PROTECTION: Merge to prevent data loss
+    // If incoming data has empty critical fields but DB has values, preserve DB values
+    const protectedFields = ['focusKeyword', 'h1', 'h1Locked', 'introduction', 'title', 'metaDescription'];
+    const protectedSeoData = { ...seoData };
+    
+    for (const field of protectedFields) {
+      const incomingValue = seoData[field];
+      const existingValue = existingSeoSettings[field];
+      
+      // If incoming is empty/undefined but existing has value, preserve existing
+      if ((!incomingValue && incomingValue !== false) && existingValue) {
+        console.warn(`[saveSEOSettings] PROTECTION: Preserving existing ${field}:`, existingValue);
+        protectedSeoData[field] = existingValue;
+      }
+    }
+    
+    console.log('[saveSEOSettings] Saving protected SEO data:', {
+      pageSlug,
+      focusKeyword: protectedSeoData.focusKeyword,
+      h1: protectedSeoData.h1,
+      hasIntroduction: !!protectedSeoData.introduction
+    });
     
     // Always save to 'en' as the master SEO settings (language-independent)
     await supabase
@@ -231,7 +284,7 @@ export async function saveSEOSettings(
         page_slug: pageSlug,
         section_key: "seo_settings",
         content_type: "json",
-        content_value: JSON.stringify(seoData),
+        content_value: JSON.stringify(protectedSeoData),
         language: 'en', // Always save as 'en' - SEO is language-independent
         updated_at: new Date().toISOString(),
         updated_by: context.userId
