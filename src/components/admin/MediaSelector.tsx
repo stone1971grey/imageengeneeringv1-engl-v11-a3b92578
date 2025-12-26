@@ -2,6 +2,7 @@ import { useState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, FolderOpen, Trash2 } from "lucide-react";
 import { DataHubDialog } from "./DataHubDialog";
+import { SegmentImageDeleteDialog } from "./ImageDeleteDialog";
 
 interface MediaSelectorProps {
   onFileSelect: (file: File) => void;
@@ -21,6 +22,13 @@ interface MediaSelectorProps {
   buttonVariant?: 'yellow' | 'blue';
   /** Make button full width */
   fullWidth?: boolean;
+  /** Enable multi-language delete dialog (requires pageSlug, segmentId, imageField, language) */
+  enableDeleteDialog?: boolean;
+  pageSlug?: string;
+  segmentId?: string;
+  imageField?: string;
+  language?: string;
+  imageLabel?: string;
 }
 
 // Helper to detect if URL is a video
@@ -42,9 +50,16 @@ export const MediaSelector = ({
   buttonOnly = false,
   buttonLabel,
   buttonVariant = 'blue',
-  fullWidth = false
+  fullWidth = false,
+  enableDeleteDialog = false,
+  pageSlug,
+  segmentId,
+  imageField,
+  language = 'en',
+  imageLabel
 }: MediaSelectorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const inputId = useId();
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +137,10 @@ export const MediaSelector = ({
           <button
             type="button"
             onClick={() => {
-              if (onClear) {
+              // If delete dialog is enabled and we're in English, show dialog
+              if (enableDeleteDialog && language === 'en' && pageSlug && segmentId && imageField) {
+                setShowDeleteDialog(true);
+              } else if (onClear) {
                 onClear();
               } else {
                 onMediaSelect('', undefined);
@@ -133,6 +151,26 @@ export const MediaSelector = ({
           >
             <Trash2 className="h-4 w-4" />
           </button>
+          
+          {/* Multi-language delete dialog */}
+          {enableDeleteDialog && pageSlug && segmentId && imageField && (
+            <SegmentImageDeleteDialog
+              isOpen={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
+              pageSlug={pageSlug}
+              segmentId={segmentId}
+              imageField={imageField}
+              language={language}
+              imageLabel={imageLabel || label}
+              onDeleteComplete={() => {
+                if (onClear) {
+                  onClear();
+                } else {
+                  onMediaSelect('', undefined);
+                }
+              }}
+            />
+          )}
         </div>
       )}
       
