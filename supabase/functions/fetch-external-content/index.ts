@@ -230,6 +230,8 @@ function parseFirecrawlContent(
     if (trimmed.includes('web shop is currently unavailable')) continue;
     // Skip list items separately (will process as benefits)
     if (trimmed.match(/^[\-\*•]\s/)) continue;
+    // Skip footnotes (escaped asterisks at start like \*This is a footnote)
+    if (trimmed.match(/^\\\*/)) continue;
     // Skip very short content
     if (trimmed.length < 40) continue;
     // Skip footer content
