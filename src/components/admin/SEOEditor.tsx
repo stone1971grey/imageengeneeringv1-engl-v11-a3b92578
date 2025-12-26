@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -237,6 +237,8 @@ export const SEOEditor = ({
       content: string;
     }> | null;
     isApplying?: boolean;
+    isGeneratingContent?: boolean;
+    contentGenerated?: boolean;
   }>>([]);
   const [showContentLinkSuggestions, setShowContentLinkSuggestions] = useState(false);
   const [isSavingContentSuggestions, setIsSavingContentSuggestions] = useState(false);
@@ -1884,6 +1886,133 @@ export const SEOEditor = ({
         i === index ? { ...s, isApplying: false } : s
       ));
       toast.error('Failed to create cluster page: ' + (error as Error).message);
+    }
+  };
+
+  // Generate AI content for a cluster page's segments
+  const handleGenerateClusterContent = async (suggestion: typeof contentLinkSuggestions[0], index: number) => {
+    if (!suggestion.saved || !suggestion.createdSlug) {
+      toast.error('Page must be created first before generating content');
+      return;
+    }
+
+    // Mark as generating
+    setContentLinkSuggestions(prev => prev.map((s, i) => 
+      i === index ? { ...s, isGeneratingContent: true } : s
+    ));
+
+    try {
+      const clusterPageSlug = suggestion.createdSlug;
+      
+      // Get current page_segments to know what segments exist
+      const { data: pageData, error: pageError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', clusterPageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', 'en')
+        .single();
+
+      if (pageError) throw pageError;
+
+      const currentSegments = JSON.parse(pageData.content_value || '[]');
+      
+      // Prepare segments for content generation
+      const segmentsToGenerate = currentSegments.map((seg: any) => ({
+        id: seg.id,
+        type: seg.type,
+        currentData: seg.data
+      }));
+
+      // Get pillar page content for context
+      let pillarContent = null;
+      if (suggestion.parentSlug) {
+        const { data: pillarData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', suggestion.parentSlug)
+          .eq('section_key', 'seo')
+          .eq('language', 'en')
+          .single();
+        
+        if (pillarData) {
+          try {
+            const seoData = JSON.parse(pillarData.content_value);
+            pillarContent = {
+              title: seoData.title,
+              description: seoData.description,
+              topics: [seoData.focusKeyword].filter(Boolean)
+            };
+          } catch (e) {
+            console.error('[SEO Editor] Error parsing pillar SEO:', e);
+          }
+        }
+      }
+
+      console.log('[SEO Editor] Generating content for cluster page:', clusterPageSlug);
+      console.log('[SEO Editor] Segments to generate:', segmentsToGenerate.length);
+
+      // Call edge function to generate content
+      const { data: result, error: genError } = await supabase.functions.invoke('generate-cluster-content', {
+        body: {
+          pageSlug: clusterPageSlug,
+          pageTitle: suggestion.suggestedTitle,
+          parentPageSlug: suggestion.parentSlug,
+          segments: segmentsToGenerate,
+          pillarPageContent: pillarContent
+        }
+      });
+
+      if (genError) throw genError;
+
+      console.log('[SEO Editor] Content generation result:', result);
+
+      // Update state to mark content as generated
+      const updatedSuggestion = { ...suggestion, isGeneratingContent: false, contentGenerated: true };
+      const newSuggestions = contentLinkSuggestions.map((s, i) => 
+        i === index ? updatedSuggestion : s
+      );
+      setContentLinkSuggestions(newSuggestions);
+
+      // Persist to database
+      try {
+        const { data: existingEntry } = await supabase
+          .from('page_content')
+          .select('id')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_content_suggestions')
+          .eq('language', editorLanguage)
+          .single();
+        
+        if (existingEntry) {
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(newSuggestions),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingEntry.id);
+        }
+      } catch (persistError) {
+        console.error('[SEO Editor] Error persisting content suggestions:', persistError);
+      }
+
+      toast.success(
+        <div className="space-y-1">
+          <strong className="text-green-300">✓ AI-Inhalte generiert!</strong>
+          <p className="text-sm text-gray-300">
+            {result.generatedSegments || 0} Segmente mit Inhalten gefüllt
+          </p>
+        </div>,
+        { duration: 5000 }
+      );
+
+    } catch (error) {
+      console.error('[SEO Editor] Error generating cluster content:', error);
+      setContentLinkSuggestions(prev => prev.map((s, i) => 
+        i === index ? { ...s, isGeneratingContent: false } : s
+      ));
+      toast.error('Fehler beim Generieren der Inhalte: ' + (error as Error).message);
     }
   };
 
@@ -4862,6 +4991,33 @@ export const SEOEditor = ({
                                         <ExternalLink className="h-3 w-3" />
                                         Preview
                                       </a>
+                                      
+                                      {/* AI Content Generator Button - Rainbow style */}
+                                      {suggestion.contentGenerated ? (
+                                        <Badge className="flex-shrink-0 text-xs bg-purple-500 text-white border-0">
+                                          <Sparkles className="h-3 w-3 mr-1" />
+                                          Content Generated
+                                        </Badge>
+                                      ) : (
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleGenerateClusterContent(suggestion, originalIndex)}
+                                          disabled={suggestion.isGeneratingContent}
+                                          className="h-8 text-xs bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300"
+                                        >
+                                          {suggestion.isGeneratingContent ? (
+                                            <>
+                                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                              Generiere...
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Sparkles className="h-3 w-3 mr-1" />
+                                              AI-Inhalte erstellen
+                                            </>
+                                          )}
+                                        </Button>
+                                      )}
                                     </>
                                   ) : (
                                     <>
