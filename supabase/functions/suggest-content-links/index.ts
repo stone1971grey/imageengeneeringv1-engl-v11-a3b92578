@@ -147,25 +147,29 @@ TYPE 1 - NEW CLUSTER PAGES (suggestionType: "new_page"):
 - These would be child/sibling pages that dive deeper into specific subtopics
 - They would link back to this pillar page and vice versa
 - CRITICAL: For each new cluster page, you MUST specify WHERE the link to this new page should be placed on the PILLAR page (linkPlacement)
+- The suggestedSlug should be ONLY the final slug part (e.g., "technical-deep-dive"), NOT the full path!
 
 TYPE 2 - SEGMENT ENHANCEMENTS (suggestionType: "existing_segment"):
 - Sections/segments within EXISTING pages that should be enhanced or created
 - These are content gaps in pages that already exist
-- Specify which existing page the segment should be added to
+- Specify which existing page the segment should be added to via "targetPageSlug"
+- Set "parentSlug" to null for this type
+- IMPORTANT: You MUST include at least 1-2 existing_segment suggestions!
 
-Suggest 2-3 of each type (4-6 total). Keep suggestedSegments arrays BRIEF (2-3 items max, with short content descriptions).
+CRITICAL INSTRUCTION: You MUST provide BOTH types! Include 2-3 new_page suggestions AND 1-2 existing_segment suggestions.
 
 RESPONSE FORMAT:
 Return ONLY a JSON array:
 [
   {
-    "suggestedSlug": "new-cluster-page-slug",
+    "suggestedSlug": "short-slug-name-only",
     "suggestedTitle": "New Cluster Page Title",
     "suggestionType": "new_page",
     "segmentType": "page",
     "reason": "Why this cluster page supports the pillar and fills a content gap",
     "priority": 1,
     "parentSlug": "${pageSlug}",
+    "targetPageSlug": null,
     "linkPlacement": {
       "segmentId": 123,
       "segmentKey": "segment_123_intro",
@@ -202,12 +206,18 @@ CRITICAL PLACEMENT DESCRIPTION RULES:
 - Example bad description: "Add a link somewhere in the segment"
 
 IMPORTANT:
-- For new_page: suggestedSlug must be a NEW slug that doesn't exist
+- You MUST include BOTH types: at least 2 new_page AND at least 1 existing_segment suggestions!
+- For new_page: suggestedSlug must be ONLY the final part (e.g., "deep-dive") NOT the full path
 - For new_page: linkPlacement MUST reference an existing segment from SEGMENTS ON CURRENT PILLAR PAGE
 - For new_page: suggestedSegments should contain 2-4 segment types that make sense for the new cluster page
-- For existing_segment: targetPageSlug must be an EXISTING page from the list
+- For existing_segment: targetPageSlug must be an EXISTING page from the EXISTING PAGES list above
+- For existing_segment: segmentType should be a specific segment type like "faq", "intro", "specification" 
 - Priority 1 = most valuable
-- placementType options: "inline_text" (add link in text), "cta_button" (use existing/new CTA), "navigation_link" (add to navigation), "feature_card" (add as feature item)`;
+- placementType options: "inline_text" (add link in text), "cta_button" (use existing/new CTA), "navigation_link" (add to navigation), "feature_card" (add as feature item)
+
+FINAL CHECK: Before responding, verify you have included:
+- At least 2 suggestions with suggestionType: "new_page"
+- At least 1 suggestion with suggestionType: "existing_segment"`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

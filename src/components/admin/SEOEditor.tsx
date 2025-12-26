@@ -1543,9 +1543,16 @@ export const SEOEditor = ({
       if (maxError && maxError.code !== 'PGRST116') throw maxError;
       
       const newPageId = (maxPageId?.page_id || 0) + 1;
-      const newSlug = suggestion.parentSlug 
-        ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` 
-        : suggestion.suggestedSlug;
+      
+      // CRITICAL FIX: Check if suggestedSlug already contains the full path (from AI)
+      // If it starts with the parentSlug, use it directly; otherwise construct the path
+      let newSlug = suggestion.suggestedSlug;
+      if (suggestion.parentSlug && !suggestion.suggestedSlug.startsWith(suggestion.parentSlug)) {
+        // suggestedSlug is just the end portion, construct full path
+        newSlug = `${suggestion.parentSlug}/${suggestion.suggestedSlug}`;
+      }
+      
+      console.log('[SEO Editor] Creating new page with slug:', newSlug, 'from suggested:', suggestion.suggestedSlug);
 
       // Step 2: Create page registry entry
       const { error: registryError } = await supabase
