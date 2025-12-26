@@ -124,7 +124,23 @@ export function parseContentItems(
   let footerTeamName = "";
   let footerTeamTitle = "";
   let footerButtonText = "";
-  let seoData = { ...existingSeoData };
+  // Initialize seoData with proper defaults - don't rely on existingSeoData which may be empty during page switch
+  let seoData = {
+    title: existingSeoData?.title || '',
+    metaDescription: existingSeoData?.metaDescription || '',
+    slug: existingSeoData?.slug || selectedPage,
+    canonical: existingSeoData?.canonical || '',
+    robotsIndex: existingSeoData?.robotsIndex || 'index',
+    robotsFollow: existingSeoData?.robotsFollow || 'follow',
+    focusKeyword: existingSeoData?.focusKeyword || '',
+    ogTitle: existingSeoData?.ogTitle || '',
+    ogDescription: existingSeoData?.ogDescription || '',
+    ogImage: existingSeoData?.ogImage || '',
+    twitterCard: existingSeoData?.twitterCard || 'summary_large_image',
+    h1: existingSeoData?.h1 || '',
+    h1Locked: existingSeoData?.h1Locked || false,
+    introduction: existingSeoData?.introduction || ''
+  };
   let needsSegmentUpdate = false;
   let segmentsWithIds: any[] = [];
 
