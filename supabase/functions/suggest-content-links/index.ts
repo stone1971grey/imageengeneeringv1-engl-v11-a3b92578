@@ -171,7 +171,7 @@ Return ONLY a JSON array:
       "segmentKey": "segment_123_intro",
       "segmentType": "intro",
       "placementType": "inline_text|cta_button|navigation_link|feature_card",
-      "placementDescription": "Add link in the introText after the sentence about [specific topic]"
+      "placementDescription": "DETAILED DESCRIPTION: Der Link wird am Ende des 'introText' Feldes im Intro-Segment eingefügt. Genauer Platz: Nach dem Absatz über [spezifisches Thema], als neuer Paragraph mit Pfeil-Prefix."
     },
     "suggestedSegments": [
       {"type": "action-hero", "content": "Hero section with title and subtitle related to the cluster topic"},
@@ -191,14 +191,23 @@ Return ONLY a JSON array:
   }
 ]
 
+CRITICAL PLACEMENT DESCRIPTION RULES:
+- placementDescription MUST be specific and actionable
+- For "intro" segments: State that link goes in "introText" or "body" field
+- For "specification" segments: State that link goes in "description" field 
+- For "feature-overview" segments: State that link goes in "items[0].description" (first feature card)
+- For "tiles" or "banner-p": State the exact field name used
+- Include which paragraph or position the link will appear at
+- Example good description: "Der Link wird am Ende des 'description' Feldes im Specification-Segment (ID 539) eingefügt, nach den technischen Daten."
+- Example bad description: "Add a link somewhere in the segment"
+
 IMPORTANT:
 - For new_page: suggestedSlug must be a NEW slug that doesn't exist
 - For new_page: linkPlacement MUST reference an existing segment from SEGMENTS ON CURRENT PILLAR PAGE
 - For new_page: suggestedSegments should contain 2-4 segment types that make sense for the new cluster page
 - For existing_segment: targetPageSlug must be an EXISTING page from the list
 - Priority 1 = most valuable
-- placementType options: "inline_text" (add link in text), "cta_button" (use existing/new CTA), "navigation_link" (add to navigation), "feature_card" (add as feature item)
-- Be specific in placementDescription about exactly where the link should go`;
+- placementType options: "inline_text" (add link in text), "cta_button" (use existing/new CTA), "navigation_link" (add to navigation), "feature_card" (add as feature item)`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

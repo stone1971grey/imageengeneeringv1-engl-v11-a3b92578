@@ -1676,49 +1676,91 @@ export const SEOEditor = ({
       console.log('[SEO Editor] Created segments for new page:', segmentsToCreate.length);
 
       // Step 7: Insert link in parent segment if linkPlacement is specified
+      let linkInserted = false;
+      let insertedField = '';
+      
       if (suggestion.linkPlacement) {
-        const { segmentId, segmentKey, segmentType, placementType } = suggestion.linkPlacement;
+        const { segmentId, segmentType, placementType } = suggestion.linkPlacement;
         
         try {
-          // Find the segment content to update
-          const segmentContent = pageContent.find(item => 
-            item.section_key === segmentKey || 
-            item.section_key.includes(`${segmentId}`)
-          );
+          // CRITICAL: Content is stored in page_segments as JSON array, not individual section_keys
+          // Find the page_segments entry for the current page
+          const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
           
-          if (segmentContent) {
-            let contentObj = JSON.parse(segmentContent.content_value);
-            const linkHtml = `<a href="/${newSlug}" class="text-primary hover:underline">${suggestion.suggestedTitle}</a>`;
+          if (pageSegmentsEntry) {
+            const pageSegmentsArray = JSON.parse(pageSegmentsEntry.content_value);
             
-            // Insert link based on segment type and placement type
-            if (segmentType === 'feature-overview' && contentObj.features) {
-              // Add link to the first feature's description or create a new link section
-              if (Array.isArray(contentObj.features) && contentObj.features.length > 0) {
-                const firstFeature = contentObj.features[0];
-                if (firstFeature.description) {
-                  firstFeature.description = `${firstFeature.description} <br/><br/>→ ${linkHtml}`;
-                } else if (firstFeature.text) {
-                  firstFeature.text = `${firstFeature.text} <br/><br/>→ ${linkHtml}`;
+            // Find the target segment by ID
+            const targetSegmentIndex = pageSegmentsArray.findIndex(
+              (seg: any) => String(seg.id) === String(segmentId)
+            );
+            
+            if (targetSegmentIndex !== -1) {
+              const targetSegment = pageSegmentsArray[targetSegmentIndex];
+              const linkHtml = `<a href="/${newSlug}" class="text-primary hover:underline">${suggestion.suggestedTitle}</a>`;
+              
+              // Insert link based on segment type
+              if (segmentType === 'specification' && targetSegment.data) {
+                // For specification segments, add to description or create a notes field
+                if (targetSegment.data.description) {
+                  targetSegment.data.description = `${targetSegment.data.description}<p class="mt-4">→ ${linkHtml}</p>`;
+                  insertedField = 'description';
+                } else if (targetSegment.data.notes) {
+                  targetSegment.data.notes = `${targetSegment.data.notes}<p>→ ${linkHtml}</p>`;
+                  insertedField = 'notes';
+                } else {
+                  // Add a new description field with the link
+                  targetSegment.data.description = `<p>→ ${linkHtml}</p>`;
+                  insertedField = 'description (new)';
                 }
+                linkInserted = true;
+              } else if (segmentType === 'feature-overview' && targetSegment.data?.items) {
+                // Add link to the first item's description
+                if (Array.isArray(targetSegment.data.items) && targetSegment.data.items.length > 0) {
+                  const firstItem = targetSegment.data.items[0];
+                  if (firstItem.description) {
+                    firstItem.description = `${firstItem.description}<br/><br/>→ ${linkHtml}`;
+                    insertedField = `items[0].description`;
+                  }
+                  linkInserted = true;
+                }
+              } else if (targetSegment.data?.introText) {
+                targetSegment.data.introText = `${targetSegment.data.introText}<p class="mt-4">→ ${linkHtml}</p>`;
+                insertedField = 'introText';
+                linkInserted = true;
+              } else if (targetSegment.data?.description) {
+                targetSegment.data.description = `${targetSegment.data.description}<p class="mt-4">→ ${linkHtml}</p>`;
+                insertedField = 'description';
+                linkInserted = true;
+              } else if (targetSegment.data?.body) {
+                targetSegment.data.body = `${targetSegment.data.body}<p class="mt-4">→ ${linkHtml}</p>`;
+                insertedField = 'body';
+                linkInserted = true;
+              } else if (targetSegment.data?.text) {
+                targetSegment.data.text = `${targetSegment.data.text}<p class="mt-4">→ ${linkHtml}</p>`;
+                insertedField = 'text';
+                linkInserted = true;
               }
-            } else if (contentObj.introText) {
-              contentObj.introText = `${contentObj.introText}<p class="mt-4">→ ${linkHtml}</p>`;
-            } else if (contentObj.description) {
-              contentObj.description = `${contentObj.description}<p class="mt-4">→ ${linkHtml}</p>`;
-            } else if (contentObj.text) {
-              contentObj.text = `${contentObj.text}<p class="mt-4">→ ${linkHtml}</p>`;
+              
+              // Update the page_segments with the modified segment
+              if (linkInserted) {
+                pageSegmentsArray[targetSegmentIndex] = targetSegment;
+                
+                await supabase
+                  .from('page_content')
+                  .update({
+                    content_value: JSON.stringify(pageSegmentsArray),
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', pageSegmentsEntry.id);
+                
+                console.log('[SEO Editor] Inserted link in segment ID:', segmentId, 'field:', insertedField);
+              }
+            } else {
+              console.warn('[SEO Editor] Target segment not found in page_segments:', segmentId);
             }
-            
-            // Update the segment content
-            await supabase
-              .from('page_content')
-              .update({
-                content_value: JSON.stringify(contentObj),
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', segmentContent.id);
-            
-            console.log('[SEO Editor] Inserted link in parent segment:', segmentKey);
+          } else {
+            console.warn('[SEO Editor] No page_segments entry found for page');
           }
         } catch (linkError) {
           console.error('[SEO Editor] Error inserting link in parent segment:', linkError);
@@ -1726,10 +1768,46 @@ export const SEOEditor = ({
         }
       }
 
-      // Update suggestion state with createdSlug
-      setContentLinkSuggestions(prev => prev.map((s, i) => 
-        i === index ? { ...s, isApplying: false, saved: true, createdSlug: newSlug } : s
-      ));
+      // Step 8: Save the applied suggestion to persist it
+      const updatedSuggestion = { ...suggestion, isApplying: false, saved: true, createdSlug: newSlug };
+      const newSuggestions = contentLinkSuggestions.map((s, i) => 
+        i === index ? updatedSuggestion : s
+      );
+      setContentLinkSuggestions(newSuggestions);
+      
+      // Persist the content suggestions to the database
+      try {
+        const { data: existingEntry } = await supabase
+          .from('page_content')
+          .select('id')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_content_suggestions')
+          .eq('language', editorLanguage)
+          .single();
+        
+        if (existingEntry) {
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(newSuggestions),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingEntry.id);
+        } else {
+          await supabase
+            .from('page_content')
+            .insert({
+              page_slug: pageSlug,
+              section_key: 'seo_content_suggestions',
+              content_type: 'json',
+              content_value: JSON.stringify(newSuggestions),
+              language: editorLanguage
+            });
+        }
+        console.log('[SEO Editor] Persisted content suggestions to database');
+      } catch (persistError) {
+        console.error('[SEO Editor] Error persisting content suggestions:', persistError);
+      }
 
       toast.success(
         <div>
@@ -1739,7 +1817,11 @@ export const SEOEditor = ({
           {suggestion.linkPlacement && (
             <>
               <br />
-              <span className="text-xs text-green-400">Link in Segment ID {suggestion.linkPlacement.segmentId} eingefügt</span>
+              <span className="text-xs text-green-400">
+                {linkInserted 
+                  ? `Link in Segment ${suggestion.linkPlacement.segmentType} (ID ${suggestion.linkPlacement.segmentId}) → Feld "${insertedField}" eingefügt` 
+                  : `Link konnte nicht eingefügt werden - Segment ${suggestion.linkPlacement.segmentId} hat keine editierbaren Textfelder`}
+              </span>
             </>
           )}
         </div>
@@ -4620,41 +4702,50 @@ export const SEOEditor = ({
                                     </div>
                                   )}
                                   
-                                  {/* Link Placement Info */}
+                                  {/* Link Placement Info - Enhanced with detailed field info */}
                                   {suggestion.linkPlacement && (
                                     <div className={`mt-3 p-3 border rounded-md ${
                                       suggestion.saved 
                                         ? 'bg-green-500/10 border-green-500/30' 
                                         : 'bg-purple-500/10 border-purple-500/20'
                                     }`}>
-                                      <p className={`text-xs font-semibold mb-2 flex items-center gap-1 ${
+                                      <p className={`text-sm font-bold mb-2 flex items-center gap-1 ${
                                         suggestion.saved ? 'text-green-400' : 'text-purple-400'
                                       }`}>
-                                        <LinkIcon className="h-3 w-3" />
-                                        {suggestion.saved ? 'Link wurde eingefügt in:' : 'Link-Platzierung auf Pillar-Page:'}
+                                        <LinkIcon className="h-4 w-4" />
+                                        {suggestion.saved ? 'Link wurde eingefügt in:' : 'Link wird eingefügt auf der Pillar-Page:'}
                                       </p>
-                                      <div className="space-y-1 text-xs">
+                                      <div className="space-y-2 text-sm">
                                         <div className="flex items-center gap-2">
-                                          <span className="text-muted-foreground">Segment:</span>
-                                          <code className={`px-1.5 py-0.5 rounded ${
+                                          <span className="text-muted-foreground font-medium">Segment:</span>
+                                          <code className={`px-2 py-1 rounded font-mono text-sm ${
                                             suggestion.saved 
                                               ? 'bg-green-500/20 text-green-300' 
                                               : 'bg-muted/50 text-purple-300'
                                           }`}>
-                                            ID {suggestion.linkPlacement.segmentId}: {suggestion.linkPlacement.segmentType}
+                                            {suggestion.linkPlacement.segmentType} (ID: {suggestion.linkPlacement.segmentId})
                                           </code>
                                         </div>
                                         {!suggestion.saved && (
                                           <>
                                             <div className="flex items-center gap-2">
-                                              <span className="text-muted-foreground">Typ:</span>
-                                              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
-                                                {suggestion.linkPlacement.placementType.replace('_', ' ')}
+                                              <span className="text-muted-foreground font-medium">Einfügemodus:</span>
+                                              <Badge variant="outline" className="text-sm bg-purple-500/10 text-purple-400 border-purple-500/30 px-2 py-0.5">
+                                                {suggestion.linkPlacement.placementType === 'inline_text' ? 'Im Fließtext' : 
+                                                 suggestion.linkPlacement.placementType === 'cta_button' ? 'Als CTA-Button' :
+                                                 suggestion.linkPlacement.placementType === 'feature_card' ? 'In Feature-Card' :
+                                                 suggestion.linkPlacement.placementType.replace('_', ' ')}
                                               </Badge>
                                             </div>
-                                            <p className="text-muted-foreground mt-1 italic">
-                                              {suggestion.linkPlacement.placementDescription}
-                                            </p>
+                                            <div className="mt-2 p-2 bg-purple-500/5 rounded border border-purple-500/20">
+                                              <p className="text-sm text-purple-300 font-medium">
+                                                📍 Genauer Platzierungsort:
+                                              </p>
+                                              <p className="text-sm text-muted-foreground mt-1">
+                                                {suggestion.linkPlacement.placementDescription || 
+                                                  `Der Link wird am Ende des Textfeldes im Segment "${suggestion.linkPlacement.segmentType}" eingefügt (z.B. description, introText, body, oder im ersten Feature-Item).`}
+                                              </p>
+                                            </div>
                                           </>
                                         )}
                                       </div>
@@ -4756,45 +4847,76 @@ export const SEOEditor = ({
                           {segmentEnhancements.map((suggestion, index) => (
                             <div
                               key={`seg-${index}`}
-                              className={`p-4 rounded-lg border transition-colors ${
+                              className={`p-4 rounded-lg border-2 transition-colors ${
                                 suggestion.saved 
                                   ? 'border-green-500/50 bg-green-500/10' 
-                                  : 'border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10'
+                                  : 'border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10'
                               }`}
                             >
                               <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-sm font-semibold text-amber-400">
+                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-sm font-bold text-amber-400">
                                   {suggestion.priority}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-base font-semibold text-foreground">
+                                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                    <span className="text-base font-bold text-foreground">
                                       {suggestion.suggestedTitle}
                                     </span>
-                                    <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
+                                    <Badge variant="outline" className="text-sm bg-amber-500/10 text-amber-400 border-amber-500/30 px-2 py-0.5">
                                       {suggestion.segmentType}
                                     </Badge>
                                     {suggestion.saved && (
-                                      <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                                        Saved ✓
+                                      <Badge className="text-sm bg-green-500 text-white border-0 font-semibold px-2 py-0.5">
+                                        <Check className="h-3 w-3 mr-1" />
+                                        Created
                                       </Badge>
                                     )}
                                   </div>
                                   {suggestion.targetPageSlug && (
                                     <div className="flex items-center gap-2 mb-2">
-                                      <span className="text-sm text-muted-foreground">Target Page:</span>
-                                      <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-amber-400">
+                                      <span className="text-sm font-medium text-muted-foreground">Zielseite:</span>
+                                      <a 
+                                        href={`/${suggestion.targetPageSlug}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm font-mono bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded text-amber-400 hover:text-amber-300 transition-colors"
+                                      >
                                         /{suggestion.targetPageSlug}
-                                      </span>
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
                                     </div>
                                   )}
-                                  <p className="text-sm text-muted-foreground">
+                                  
+                                  {/* Detailed action description */}
+                                  <div className="mt-2 p-2 bg-amber-500/5 rounded border border-amber-500/20">
+                                    <p className="text-sm text-amber-300 font-medium">
+                                      📝 Vorgeschlagene Aktion:
+                                    </p>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                      Ein neues <strong>{suggestion.segmentType}</strong>-Segment sollte auf der Seite <strong>/{suggestion.targetPageSlug}</strong> erstellt werden, um den Content zu vervollständigen.
+                                    </p>
+                                  </div>
+                                  
+                                  <p className="text-sm text-muted-foreground mt-3">
                                     {suggestion.reason}
                                   </p>
                                 </div>
-                                <Badge variant="outline" className="flex-shrink-0 text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
-                                  Add Segment
-                                </Badge>
+                                <div className="flex flex-col items-end gap-2">
+                                  <Badge variant="outline" className="flex-shrink-0 text-sm bg-amber-500/10 text-amber-400 border-amber-500/30 px-2 py-1">
+                                    ⚠️ Segment fehlt
+                                  </Badge>
+                                  {suggestion.targetPageSlug && (
+                                    <a
+                                      href={`/admin?page=${suggestion.targetPageSlug}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded transition-colors"
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                      Edit Page
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           ))}
