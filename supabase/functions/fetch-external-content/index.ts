@@ -158,17 +158,18 @@ function parseFirecrawlContent(
 
   // === DESCRIPTION ===
   // This website has embedded JSON that pollutes the markdown
-  // Strategy: Extract text BEFORE any JSON blocks, and use metadata as fallback
+  // PRIORITY: Use meta description first (it's always clean), then try markdown extraction
+  
+  // Get meta description - it's usually clean and well-written
+  const metaDescription = (metadata.description || '').trim();
+  console.log('[Firecrawl] Meta description found:', metaDescription.length, 'chars');
+  console.log('[Firecrawl] Meta description content:', metaDescription);
   
   // Find the first JSON-like block and only use content before it
   const jsonStartIndex = markdown.search(/\{[^{}]*"id":/);
   const cleanPortion = jsonStartIndex > 0 ? markdown.substring(0, jsonStartIndex) : markdown;
   
-  // Also try to extract from meta description (usually clean)
-  const metaDescription = metadata.description || '';
-  console.log('[Firecrawl] Meta description:', metaDescription.slice(0, 200));
-  
-  // Process the clean portion of markdown
+  // Process the clean portion of markdown for additional paragraphs
   const paragraphs: string[] = [];
   const blocks = cleanPortion.split(/\n\n+/);
   
@@ -205,15 +206,23 @@ function parseFirecrawlContent(
     paragraphs.push(cleaned);
   }
   
-  // Build description: use extracted paragraphs, or fall back to meta description
-  if (paragraphs.length > 0) {
-    result.description = paragraphs.slice(0, 4).join('\n\n');
-  } else if (metaDescription.length > 50) {
-    // Use meta description as fallback - it's usually clean
+  // PRIORITY: Use meta description first (it's always clean on this website)
+  // Then append any clean paragraphs we found
+  if (metaDescription.length > 30) {
+    // Use meta description as the primary description
     result.description = metaDescription;
+    
+    // Optionally append first clean paragraph if different from meta
+    if (paragraphs.length > 0 && !metaDescription.includes(paragraphs[0].slice(0, 50))) {
+      result.description += '\n\n' + paragraphs[0];
+    }
+  } else if (paragraphs.length > 0) {
+    // Fallback to extracted paragraphs
+    result.description = paragraphs.slice(0, 4).join('\n\n');
   }
   
   console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
+  console.log('[Firecrawl] Final description length:', result.description.length);
   console.log('[Firecrawl] Description preview:', result.description.slice(0, 300));
   
   // Use cleanPortion for further extraction
