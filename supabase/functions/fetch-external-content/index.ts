@@ -227,14 +227,15 @@ function parseFirecrawlContent(
       .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
       .replace(/\*([^*]+)\*/g, '$1') // Remove italic
       .replace(/`([^`]+)`/g, '$1') // Remove code
-      .replace(/\\\*/g, '*') // Unescape asterisks
+      .replace(/\\\*/g, '*') // Unescape asterisks (\* -> *)
+      .replace(/\\\\/g, '') // Remove escaped backslashes
       .replace(/\s{2,}/g, ' ') // Normalize spaces
       .trim();
     
     // Skip if too short after cleaning
     if (cleaned.length < 50) continue;
     
-    // Skip if contains JSON artifacts
+    // Skip if contains JSON artifacts (but allow normal backslashes after cleaning)
     if (cleaned.includes('{"') || cleaned.includes('":"') || cleaned.includes('form_id')) continue;
     
     paragraphs.push(cleaned);

@@ -56,3 +56,6 @@ verify_jwt = true
 
 [functions.generate-cluster-content]
 verify_jwt = true
+
+[functions.fetch-external-content]
+verify_jwt = true
