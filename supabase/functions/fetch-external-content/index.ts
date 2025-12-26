@@ -182,35 +182,32 @@ function parseFirecrawlContent(
   }
   
   // Find where navigation/header content ends
-  // Try multiple patterns to find the main content start
-  const navEndPatterns = [
-    'Our web shop is currently unavailable',
-    '## ',  // First H2 heading often marks content start
-    /^#\s+[A-Z]/m,  // First H1 with capital letter
-  ];
+  // The shop notice is followed by the actual product content
+  // We need to find the end of the shop notice line and start from there
   
   let mainContentStart = 0;
-  for (const pattern of navEndPatterns) {
-    if (typeof pattern === 'string') {
-      const idx = markdown.indexOf(pattern);
-      if (idx > 0 && (mainContentStart === 0 || idx < mainContentStart)) {
-        // Skip past navigation items (Main Menu, Test Equipment, etc.)
-        if (pattern === '## ') {
-          mainContentStart = idx;
-        } else {
-          // Skip past the pattern itself
-          mainContentStart = idx + pattern.length;
-        }
-      }
-    } else {
-      const match = markdown.match(pattern);
-      if (match && match.index && match.index > 0) {
-        if (mainContentStart === 0 || match.index < mainContentStart) {
-          mainContentStart = match.index;
-        }
-      }
+  
+  // Strategy 1: Find shop notice and skip to next paragraph
+  const shopNoticeIdx = markdown.indexOf('Our web shop is currently unavailable');
+  if (shopNoticeIdx > 0) {
+    // Find the end of this line/paragraph (next double newline)
+    const nextParaIdx = markdown.indexOf('\n\n', shopNoticeIdx);
+    if (nextParaIdx > 0) {
+      mainContentStart = nextParaIdx + 2; // Skip past the double newline
+      console.log('[Firecrawl] Found shop notice, skipping to:', mainContentStart);
     }
   }
+  
+  // Strategy 2: If no shop notice, look for first H2 or content paragraph
+  if (mainContentStart === 0) {
+    // Try to find first substantial paragraph after navigation
+    const h2Idx = markdown.indexOf('## ');
+    if (h2Idx > 0) {
+      mainContentStart = h2Idx;
+    }
+  }
+  
+  console.log('[Firecrawl] Main content starts at index:', mainContentStart);
   
   // Extract the portion between navigation and JSON
   const contentPortion = markdown.substring(mainContentStart, jsonStartIndex);
