@@ -236,7 +236,7 @@ const Footer = () => {
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="mt-6">
             {hasCMSContent && footerContent.footer_button_text ? (
               <a href={footerContent.footer_button_url || "/contact"}>
                 <Button 
