@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -224,6 +224,7 @@ export const SEOEditor = ({
     parentSlug?: string | null;
     targetPageSlug?: string | null;
     saved?: boolean;
+    createdSlug?: string; // Full slug of the created page
     linkPlacement?: {
       segmentId: number;
       segmentKey: string;
@@ -1674,9 +1675,60 @@ export const SEOEditor = ({
 
       console.log('[SEO Editor] Created segments for new page:', segmentsToCreate.length);
 
-      // Update suggestion state
+      // Step 7: Insert link in parent segment if linkPlacement is specified
+      if (suggestion.linkPlacement) {
+        const { segmentId, segmentKey, segmentType, placementType } = suggestion.linkPlacement;
+        
+        try {
+          // Find the segment content to update
+          const segmentContent = pageContent.find(item => 
+            item.section_key === segmentKey || 
+            item.section_key.includes(`${segmentId}`)
+          );
+          
+          if (segmentContent) {
+            let contentObj = JSON.parse(segmentContent.content_value);
+            const linkHtml = `<a href="/${newSlug}" class="text-primary hover:underline">${suggestion.suggestedTitle}</a>`;
+            
+            // Insert link based on segment type and placement type
+            if (segmentType === 'feature-overview' && contentObj.features) {
+              // Add link to the first feature's description or create a new link section
+              if (Array.isArray(contentObj.features) && contentObj.features.length > 0) {
+                const firstFeature = contentObj.features[0];
+                if (firstFeature.description) {
+                  firstFeature.description = `${firstFeature.description} <br/><br/>→ ${linkHtml}`;
+                } else if (firstFeature.text) {
+                  firstFeature.text = `${firstFeature.text} <br/><br/>→ ${linkHtml}`;
+                }
+              }
+            } else if (contentObj.introText) {
+              contentObj.introText = `${contentObj.introText}<p class="mt-4">→ ${linkHtml}</p>`;
+            } else if (contentObj.description) {
+              contentObj.description = `${contentObj.description}<p class="mt-4">→ ${linkHtml}</p>`;
+            } else if (contentObj.text) {
+              contentObj.text = `${contentObj.text}<p class="mt-4">→ ${linkHtml}</p>`;
+            }
+            
+            // Update the segment content
+            await supabase
+              .from('page_content')
+              .update({
+                content_value: JSON.stringify(contentObj),
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', segmentContent.id);
+            
+            console.log('[SEO Editor] Inserted link in parent segment:', segmentKey);
+          }
+        } catch (linkError) {
+          console.error('[SEO Editor] Error inserting link in parent segment:', linkError);
+          // Don't fail the whole operation, just log the error
+        }
+      }
+
+      // Update suggestion state with createdSlug
       setContentLinkSuggestions(prev => prev.map((s, i) => 
-        i === index ? { ...s, isApplying: false, saved: true } : s
+        i === index ? { ...s, isApplying: false, saved: true, createdSlug: newSlug } : s
       ));
 
       toast.success(
@@ -1684,6 +1736,12 @@ export const SEOEditor = ({
           <strong>Cluster page created!</strong>
           <br />
           <span className="text-sm">/{newSlug} with {segmentsToCreate.length} segments</span>
+          {suggestion.linkPlacement && (
+            <>
+              <br />
+              <span className="text-xs text-green-400">Link in Segment ID {suggestion.linkPlacement.segmentId} eingefügt</span>
+            </>
+          )}
         </div>
       );
 
@@ -4505,34 +4563,52 @@ export const SEOEditor = ({
                             return (
                             <div
                               key={`new-${index}`}
-                              className={`p-4 rounded-lg border transition-colors ${
+                              className={`p-4 rounded-lg border-2 transition-all ${
                                 suggestion.saved 
-                                  ? 'border-green-500/50 bg-green-500/10' 
+                                  ? 'border-green-500 bg-green-500/20 ring-2 ring-green-500/30' 
                                   : 'border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10'
                               }`}
                             >
                               <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold text-blue-400">
-                                  {suggestion.priority}
+                                {/* Priority or Success Icon */}
+                                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                  suggestion.saved 
+                                    ? 'bg-green-500 text-white' 
+                                    : 'bg-blue-500/20 text-blue-400'
+                                }`}>
+                                  {suggestion.saved ? (
+                                    <Check className="h-5 w-5" />
+                                  ) : (
+                                    suggestion.priority
+                                  )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="font-medium text-foreground">
+                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                    <span className={`font-medium ${suggestion.saved ? 'text-green-400' : 'text-foreground'}`}>
                                       {suggestion.suggestedTitle}
                                     </span>
-                                    <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                    <Badge variant="outline" className={`text-xs ${
+                                      suggestion.saved 
+                                        ? 'bg-green-500/20 text-green-400 border-green-500/50' 
+                                        : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                                    }`}>
                                       {suggestion.segmentType}
                                     </Badge>
                                     {suggestion.saved && (
-                                      <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                                        Created ✓
+                                      <Badge className="text-xs bg-green-500 text-white border-0 font-semibold">
+                                        <Check className="h-3 w-3 mr-1" />
+                                        Created
                                       </Badge>
                                     )}
                                   </div>
                                   <div className="flex items-center gap-2 mb-2">
                                     <span className="text-sm text-muted-foreground">Slug:</span>
-                                    <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-blue-400">
-                                      /{suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug}
+                                    <span className={`text-xs font-mono px-2 py-0.5 rounded ${
+                                      suggestion.saved 
+                                        ? 'bg-green-500/20 text-green-400' 
+                                        : 'bg-muted/50 text-blue-400'
+                                    }`}>
+                                      /{suggestion.createdSlug || (suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug)}
                                     </span>
                                   </div>
                                   {suggestion.parentSlug && (
@@ -4546,33 +4622,47 @@ export const SEOEditor = ({
                                   
                                   {/* Link Placement Info */}
                                   {suggestion.linkPlacement && (
-                                    <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-md">
-                                      <p className="text-xs font-semibold text-purple-400 mb-2 flex items-center gap-1">
+                                    <div className={`mt-3 p-3 border rounded-md ${
+                                      suggestion.saved 
+                                        ? 'bg-green-500/10 border-green-500/30' 
+                                        : 'bg-purple-500/10 border-purple-500/20'
+                                    }`}>
+                                      <p className={`text-xs font-semibold mb-2 flex items-center gap-1 ${
+                                        suggestion.saved ? 'text-green-400' : 'text-purple-400'
+                                      }`}>
                                         <LinkIcon className="h-3 w-3" />
-                                        Link-Platzierung auf Pillar-Page:
+                                        {suggestion.saved ? 'Link wurde eingefügt in:' : 'Link-Platzierung auf Pillar-Page:'}
                                       </p>
                                       <div className="space-y-1 text-xs">
                                         <div className="flex items-center gap-2">
                                           <span className="text-muted-foreground">Segment:</span>
-                                          <code className="bg-muted/50 px-1.5 py-0.5 rounded text-purple-300">
-                                            {suggestion.linkPlacement.segmentType} (ID: {suggestion.linkPlacement.segmentId})
+                                          <code className={`px-1.5 py-0.5 rounded ${
+                                            suggestion.saved 
+                                              ? 'bg-green-500/20 text-green-300' 
+                                              : 'bg-muted/50 text-purple-300'
+                                          }`}>
+                                            ID {suggestion.linkPlacement.segmentId}: {suggestion.linkPlacement.segmentType}
                                           </code>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-muted-foreground">Typ:</span>
-                                          <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
-                                            {suggestion.linkPlacement.placementType.replace('_', ' ')}
-                                          </Badge>
-                                        </div>
-                                        <p className="text-muted-foreground mt-1 italic">
-                                          {suggestion.linkPlacement.placementDescription}
-                                        </p>
+                                        {!suggestion.saved && (
+                                          <>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-muted-foreground">Typ:</span>
+                                              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
+                                                {suggestion.linkPlacement.placementType.replace('_', ' ')}
+                                              </Badge>
+                                            </div>
+                                            <p className="text-muted-foreground mt-1 italic">
+                                              {suggestion.linkPlacement.placementDescription}
+                                            </p>
+                                          </>
+                                        )}
                                       </div>
                                     </div>
                                   )}
                                   
                                   {/* Suggested Segments */}
-                                  {suggestion.suggestedSegments && suggestion.suggestedSegments.length > 0 && (
+                                  {suggestion.suggestedSegments && suggestion.suggestedSegments.length > 0 && !suggestion.saved && (
                                     <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-md">
                                       <p className="text-xs font-semibold text-blue-400 mb-2">
                                         Vorgeschlagene Segmente:
@@ -4591,33 +4681,52 @@ export const SEOEditor = ({
                                     </div>
                                   )}
                                   
-                                  <p className="text-sm text-muted-foreground mt-3">
-                                    {suggestion.reason}
-                                  </p>
+                                  {!suggestion.saved && (
+                                    <p className="text-sm text-muted-foreground mt-3">
+                                      {suggestion.reason}
+                                    </p>
+                                  )}
                                 </div>
                                 
                                 {/* Action Column */}
                                 <div className="flex flex-col items-end gap-2">
-                                  <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                                    New Page
-                                  </Badge>
-                                  
-                                  {!suggestion.saved && (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleApplyClusterSuggestion(suggestion, originalIndex)}
-                                      disabled={suggestion.isApplying}
-                                      className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
-                                    >
-                                      {suggestion.isApplying ? (
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                      ) : (
-                                        <>
-                                          <Plus className="h-3 w-3 mr-1" />
-                                          Apply
-                                        </>
-                                      )}
-                                    </Button>
+                                  {suggestion.saved ? (
+                                    <>
+                                      <Badge className="flex-shrink-0 text-xs bg-green-500 text-white border-0">
+                                        <Check className="h-3 w-3 mr-1" />
+                                        Applied
+                                      </Badge>
+                                      <a
+                                        href={`/${suggestion.createdSlug || (suggestion.parentSlug ? `${suggestion.parentSlug}/${suggestion.suggestedSlug}` : suggestion.suggestedSlug)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-xs text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded transition-colors"
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                        Preview
+                                      </a>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                        New Page
+                                      </Badge>
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleApplyClusterSuggestion(suggestion, originalIndex)}
+                                        disabled={suggestion.isApplying}
+                                        className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
+                                      >
+                                        {suggestion.isApplying ? (
+                                          <Loader2 className="h-3 w-3 animate-spin" />
+                                        ) : (
+                                          <>
+                                            <Plus className="h-3 w-3 mr-1" />
+                                            Apply
+                                          </>
+                                        )}
+                                      </Button>
+                                    </>
                                   )}
                                 </div>
                               </div>
