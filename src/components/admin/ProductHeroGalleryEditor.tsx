@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { GeminiIcon } from '@/components/GeminiIcon';
@@ -405,13 +405,27 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   };
 
   const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
-    const fullMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' } : { altText: '' };
+    // Merge all metadata from Media Management, preserving existing altText if not provided
+    const existingAltText = localData.images[index]?.metadata?.altText || '';
+    const fullMetadata: ImageMetadata = {
+      url: metadata?.url || url,
+      originalFileName: metadata?.originalFileName || metadata?.name || url.split('/').pop() || '',
+      width: metadata?.width || 0,
+      height: metadata?.height || 0,
+      fileSizeKB: metadata?.fileSizeKB || metadata?.size || 0,
+      format: metadata?.format || metadata?.mimeType?.split('/').pop() || url.split('.').pop()?.toUpperCase() || '',
+      uploadDate: metadata?.uploadDate || metadata?.created_at || new Date().toISOString(),
+      altText: metadata?.altText || existingAltText
+    };
     
     const updatedImages = [...localData.images];
     updatedImages[index] = { 
       ...updatedImages[index], 
       imageUrl: url,
-      metadata: fullMetadata
+      metadata: fullMetadata,
+      // Inherit maxWidth/maxHeight from metadata if available
+      maxWidth: updatedImages[index].maxWidth || metadata?.maxWidth || null,
+      maxHeight: updatedImages[index].maxHeight || metadata?.maxHeight || null
     };
     
     const updatedData = { ...localData, images: updatedImages };
@@ -503,6 +517,19 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     setLocalData(updatedData);
     onChange(updatedData);
     setDeleteIndex(null);
+  };
+
+  const handleMoveImage = (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= localData.images.length) return;
+    
+    const updatedImages = [...localData.images];
+    // Swap the images
+    [updatedImages[index], updatedImages[newIndex]] = [updatedImages[newIndex], updatedImages[index]];
+    
+    const updatedData = { ...localData, images: updatedImages };
+    setLocalData(updatedData);
+    onChange(updatedData);
   };
 
   const handleTranslate = async () => {
@@ -988,6 +1015,40 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Image {index + 1}</span>
+                  <div className="flex items-center gap-2">
+                    {/* Move Up Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleMoveImage(index, 'up')}
+                      disabled={index === 0}
+                      className="h-8 w-8 p-0"
+                      title="Move up"
+                    >
+                      <ChevronUp className="w-4 h-4" />
+                    </Button>
+                    {/* Move Down Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleMoveImage(index, 'down')}
+                      disabled={index === localData.images.length - 1}
+                      className="h-8 w-8 p-0"
+                      title="Move down"
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                    {/* Delete Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDeleteIndex(index)}
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:border-red-500"
+                      title="Delete image"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <MediaSelector
