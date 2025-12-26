@@ -4315,11 +4315,11 @@ export const SEOEditor = ({
                               </code>
                               {suggestion.segmentId ? (
                                 <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
-                                  ID: {suggestion.segmentId}
+                                  ID {suggestion.segmentId}: {suggestion.segmentType || 'segment'}
                                 </Badge>
                               ) : (
-                                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
-                                  Footer-Feld
+                                <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30 font-mono">
+                                  ID -: footer
                                 </Badge>
                               )}
                               {suggestion.segmentType && suggestion.segmentType !== 'text' && (
