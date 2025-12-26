@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -958,12 +958,10 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
 
             <div className="space-y-2">
               <Label htmlFor="subtitle">Subtitle</Label>
-              <Textarea
-                id="subtitle"
+              <SimpleRichTextEditor
                 value={subtitle}
-                onChange={(e) => setSubtitle(e.target.value)}
+                onChange={setSubtitle}
                 placeholder="Professional solutions for testing and calibrating camera systems..."
-                rows={3}
               />
             </div>
           </TabsContent>
@@ -1203,12 +1201,10 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
                       <Label htmlFor="videoAlt">
                         Video Description (for SEO & Accessibility)
                       </Label>
-                      <Textarea
-                        id="videoAlt"
+                      <SimpleRichTextEditor
                         value={videoAlt}
-                        onChange={(e) => setVideoAlt(e.target.value)}
+                        onChange={setVideoAlt}
                         placeholder="Describe the video content for screen readers and search engines..."
-                        className="min-h-[80px]"
                       />
                       <p className="text-xs text-muted-foreground">
                         This description is used as title/aria-label for accessibility and SEO. 
