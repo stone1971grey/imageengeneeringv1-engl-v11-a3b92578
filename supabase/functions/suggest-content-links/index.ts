@@ -102,9 +102,9 @@ serve(async (req) => {
       description: p.flyout_description || ''
     }));
 
-    const systemPrompt = `You are an SEO and content strategy expert. Your task is to suggest NEW PAGES or SEGMENTS that should be CREATED to improve the website's internal linking structure.
+    const systemPrompt = `You are an SEO and content strategy expert specializing in Topic Cluster / Pillar Page architecture. Your task is to suggest content improvements for this page which serves as a PILLAR PAGE in a topic cluster.
 
-CURRENT PAGE: ${pageSlug}
+CURRENT PAGE (PILLAR): ${pageSlug}
 CURRENT PAGE TITLE: ${currentPage?.page_title || 'Unknown'}
 PARENT: ${currentPage?.parent_slug || 'none'}
 FOCUS KEYWORD: ${focusKeyword || 'not defined'}
@@ -115,30 +115,49 @@ ${JSON.stringify(existingPagesContext.map(p => p.slug), null, 2)}
 CURRENT PAGE CONTENT:
 ${textContent.substring(0, 3000)}
 
-TASK: Analyze the current page content and suggest 4-6 NEW pages or segments that:
-1. Would make sense to link FROM this page
-2. Do NOT already exist in the existing pages list
-3. Would improve the site's topic coverage and SEO
-4. Are topically related to the current page content
+TASK: Analyze the current page and suggest TWO TYPES of content improvements:
+
+TYPE 1 - NEW CLUSTER PAGES (suggestionType: "new_page"):
+- Completely NEW pages that should be created as cluster content around this pillar
+- These would be child/sibling pages that dive deeper into specific subtopics
+- They would link back to this pillar page and vice versa
+
+TYPE 2 - SEGMENT ENHANCEMENTS (suggestionType: "existing_segment"):
+- Sections/segments within EXISTING pages that should be enhanced or created
+- These are content gaps in pages that already exist
+- Specify which existing page the segment should be added to
+
+Suggest 3-4 of each type (6-8 total).
 
 RESPONSE FORMAT:
-Return ONLY a JSON array with content suggestions:
+Return ONLY a JSON array:
 [
   {
-    "suggestedSlug": "suggested-page-slug",
-    "suggestedTitle": "Suggested Page Title",
-    "segmentType": "page or segment",
-    "reason": "Why this content would be valuable and how it relates to the current page",
+    "suggestedSlug": "new-cluster-page-slug",
+    "suggestedTitle": "New Cluster Page Title",
+    "suggestionType": "new_page",
+    "segmentType": "page",
+    "reason": "Why this cluster page supports the pillar and fills a content gap",
     "priority": 1,
-    "parentSlug": "optional-parent-slug if it should be a child page"
+    "parentSlug": "${pageSlug}"
+  },
+  {
+    "suggestedSlug": "existing-page-slug",
+    "suggestedTitle": "Suggested Section: [Section Title]",
+    "suggestionType": "existing_segment",
+    "segmentType": "intro|faq|specification|etc",
+    "reason": "Why this segment should be added to the existing page",
+    "priority": 2,
+    "parentSlug": null,
+    "targetPageSlug": "the-existing-page-where-segment-goes"
   }
 ]
 
 IMPORTANT:
-- Only suggest content that does NOT exist yet
-- Be specific and practical with suggestions
-- Priority 1 = most valuable/important
-- Maximum 6 suggestions`;
+- For new_page: suggestedSlug must be a NEW slug that doesn't exist
+- For existing_segment: targetPageSlug must be an EXISTING page from the list
+- Priority 1 = most valuable
+- Be specific about segment types (intro, faq, specification, feature-overview, etc.)`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

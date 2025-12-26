@@ -218,11 +218,15 @@ export const SEOEditor = ({
     suggestedSlug: string;
     suggestedTitle: string;
     segmentType: string;
+    suggestionType: 'new_page' | 'existing_segment';
     reason: string;
     priority: number;
     parentSlug?: string | null;
+    targetPageSlug?: string | null;
+    saved?: boolean;
   }>>([]);
   const [showContentLinkSuggestions, setShowContentLinkSuggestions] = useState(false);
+  const [isSavingContentSuggestions, setIsSavingContentSuggestions] = useState(false);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
@@ -347,6 +351,28 @@ export const SEOEditor = ({
           }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse applied links:', e);
+        }
+      }
+
+      // Load persisted content suggestions
+      const { data: contentSuggestionsData, error: contentSuggestionsError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_content_suggestions')
+        .eq('language', editorLanguage)
+        .single();
+      
+      if (!contentSuggestionsError && contentSuggestionsData) {
+        try {
+          const parsedSuggestions = JSON.parse(contentSuggestionsData.content_value);
+          if (Array.isArray(parsedSuggestions)) {
+            setContentLinkSuggestions(parsedSuggestions);
+            setShowContentLinkSuggestions(true);
+            console.log('[SEO Editor] Loaded saved content suggestions:', parsedSuggestions.length);
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse content suggestions:', e);
         }
       }
     };
@@ -1372,7 +1398,63 @@ export const SEOEditor = ({
     }
   };
 
-  // Generate Smart H1 Headlines using AI
+  // Save Content Suggestions to database
+  const handleSaveContentSuggestions = async () => {
+    if (contentLinkSuggestions.length === 0) {
+      toast.info('No suggestions to save');
+      return;
+    }
+
+    setIsSavingContentSuggestions(true);
+    try {
+      const suggestionsToSave = contentLinkSuggestions.map(s => ({ ...s, saved: true }));
+      
+      // Check if entry already exists
+      const { data: existing } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_content_suggestions')
+        .eq('language', editorLanguage)
+        .single();
+
+      if (existing) {
+        // Update existing
+        const { error } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(suggestionsToSave),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existing.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert new
+        const { error } = await supabase
+          .from('page_content')
+          .insert({
+            page_slug: pageSlug,
+            section_key: 'seo_content_suggestions',
+            content_type: 'json',
+            content_value: JSON.stringify(suggestionsToSave),
+            language: editorLanguage
+          });
+        
+        if (error) throw error;
+      }
+
+      // Update local state with saved flag
+      setContentLinkSuggestions(suggestionsToSave);
+      toast.success(`${suggestionsToSave.length} content suggestions saved`);
+    } catch (error) {
+      console.error('[SEO Editor] Error saving content suggestions:', error);
+      toast.error('Failed to save content suggestions');
+    } finally {
+      setIsSavingContentSuggestions(false);
+    }
+  };
+
   const handleGenerateH1Headlines = async () => {
     setIsGeneratingH1(true);
     setH1Suggestions([]);
@@ -4107,69 +4189,179 @@ export const SEOEditor = ({
             
             {/* Content Suggestions (from Possible Internal Links) */}
             {showContentLinkSuggestions && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-base font-medium text-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                    Content Suggestions:
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-amber-500"></span>
+                    Content Cluster Suggestions:
                   </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowContentLinkSuggestions(false)}
-                    className="h-6 w-6 p-0"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {contentLinkSuggestions.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSaveContentSuggestions}
+                        disabled={isSavingContentSuggestions}
+                        className="h-7 text-xs bg-green-500/10 border-green-500/30 hover:bg-green-500/20 text-green-400"
+                      >
+                        {isSavingContentSuggestions ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Save className="h-3 w-3 mr-1" />
+                            Save
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowContentLinkSuggestions(false)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
                 
                 {contentLinkSuggestions.length > 0 ? (
-                  <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground italic">
-                      Diese Seiten/Segmente sollten erstellt werden, um die interne Verlinkung zu verbessern:
-                    </p>
-                    {contentLinkSuggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold text-blue-400">
-                            {suggestion.priority}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="font-medium text-foreground">
-                                {suggestion.suggestedTitle}
-                              </span>
-                              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                                {suggestion.segmentType}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm text-muted-foreground">Slug:</span>
-                              <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-blue-400">
-                                /{suggestion.suggestedSlug}
-                              </span>
-                            </div>
-                            {suggestion.parentSlug && (
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-sm text-muted-foreground">Parent:</span>
-                                <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded">
-                                  {suggestion.parentSlug}
-                                </span>
-                              </div>
-                            )}
-                            <p className="text-sm text-muted-foreground">
-                              {suggestion.reason}
+                  <div className="space-y-6">
+                    {/* Group 1: New Cluster Pages (blue) */}
+                    {(() => {
+                      const newPages = contentLinkSuggestions.filter(s => s.suggestionType === 'new_page' || !s.suggestionType);
+                      if (newPages.length === 0) return null;
+                      
+                      return (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <p className="text-sm font-semibold text-blue-400">
+                              New Cluster Pages ({newPages.length})
                             </p>
                           </div>
-                          <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                            Seite fehlt
-                          </Badge>
+                          <p className="text-xs text-muted-foreground italic pl-5">
+                            Neue Seiten, die als Cluster-Content um diese Pillar-Page erstellt werden sollten:
+                          </p>
+                          {newPages.map((suggestion, index) => (
+                            <div
+                              key={`new-${index}`}
+                              className={`p-4 rounded-lg border transition-colors ${
+                                suggestion.saved 
+                                  ? 'border-green-500/50 bg-green-500/10' 
+                                  : 'border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10'
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold text-blue-400">
+                                  {suggestion.priority}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="font-medium text-foreground">
+                                      {suggestion.suggestedTitle}
+                                    </span>
+                                    <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                      {suggestion.segmentType}
+                                    </Badge>
+                                    {suggestion.saved && (
+                                      <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                                        Saved ✓
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-sm text-muted-foreground">Slug:</span>
+                                    <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-blue-400">
+                                      /{suggestion.suggestedSlug}
+                                    </span>
+                                  </div>
+                                  {suggestion.parentSlug && (
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <span className="text-sm text-muted-foreground">Parent (Pillar):</span>
+                                      <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-purple-400">
+                                        {suggestion.parentSlug}
+                                      </span>
+                                    </div>
+                                  )}
+                                  <p className="text-sm text-muted-foreground">
+                                    {suggestion.reason}
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="flex-shrink-0 text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                  New Page
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })()}
+                    
+                    {/* Group 2: Segment Enhancements in Existing Pages (amber/yellow) */}
+                    {(() => {
+                      const segmentEnhancements = contentLinkSuggestions.filter(s => s.suggestionType === 'existing_segment');
+                      if (segmentEnhancements.length === 0) return null;
+                      
+                      return (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <p className="text-sm font-semibold text-amber-400">
+                              Segment Enhancements ({segmentEnhancements.length})
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground italic pl-5">
+                            Segmente in bestehenden Seiten, die ergänzt oder erstellt werden sollten:
+                          </p>
+                          {segmentEnhancements.map((suggestion, index) => (
+                            <div
+                              key={`seg-${index}`}
+                              className={`p-4 rounded-lg border transition-colors ${
+                                suggestion.saved 
+                                  ? 'border-green-500/50 bg-green-500/10' 
+                                  : 'border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10'
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-sm font-semibold text-amber-400">
+                                  {suggestion.priority}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="font-medium text-foreground">
+                                      {suggestion.suggestedTitle}
+                                    </span>
+                                    <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
+                                      {suggestion.segmentType}
+                                    </Badge>
+                                    {suggestion.saved && (
+                                      <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                                        Saved ✓
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {suggestion.targetPageSlug && (
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <span className="text-sm text-muted-foreground">Target Page:</span>
+                                      <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-amber-400">
+                                        /{suggestion.targetPageSlug}
+                                      </span>
+                                    </div>
+                                  )}
+                                  <p className="text-sm text-muted-foreground">
+                                    {suggestion.reason}
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="flex-shrink-0 text-xs bg-amber-500/10 text-amber-400 border-amber-500/30">
+                                  Add Segment
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 ) : (
                   <div className="p-4 bg-muted/20 rounded-lg text-center">
