@@ -53,3 +53,6 @@ verify_jwt = true
 
 [functions.suggest-content-links]
 verify_jwt = true
+
+[functions.generate-cluster-content]
+verify_jwt = true
