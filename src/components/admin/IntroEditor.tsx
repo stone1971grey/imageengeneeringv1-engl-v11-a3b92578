@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -351,12 +351,10 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
 
       <div className="space-y-2">
         <Label htmlFor="intro-description">Description</Label>
-        <Textarea
-          id="intro-description"
+        <SimpleRichTextEditor
           value={description}
-          onChange={(e) => handleDescriptionChange(e.target.value)}
+          onChange={handleDescriptionChange}
           placeholder="Industry-leading solutions for comprehensive camera and sensor evaluation"
-          rows={4}
         />
       </div>
 
