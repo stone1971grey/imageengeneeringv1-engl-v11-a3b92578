@@ -1,4 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -19,7 +18,6 @@ interface ParsedContent {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -34,32 +32,82 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Fetching content from: ${url}`);
+    console.log(`[Firecrawl] Fetching content from: ${url}`);
 
-    // Fetch the page content
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; ContentAutomation/1.0)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch URL: ${response.status}`);
+    const apiKey = Deno.env.get('FIRECRAWL_API_KEY');
+    if (!apiKey) {
+      console.error('FIRECRAWL_API_KEY not configured');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Firecrawl API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    const html = await response.text();
-    console.log(`Fetched ${html.length} bytes of HTML`);
+    // Use Firecrawl to scrape the page - get markdown, html, and links
+    const firecrawlResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: url,
+        formats: ['markdown', 'html', 'links'],
+        onlyMainContent: true,
+        waitFor: 2000, // Wait for dynamic content
+      }),
+    });
 
-    // Parse the content
-    const parsed = parseHtmlContent(html, url, language);
+    if (!firecrawlResponse.ok) {
+      const errorText = await firecrawlResponse.text();
+      console.error('[Firecrawl] API error:', firecrawlResponse.status, errorText);
+      return new Response(
+        JSON.stringify({ success: false, error: `Firecrawl API error: ${firecrawlResponse.status}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const firecrawlData = await firecrawlResponse.json();
+    console.log('[Firecrawl] Response success:', firecrawlData.success);
+
+    if (!firecrawlData.success) {
+      console.error('[Firecrawl] Scrape failed:', firecrawlData.error);
+      return new Response(
+        JSON.stringify({ success: false, error: firecrawlData.error || 'Firecrawl scrape failed' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const data = firecrawlData.data || firecrawlData;
+    const markdown = data.markdown || '';
+    const html = data.html || '';
+    const links = data.links || [];
+    const metadata = data.metadata || {};
+
+    console.log('[Firecrawl] Markdown length:', markdown.length);
+    console.log('[Firecrawl] HTML length:', html.length);
+    console.log('[Firecrawl] Links count:', links.length);
+    console.log('[Firecrawl] Metadata:', JSON.stringify(metadata).slice(0, 300));
+
+    // Parse the Firecrawl data into our structured format
+    const parsed = parseFirecrawlContent(markdown, html, links, metadata, url, language);
+
+    console.log('[Firecrawl] === EXTRACTION SUMMARY ===');
+    console.log('[Firecrawl] Title:', parsed.title);
+    console.log('[Firecrawl] Description length:', parsed.description.length);
+    console.log('[Firecrawl] Description preview:', parsed.description.slice(0, 300));
+    console.log('[Firecrawl] Benefits:', parsed.benefits.length);
+    console.log('[Firecrawl] Specifications:', parsed.specifications.length);
+    console.log('[Firecrawl] UseCases:', parsed.useCases.length);
+    console.log('[Firecrawl] Downloads:', parsed.downloads.length);
+    console.log('[Firecrawl] Images:', parsed.images.length);
 
     return new Response(
       JSON.stringify({ success: true, data: parsed }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: unknown) {
-    console.error('Error fetching content:', error);
+    console.error('[Firecrawl] Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
       JSON.stringify({ success: false, error: errorMessage }),
@@ -68,7 +116,14 @@ serve(async (req) => {
   }
 });
 
-function parseHtmlContent(html: string, baseUrl: string, language: string): ParsedContent {
+function parseFirecrawlContent(
+  markdown: string, 
+  html: string, 
+  links: string[], 
+  metadata: Record<string, string>,
+  baseUrl: string,
+  language: string
+): ParsedContent {
   const result: ParsedContent = {
     title: '',
     subtitle: '',
@@ -81,190 +136,194 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
     images: [],
   };
 
-  // STEP 1: Try to find the main article content area first
-  let mainContent = html;
-  
-  // Look for article-content, main-content, or similar containers
-  const articleMatch = html.match(/<section[^>]*class="[^"]*article-content[^"]*"[^>]*>([\s\S]*?)<\/section>/i) ||
-                       html.match(/<article[^>]*>([\s\S]*?)<\/article>/i) ||
-                       html.match(/<div[^>]*class="[^"]*main-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
-                       html.match(/<div[^>]*id="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-  
-  if (articleMatch) {
-    mainContent = articleMatch[1];
-    console.log('Found main article content area, length:', mainContent.length);
-  }
-
-  // STEP 2: Clean the content from unwanted sections
-  let cleanedHtml = mainContent
-    .replace(/<footer[\s\S]*?<\/footer>/gi, '')
-    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-    .replace(/<header[\s\S]*?<\/header>/gi, '')
-    .replace(/<aside[\s\S]*?<\/aside>/gi, '')
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, '')
-    // Remove sidebar divs
-    .replace(/<div[^>]*class="[^"]*sidebar[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-    .replace(/<div[^>]*class="[^"]*t3-sidebar[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-    // Remove gallery/lightbox modal content
-    .replace(/<div[^>]*class="[^"]*modal[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-    .replace(/<div[^>]*class="[^"]*ba-modal[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-    // Remove social share buttons
-    .replace(/<div[^>]*class="[^"]*share[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
-
-  console.log('HTML cleaned, main content length:', cleanedHtml.length);
-
-  // STEP 3: Extract title - try multiple approaches
-  const h1Match = cleanedHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  if (h1Match) {
-    result.title = cleanText(h1Match[1].replace(/<[^>]+>/g, ''));
-  }
+  // === TITLE ===
+  // First try metadata, then extract from markdown H1
+  result.title = metadata.title || '';
   if (!result.title) {
-    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if (titleMatch) {
-      result.title = cleanText(titleMatch[1].split('|')[0].split('-')[0]);
+    const h1Match = markdown.match(/^#\s+(.+)$/m);
+    if (h1Match) {
+      result.title = h1Match[1].trim();
     }
   }
-  // Try modal title as fallback
-  if (!result.title) {
-    const modalTitleMatch = html.match(/class="modal-title"[^>]*>([^<]+)</i);
-    if (modalTitleMatch) {
-      result.title = cleanText(modalTitleMatch[1].split('|')[0]);
-    }
-  }
-  console.log('Extracted title:', result.title);
+  // Clean up title (remove site name suffixes)
+  result.title = result.title.split('|')[0].split(' - ')[0].trim();
+  console.log('[Firecrawl] Extracted title:', result.title);
 
-  // STEP 4: Extract subtitle from category or heading
-  const subtitleMatch = html.match(/class="[^"]*category-banner__heading[^"]*"[^>]*>([^<]+)</i) ||
-                        html.match(/class="[^"]*subtitle[^"]*"[^>]*>([^<]+)</i) ||
-                        html.match(/<h2[^>]*>([^<]+)<\/h2>/i);
-  if (subtitleMatch) {
-    result.subtitle = cleanText(subtitleMatch[1]);
+  // === SUBTITLE ===
+  // Look for H2 or use meta description as subtitle
+  const h2Match = markdown.match(/^##\s+(.+)$/m);
+  if (h2Match) {
+    result.subtitle = h2Match[1].trim();
   }
 
-  // STEP 5: Extract ALL paragraphs - be more flexible with inner HTML
-  const allParagraphs: string[] = [];
-  const pMatches = cleanedHtml.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi);
-  for (const match of pMatches) {
-    // Strip all inner HTML tags to get pure text
-    const rawText = match[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-    const text = cleanText(rawText);
+  // === DESCRIPTION ===
+  // The markdown from Firecrawl is already clean - extract all paragraphs
+  const paragraphs: string[] = [];
+  
+  // Split markdown by double newlines and process each block
+  const blocks = markdown.split(/\n\n+/);
+  for (const block of blocks) {
+    const trimmed = block.trim();
     
-    // Only include substantial paragraphs (min 50 chars) that aren't footer content
-    if (text.length > 50 && !isFooterContent(text)) {
-      allParagraphs.push(text);
+    // Skip headers, lists, links-only lines, short lines
+    if (trimmed.startsWith('#')) continue;
+    if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•')) continue;
+    if (trimmed.match(/^\[.*\]\(.*\)$/)) continue; // Only a link
+    if (trimmed.length < 50) continue;
+    
+    // Skip footer-like content
+    if (isFooterContent(trimmed)) continue;
+    
+    // Clean up markdown formatting but keep text
+    const cleaned = trimmed
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting, keep text
+      .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
+      .replace(/\*([^*]+)\*/g, '$1') // Remove italic
+      .replace(/`([^`]+)`/g, '$1') // Remove code
+      .replace(/^\s*>\s*/gm, '') // Remove blockquotes
+      .trim();
+    
+    if (cleaned.length > 50) {
+      paragraphs.push(cleaned);
     }
   }
   
-  // Join all paragraphs as description
-  result.description = allParagraphs.join('\n\n');
-  console.log('Extracted paragraphs:', allParagraphs.length, 'Total description length:', result.description.length);
+  result.description = paragraphs.join('\n\n');
+  console.log('[Firecrawl] Extracted paragraphs:', paragraphs.length);
 
-  // STEP 6: Extract benefits from the description by splitting into sentences
-  if (result.description.length > 100) {
-    // Split description into meaningful sentences and use as benefits
+  // === BENEFITS ===
+  // Extract from markdown lists (lines starting with -, *, •)
+  const listItems: string[] = [];
+  const listMatches = markdown.matchAll(/^[\-\*•]\s+(.+)$/gm);
+  for (const match of listMatches) {
+    const text = match[1]
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .trim();
+    
+    if (text.length > 15 && text.length < 400 && !isFooterContent(text)) {
+      listItems.push(text);
+    }
+  }
+  
+  // Also generate benefits from description sentences if list items are sparse
+  if (listItems.length < 3 && result.description.length > 100) {
     const sentences = result.description
       .split(/[.!?]\s+/)
       .filter(s => s.length > 30 && s.length < 300)
-      .map(s => s.trim() + '.');
+      .map(s => s.trim() + (s.endsWith('.') ? '' : '.'));
     
-    // Take key sentences as benefits
-    result.benefits = sentences.slice(0, 8);
-  }
-
-  // Also try to extract from lists
-  const ulMatches = cleanedHtml.matchAll(/<ul[^>]*>([\s\S]*?)<\/ul>/gi);
-  for (const ulMatch of ulMatches) {
-    const liMatches = ulMatch[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
-    for (const liMatch of liMatches) {
-      const text = cleanText(liMatch[1].replace(/<[^>]+>/g, ' '));
-      if (text.length > 15 && text.length < 400 && !isFooterContent(text)) {
-        result.benefits.push(text);
-      }
-    }
-  }
-  result.benefits = [...new Set(result.benefits)].slice(0, 12);
-  console.log('Extracted benefits count:', result.benefits.length);
-
-  // STEP 7: Extract specifications from tables
-  const tableMatches = cleanedHtml.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/gi);
-  for (const tableMatch of tableMatches) {
-    const trMatches = tableMatch[1].matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi);
-    for (const trMatch of trMatches) {
-      const cells = [...trMatch[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)];
-      if (cells.length >= 2) {
-        const name = cleanText(cells[0][1].replace(/<[^>]+>/g, ''));
-        const value = cleanText(cells[1][1].replace(/<[^>]+>/g, ''));
-        if (name && value && name.length < 150 && value.length < 300 && !isFooterContent(name)) {
-          result.specifications.push({ name, value });
-        }
-      }
-    }
+    listItems.push(...sentences.slice(0, 8 - listItems.length));
   }
   
-  // Also extract from definition lists
-  const dlMatches = cleanedHtml.matchAll(/<dl[^>]*>([\s\S]*?)<\/dl>/gi);
-  for (const dlMatch of dlMatches) {
-    const dtMatches = [...dlMatch[1].matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi)];
-    const ddMatches = [...dlMatch[1].matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/gi)];
-    for (let i = 0; i < Math.min(dtMatches.length, ddMatches.length); i++) {
-      const name = cleanText(dtMatches[i][1].replace(/<[^>]+>/g, ''));
-      const value = cleanText(ddMatches[i][1].replace(/<[^>]+>/g, ''));
-      if (name && value) {
+  result.benefits = [...new Set(listItems)].slice(0, 12);
+  console.log('[Firecrawl] Extracted benefits:', result.benefits.length);
+
+  // === SPECIFICATIONS ===
+  // Look for table-like content in markdown (| col | col |)
+  const tableLines = markdown.split('\n').filter(line => line.includes('|') && line.trim().startsWith('|'));
+  let inTable = false;
+  let isHeaderRow = true;
+  
+  for (const line of tableLines) {
+    // Skip separator lines (|---|---|)
+    if (line.match(/^\|[\s\-:|]+\|$/)) {
+      isHeaderRow = false;
+      continue;
+    }
+    
+    const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
+    if (cells.length >= 2 && !isHeaderRow) {
+      const name = cells[0].replace(/\*\*/g, '').trim();
+      const value = cells[1].replace(/\*\*/g, '').trim();
+      
+      if (name && value && name.length < 150 && value.length < 300 && !isFooterContent(name)) {
         result.specifications.push({ name, value });
       }
     }
   }
-  result.specifications = result.specifications.slice(0, 25);
-  console.log('Extracted specifications count:', result.specifications.length);
-
-  // STEP 8: Generate use cases from content sections
-  // Look for h3/h4 with following paragraphs
-  const sectionMatches = cleanedHtml.matchAll(/<h[34][^>]*>([\s\S]*?)<\/h[34]>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
-  for (const match of sectionMatches) {
-    const title = cleanText(match[1].replace(/<[^>]+>/g, ''));
-    const desc = cleanText(match[2].replace(/<[^>]+>/g, ''));
-    if (title.length > 3 && title.length < 120 && desc.length > 20 && !isFooterContent(title)) {
-      result.useCases.push({ title, description: desc.slice(0, 300) });
+  
+  // Also look for "key: value" or "key – value" patterns
+  const kvMatches = markdown.matchAll(/^[\*\-•]?\s*\*?\*?([^:\n\|]+?)\*?\*?\s*[:\-–]\s*(.+)$/gm);
+  for (const match of kvMatches) {
+    const name = match[1].trim().replace(/\*\*/g, '');
+    const value = match[2].trim().replace(/\*\*/g, '');
+    
+    // Skip if it looks like a sentence
+    if (name.split(' ').length > 5) continue;
+    if (value.length > 300) continue;
+    
+    if (name.length > 2 && name.length < 100 && value && !isFooterContent(name)) {
+      // Avoid duplicates
+      if (!result.specifications.some(s => s.name === name)) {
+        result.specifications.push({ name, value });
+      }
     }
+  }
+  
+  result.specifications = result.specifications.slice(0, 25);
+  console.log('[Firecrawl] Extracted specifications:', result.specifications.length);
+
+  // === USE CASES ===
+  // Look for H3/H4 sections with descriptions
+  const sectionMatches = markdown.matchAll(/^###?\s+(.+)\n+([^#]+)/gm);
+  for (const match of sectionMatches) {
+    const title = match[1].trim().replace(/\*\*/g, '');
+    const content = match[2].trim();
+    
+    // Get first paragraph as description
+    const firstPara = content.split('\n\n')[0]
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .trim();
+    
+    if (title.length > 3 && title.length < 120 && firstPara.length > 20 && !isFooterContent(title)) {
+      result.useCases.push({ 
+        title, 
+        description: firstPara.slice(0, 400) 
+      });
+    }
+    
     if (result.useCases.length >= 6) break;
   }
   
-  // If no use cases found, generate from benefits
+  // Generate use cases from benefits if none found
   if (result.useCases.length === 0 && result.benefits.length > 0) {
     result.useCases = result.benefits.slice(0, 4).map((benefit, idx) => ({
       title: `Feature ${idx + 1}`,
       description: benefit
     }));
   }
-  console.log('Extracted useCases count:', result.useCases.length);
+  console.log('[Firecrawl] Extracted useCases:', result.useCases.length);
 
-  // STEP 9: Extract download links (PDF files)
-  const pdfMatches = html.matchAll(/<a[^>]*href="([^"]*\.pdf)"[^>]*>([\s\S]*?)<\/a>/gi);
-  for (const match of pdfMatches) {
-    let pdfUrl = match[1];
-    // Extract link text, stripping any inner HTML
-    const title = cleanText(match[2].replace(/<[^>]+>/g, ' '));
-    
-    // Make URL absolute
-    if (!pdfUrl.startsWith('http')) {
-      const urlObj = new URL(baseUrl);
-      pdfUrl = pdfUrl.startsWith('/') 
-        ? `${urlObj.origin}${pdfUrl}`
-        : `${urlObj.origin}/${pdfUrl}`;
-    }
-    
-    // Detect language from filename or title
-    const isGerman = pdfUrl.toLowerCase().includes('_de') || 
-                     title.toLowerCase().includes('deutsch') ||
-                     title.toLowerCase().includes('datenblatt');
-    const isEnglish = pdfUrl.toLowerCase().includes('_en') ||
-                      title.toLowerCase().includes('english') ||
-                      title.toLowerCase().includes('datasheet');
-    const detectedLang = isGerman ? 'de' : (isEnglish ? 'en' : language);
-    
-    if (title.length > 3 && !isFooterContent(title)) {
+  // === DOWNLOADS ===
+  // Extract PDF links from the links array
+  for (const link of links) {
+    if (link.toLowerCase().includes('.pdf')) {
+      let pdfUrl = link;
+      
+      // Make URL absolute if needed
+      if (!pdfUrl.startsWith('http')) {
+        const urlObj = new URL(baseUrl);
+        pdfUrl = pdfUrl.startsWith('/') 
+          ? `${urlObj.origin}${pdfUrl}`
+          : `${urlObj.origin}/${pdfUrl}`;
+      }
+      
+      // Extract filename for title
+      const filename = pdfUrl.split('/').pop()?.split('?')[0] || 'Document';
+      const title = filename
+        .replace('.pdf', '')
+        .replace(/[-_]/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2');
+      
+      // Detect language
+      const isGerman = pdfUrl.toLowerCase().includes('_de') || filename.toLowerCase().includes('_de');
+      const isEnglish = pdfUrl.toLowerCase().includes('_en') || filename.toLowerCase().includes('_en');
+      const detectedLang = isGerman ? 'de' : (isEnglish ? 'en' : language);
+      
       result.downloads.push({
         title: title.trim(),
         description: getDownloadDescription(title),
@@ -273,60 +332,66 @@ function parseHtmlContent(html: string, baseUrl: string, language: string): Pars
       });
     }
   }
-  console.log('Extracted downloads count:', result.downloads.length);
+  console.log('[Firecrawl] Extracted downloads:', result.downloads.length);
 
-  // STEP 10: Extract video URL
-  const videoMatch = html.match(/href="([^"]*\.mp4)"/i) ||
-                     html.match(/src="([^"]*youtube[^"]*embed[^"]*)"/i) ||
-                     html.match(/data-video="([^"]*)"/i);
-  if (videoMatch) {
-    result.videoUrl = videoMatch[1];
+  // === VIDEO ===
+  // Check for video links
+  for (const link of links) {
+    if (link.includes('youtube.com') || link.includes('vimeo.com') || link.endsWith('.mp4')) {
+      result.videoUrl = link;
+      break;
+    }
   }
 
-  // STEP 11: Extract product images
-  // First try main product image
-  const mainImgMatch = html.match(/<div[^>]*class="[^"]*main-product-img[^"]*"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"[^>]*>/i);
-  if (mainImgMatch) {
-    result.images.push({ url: mainImgMatch[1], title: result.title });
+  // === IMAGES ===
+  // Extract image URLs from HTML
+  const imgMatches = html.matchAll(/<img[^>]*src="([^"]+)"[^>]*(?:alt="([^"]*)")?[^>]*>/gi);
+  for (const match of imgMatches) {
+    let imgUrl = match[1];
+    const alt = match[2] || '';
+    
+    // Make URL absolute
+    if (!imgUrl.startsWith('http')) {
+      const urlObj = new URL(baseUrl);
+      imgUrl = imgUrl.startsWith('/') 
+        ? `${urlObj.origin}${imgUrl}`
+        : `${urlObj.origin}/${imgUrl}`;
+    }
+    
+    // Filter out icons, logos, pixels, lazy-load placeholders
+    if (imgUrl.includes('icon') || 
+        imgUrl.includes('logo') || 
+        imgUrl.includes('pixel') ||
+        imgUrl.includes('lazy-load') ||
+        imgUrl.includes('placeholder') ||
+        imgUrl.includes('1x1') ||
+        imgUrl.includes('spinner')) {
+      continue;
+    }
+    
+    result.images.push({ url: imgUrl, title: alt });
+    if (result.images.length >= 10) break;
   }
   
-  // Then get gallery images
-  const galleryImgMatches = html.matchAll(/data-original="([^"]+\.(png|jpg|jpeg|webp))"/gi);
-  for (const match of galleryImgMatches) {
-    const imgUrl = match[1];
-    if (imgUrl && !imgUrl.includes('lazy-load') && !imgUrl.includes('default')) {
+  // Also check for data-original (lazy-loaded images)
+  const lazyImgMatches = html.matchAll(/data-original="([^"]+\.(png|jpg|jpeg|webp))"/gi);
+  for (const match of lazyImgMatches) {
+    let imgUrl = match[1];
+    
+    if (!imgUrl.startsWith('http')) {
+      const urlObj = new URL(baseUrl);
+      imgUrl = imgUrl.startsWith('/') 
+        ? `${urlObj.origin}${imgUrl}`
+        : `${urlObj.origin}/${imgUrl}`;
+    }
+    
+    // Avoid duplicates
+    if (!result.images.some(img => img.url === imgUrl)) {
       result.images.push({ url: imgUrl, title: '' });
     }
-    if (result.images.length >= 8) break;
+    if (result.images.length >= 10) break;
   }
-  
-  // Fallback: get any relevant images
-  if (result.images.length === 0) {
-    const imgMatches = html.matchAll(/<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"/gi);
-    for (const match of imgMatches) {
-      const imgUrl = match[1];
-      const alt = match[2] || '';
-      if (imgUrl.startsWith('http') && 
-          !imgUrl.includes('icon') && 
-          !imgUrl.includes('logo') && 
-          !imgUrl.includes('pixel') &&
-          !imgUrl.includes('lazy-load')) {
-        result.images.push({ url: imgUrl, title: alt });
-      }
-      if (result.images.length >= 8) break;
-    }
-  }
-  console.log('Extracted images count:', result.images.length);
-
-  // STEP 12: Log summary
-  console.log('=== EXTRACTION SUMMARY ===');
-  console.log('Title:', result.title);
-  console.log('Description preview:', result.description.slice(0, 200) + '...');
-  console.log('Benefits:', result.benefits.length);
-  console.log('Specifications:', result.specifications.length);
-  console.log('UseCases:', result.useCases.length);
-  console.log('Downloads:', result.downloads.length);
-  console.log('Images:', result.images.length);
+  console.log('[Firecrawl] Extracted images:', result.images.length);
 
   return result;
 }
@@ -337,11 +402,15 @@ function isFooterContent(text: string): boolean {
   const footerPatterns = [
     'cookie', 'privacy policy', 'newsletter', 'subscribe', 'copyright', 
     'all rights reserved', 'impressum', 'datenschutz',
-    'follow us', 'social media',
-    'menu', 'navigation', 'sitemap',
-    'login', 'register', 'anmelden',
-    'related products', 'ähnliche produkte',
-    'web shop is currently unavailable'
+    'follow us', 'social media', 'facebook', 'twitter', 'linkedin', 'instagram',
+    'menu', 'navigation', 'sitemap', 'breadcrumb',
+    'login', 'register', 'anmelden', 'sign up', 'sign in',
+    'related products', 'ähnliche produkte', 'you might also like',
+    'web shop is currently unavailable', 'shop unavailable',
+    'contact us', 'kontakt', 'get in touch',
+    'back to top', 'nach oben', 'scroll to top',
+    'page load', 'loading', 'please wait',
+    'skip to content', 'skip to main',
   ];
   
   for (const pattern of footerPatterns) {
@@ -350,28 +419,22 @@ function isFooterContent(text: string): boolean {
   return false;
 }
 
-function cleanText(text: string): string {
-  return text
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function getDownloadDescription(title: string): string {
   const lower = title.toLowerCase();
   if (lower.includes('datasheet') || lower.includes('datenblatt') || lower.includes('specification')) {
     return 'Technical specifications and product details';
   }
-  if (lower.includes('manual') || lower.includes('anleitung')) {
+  if (lower.includes('manual') || lower.includes('anleitung') || lower.includes('guide')) {
     return 'Complete operating instructions';
   }
   if (lower.includes('brochure') || lower.includes('broschüre') || lower.includes('flyer')) {
     return 'Product overview and features';
+  }
+  if (lower.includes('whitepaper') || lower.includes('white paper')) {
+    return 'Technical whitepaper with in-depth analysis';
+  }
+  if (lower.includes('certificate') || lower.includes('zertifikat')) {
+    return 'Product certification documentation';
   }
   return 'Product documentation';
 }
