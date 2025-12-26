@@ -53,11 +53,52 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
   const [currentContent, setCurrentContent] = useState<string | null>(null);
   const [loadingCurrent, setLoadingCurrent] = useState(false);
 
+  // Load available segments from segment_registry on mount
+  useEffect(() => {
+    if (pageSlug) {
+      loadAvailableSegments();
+    }
+  }, [pageSlug]);
+
+  // Load backups when filters change
   useEffect(() => {
     if (pageSlug) {
       loadBackups();
     }
   }, [pageSlug, selectedSegment, selectedLanguage]);
+
+  const loadAvailableSegments = async () => {
+    try {
+      // Load segments from segment_registry for this page
+      const { data: registrySegments, error } = await supabase
+        .from("segment_registry")
+        .select("segment_key, segment_type, position")
+        .eq("page_slug", pageSlug)
+        .eq("deleted", false)
+        .order("position", { ascending: true });
+
+      if (error) {
+        console.error("Error loading segment registry:", error);
+        return;
+      }
+
+      // Also get unique section_keys from existing backups (includes page_segments, tab_order etc.)
+      const { data: backupSegments } = await supabase
+        .from("page_content_backups")
+        .select("section_key")
+        .eq("page_slug", pageSlug);
+
+      const backupKeys = [...new Set((backupSegments || []).map(b => b.section_key))];
+      
+      // Combine both: registry segments + backup-only keys
+      const registryKeys = (registrySegments || []).map(s => s.segment_key);
+      const allSegments = [...new Set([...registryKeys, ...backupKeys])];
+      
+      setAvailableSegments(allSegments);
+    } catch (error) {
+      console.error("Error loading available segments:", error);
+    }
+  };
 
   const loadBackups = async () => {
     setLoading(true);
@@ -85,10 +126,6 @@ export const VersionHistoryPanel = ({ pageSlug, currentLanguage, onRestore }: Ve
       }
 
       setBackups(data || []);
-
-      // Extract unique segments for filter
-      const segments = [...new Set((data || []).map(b => b.section_key))];
-      setAvailableSegments(segments);
 
       // Load user emails for display
       const userIds = [...new Set((data || []).filter(b => b.original_updated_by).map(b => b.original_updated_by!))];
