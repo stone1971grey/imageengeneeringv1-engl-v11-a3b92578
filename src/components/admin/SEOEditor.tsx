@@ -271,6 +271,57 @@ export const SEOEditor = ({
       
       console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items for language:', editorLanguage);
       
+      // CRITICAL: Also load seo_settings directly and merge with data prop if missing
+      // This ensures Advanced SEO features are always loaded even if parent component fails
+      const seoSettingsEntry = contentData?.find(item => item.section_key === 'seo_settings');
+      if (seoSettingsEntry) {
+        try {
+          const savedSeoSettings = JSON.parse(seoSettingsEntry.content_value);
+          console.log('[SEO Editor] Found seo_settings in DB:', savedSeoSettings);
+          
+          // Check if data prop is missing critical Advanced SEO fields
+          const missingFocusKeyword = !data.focusKeyword && savedSeoSettings.focusKeyword;
+          const missingH1 = !data.h1 && savedSeoSettings.h1;
+          const missingIntroduction = !data.introduction && savedSeoSettings.introduction;
+          
+          if (missingFocusKeyword || missingH1 || missingIntroduction) {
+            console.log('[SEO Editor] CRITICAL: Advanced SEO data missing in props, merging from DB:', {
+              missingFocusKeyword,
+              missingH1,
+              missingIntroduction,
+              dbValues: {
+                focusKeyword: savedSeoSettings.focusKeyword,
+                h1: savedSeoSettings.h1,
+                introduction: savedSeoSettings.introduction?.substring(0, 50) + '...'
+              }
+            });
+            
+            // Merge DB values into data, preserving any existing values
+            onChange({
+              ...data,
+              focusKeyword: data.focusKeyword || savedSeoSettings.focusKeyword || '',
+              h1: data.h1 || savedSeoSettings.h1 || '',
+              h1Locked: data.h1Locked ?? savedSeoSettings.h1Locked ?? false,
+              introduction: data.introduction || savedSeoSettings.introduction || '',
+              title: data.title || savedSeoSettings.title || '',
+              metaDescription: data.metaDescription || savedSeoSettings.metaDescription || '',
+              slug: data.slug || savedSeoSettings.slug || pageSlug,
+              canonical: data.canonical || savedSeoSettings.canonical || '',
+              robotsIndex: data.robotsIndex || savedSeoSettings.robotsIndex || 'index',
+              robotsFollow: data.robotsFollow || savedSeoSettings.robotsFollow || 'follow',
+              ogTitle: data.ogTitle || savedSeoSettings.ogTitle || '',
+              ogDescription: data.ogDescription || savedSeoSettings.ogDescription || '',
+              ogImage: data.ogImage || savedSeoSettings.ogImage || '',
+              twitterCard: data.twitterCard || savedSeoSettings.twitterCard || 'summary_large_image'
+            });
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse seo_settings:', e);
+        }
+      } else {
+        console.log('[SEO Editor] No seo_settings found in DB for this page/language');
+      }
+      
       if (!contentError && contentData) {
         setPageContent(contentData);
         
