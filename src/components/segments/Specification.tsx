@@ -7,12 +7,13 @@ interface SpecificationProps {
   id: string;
   title?: string;
   rows?: SpecificationRow[];
+  description?: string;
 }
 
-const Specification = ({ id, title = "Detailed Specifications", rows = [] }: SpecificationProps) => {
-  console.log('Specification render:', { id, title, rowsCount: rows.length, rows });
+const Specification = ({ id, title = "Detailed Specifications", rows = [], description }: SpecificationProps) => {
+  console.log('Specification render:', { id, title, rowsCount: rows.length, rows, description });
   
-  if (!title && rows.length === 0) return null;
+  if (!title && rows.length === 0 && !description) return null;
 
   return (
     <section id={id} className="pt-[20px] pb-20 bg-gray-50">
@@ -45,6 +46,14 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
             </div>
           ) : (
             <p className="text-gray-500">No specifications available.</p>
+          )}
+          
+          {/* Description/Links section - renders HTML content including internal links */}
+          {description && (
+            <div 
+              className="mt-6 pt-6 border-t border-gray-200 prose prose-sm max-w-none text-[#555]"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           )}
         </div>
       </div>
