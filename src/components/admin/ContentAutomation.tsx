@@ -912,6 +912,56 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         }
       }
 
+      // === BATCH CREATE FILE-SEGMENT MAPPINGS ===
+      // Automatically link storage files (images + PDFs) to the created segments
+      const segmentKeysForMapping = newRegistryEntries.map(entry => entry.segment_key);
+      
+      if (segmentKeysForMapping.length > 0 && (storageImages.length > 0 || storagePdfs.length > 0)) {
+        const fileMappings: { file_path: string; bucket_id: string; segment_ids: string[]; alt_text: string; visibility: string }[] = [];
+        
+        // Add image mappings
+        for (const img of storageImages) {
+          // Extract file path from full URL
+          const filePath = `${folderPath}/${img.url.split('/').pop()}`;
+          fileMappings.push({
+            file_path: filePath,
+            bucket_id: 'page-images',
+            segment_ids: segmentKeysForMapping,
+            alt_text: img.title || parsedContent.title || '',
+            visibility: 'public',
+          });
+        }
+        
+        // Add PDF mappings
+        for (const pdf of storagePdfs) {
+          const filePath = `${folderPath}/${pdf.filename}`;
+          fileMappings.push({
+            file_path: filePath,
+            bucket_id: 'page-images',
+            segment_ids: segmentKeysForMapping,
+            alt_text: pdf.title || '',
+            visibility: 'public',
+          });
+        }
+        
+        if (fileMappings.length > 0) {
+          // Use upsert to avoid duplicates
+          const { error: mappingError } = await supabase
+            .from('file_segment_mappings')
+            .upsert(fileMappings, {
+              onConflict: 'file_path',
+              ignoreDuplicates: false,
+            });
+          
+          if (mappingError) {
+            console.error('[ContentAutomation] Error creating file mappings:', mappingError);
+          } else {
+            console.log(`[ContentAutomation] Created ${fileMappings.length} file-segment mappings`);
+            toast.success(`${fileMappings.length} files linked to segments`);
+          }
+        }
+      }
+
       toast.success(`Successfully imported ${newSegments.length} segments!`);
       onImportComplete?.();
 
