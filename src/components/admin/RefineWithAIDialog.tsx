@@ -289,8 +289,11 @@ export const RefineWithAIDialog = ({
           language,
           currentContent: contentSummary,
           prompt: `Analysiere den vorhandenen Content dieser Produktseite und schlage 2-3 zusätzliche Segment-Typen vor, 
-                   die den Content ergänzen würden. Verfügbare Segment-Typen sind: 
-                   intro, specification, feature-overview, downloads, video, faq, banner, image-text, table, tiles.
+                   die den Content ergänzen würden. Verfügbare Segment-Typen sind NUR diese existierenden Typen: 
+                   action-hero, intro, specification, feature-overview, faq, table, video, banner-p, 
+                   downloads-segment, events-segment, industries-segment, news-segment, news-list-segment, 
+                   product-list-segment, product-hero-gallery, full-hero.
+                   WICHTIG: Verwende NUR Typen aus dieser Liste! Keine anderen Typen erfinden!
                    Antworte im JSON-Format: { suggestions: [{ type: string, reason: string }] }`
         }
       });
