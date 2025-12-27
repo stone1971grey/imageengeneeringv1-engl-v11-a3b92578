@@ -570,7 +570,7 @@ export const RefineWithAIDialog = ({
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] flex flex-col bg-gray-900 border-gray-700 text-white">
+      <DialogContent className="sm:max-w-[700px] max-h-[75vh] flex flex-col bg-gray-900 border-gray-700 text-white top-[55%] translate-y-[-50%] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl">
             {showPreview ? (
