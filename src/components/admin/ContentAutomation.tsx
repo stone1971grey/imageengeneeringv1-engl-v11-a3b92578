@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FirecrawlIcon } from '@/components/FirecrawlIcon';
-import { RefineWithAIDialog } from '@/components/admin/RefineWithAIDialog';
+
 import { GeminiIcon } from '@/components/GeminiIcon';
 import { 
   Globe, 
@@ -495,21 +495,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             .trim();
         };
         
-        // Build clean intro HTML - split description into proper paragraphs
-        const descParagraphs = cleanText(parsedContent.description)
+        // Build COMPLETE intro HTML - include ALL paragraphs from description
+        const allParagraphs = cleanText(parsedContent.description)
           .split(/\n\n+/)
           .filter(p => p.trim().length > 20)
-          .slice(0, 3)  // Max 3 paragraphs
           .map(p => `<p>${p.trim()}</p>`)
           .join('');
         
-        // Add benefits as a clean list (max 6)
+        // Add ALL benefits as a clean list (no limit)
         let benefitsHtml = '';
         if (parsedContent.benefits.length > 0) {
           const cleanBenefits = parsedContent.benefits
-            .slice(0, 6)
             .map(b => cleanText(b))
-            .filter(b => b.length > 10 && b.length < 200);
+            .filter(b => b.length > 10 && b.length < 300);
           
           if (cleanBenefits.length > 0) {
             benefitsHtml = '<h3>' + (language === 'de' ? 'Hauptvorteile' : 'Key Benefits') + '</h3>';
@@ -526,7 +524,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           data: {
             headline: cleanTitle,
             headingLevel: 'h2',  // h2 since Hero already has h1
-            introText: descParagraphs + benefitsHtml || `<p>${language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.'}</p>`,
+            introText: allParagraphs + benefitsHtml || `<p>${language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.'}</p>`,
             alignment: 'left',
             showDivider: true,
           },
@@ -1091,31 +1089,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           </div>
         </div>
 
-        {/* Phase 2: Refine with AI */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
-              2
-            </div>
-            <h3 className="text-white font-semibold">Refine with AI</h3>
-            <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Optional</Badge>
-          </div>
-          
-          <div className="flex items-start gap-4 pl-10">
-            <GeminiIcon className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-400 text-sm">
-                Use AI to expand texts, generate FAQs, optimize SEO, or suggest additional segments.
-              </p>
-            </div>
-            <RefineWithAIDialog 
-              pageSlug={pageSlug} 
-              language={language} 
-              onRefineComplete={onImportComplete}
-              variant="compact"
-            />
-          </div>
-        </div>
 
         {/* Parsed Content Preview */}
         {parsedContent && (

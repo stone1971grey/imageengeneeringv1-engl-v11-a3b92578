@@ -25,7 +25,7 @@ import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
-import { RefineWithAIDialog } from "@/components/admin/RefineWithAIDialog";
+
 import { FrontendEditProvider } from "@/contexts/FrontendEditContext";
 import { EditModeToggle, EditableSegment } from "@/components/frontend-edit";
 
@@ -1598,14 +1598,6 @@ const DynamicCMSPage = () => {
             </div>
             <div className="flex items-center gap-3">
               <EditModeToggle />
-              <RefineWithAIDialog
-                pageSlug={pageSlug}
-                language={currentUrlLanguage as 'en' | 'de' | 'ja' | 'ko' | 'zh'}
-                variant="compact"
-                onRefineComplete={() => {
-                  window.location.reload();
-                }}
-              />
               <a
                 href={`/${currentUrlLanguage}/admin-dashboard`}
                 target="_blank"

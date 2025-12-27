@@ -79,7 +79,7 @@ import { createContentBackup, createMultipleBackups } from '@/utils/createConten
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
 import { ContentAutomation } from '@/components/admin/ContentAutomation';
-import { RefineWithAIDialog } from '@/components/admin/RefineWithAIDialog';
+
 import { TemplateSelectionDialog } from '@/components/admin/dashboard/TemplateSelectionDialog';
 import { WelcomeTab } from '@/components/admin/dashboard/WelcomeTab';
 import { AdminHeader } from '@/components/admin/dashboard/AdminHeader';
