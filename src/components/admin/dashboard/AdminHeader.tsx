@@ -12,6 +12,7 @@ import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
+import { PagePublishControl } from '@/components/admin/PagePublishControl';
 import { PageInfo } from '@/components/admin/dashboard/pageRegistryUtils';
 import { DESIGN_ICON_OPTIONS } from '@/components/admin/dashboard/AdminConstants';
 import { LucideIcon } from "lucide-react";
@@ -75,6 +76,7 @@ interface AdminHeaderProps {
   setIsContentAutomationOpen?: (open: boolean) => void;
   loadPageInfo: () => void;
   currentUser?: SupabaseUser | null;
+  onPageStatusChange?: (newStatus: 'draft' | 'published') => void;
 }
 
 export const AdminHeader = ({
@@ -101,6 +103,7 @@ export const AdminHeader = ({
   setIsContentAutomationOpen,
   loadPageInfo,
   currentUser,
+  onPageStatusChange,
 }: AdminHeaderProps) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -246,6 +249,14 @@ export const AdminHeader = ({
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap flex-shrink-0">
                     ID {pageInfo.pageId}
                   </span>
+                  <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                  <PagePublishControl
+                    pageSlug={pageInfo.pageSlug}
+                    pageId={pageInfo.pageId}
+                    currentStatus={pageInfo.status || 'published'}
+                    onStatusChange={(newStatus) => onPageStatusChange?.(newStatus)}
+                    isAdmin={isAdmin}
+                  />
                   <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
                   <span className="text-base text-gray-700 font-mono whitespace-nowrap">
                     {pageInfo.pageSlug}

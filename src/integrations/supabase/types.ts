@@ -702,6 +702,7 @@ export type Database = {
           parent_id: number | null
           parent_slug: string | null
           position: number | null
+          status: string
           target_page_slug: string | null
         }
         Insert: {
@@ -720,6 +721,7 @@ export type Database = {
           parent_id?: number | null
           parent_slug?: string | null
           position?: number | null
+          status?: string
           target_page_slug?: string | null
         }
         Update: {
@@ -738,6 +740,7 @@ export type Database = {
           parent_id?: number | null
           parent_slug?: string | null
           position?: number | null
+          status?: string
           target_page_slug?: string | null
         }
         Relationships: []

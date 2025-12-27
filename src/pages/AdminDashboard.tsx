@@ -74,6 +74,7 @@ import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
 import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
 import { ProductListSegmentEditor } from '@/components/admin/ProductListSegmentEditor';
 import { DownloadsSegmentEditor } from '@/components/admin/DownloadsSegmentEditor';
+import { PagePublishControl } from '@/components/admin/PagePublishControl';
 import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
@@ -385,6 +386,7 @@ const AdminDashboard = () => {
     ctaLabel?: string | null;
     ctaIcon?: string | null;
     targetPageSlug?: string | null;
+    status?: 'draft' | 'published';
   } | null>(null);
   const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
@@ -1431,6 +1433,7 @@ const AdminDashboard = () => {
           setIsContentAutomationOpen={setIsContentAutomationOpen}
           loadPageInfo={loadPageInfo}
           currentUser={user}
+          onPageStatusChange={(newStatus) => setPageInfo(prev => prev ? { ...prev, status: newStatus } : prev)}
         />
 
         {/* Segment Template Dialog */}

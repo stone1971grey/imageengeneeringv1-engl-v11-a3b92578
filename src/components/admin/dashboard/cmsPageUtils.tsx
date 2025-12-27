@@ -163,7 +163,7 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
 
-    // Create page_registry entry
+    // Create page_registry entry with draft status
     const { data: newPageData, error: insertError } = await supabase
       .from("page_registry")
       .insert({
@@ -172,6 +172,7 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
         page_title: pageTitle,
         parent_id,
         parent_slug: parent_slug_value,
+        status: 'draft', // New pages start as draft
       })
       .select()
       .single();
@@ -318,9 +319,10 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
     toast.success(
       <div className="space-y-2">
         <p className="font-bold">🎉 Page Created Successfully ID {nextPageId}</p>
-        <p className="text-sm">Page is fully configured and immediately available.</p>
+        <p className="text-sm">Page is in <strong>draft mode</strong> – only visible to logged-in admins/editors.</p>
         <p className="text-sm"><strong>URL:</strong> /{slug}</p>
         <p className="text-sm"><strong>Languages:</strong> {languages.join(', ')}</p>
+        <p className="text-sm text-amber-600">Publish the page when ready to go live.</p>
       </div>,
       {
         duration: 5000,
@@ -459,6 +461,7 @@ export async function createNewCMSPage(params: {
           page_title: inferredTitle,
           parent_id,
           parent_slug,
+          status: 'draft', // New pages start as draft
         })
         .select()
         .single();
