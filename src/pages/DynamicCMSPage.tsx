@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
+import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MiniFooter from "@/components/MiniFooter";
@@ -1577,40 +1577,32 @@ const DynamicCMSPage = () => {
       {/* Editor Toolbar - shown to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {currentUser && userRole && (
-        <div className={`fixed top-[110px] left-0 right-0 z-40 py-3 px-4 shadow-md ${isDraftPage ? 'bg-yellow text-black' : 'bg-gray-900 text-white'}`}>
-          <div className="container mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {isDraftPage && (
-                <>
-                  <Eye className="h-5 w-5" />
-                  <span className="font-semibold text-base">Draft Preview</span>
-                  <span className={isDraftPage ? 'text-black' : 'text-gray-400'}>—</span>
-                  <span className={`text-sm ${isDraftPage ? 'text-black' : 'text-gray-300'}`}>
-                    This page is not published.
-                  </span>
-                </>
-              )}
-              {!isDraftPage && (
-                <span className="text-sm text-gray-300">
-                  Frontend Editing Mode
+        <div className={`fixed top-[110px] left-0 right-0 z-40 py-2 ${isDraftPage ? 'bg-yellow text-black' : 'bg-transparent'}`}>
+          <div className="container mx-auto flex items-center gap-3 pl-4">
+            {isDraftPage && (
+              <>
+                <Eye className="h-5 w-5" />
+                <span className="font-semibold text-base">Draft Preview</span>
+                <span className="text-black">—</span>
+                <span className="text-sm text-black">
+                  This page is not published.
                 </span>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <EditModeToggle />
-              <a
-                href={`/${currentUrlLanguage}/admin-dashboard`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`h-9 px-4 inline-flex items-center rounded text-sm font-medium transition-colors ${
-                  isDraftPage 
-                    ? 'bg-black text-white hover:bg-gray-800' 
-                    : 'bg-white text-black hover:bg-gray-100'
-                }`}
-              >
-                Admin Dashboard
-              </a>
-            </div>
+              </>
+            )}
+            {!isDraftPage && (
+              <>
+                <EditModeToggle />
+                <a
+                  href={`/${currentUrlLanguage}/admin-dashboard`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 px-3 inline-flex items-center gap-2 rounded text-sm font-medium transition-colors bg-white text-black hover:bg-gray-100 border border-gray-200"
+                >
+                  <Settings className="h-4 w-4" />
+                  Admin
+                </a>
+              </>
+            )}
           </div>
         </div>
       )}
