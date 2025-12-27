@@ -233,6 +233,57 @@ export const RefineWithAIDialog = ({
 
   // Preview generators (return proposed changes without saving)
   const generateRefetchPreview = async (): Promise<ProposedChange[]> => {
+    // First, load existing content to avoid duplicating
+    const { data: existingContent } = await supabase
+      .from('page_content')
+      .select('section_key, content_value, content_type')
+      .eq('page_slug', pageSlug)
+      .eq('language', language);
+
+    // Check what already exists
+    let existingDescription = '';
+    let existingDownloads: string[] = [];
+    let existingImages: string[] = [];
+    let existingSpecifications: string[] = [];
+
+    if (existingContent) {
+      for (const item of existingContent) {
+        try {
+          const parsed = JSON.parse(item.content_value);
+          
+          // Extract existing description/intro text
+          if (item.section_key.includes('intro') || parsed.description) {
+            existingDescription = parsed.description || parsed.text || '';
+          }
+          
+          // Extract existing downloads
+          if (parsed.downloads && Array.isArray(parsed.downloads)) {
+            existingDownloads = parsed.downloads.map((d: any) => d.url || d.title || '').filter(Boolean);
+          }
+          
+          // Extract existing gallery images
+          if (parsed.images && Array.isArray(parsed.images)) {
+            existingImages = parsed.images.map((img: any) => img.imageUrl || img.url || '').filter(Boolean);
+          }
+          
+          // Extract existing specifications
+          if (parsed.specifications && Array.isArray(parsed.specifications)) {
+            existingSpecifications = parsed.specifications.map((s: any) => s.name || s.key || '').filter(Boolean);
+          }
+        } catch {
+          // Not JSON, skip
+        }
+      }
+    }
+
+    console.log('[RefineWithAI] Existing content check:', {
+      hasDescription: existingDescription.length > 0,
+      descriptionLength: existingDescription.length,
+      existingDownloads: existingDownloads.length,
+      existingImages: existingImages.length,
+      existingSpecs: existingSpecifications.length,
+    });
+
     // Try multiple URL patterns to find the redirect
     const urlPatterns = [
       `/${language}/${pageSlug}`,
@@ -291,86 +342,101 @@ export const RefineWithAIDialog = ({
       return [];
     }
     
-    if (!data) {
+    if (!data?.data) {
       console.log('[RefineWithAI] No data returned from fetch');
       return [];
     }
 
+    const fetchedData = data.data;
+
     console.log('[RefineWithAI] Fetched data:', {
-      hasDescription: !!data.description,
-      descriptionLength: data.description?.length,
-      hasBenefits: !!data.benefits,
-      benefitsCount: data.benefits?.length,
-      hasSpecifications: !!data.specifications,
-      specificationsCount: data.specifications?.length,
-      hasDownloads: !!data.downloads,
-      downloadsCount: data.downloads?.length,
+      hasDescription: !!fetchedData.description,
+      descriptionLength: fetchedData.description?.length,
+      hasBenefits: !!fetchedData.benefits,
+      benefitsCount: fetchedData.benefits?.length,
+      hasSpecifications: !!fetchedData.specifications,
+      specificationsCount: fetchedData.specifications?.length,
+      hasDownloads: !!fetchedData.downloads,
+      downloadsCount: fetchedData.downloads?.length,
     });
 
     // Parse the fetched content and create proposed changes
+    // IMPORTANT: Only add content that doesn't already exist
     const changes: ProposedChange[] = [];
     
-    // Add description if available
-    if (data.description && data.description.length > 50) {
-      changes.push({
-        id: `refetch-desc-${Date.now()}`,
-        type: 'refetch',
-        title: 'Additional content from source page',
-        description: 'Text content extracted from the original page',
-        proposedValue: data.description,
-        accepted: true
-      });
+    // Add description ONLY if current description is short or missing
+    if (fetchedData.description && fetchedData.description.length > 50) {
+      // Check if existing description is substantially different or shorter
+      const isNewContent = existingDescription.length < 100 || 
+        !existingDescription.toLowerCase().includes(fetchedData.description.substring(0, 50).toLowerCase());
+      
+      if (isNewContent) {
+        changes.push({
+          id: `refetch-desc-${Date.now()}`,
+          type: 'refetch',
+          title: 'Additional description from source',
+          description: `Text content extracted (${fetchedData.description.length} chars)`,
+          proposedValue: fetchedData.description,
+          accepted: true
+        });
+      } else {
+        console.log('[RefineWithAI] Skipping description - similar content already exists');
+      }
     }
     
     // Add benefits if available
-    if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0) {
+    if (fetchedData.benefits && Array.isArray(fetchedData.benefits) && fetchedData.benefits.length > 0) {
       changes.push({
         id: `refetch-benefits-${Date.now()}`,
         type: 'refetch',
         title: 'Key benefits from source',
-        description: `${data.benefits.length} benefits extracted`,
-        proposedValue: data.benefits.map((b: string) => `• ${b}`).join('\n'),
+        description: `${fetchedData.benefits.length} benefits extracted`,
+        proposedValue: fetchedData.benefits.map((b: string) => `• ${b}`).join('\n'),
         accepted: true
       });
     }
     
-    // Add specifications if available
-    if (data.specifications && Array.isArray(data.specifications) && data.specifications.length > 0) {
-      changes.push({
-        id: `refetch-specs-${Date.now()}`,
-        type: 'refetch',
-        title: 'Technical specifications from source',
-        description: `${data.specifications.length} specifications found`,
-        proposedValue: data.specifications.map((s: any) => `${s.name}: ${s.value}`).join('\n'),
-        accepted: true
-      });
-    }
-    
-    // Add downloads if available
-    if (data.downloads && Array.isArray(data.downloads) && data.downloads.length > 0) {
-      changes.push({
-        id: `refetch-downloads-${Date.now()}`,
-        type: 'refetch',
-        title: 'Downloads from source',
-        description: `${data.downloads.length} download links found`,
-        proposedValue: data.downloads.map((d: any) => `• ${d.title}: ${d.url}`).join('\n'),
-        accepted: true
-      });
-    }
-
-    // Fallback: if we have raw content but nothing structured
-    if (changes.length === 0 && data.content) {
-      const content = typeof data.content === 'string' ? data.content : JSON.stringify(data.content);
-      if (content.length > 100) {
+    // Add specifications ONLY if they don't already exist
+    if (fetchedData.specifications && Array.isArray(fetchedData.specifications) && fetchedData.specifications.length > 0) {
+      const newSpecs = fetchedData.specifications.filter((s: any) => 
+        !existingSpecifications.some(existing => 
+          existing.toLowerCase() === (s.name || '').toLowerCase()
+        )
+      );
+      
+      if (newSpecs.length > 0) {
         changes.push({
-          id: `refetch-raw-${Date.now()}`,
+          id: `refetch-specs-${Date.now()}`,
           type: 'refetch',
-          title: 'Raw content from source page',
-          description: 'Unstructured content was extracted',
-          proposedValue: content.substring(0, 1000) + (content.length > 1000 ? '...' : ''),
+          title: 'New specifications from source',
+          description: `${newSpecs.length} new specifications found (${existingSpecifications.length} already exist)`,
+          proposedValue: newSpecs.map((s: any) => `${s.name}: ${s.value}`).join('\n'),
           accepted: true
         });
+      } else {
+        console.log('[RefineWithAI] Skipping specifications - all already exist');
       }
+    }
+    
+    // SKIP downloads if they already exist - do NOT propose duplicates
+    if (fetchedData.downloads && Array.isArray(fetchedData.downloads) && fetchedData.downloads.length > 0) {
+      if (existingDownloads.length > 0) {
+        console.log('[RefineWithAI] Skipping downloads - downloads already configured:', existingDownloads.length);
+      } else {
+        changes.push({
+          id: `refetch-downloads-${Date.now()}`,
+          type: 'refetch',
+          title: 'Downloads from source',
+          description: `${fetchedData.downloads.length} download links found`,
+          proposedValue: fetchedData.downloads.map((d: any) => `• ${d.title}: ${d.url}`).join('\n'),
+          accepted: false // Default to not accepted since this requires manual review
+        });
+      }
+    }
+
+    // SKIP images - we never auto-import images as they're already managed
+    if (existingImages.length > 0) {
+      console.log('[RefineWithAI] Skipping images - gallery already configured:', existingImages.length);
     }
 
     return changes;
