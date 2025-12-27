@@ -76,6 +76,7 @@ export interface PageInfo {
   ctaLabel?: string | null;
   ctaIcon?: string | null;
   targetPageSlug?: string | null;
+  status?: 'draft' | 'published';
 }
 
 export async function loadPageInfo(
@@ -90,7 +91,7 @@ export async function loadPageInfo(
     // First try exact match
     let { data, error } = await supabase
       .from("page_registry")
-      .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
+      .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug, status")
       .eq("page_slug", querySlug)
       .maybeSingle();
     
@@ -99,7 +100,7 @@ export async function loadPageInfo(
       console.log('[loadPageInfo] No exact match, trying hierarchical search for:', querySlug);
       const { data: hierarchicalData, error: hierarchicalError } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
+        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug, status")
         .ilike("page_slug", `%/${querySlug}`)
         .limit(1);
       
@@ -128,6 +129,7 @@ export async function loadPageInfo(
         ctaLabel: (data as any).cta_label ?? null,
         ctaIcon: (data as any).cta_icon ?? null,
         targetPageSlug: (data as any).target_page_slug ?? null,
+        status: ((data as any).status as 'draft' | 'published') ?? 'published',
       };
     }
     
