@@ -937,9 +937,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             <FirecrawlIcon className="h-8 w-8 text-white" />
           </div>
           <div className="flex-1">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
-              <Badge variant="outline" className="text-xs text-gray-400 border-gray-600 bg-gray-800/50">
+              <Badge className="text-xs text-white border-0 bg-[#8B0000]">
                 Powered by Firecrawl
               </Badge>
             </div>
