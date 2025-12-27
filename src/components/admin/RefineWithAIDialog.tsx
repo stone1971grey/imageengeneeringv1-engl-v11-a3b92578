@@ -109,6 +109,7 @@ export const RefineWithAIDialog = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState<string | null>(null);
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   
   // Preview mode state
   const [showPreview, setShowPreview] = useState(false);
@@ -1065,9 +1066,51 @@ export const RefineWithAIDialog = ({
     </Button>
   );
 
+  // Load source URL when dialog opens
+  const loadSourceUrl = async () => {
+    const urlPatterns = [
+      `/${language}/${pageSlug}`,
+      `/${pageSlug}`,
+      `/en/${pageSlug}`,
+    ];
+    
+    for (const targetUrl of urlPatterns) {
+      const { data: redirect } = await supabase
+        .from('redirects')
+        .select('source_url')
+        .eq('target_url', targetUrl)
+        .maybeSingle();
+      
+      if (redirect?.source_url) {
+        const fullUrl = redirect.source_url.startsWith('http') 
+          ? redirect.source_url 
+          : `https://www.image-engineering.de${redirect.source_url}`;
+        setSourceUrl(fullUrl);
+        return;
+      }
+    }
+    
+    // Try LIKE search
+    const { data: redirect } = await supabase
+      .from('redirects')
+      .select('source_url')
+      .ilike('target_url', `%${pageSlug.split('/').pop()}%`)
+      .maybeSingle();
+    
+    if (redirect?.source_url) {
+      const fullUrl = redirect.source_url.startsWith('http') 
+        ? redirect.source_url 
+        : `https://www.image-engineering.de${redirect.source_url}`;
+      setSourceUrl(fullUrl);
+    } else {
+      setSourceUrl(null);
+    }
+  };
+
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) {
       setOpen(true);
+      loadSourceUrl();
     } else {
       handleClose();
     }
@@ -1111,11 +1154,32 @@ export const RefineWithAIDialog = ({
               <div className="space-y-6 py-4">
                 {/* Re-Fetch Section */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-3 mb-2">
                     <FirecrawlIcon className="h-5 w-5 text-white" />
                     <h4 className="font-semibold text-base text-white">Content Fetching</h4>
                     <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">Firecrawl</Badge>
                   </div>
+                  
+                  {/* Source URL Display */}
+                  {sourceUrl && (
+                    <div className="mb-4 p-3 rounded-md bg-gray-800/60 border border-gray-700">
+                      <p className="text-xs text-gray-400 mb-1">Source URL:</p>
+                      <a 
+                        href={sourceUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-400 hover:text-blue-300 break-all"
+                      >
+                        {sourceUrl}
+                      </a>
+                    </div>
+                  )}
+                  {!sourceUrl && (
+                    <div className="mb-4 p-3 rounded-md bg-yellow-900/20 border border-yellow-700/50">
+                      <p className="text-sm text-yellow-400">No source URL found for this page</p>
+                    </div>
+                  )}
+                  
                   <div className="space-y-3">
                     {fetchOptions.map(option => (
                       <div
