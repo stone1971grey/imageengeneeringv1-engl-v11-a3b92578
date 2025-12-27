@@ -550,31 +550,103 @@ export const RefineWithAIDialog = ({
       }
     }
     
-    // === DOWNLOADS - Only if NONE exist ===
+    // === DOWNLOADS ANALYSIS - Intelligent check ===
     if (fetchedData.downloads && Array.isArray(fetchedData.downloads) && fetchedData.downloads.length > 0) {
-      if (existingDownloads.length > 0) {
-        console.log('[RefineWithAI] SKIP downloads - ${existingDownloads.length} already configured');
+      // Check if there's already a downloads segment configured
+      const hasDownloadsSegment = existingContent?.some(item => 
+        item.section_key.toLowerCase().includes('download')
+      );
+      
+      if (hasDownloadsSegment && existingDownloads.length > 0) {
+        console.log('[RefineWithAI] SKIP downloads - segment already configured with', existingDownloads.length, 'items');
       } else {
-        changes.push({
-          id: `refetch-downloads-${Date.now()}`,
-          type: 'refetch',
-          title: 'Downloads from source',
-          description: `${fetchedData.downloads.length} download links found - REQUIRES MANUAL REVIEW`,
-          proposedValue: fetchedData.downloads.map((d: any) => `• ${d.title}: ${d.url}`).join('\n'),
-          accepted: false // Default OFF - requires manual review
-        });
+        // Check if PDFs exist in storage for this page
+        const productPath = pageSlug.replace(/\//g, '/');
+        const { data: storagePdfs } = await supabase
+          .from('file_segment_mappings')
+          .select('file_path, alt_text, segment_ids')
+          .ilike('file_path', `%${pageSlug.split('/').pop()}%`)
+          .ilike('file_path', '%.pdf');
+        
+        const pdfsInStorage = storagePdfs || [];
+        
+        console.log('[RefineWithAI] Downloads analysis:');
+        console.log('[RefineWithAI] - Fetched downloads:', fetchedData.downloads.length);
+        console.log('[RefineWithAI] - PDFs in storage:', pdfsInStorage.length);
+        console.log('[RefineWithAI] - Has downloads segment:', hasDownloadsSegment);
+        
+        if (pdfsInStorage.length > 0) {
+          // PDFs exist in storage - suggest creating a downloads segment
+          const pdfList = pdfsInStorage.map((p: any) => 
+            `• ${p.alt_text || p.file_path.split('/').pop()}`
+          ).join('\n');
+          
+          changes.push({
+            id: `refetch-downloads-segment-${Date.now()}`,
+            type: 'refetch',
+            title: 'Create Downloads Segment',
+            description: `${pdfsInStorage.length} PDFs found in Media Management - ready to link`,
+            proposedValue: `PDFs available in storage:\n${pdfList}\n\n→ Create a downloads-segment to display these documents`,
+            accepted: true
+          });
+        } else {
+          // PDFs not in storage yet - inform user to upload first
+          const pdfUrls = fetchedData.downloads
+            .filter((d: any) => d.url?.toLowerCase().includes('.pdf'))
+            .map((d: any) => `• ${d.title}: ${d.url}`)
+            .join('\n');
+          
+          if (pdfUrls) {
+            changes.push({
+              id: `refetch-downloads-upload-${Date.now()}`,
+              type: 'refetch',
+              title: 'PDFs need to be uploaded first',
+              description: `${fetchedData.downloads.length} downloads found on source - upload PDFs to Media Management first`,
+              proposedValue: `Source page has these downloads:\n${pdfUrls}\n\n⚠️ ACTION REQUIRED: Upload these PDFs to Media Management (folder: ${pageSlug}), then run "Fetch Additional Content" again to create the downloads segment.`,
+              accepted: false // Default OFF - requires manual action first
+            });
+          }
+        }
       }
     }
 
-    // === IMAGES - NEVER auto-import, they're managed separately ===
+    // === IMAGES - NEVER auto-import, they're managed in Media Management ===
+    // Images are uploaded manually and linked via file_segment_mappings
     if (existingImages.length > 0) {
-      console.log('[RefineWithAI] SKIP images - gallery already has ${existingImages.length} images');
+      console.log('[RefineWithAI] Gallery images already configured:', existingImages.length);
+    } else if (fetchedData.images && fetchedData.images.length > 0) {
+      // Check if images exist in storage but aren't linked to a segment yet
+      const { data: storageImages } = await supabase
+        .from('file_segment_mappings')
+        .select('file_path, alt_text, segment_ids')
+        .ilike('file_path', `%${pageSlug.split('/').pop()}%`)
+        .not('file_path', 'ilike', '%.pdf');
+      
+      if (storageImages && storageImages.length > 0) {
+        const unlinkedImages = storageImages.filter((img: any) => 
+          !img.segment_ids || img.segment_ids.length === 0
+        );
+        
+        if (unlinkedImages.length > 0) {
+          console.log('[RefineWithAI] Found', unlinkedImages.length, 'unlinked images in storage');
+          changes.push({
+            id: `refetch-images-link-${Date.now()}`,
+            type: 'refetch',
+            title: 'Link existing images to gallery',
+            description: `${unlinkedImages.length} images in storage are not linked to any segment`,
+            proposedValue: `Images available in storage:\n${unlinkedImages.map((i: any) => `• ${i.alt_text || i.file_path}`).join('\n')}\n\n→ These should be linked to the product-hero-gallery segment`,
+            accepted: true
+          });
+        }
+      } else {
+        console.log('[RefineWithAI] No images in storage yet - user needs to upload via Media Management');
+      }
     }
     
     // === SUMMARY ===
     console.log('[RefineWithAI] === PROPOSED CHANGES SUMMARY ===');
     console.log('[RefineWithAI] Total changes proposed:', changes.length);
-    changes.forEach(c => console.log(`[RefineWithAI] - ${c.title}`));
+    changes.forEach(c => console.log(`[RefineWithAI] - ${c.title}: ${c.description}`));
 
     return changes;
   };
