@@ -274,6 +274,50 @@ Bei Änderungen an der IE-Website-Struktur:
 
 ## 8. Verbindliche Regeln
 
+### 8.1 STRIKTE SEGMENT-REGELN
+
+**KEINE ERFUNDENEN SEGMENT-TYPEN:**
+- Es dürfen **NUR** folgende existierende Segment-Typen verwendet werden:
+  - `product-hero-gallery`
+  - `action-hero`
+  - `full-hero`
+  - `intro`
+  - `specification`
+  - `feature-overview`
+  - `faq`
+  - `table`
+  - `video`
+  - `banner-p`
+  - `downloads-segment`
+  - `events-segment`
+  - `industries-segment`
+  - `news-segment`
+  - `news-list-segment`
+  - `product-list-segment`
+  - `tiles`
+- **VERBOTEN:** Erfinden von Segment-Typen wie "banner", "banner-prototype", "image-text", oder andere nicht existierende Typen
+
+**KEINE WILLKÜRLICHEN SEGMENT-ERGÄNZUNGEN:**
+- Ein Segment darf **NUR** erstellt werden, wenn:
+  1. Es in der Quellseite entsprechenden Content gibt (z.B. Video nur wenn tatsächlich ein Video-URL gefunden wurde)
+  2. Der Benutzer es explizit angefordert hat
+- **VERBOTEN:** Hinzufügen von Placeholder-Content, Test-Videos, erfundenen URLs
+- **VERBOTEN:** "Kreatives" Ergänzen von Segmenten nach eigenem Ermessen
+
+### 8.2 CONTENT-FETCH-REGELN
+
+**NUR GEFETCHTER CONTENT:**
+- Bei Content-Import von externen Seiten wird **NUR** der tatsächlich extrahierte Content verwendet
+- **VERBOTEN:** Erfinden, Hinzufügen, oder "Verbessern" von Content der nicht in der Quelle existiert
+- **VERBOTEN:** Placeholder-URLs, Test-Daten, oder erfundene Informationen
+
+**QUELL-TREUE:**
+- Der importierte Content muss 1:1 der Quelle entsprechen
+- Formatierung und Strukturierung ist erlaubt
+- Inhaltliche Änderungen oder Ergänzungen sind **VERBOTEN**
+
+### 8.3 ALLGEMEINE PARSING-REGELN
+
 1. **NIEMALS** den Parsing-Algorithmus ohne vollständigen Trace ändern
 2. **IMMER** vor dem Import die Edge Function mit echten Daten testen
 3. **IMMER** die Logs prüfen, um die Extraktion zu verifizieren
@@ -281,8 +325,28 @@ Bei Änderungen an der IE-Website-Struktur:
 5. **IMMER** Fußnoten (`\*...`) ausschließen
 6. **IMMER** JSON-Artefakte (`{"`, `":"`, `form_id`) ausschließen
 
+### 8.4 KI-REFINE REGELN
+
+Für die "Refine with AI"-Funktion gelten zusätzlich:
+1. **NUR** existierende Segment-Typen vorschlagen (siehe Liste in 8.1)
+2. **NIEMALS** Placeholder-Content erstellen
+3. Bei "Suggest Segments" nur Typen vorschlagen, für die auch Content vorhanden ist
+4. **NIEMALS** willkürlich Videos, Bilder oder andere Medien hinzufügen
+
+---
+
+## 9. Fehlerbehebung bei falschen Segmenten
+
+Wenn ein ungültiges oder halluziniertes Segment entdeckt wird:
+
+1. Segment aus `segment_registry` löschen
+2. Zugehörigen Content aus `page_content` löschen  
+3. `tab_order` aktualisieren um das Segment zu entfernen
+4. `page_segments` JSON bereinigen falls vorhanden
+5. **NIEMALS** ein falsches Segment durch ein anderes willkürliches ersetzen
+
 ---
 
 **Erstellt:** 2025-12-26  
-**Letzte Prüfung:** 2025-12-26  
+**Letzte Prüfung:** 2025-12-27  
 **Status:** PRODUKTIONSREIF
