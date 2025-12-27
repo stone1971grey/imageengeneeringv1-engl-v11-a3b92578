@@ -771,37 +771,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         });
       }
 
-      // 8. Banner-P (CTA) Segment - Always add at the end
-      // BannerP uses: title, subtext, buttonText, buttonLink, buttonStyle
-      if (!existingSegmentTypes.has('banner-p')) {
-        const segId = nextSegmentId++;
-        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-cta-${segId}`,
-          segment_type: 'banner-p',
-          position: position++,
-        });
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'banner-p',
-          data: {
-            title: language === 'de' 
-              ? `Interesse an ${cleanTitle}?`
-              : `Interested in ${cleanTitle}?`,
-            subtext: language === 'de'
-              ? 'Kontaktieren Sie unser Expertenteam für eine individuelle Beratung und ein maßgeschneidertes Angebot.'
-              : 'Contact our expert team for personalized consultation and a tailored quote.',
-            buttonText: language === 'de' ? 'Kontakt aufnehmen' : 'Get in Touch',
-            buttonLink: '/contact',
-            buttonStyle: 'standard',
-            images: [],
-          },
-          position: position - 1,
-        });
-      }
+      // NOTE: Banner-P segment removed - does not exist in the system
 
       if (newRegistryEntries.length === 0) {
         toast.info('No new segments to import (segments already exist or none selected)');
