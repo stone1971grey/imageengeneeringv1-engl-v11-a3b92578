@@ -149,7 +149,7 @@ export const RefineWithAIDialog = ({
   // Generate preview without saving
   const handleGeneratePreview = async () => {
     if (selectedOptions.length === 0) {
-      toast.error('Bitte wähle mindestens eine Option aus');
+      toast.error('Please select at least one option');
       return;
     }
 
@@ -210,8 +210,8 @@ export const RefineWithAIDialog = ({
       }
 
       if (changes.length === 0) {
-        toast.info('Keine Änderungen vorgeschlagen', {
-          description: 'Die KI konnte keine Verbesserungen für diese Seite finden.'
+        toast.info('No changes proposed', {
+          description: 'AI could not find any improvements for this page.'
         });
         return;
       }
@@ -222,8 +222,8 @@ export const RefineWithAIDialog = ({
       
     } catch (error) {
       console.error('Preview generation error:', error);
-      toast.error('Fehler bei der Vorschau-Generierung', {
-        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      toast.error('Error generating preview', {
+        description: error instanceof Error ? error.message : 'Unknown error'
       });
     } finally {
       setIsProcessing(false);
@@ -233,37 +233,144 @@ export const RefineWithAIDialog = ({
 
   // Preview generators (return proposed changes without saving)
   const generateRefetchPreview = async (): Promise<ProposedChange[]> => {
-    const targetUrl = `/${language}/${pageSlug}`;
-    const { data: redirect } = await supabase
-      .from('redirects')
-      .select('source_url')
-      .eq('target_url', targetUrl)
-      .maybeSingle();
+    // Try multiple URL patterns to find the redirect
+    const urlPatterns = [
+      `/${language}/${pageSlug}`,
+      `/${pageSlug}`,
+      `/en/${pageSlug}`,
+    ];
+    
+    let sourceUrl: string | null = null;
+    
+    // First try exact match
+    for (const targetUrl of urlPatterns) {
+      const { data: redirect } = await supabase
+        .from('redirects')
+        .select('source_url')
+        .eq('target_url', targetUrl)
+        .maybeSingle();
+      
+      if (redirect?.source_url) {
+        sourceUrl = redirect.source_url;
+        break;
+      }
+    }
+    
+    // If no exact match, try LIKE search with pageSlug
+    if (!sourceUrl) {
+      const { data: redirect } = await supabase
+        .from('redirects')
+        .select('source_url, target_url')
+        .ilike('target_url', `%${pageSlug.split('/').pop()}%`)
+        .maybeSingle();
+      
+      if (redirect?.source_url) {
+        sourceUrl = redirect.source_url;
+        console.log('[RefineWithAI] Found redirect via LIKE search:', redirect.target_url, '->', sourceUrl);
+      }
+    }
 
-    if (!redirect?.source_url) {
+    if (!sourceUrl) {
+      console.log('[RefineWithAI] No redirect found for pageSlug:', pageSlug);
       return [];
     }
 
+    // Build full URL if relative
+    const fullUrl = sourceUrl.startsWith('http') 
+      ? sourceUrl 
+      : `https://www.image-engineering.de${sourceUrl}`;
+    
+    console.log('[RefineWithAI] Fetching content from:', fullUrl);
+
     const { data, error } = await supabase.functions.invoke('fetch-external-content', {
-      body: { url: redirect.source_url }
+      body: { url: fullUrl }
     });
 
-    if (error || !data) return [];
+    if (error) {
+      console.error('[RefineWithAI] Fetch error:', error);
+      return [];
+    }
+    
+    if (!data) {
+      console.log('[RefineWithAI] No data returned from fetch');
+      return [];
+    }
+
+    console.log('[RefineWithAI] Fetched data:', {
+      hasDescription: !!data.description,
+      descriptionLength: data.description?.length,
+      hasBenefits: !!data.benefits,
+      benefitsCount: data.benefits?.length,
+      hasSpecifications: !!data.specifications,
+      specificationsCount: data.specifications?.length,
+      hasDownloads: !!data.downloads,
+      downloadsCount: data.downloads?.length,
+    });
 
     // Parse the fetched content and create proposed changes
     const changes: ProposedChange[] = [];
     
-    if (data.content) {
+    // Add description if available
+    if (data.description && data.description.length > 50) {
       changes.push({
-        id: `refetch-${Date.now()}`,
+        id: `refetch-desc-${Date.now()}`,
         type: 'refetch',
-        title: 'Zusätzlicher Content von Originalseite',
-        description: 'Neuer Content wurde von der Originalseite extrahiert',
-        proposedValue: typeof data.content === 'string' 
-          ? data.content.substring(0, 500) + '...' 
-          : JSON.stringify(data.content).substring(0, 500) + '...',
+        title: 'Additional content from source page',
+        description: 'Text content extracted from the original page',
+        proposedValue: data.description,
         accepted: true
       });
+    }
+    
+    // Add benefits if available
+    if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0) {
+      changes.push({
+        id: `refetch-benefits-${Date.now()}`,
+        type: 'refetch',
+        title: 'Key benefits from source',
+        description: `${data.benefits.length} benefits extracted`,
+        proposedValue: data.benefits.map((b: string) => `• ${b}`).join('\n'),
+        accepted: true
+      });
+    }
+    
+    // Add specifications if available
+    if (data.specifications && Array.isArray(data.specifications) && data.specifications.length > 0) {
+      changes.push({
+        id: `refetch-specs-${Date.now()}`,
+        type: 'refetch',
+        title: 'Technical specifications from source',
+        description: `${data.specifications.length} specifications found`,
+        proposedValue: data.specifications.map((s: any) => `${s.name}: ${s.value}`).join('\n'),
+        accepted: true
+      });
+    }
+    
+    // Add downloads if available
+    if (data.downloads && Array.isArray(data.downloads) && data.downloads.length > 0) {
+      changes.push({
+        id: `refetch-downloads-${Date.now()}`,
+        type: 'refetch',
+        title: 'Downloads from source',
+        description: `${data.downloads.length} download links found`,
+        proposedValue: data.downloads.map((d: any) => `• ${d.title}: ${d.url}`).join('\n'),
+        accepted: true
+      });
+    }
+
+    // Fallback: if we have raw content but nothing structured
+    if (changes.length === 0 && data.content) {
+      const content = typeof data.content === 'string' ? data.content : JSON.stringify(data.content);
+      if (content.length > 100) {
+        changes.push({
+          id: `refetch-raw-${Date.now()}`,
+          type: 'refetch',
+          title: 'Raw content from source page',
+          description: 'Unstructured content was extracted',
+          proposedValue: content.substring(0, 1000) + (content.length > 1000 ? '...' : ''),
+          accepted: true
+        });
+      }
     }
 
     return changes;
@@ -420,8 +527,8 @@ export const RefineWithAIDialog = ({
     const acceptedChanges = proposedChanges.filter(c => c.accepted);
     
     if (acceptedChanges.length === 0) {
-      toast.error('Keine Änderungen ausgewählt', {
-        description: 'Bitte akzeptiere mindestens eine Änderung.'
+      toast.error('No changes selected', {
+        description: 'Please accept at least one change.'
       });
       return;
     }
@@ -610,8 +717,8 @@ export const RefineWithAIDialog = ({
         }
       }
 
-      toast.success('Änderungen übernommen!', {
-        description: `${acceptedChanges.length} Änderung(en) wurden gespeichert.`
+      toast.success('Changes applied!', {
+        description: `${acceptedChanges.length} change(s) have been saved.`
       });
       
       setOpen(false);
@@ -622,8 +729,8 @@ export const RefineWithAIDialog = ({
       
     } catch (error) {
       console.error('Apply changes error:', error);
-      toast.error('Fehler beim Speichern', {
-        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      toast.error('Error saving changes', {
+        description: error instanceof Error ? error.message : 'Unknown error'
       });
     } finally {
       setIsApplying(false);
