@@ -442,6 +442,7 @@ export const RefineWithAIDialog = ({
     const changes: ProposedChange[] = [];
     
     // === DESCRIPTION ANALYSIS ===
+    // Always propose new text content if there are ANY new phrases
     if (fetchedData.description && fetchedData.description.length > 50) {
       const fetchedPhrases = extractKeyPhrases(fetchedData.description);
       const existingPhrases = extractKeyPhrases(existingDescription);
@@ -454,22 +455,27 @@ export const RefineWithAIDialog = ({
         )
       );
       
-      const coverageRatio = 1 - (newPhrases.length / Math.max(fetchedPhrases.length, 1));
+      const coverageRatio = existingPhrases.length > 0 
+        ? 1 - (newPhrases.length / Math.max(fetchedPhrases.length, 1))
+        : 0;
       console.log('[RefineWithAI] Description coverage:', Math.round(coverageRatio * 100) + '%');
-      console.log('[RefineWithAI] New phrases found:', newPhrases.length);
+      console.log('[RefineWithAI] New phrases found:', newPhrases.length, 'of', fetchedPhrases.length);
       
-      // Only suggest if we have significant new content (less than 70% overlap)
-      if (coverageRatio < 0.7 && newPhrases.length > 0) {
+      // Suggest if we have ANY new content (not already covered)
+      if (newPhrases.length > 0) {
+        // Build the actual new text from new phrases only
+        const newTextContent = newPhrases.join('. ');
         changes.push({
           id: `refetch-desc-${Date.now()}`,
           type: 'refetch',
-          title: 'Additional description content',
-          description: `${newPhrases.length} new text sections found (${Math.round(coverageRatio * 100)}% existing coverage)`,
-          proposedValue: fetchedData.description,
+          title: 'Zusätzlicher Textinhalt',
+          description: `${newPhrases.length} neue Textabschnitte gefunden (${Math.round(coverageRatio * 100)}% bereits vorhanden)`,
+          proposedValue: newTextContent,
+          originalValue: existingDescription.length > 0 ? `Bereits vorhanden: ${existingDescription.substring(0, 200)}...` : undefined,
           accepted: true
         });
       } else {
-        console.log('[RefineWithAI] Skipping description - sufficient content already exists');
+        console.log('[RefineWithAI] Skipping description - all content already exists');
       }
     }
     
