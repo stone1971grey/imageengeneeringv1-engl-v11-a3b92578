@@ -44,7 +44,8 @@ import {
   Layers,
   Plus,
   ExternalLink,
-  CheckCircle
+  CheckCircle,
+  Clock
 } from 'lucide-react';
 
 interface RefineWithAIDialogProps {
@@ -566,12 +567,17 @@ ${rawText}`
 
             await supabase
               .from('page_content')
-              .update({ content_value: updatedValue })
+              .update({ 
+                content_value: updatedValue,
+                content_status: 'pending',
+                import_stage: 2,
+                draft_value: updatedValue
+              })
               .eq('page_slug', pageSlug)
               .eq('section_key', segmentKey)
               .eq('language', language);
               
-            console.log('[RefineWithAI] Updated segment:', segmentKey);
+            console.log('[RefineWithAI] Updated segment with pending status:', segmentKey);
           }
         } else if (block.isNew) {
           // CREATE new segment
@@ -653,10 +659,13 @@ ${rawText}`
               section_key: segmentKey,
               language,
               content_type: 'json',
-              content_value: JSON.stringify(contentValue)
+              content_value: JSON.stringify(contentValue),
+              content_status: 'pending',
+              import_stage: 2,
+              draft_value: JSON.stringify(contentValue)
             });
 
-          console.log('[RefineWithAI] Created new segment:', segmentKey);
+          console.log('[RefineWithAI] Created new segment with pending status:', segmentKey);
         }
 
         // Track result
@@ -852,13 +861,27 @@ ${rawText}`
           <>
             <ScrollArea className="flex-1 pr-4">
               <div className="space-y-4 py-4">
+                {/* Info banner about approval */}
+                <div className="rounded-lg border border-orange-700/50 bg-orange-900/20 p-4 mb-4">
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-5 w-5 text-orange-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-orange-300 font-medium">Freigabe erforderlich</p>
+                      <p className="text-xs text-orange-400/80 mt-1">
+                        Die Inhalte wurden als "Pending" gespeichert. Öffne das Frontend im Edit-Modus, 
+                        um die Änderungen zu überprüfen und freizugeben.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
                 {appliedResults.map((result, index) => (
                   <div 
                     key={index}
-                    className="rounded-lg border border-green-700/50 bg-green-900/20 p-4"
+                    className="rounded-lg border border-orange-700/50 bg-orange-900/10 p-4"
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <Clock className="h-5 w-5 text-orange-400" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-white">
@@ -867,15 +890,13 @@ ${rawText}`
                              result.segmentType === 'specification' ? 'Specification' :
                              result.segmentType === 'banner-p' ? 'Banner' : result.segmentType}
                           </span>
+                          <Badge className="text-xs bg-orange-900/50 text-orange-300 border-orange-700">
+                            Pending
+                          </Badge>
                           {result.isNew && (
                             <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">
                               <Plus className="h-3 w-3 mr-1" />
-                              Neu erstellt
-                            </Badge>
-                          )}
-                          {!result.isNew && (
-                            <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">
-                              Ergänzt
+                              Neu
                             </Badge>
                           )}
                         </div>
@@ -891,9 +912,9 @@ ${rawText}`
             </ScrollArea>
 
             <div className="flex justify-between items-center pt-4 border-t border-gray-700">
-              <div className="text-sm text-green-400 flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Alle Änderungen wurden gespeichert
+              <div className="text-sm text-orange-400 flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                {appliedResults.length} Segment(e) warten auf Freigabe
               </div>
               <div className="flex gap-3">
                 <Button 

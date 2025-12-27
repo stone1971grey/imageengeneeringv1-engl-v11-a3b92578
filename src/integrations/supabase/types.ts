@@ -215,6 +215,7 @@ export type Database = {
       editor_page_access: {
         Row: {
           created_at: string | null
+          frontend_editing_enabled: boolean | null
           id: string
           language_code: string | null
           page_slug: string
@@ -222,6 +223,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          frontend_editing_enabled?: boolean | null
           id?: string
           language_code?: string | null
           page_slug: string
@@ -229,6 +231,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          frontend_editing_enabled?: boolean | null
           id?: string
           language_code?: string | null
           page_slug?: string
@@ -618,9 +621,14 @@ export type Database = {
       }
       page_content: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          content_status: string
           content_type: string
           content_value: string
+          draft_value: string | null
           id: string
+          import_stage: number | null
           language: string
           page_slug: string
           section_key: string
@@ -628,9 +636,14 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content_status?: string
           content_type: string
           content_value: string
+          draft_value?: string | null
           id?: string
+          import_stage?: number | null
           language?: string
           page_slug: string
           section_key: string
@@ -638,9 +651,14 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          content_status?: string
           content_type?: string
           content_value?: string
+          draft_value?: string | null
           id?: string
+          import_stage?: number | null
           language?: string
           page_slug?: string
           section_key?: string
