@@ -1519,10 +1519,10 @@ const DynamicCMSPage = () => {
       {/* Draft Preview Banner - shown only to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {isDraftPage && currentUser && userRole && (
-        <div className="fixed top-[110px] left-0 right-0 z-40 bg-amber-500 text-black py-2 px-4 shadow-md">
-          <div className="container mx-auto flex items-center justify-center gap-3">
-            <Eye className="h-4 w-4" />
-            <span className="font-medium">Draft Preview</span>
+        <div className="fixed top-[110px] left-0 right-0 z-40 bg-amber-500 text-black py-4 px-4 shadow-md">
+          <div className="container mx-auto flex items-center justify-center gap-4">
+            <Eye className="h-5 w-5" />
+            <span className="font-semibold text-base">Draft Preview</span>
             <span className="text-black">—</span>
             <span className="text-sm text-black">
               This page is not published. Only admins and editors can see this preview.
@@ -1531,7 +1531,7 @@ const DynamicCMSPage = () => {
               pageSlug={pageSlug}
               language={currentUrlLanguage as 'en' | 'de' | 'ja' | 'ko' | 'zh'}
               variant="compact"
-              className="ml-2"
+              className="ml-3"
               onRefineComplete={() => {
                 // Reload the page to show updated content
                 window.location.reload();
@@ -1539,7 +1539,7 @@ const DynamicCMSPage = () => {
             />
             <Link
               to="/admin"
-              className="ml-2 h-7 px-3 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="ml-2 h-9 px-4 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Edit in Admin Dashboard
             </Link>
