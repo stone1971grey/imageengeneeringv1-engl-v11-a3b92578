@@ -553,6 +553,53 @@ export const RefineWithAIDialog = ({
             }
             break;
 
+          case 'refetch':
+            // APPEND re-fetched content to existing intro/description instead of replacing
+            const { data: introSegment } = await supabase
+              .from('page_content')
+              .select('content_value, section_key')
+              .eq('page_slug', pageSlug)
+              .eq('language', language)
+              .or('section_key.ilike.%intro%,section_key.ilike.%description%')
+              .limit(1)
+              .maybeSingle();
+
+            if (introSegment?.content_value) {
+              try {
+                const existingContent = JSON.parse(introSegment.content_value);
+                // Append new content as additional paragraph
+                if (existingContent.description) {
+                  existingContent.description = existingContent.description + '\n\n' + change.proposedValue;
+                } else if (existingContent.text) {
+                  existingContent.text = existingContent.text + '\n\n' + change.proposedValue;
+                } else {
+                  // If no description/text field, add it
+                  existingContent.additionalContent = (existingContent.additionalContent || '') + '\n\n' + change.proposedValue;
+                }
+
+                await supabase
+                  .from('page_content')
+                  .update({ content_value: JSON.stringify(existingContent) })
+                  .eq('page_slug', pageSlug)
+                  .eq('section_key', introSegment.section_key)
+                  .eq('language', language);
+                  
+                console.log('Re-fetched content appended to:', introSegment.section_key);
+              } catch {
+                // Plain text fallback
+                const appendedValue = introSegment.content_value + '\n\n' + change.proposedValue;
+                await supabase
+                  .from('page_content')
+                  .update({ content_value: appendedValue })
+                  .eq('page_slug', pageSlug)
+                  .eq('section_key', introSegment.section_key)
+                  .eq('language', language);
+              }
+            } else {
+              console.log('No intro segment found to append re-fetched content');
+            }
+            break;
+
           case 'segment-suggestion':
             // Segment suggestions are informational
             console.log('Segment suggestion:', change.title);
