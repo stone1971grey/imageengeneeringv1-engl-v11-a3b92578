@@ -62,6 +62,10 @@ const SOURCE_URL_MAPPING: Record<string, LanguageUrls> = {
     default: 'https://www.image-engineering.de/products/equipment/illumination-devices/vega',
     de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/vega',
   },
+  'products/illumination-devices/octa-light-player': {
+    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1388-octa-light-player',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1388-octa-light-player',
+  },
   'products/lightboxes/le7': {
     default: 'https://www.image-engineering.de/products/equipment/lightboxes/le7',
     de: 'https://www.image-engineering.de/de/produkte/equipment/lightboxes/le7',
