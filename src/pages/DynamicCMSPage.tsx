@@ -25,6 +25,7 @@ import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
+import { RefineWithAIDialog } from "@/components/admin/RefineWithAIDialog";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -1525,9 +1526,19 @@ const DynamicCMSPage = () => {
             <span className="text-sm text-amber-100">
               This page is not published. Only admins and editors can see this preview.
             </span>
+            <RefineWithAIDialog
+              pageSlug={pageSlug}
+              language={currentUrlLanguage as 'en' | 'de' | 'ja' | 'ko' | 'zh'}
+              variant="compact"
+              className="ml-2"
+              onRefineComplete={() => {
+                // Reload the page to show updated content
+                window.location.reload();
+              }}
+            />
             <Link
               to="/admin"
-              className="ml-4 px-3 py-1 bg-white text-amber-600 rounded text-sm font-medium hover:bg-amber-50 transition-colors"
+              className="ml-2 px-3 py-1 bg-white text-amber-600 rounded text-sm font-medium hover:bg-amber-50 transition-colors"
             >
               Edit in Admin
             </Link>

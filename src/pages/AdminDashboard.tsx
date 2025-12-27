@@ -79,6 +79,7 @@ import { createContentBackup, createMultipleBackups } from '@/utils/createConten
 import { VersionHistoryPanel } from '@/components/admin/VersionHistoryPanel';
 import { SegmentHistoryButton } from '@/components/admin/SegmentHistoryButton';
 import { ContentAutomation } from '@/components/admin/ContentAutomation';
+import { RefineWithAIDialog } from '@/components/admin/RefineWithAIDialog';
 import { TemplateSelectionDialog } from '@/components/admin/dashboard/TemplateSelectionDialog';
 import { WelcomeTab } from '@/components/admin/dashboard/WelcomeTab';
 import { AdminHeader } from '@/components/admin/dashboard/AdminHeader';
@@ -1562,6 +1563,17 @@ const AdminDashboard = () => {
                 setIsContentAutomationOpen(false);
               }}
             />
+            {/* Refine with AI Button - shown alongside Content Automation */}
+            <div className="mt-4 pt-4 border-t border-gray-700 flex items-center gap-3">
+              <span className="text-sm text-gray-400">Bereits importierte Inhalte verfeinern:</span>
+              <RefineWithAIDialog
+                pageSlug={resolvedPageSlug || selectedPage}
+                language={editorLanguage}
+                onRefineComplete={() => {
+                  loadContent();
+                }}
+              />
+            </div>
           </div>
         )}
 
