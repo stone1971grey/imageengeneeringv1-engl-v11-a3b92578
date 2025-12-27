@@ -1091,6 +1091,31 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           </div>
         </div>
 
+        {/* Phase 2: Refine with AI */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
+              2
+            </div>
+            <h3 className="text-white font-semibold">Refine with AI</h3>
+            <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Optional</Badge>
+          </div>
+          
+          <div className="flex items-start gap-4 pl-10">
+            <GeminiIcon className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-400 text-sm">
+                Use AI to expand texts, generate FAQs, optimize SEO, or suggest additional segments.
+              </p>
+            </div>
+            <RefineWithAIDialog 
+              pageSlug={pageSlug} 
+              language={language} 
+              onRefineComplete={onImportComplete}
+              variant="compact"
+            />
+          </div>
+        </div>
 
         {/* Parsed Content Preview */}
         {parsedContent && (
