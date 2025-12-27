@@ -101,8 +101,9 @@ const Navigation = () => {
     const loadStyleguidePages = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, page_title, parent_slug, page_id, position')
+        .select('page_slug, page_title, parent_slug, page_id, position, status')
         .ilike('page_slug', 'styleguide%')
+        .eq('status', 'published') // Only show published pages in navigation
         .order('position', { ascending: true }); // Sort by position (drag & drop order)
 
       if (!error && data) {
@@ -135,8 +136,9 @@ const Navigation = () => {
     const loadDesignIcons = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, design_icon')
-        .not('design_icon', 'is', null);
+        .select('page_slug, design_icon, status')
+        .not('design_icon', 'is', null)
+        .eq('status', 'published'); // Only show published pages in navigation
 
       if (error) {
         console.error('Error loading design icons:', error);
@@ -160,8 +162,9 @@ const Navigation = () => {
     const loadFlyoutData = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, flyout_image_url, flyout_description, flyout_description_translations')
-        .not('flyout_image_url', 'is', null);
+        .select('page_slug, flyout_image_url, flyout_description, flyout_description_translations, status')
+        .not('flyout_image_url', 'is', null)
+        .eq('status', 'published'); // Only show published pages in navigation
 
       if (error) {
         console.error('Error loading flyout data:', error);
@@ -197,8 +200,9 @@ const Navigation = () => {
     const loadCtaConfig = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, cta_group, cta_label, cta_icon')
-        .not('cta_group', 'is', null);
+        .select('page_slug, cta_group, cta_label, cta_icon, status')
+        .not('cta_group', 'is', null)
+        .eq('status', 'published'); // Only show published pages in navigation
 
       if (error) {
         console.error('Error loading CTA config:', error);

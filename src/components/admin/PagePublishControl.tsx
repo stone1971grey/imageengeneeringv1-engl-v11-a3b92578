@@ -117,8 +117,8 @@ export const PagePublishControl = ({
           
           <AlertDialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
             <AlertDialogTrigger asChild>
-              <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700">
-                <Send className="h-3 w-3" />
+              <Button size="sm" className="gap-1 h-7 bg-green-600 text-white border-0 hover:bg-green-700">
+                <Send className="h-3 w-3 text-white" />
                 Publish
               </Button>
             </AlertDialogTrigger>
