@@ -28,6 +28,43 @@ import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
 import { removeBackground, loadImageFromFile, loadImageFromUrl } from "@/utils/removeImageBackground";
 
+// Helper function to fetch storage metadata for an image URL
+const fetchStorageMetadata = async (imageUrl: string): Promise<Partial<ImageMetadata>> => {
+  try {
+    // Extract file path from public URL
+    // URL format: https://xxx.supabase.co/storage/v1/object/public/page-images/path/to/file.png
+    const urlParts = imageUrl.split('/storage/v1/object/public/page-images/');
+    if (urlParts.length < 2) return {};
+    
+    const filePath = urlParts[1];
+    const pathParts = filePath.split('/');
+    const fileName = pathParts.pop() || '';
+    const folderPath = pathParts.join('/');
+    
+    // List files in the folder to get metadata
+    const { data: files, error } = await supabase.storage
+      .from('page-images')
+      .list(folderPath, { search: fileName });
+    
+    if (error || !files || files.length === 0) return {};
+    
+    const file = files.find(f => f.name === fileName);
+    if (!file) return {};
+    
+    const fileExtension = fileName.split('.').pop()?.toUpperCase() || '';
+    
+    return {
+      originalFileName: fileName,
+      fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+      format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
+      uploadDate: file.created_at || new Date().toISOString(),
+    };
+  } catch (error) {
+    console.error('[PHG Editor] Error fetching storage metadata:', error);
+    return {};
+  }
+};
+
 interface ProductImage {
   imageUrl: string;
   title: string;
@@ -244,16 +281,30 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           // Update ONLY local state - do NOT call onChange to avoid parent state contamination
           const loadedData = gallerySegment.data;
           
-          // Load alt text from file_segment_mappings for each image
+          // Load alt text and storage metadata for each image
           if (loadedData.images && loadedData.images.length > 0) {
-            const imagesWithAltText = await Promise.all(
+            const imagesWithMetadata = await Promise.all(
               loadedData.images.map(async (img: ProductImage) => {
                 if (img.imageUrl) {
+                  // Load alt text from mapping
                   const altText = await loadAltTextFromMapping(img.imageUrl, 'page-images');
+                  
+                  // Fetch storage metadata if not already present
+                  let storageMetadata: Partial<ImageMetadata> = {};
+                  if (!img.metadata?.fileSizeKB || !img.metadata?.uploadDate) {
+                    storageMetadata = await fetchStorageMetadata(img.imageUrl);
+                  }
+                  
                   return {
                     ...img,
                     metadata: {
-                      ...img.metadata,
+                      url: img.imageUrl,
+                      originalFileName: img.metadata?.originalFileName || storageMetadata.originalFileName || img.imageUrl.split('/').pop() || '',
+                      width: img.metadata?.width || 0,
+                      height: img.metadata?.height || 0,
+                      fileSizeKB: img.metadata?.fileSizeKB || storageMetadata.fileSizeKB || 0,
+                      format: img.metadata?.format || storageMetadata.format || img.imageUrl.split('.').pop()?.toUpperCase() || '',
+                      uploadDate: img.metadata?.uploadDate || storageMetadata.uploadDate || '',
                       altText: altText || img.metadata?.altText || ''
                     }
                   };
@@ -261,7 +312,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 return img;
               })
             );
-            loadedData.images = imagesWithAltText;
+            loadedData.images = imagesWithMetadata;
           }
           
           setLocalData(loadedData);
@@ -304,16 +355,29 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 // Update ONLY local state - do NOT call onChange
                 const fallbackData = enGallerySegment.data;
                 
-                // Load alt text from file_segment_mappings for each image
+                // Load alt text and storage metadata for each image
                 if (fallbackData.images && fallbackData.images.length > 0) {
-                  const imagesWithAltText = await Promise.all(
+                  const imagesWithMetadata = await Promise.all(
                     fallbackData.images.map(async (img: ProductImage) => {
                       if (img.imageUrl) {
                         const altText = await loadAltTextFromMapping(img.imageUrl, 'page-images');
+                        
+                        // Fetch storage metadata if not already present
+                        let storageMetadata: Partial<ImageMetadata> = {};
+                        if (!img.metadata?.fileSizeKB || !img.metadata?.uploadDate) {
+                          storageMetadata = await fetchStorageMetadata(img.imageUrl);
+                        }
+                        
                         return {
                           ...img,
                           metadata: {
-                            ...img.metadata,
+                            url: img.imageUrl,
+                            originalFileName: img.metadata?.originalFileName || storageMetadata.originalFileName || img.imageUrl.split('/').pop() || '',
+                            width: img.metadata?.width || 0,
+                            height: img.metadata?.height || 0,
+                            fileSizeKB: img.metadata?.fileSizeKB || storageMetadata.fileSizeKB || 0,
+                            format: img.metadata?.format || storageMetadata.format || img.imageUrl.split('.').pop()?.toUpperCase() || '',
+                            uploadDate: img.metadata?.uploadDate || storageMetadata.uploadDate || '',
                             altText: altText || img.metadata?.altText || ''
                           }
                         };
@@ -321,7 +385,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                       return img;
                     })
                   );
-                  fallbackData.images = imagesWithAltText;
+                  fallbackData.images = imagesWithMetadata;
                 }
                 
                 setLocalData(fallbackData);
