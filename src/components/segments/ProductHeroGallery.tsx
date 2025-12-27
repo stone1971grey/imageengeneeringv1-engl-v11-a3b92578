@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
+import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableImage } from '@/components/frontend-edit/EditableImage';
 
 interface ImageMetadata {
   url?: string;
@@ -44,21 +47,34 @@ interface ProductHeroGalleryProps {
     cta2Style: 'standard' | 'technical' | 'outline-white';
     images: ProductImage[];
   };
+  segmentKey?: string;
+  pageSlug?: string;
+  language?: string;
+  onContentUpdate?: () => void;
 }
 
-const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHeroGalleryProps) => {
+const ProductHeroGallery = ({ 
+  id, 
+  hasMetaNavigation = false, 
+  data,
+  segmentKey = '',
+  pageSlug = '',
+  language = 'en',
+  onContentUpdate
+}: ProductHeroGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  
+  const segmentEdit = useSegmentEdit();
+  const isEditing = segmentEdit?.isSegmentEditing || false;
 
   const imagePosition = data.imagePosition || 'right';
   const layoutRatio = data.layoutRatio || '1-1';
   const topSpacing = data.topSpacing || 'medium';
-  // Global fallback settings
   const globalMaxWidth = data.imageMaxWidth || null;
   const globalMaxHeight = data.imageMaxHeight || null;
 
-  // Get current image's size constraints (individual or fallback to global)
   const getCurrentImageStyle = (): React.CSSProperties => {
     const currentImage = data.images[currentImageIndex];
     const maxWidth = currentImage?.maxWidth ?? globalMaxWidth;
@@ -76,9 +92,6 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
     return maxWidth || maxHeight;
   };
 
-  // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
-  // Meta Navigation (wenn vorhanden) ist ~60px hoch
-  // Reduziertes Top-Spacing: small = 40px, medium = 60px, large = 80px, extra-large = 100px (80px weniger)
   const getTopPaddingClass = () => {
     switch (topSpacing) {
       case 'small': return hasMetaNavigation ? 'pt-[100px]' : 'pt-[40px]';
@@ -116,29 +129,19 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   };
 
   const isExternalLink = (link: string): boolean => {
-    // Check if it starts with protocol
     if (link.startsWith('http://') || link.startsWith('https://')) return true;
-    
-    // Check if it starts with www.
     if (link.startsWith('www.')) return true;
-    
-    // Check if it contains a TLD pattern (e.g., example.com, example.de)
-    // Must not start with / (internal route) or # (anchor)
     if (!link.startsWith('/') && !link.startsWith('#')) {
       const tldPattern = /\.[a-z]{2,}$/i;
       return tldPattern.test(link);
     }
-    
     return false;
   };
 
   const normalizeExternalLink = (link: string): string => {
-    // If already has protocol, return as-is
     if (link.startsWith('http://') || link.startsWith('https://')) {
       return link;
     }
-    
-    // Add https:// for www. or domain.tld links
     return `https://${link}`;
   };
 
@@ -187,16 +190,55 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   const textContent = (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
-          {data.title}
-          <br />
-          <span className="font-medium text-gray-900">{data.subtitle}</span>
-        </h1>
-        
-        <div 
-          className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
-          dangerouslySetInnerHTML={{ __html: data.description }}
-        />
+        {isEditing ? (
+          <>
+            <div className="mb-6">
+              <EditableText
+                value={data.title}
+                sectionKey={`${segmentKey}-title`}
+                pageSlug={pageSlug}
+                language={language}
+                className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight text-gray-900"
+                as="span"
+                onUpdate={onContentUpdate}
+              />
+              <br />
+              <EditableText
+                value={data.subtitle}
+                sectionKey={`${segmentKey}-subtitle`}
+                pageSlug={pageSlug}
+                language={language}
+                className="text-5xl lg:text-6xl xl:text-7xl font-medium leading-[1.05] tracking-tight text-gray-900"
+                as="span"
+                onUpdate={onContentUpdate}
+              />
+            </div>
+            
+            <EditableText
+              value={data.description}
+              sectionKey={`${segmentKey}-description`}
+              pageSlug={pageSlug}
+              language={language}
+              className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl"
+              as="div"
+              multiline
+              onUpdate={onContentUpdate}
+            />
+          </>
+        ) : (
+          <>
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
+              {data.title}
+              <br />
+              <span className="font-medium text-gray-900">{data.subtitle}</span>
+            </h1>
+            
+            <div 
+              className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
+              dangerouslySetInnerHTML={{ __html: data.description }}
+            />
+          </>
+        )}
       </div>
       
       <div className="pt-4 flex gap-4">
@@ -210,30 +252,57 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
     <div className="relative">
       <div 
         className="relative group cursor-pointer" 
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => !isEditing && setIsModalOpen(true)}
         style={hasCurrentImageSizeConstraints() ? { display: 'flex', justifyContent: 'center' } : {}}
       >
-        <img 
-          src={data.images[currentImageIndex]?.imageUrl} 
-          alt={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || data.title}
-          className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
-          style={getCurrentImageStyle()}
-        />
-        
-        {/* Expand Icon Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
-            <Expand className="w-6 h-6 text-light-foreground" />
-          </div>
-        </div>
+        {isEditing ? (
+          <EditableImage
+            src={data.images[currentImageIndex]?.imageUrl}
+            alt={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || data.title}
+            sectionKey={`${segmentKey}-image-${currentImageIndex}`}
+            pageSlug={pageSlug}
+            language={language}
+            className="w-full"
+            imgClassName="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
+            onUpdate={onContentUpdate}
+          />
+        ) : (
+          <>
+            <img 
+              src={data.images[currentImageIndex]?.imageUrl} 
+              alt={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || data.title}
+              className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
+              style={getCurrentImageStyle()}
+            />
+            
+            {/* Expand Icon Overlay */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
+                <Expand className="w-6 h-6 text-light-foreground" />
+              </div>
+            </div>
+          </>
+        )}
       </div>
       
-      {/* Image Title - from Alt Text (zwischen Bild und Thumbnails) */}
+      {/* Image Title */}
       {(data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title) && (
         <div className="text-center mt-3">
-          <h4 className="font-medium text-light-foreground text-sm lg:text-base">
-            {data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title}
-          </h4>
+          {isEditing ? (
+            <EditableText
+              value={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || ''}
+              sectionKey={`${segmentKey}-image-title-${currentImageIndex}`}
+              pageSlug={pageSlug}
+              language={language}
+              className="font-medium text-light-foreground text-sm lg:text-base"
+              as="h4"
+              onUpdate={onContentUpdate}
+            />
+          ) : (
+            <h4 className="font-medium text-light-foreground text-sm lg:text-base">
+              {data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title}
+            </h4>
+          )}
         </div>
       )}
       
