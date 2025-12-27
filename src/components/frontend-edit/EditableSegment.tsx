@@ -1,11 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { ApprovalBadge } from './ApprovalBadge';
 import { ApproveButton } from './ApproveButton';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Check, X, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface EditableSegmentProps {
   children: React.ReactNode;
@@ -36,18 +35,32 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
     return <>{children}</>;
   }
 
-  const { isEditMode, canEdit, canApprove, isAdmin, userId } = editContext;
+  const { isEditMode, canEdit, canApprove } = editContext;
 
   // If not in edit mode, just render children normally
   if (!isEditMode) {
     return <>{children}</>;
   }
 
-  const showApprovalBadge = contentStatus !== 'approved' || importStage > 1;
   const needsApproval = contentStatus === 'pending' || contentStatus === 'draft';
+  const isStage2 = importStage >= 2;
+  const showIndicator = needsApproval || isStage2;
 
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
+  // Get border color based on status
+  const getBorderColor = () => {
+    if (contentStatus === 'draft') return 'border-l-yellow-400';
+    if (contentStatus === 'pending') return 'border-l-orange-400';
+    if (isStage2) return 'border-l-blue-400';
+    return 'border-l-transparent';
+  };
+
+  // Get status label
+  const getStatusLabel = () => {
+    if (contentStatus === 'draft') return 'Entwurf';
+    if (contentStatus === 'pending') return 'Wartet auf Freigabe';
+    if (isStage2) return 'Stage 2 Import';
+    return null;
+  };
 
   const handleApproved = () => {
     onContentUpdate?.();
@@ -57,64 +70,106 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
     onContentUpdate?.();
   };
 
+  // Extract clean segment name from key (e.g., "intro-549" -> "Intro")
+  const getSegmentDisplayName = () => {
+    const baseName = segmentKey.split('-')[0];
+    return baseName.charAt(0).toUpperCase() + baseName.slice(1);
+  };
+
   return (
     <div 
       className={cn(
-        "relative group transition-all",
-        isEditMode && "cursor-pointer",
-        isHovered && isEditMode && "ring-2 ring-blue-500/50 ring-offset-2 ring-offset-background rounded-lg",
+        "relative transition-all duration-200",
+        showIndicator && "border-l-4 pl-4",
+        getBorderColor(),
+        isHovered && isEditMode && "bg-gray-900/5 dark:bg-white/5 rounded-r-lg",
         className
       )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Edit Mode Overlay */}
-      {isEditMode && isHovered && (
-        <div className="absolute -top-12 left-0 right-0 z-50 flex items-center justify-between bg-gray-900/95 backdrop-blur-sm rounded-t-lg px-4 py-2 border border-gray-700 border-b-0">
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400 font-mono">{segmentKey}</span>
-            {showApprovalBadge && (
-              <ApprovalBadge 
-                status={contentStatus} 
-                importStage={importStage} 
-              />
-            )}
+      {/* Corner Badge - always visible when there's status to show */}
+      {showIndicator && (
+        <div className="absolute -top-2 -left-1 z-20">
+          <div className={cn(
+            "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium shadow-lg",
+            contentStatus === 'draft' && "bg-yellow-500 text-yellow-950",
+            contentStatus === 'pending' && "bg-orange-500 text-orange-950",
+            isStage2 && contentStatus === 'approved' && "bg-blue-500 text-blue-950"
+          )}>
+            {isStage2 && <Layers className="h-3 w-3" />}
+            <span>{getStatusLabel()}</span>
           </div>
-          
-          <div className="flex items-center gap-2">
+        </div>
+      )}
+
+      {/* Floating Action Bar - appears on hover, positioned at top-right corner */}
+      {isEditMode && isHovered && (
+        <div className="absolute -top-3 right-4 z-30 flex items-center gap-2">
+          {/* Segment Info Pill */}
+          <div className="flex items-center gap-2 bg-gray-800/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg border border-gray-600">
+            <span className="text-xs text-gray-300 font-medium">{getSegmentDisplayName()}</span>
+            <span className="text-xs text-gray-500 font-mono">{segmentKey}</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1 bg-gray-800/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg border border-gray-600">
             {canEdit && (
-              <button className="text-blue-400 hover:text-blue-300 p-1">
-                <Edit3 className="h-4 w-4" />
-              </button>
+              <Button 
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0 rounded-full text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // TODO: Trigger inline edit mode
+                  console.log('Edit clicked for:', segmentKey);
+                }}
+              >
+                <Edit3 className="h-3.5 w-3.5" />
+              </Button>
             )}
+            
             {needsApproval && canApprove && (
-              <ApproveButton 
-                segmentKey={segmentKey}
-                onApproved={handleApproved}
-                onRejected={handleRejected}
-              />
+              <>
+                <Button 
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0 rounded-full text-green-400 hover:text-green-300 hover:bg-green-500/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    editContext.approveSegment(segmentKey).then(success => {
+                      if (success) handleApproved();
+                    });
+                  }}
+                >
+                  <Check className="h-3.5 w-3.5" />
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0 rounded-full text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    editContext.rejectSegment(segmentKey).then(success => {
+                      if (success) handleRejected();
+                    });
+                  }}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </>
             )}
           </div>
         </div>
       )}
-      
+
       {/* Content */}
       <div className={cn(
         "transition-opacity",
-        contentStatus === 'draft' && "opacity-80"
+        contentStatus === 'draft' && "opacity-90"
       )}>
         {children}
       </div>
-      
-      {/* Status indicator line */}
-      {showApprovalBadge && isEditMode && (
-        <div className={cn(
-          "absolute left-0 top-0 bottom-0 w-1 rounded-l-lg",
-          contentStatus === 'draft' && "bg-yellow-500",
-          contentStatus === 'pending' && "bg-orange-500",
-          contentStatus === 'approved' && importStage > 1 && "bg-blue-500"
-        )} />
-      )}
     </div>
   );
 };
