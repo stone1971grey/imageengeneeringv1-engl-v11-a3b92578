@@ -28,30 +28,30 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({ className }) => 
         className={cn("gap-2", className)}
       >
         <Loader2 className="h-4 w-4 animate-spin" />
-        Lade...
+        Loading...
       </Button>
     );
   }
 
   return (
     <Button
-      variant={isEditMode ? "default" : "outline"}
+      variant="ghost"
       size="sm"
       onClick={() => setEditMode(!isEditMode)}
       className={cn(
-        "gap-2 transition-all",
+        "gap-2 transition-all font-medium",
         isEditMode 
-          ? "bg-blue-600 hover:bg-blue-500 text-white" 
-          : "border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white",
+          ? "bg-[#f9dc24] hover:bg-[#e5c820] text-black" 
+          : "bg-black hover:bg-gray-800 text-white",
         className
       )}
     >
       {isEditMode ? (
         <>
           <Eye className="h-4 w-4" />
-          Vorschau
+          Preview
           {pendingCount > 0 && (
-            <span className="ml-1 bg-yellow-500 text-yellow-900 text-xs px-1.5 py-0.5 rounded-full font-medium">
+            <span className="ml-1 bg-black text-[#f9dc24] text-xs px-1.5 py-0.5 rounded-full font-medium">
               {pendingCount}
             </span>
           )}
@@ -59,7 +59,7 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({ className }) => 
       ) : (
         <>
           <Edit3 className="h-4 w-4" />
-          Bearbeiten
+          Edit
         </>
       )}
     </Button>
