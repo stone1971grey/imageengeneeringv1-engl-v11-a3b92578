@@ -1519,7 +1519,7 @@ const DynamicCMSPage = () => {
       {/* Draft Preview Banner - shown only to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {isDraftPage && currentUser && userRole && (
-        <div className="fixed top-[110px] left-0 right-0 z-40 bg-amber-500 text-white py-2 px-4 shadow-md">
+        <div className="fixed top-[110px] left-0 right-0 z-40 bg-amber-500 text-black py-2 px-4 shadow-md">
           <div className="container mx-auto flex items-center justify-center gap-3">
             <Eye className="h-4 w-4" />
             <span className="font-medium">Draft Preview</span>
