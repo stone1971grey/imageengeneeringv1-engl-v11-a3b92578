@@ -544,8 +544,16 @@ export const RefineWithAIDialog = ({
     </Button>
   );
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setOpen(true);
+    } else {
+      handleClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
