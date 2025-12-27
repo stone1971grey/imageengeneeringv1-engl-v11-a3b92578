@@ -193,9 +193,10 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
           <span className="font-medium text-gray-900">{data.subtitle}</span>
         </h1>
         
-        <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl">
-          {data.description}
-        </p>
+        <div 
+          className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
+          dangerouslySetInnerHTML={{ __html: data.description }}
+        />
       </div>
       
       <div className="pt-4 flex gap-4">
