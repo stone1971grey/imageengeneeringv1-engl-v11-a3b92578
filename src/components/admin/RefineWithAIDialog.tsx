@@ -659,7 +659,7 @@ export const RefineWithAIDialog = ({
 
   const triggerButton = variant === 'compact' ? (
     <Button 
-      className={`gap-2 h-7 px-3 text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 ${className}`}
+      className={`gap-2 h-9 px-4 text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 ${className}`}
     >
       <GeminiIcon className="h-4 w-4 text-white" />
       <FirecrawlIcon className="h-4 w-4 text-white" />
