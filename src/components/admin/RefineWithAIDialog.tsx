@@ -165,6 +165,17 @@ export const RefineWithAIDialog = ({
   // NEW: Success view state
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [appliedResults, setAppliedResults] = useState<AppliedResult[]>([]);
+  
+  // NEW: Manual text input
+  const [manualTextInput, setManualTextInput] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+  
+  // NEW: Processing status for dialog display
+  const [processingStatus, setProcessingStatus] = useState<{
+    type: 'idle' | 'loading' | 'success' | 'error' | 'no-content';
+    message: string;
+    details?: string;
+  }>({ type: 'idle', message: '' });
 
   const toggleOption = (optionId: string) => {
     setSelectedOptions(prev => 
@@ -351,8 +362,27 @@ ${rawText}`
     }
   };
 
+  // Improved similarity check - more accurate comparison
+  const calculateSimilarity = (text1: string, text2: string): number => {
+    const words1 = new Set(text1.toLowerCase().split(/\s+/).filter(w => w.length > 3));
+    const words2 = new Set(text2.toLowerCase().split(/\s+/).filter(w => w.length > 3));
+    
+    if (words1.size === 0 || words2.size === 0) return 0;
+    
+    let intersection = 0;
+    words1.forEach(word => {
+      if (words2.has(word)) intersection++;
+    });
+    
+    // Jaccard similarity
+    const union = words1.size + words2.size - intersection;
+    return intersection / union;
+  };
+
   // Extract new text content from source
   const fetchAndAnalyzeContent = async (): Promise<ContentBlock[]> => {
+    setProcessingStatus({ type: 'loading', message: 'Lade existierende Inhalte...', details: 'Analysiere bereits importierte Texte' });
+    
     // Load existing content for comparison
     const { data: existingContent } = await supabase
       .from('page_content')
@@ -361,20 +391,29 @@ ${rawText}`
       .eq('language', language);
 
     // Extract all existing text for comparison
-    let existingText = '';
+    const existingTexts: string[] = [];
     if (existingContent) {
       for (const item of existingContent) {
         try {
           const parsed = JSON.parse(item.content_value);
-          if (parsed.description) existingText += ' ' + parsed.description;
-          if (parsed.text) existingText += ' ' + parsed.text;
-          if (parsed.introText) existingText += ' ' + parsed.introText;
+          if (parsed.description) existingTexts.push(parsed.description);
+          if (parsed.text) existingTexts.push(parsed.text);
+          if (parsed.introText) existingTexts.push(parsed.introText);
+          // Also check for items in feature-overview
+          if (parsed.items && Array.isArray(parsed.items)) {
+            for (const itm of parsed.items) {
+              if (itm.text) existingTexts.push(itm.text);
+            }
+          }
         } catch {
-          if (item.content_type === 'text') existingText += ' ' + item.content_value;
+          if (item.content_type === 'text') existingTexts.push(item.content_value);
         }
       }
     }
-    existingText = existingText.toLowerCase().trim();
+
+    console.log('[RefineWithAI] Existing text segments:', existingTexts.length);
+
+    setProcessingStatus({ type: 'loading', message: 'Suche Source-URL...', details: 'Prüfe Redirect-Mapping' });
 
     // Find source URL
     const productName = pageSlug.split('/').pop();
@@ -395,13 +434,16 @@ ${rawText}`
     }
 
     if (!sourceUrlToFetch) {
-      toast.error('Keine Source-URL gefunden', {
-        description: 'Diese Seite hat keine verknüpfte Ursprungsseite.'
+      setProcessingStatus({ 
+        type: 'error', 
+        message: 'Keine Source-URL gefunden', 
+        details: 'Diese Seite hat keine verknüpfte Ursprungsseite. Verwende "Text manuell einfügen" stattdessen.'
       });
       return [];
     }
 
     console.log('[RefineWithAI] Fetching from:', sourceUrlToFetch);
+    setProcessingStatus({ type: 'loading', message: 'Lade Quelldaten...', details: sourceUrlToFetch });
 
     // Fetch content from source
     const { data, error } = await supabase.functions.invoke('fetch-external-content', {
@@ -410,97 +452,182 @@ ${rawText}`
 
     if (error || !data?.data) {
       console.error('[RefineWithAI] Fetch error:', error);
-      toast.error('Fehler beim Laden der Quelldaten');
+      setProcessingStatus({ 
+        type: 'error', 
+        message: 'Fehler beim Laden der Quelldaten', 
+        details: error?.message || 'Firecrawl konnte die Seite nicht scrapen. Verwende "Text manuell einfügen" stattdessen.'
+      });
       return [];
     }
 
     const fetchedData = data.data;
     console.log('[RefineWithAI] Fetched description length:', fetchedData.description?.length || 0);
+    
+    setProcessingStatus({ type: 'loading', message: 'Analysiere Textinhalte...', details: `${fetchedData.description?.length || 0} Zeichen geladen` });
 
     // Extract only NEW text that isn't already on the page
     if (!fetchedData.description || fetchedData.description.length < 50) {
-      toast.info('Kein neuer Textinhalt gefunden');
+      setProcessingStatus({ 
+        type: 'no-content', 
+        message: 'Kein neuer Textinhalt gefunden', 
+        details: 'Die gescrapte Seite enthält keinen relevanten Text. Verwende "Text manuell einfügen" um Content direkt hinzuzufügen.'
+      });
       return [];
     }
 
-    // Split into phrases and find truly new content
-    const fetchedPhrases = fetchedData.description
+    // Split fetched content into sentences
+    const fetchedSentences = fetchedData.description
       .split(/[.!?]\s+/)
       .map((s: string) => s.trim())
       .filter((s: string) => s.length > 30);
 
-    const existingPhrases = existingText
-      .split(/[.!?]\s+/)
-      .map(s => s.trim())
-      .filter(s => s.length > 20);
+    console.log('[RefineWithAI] Fetched sentences:', fetchedSentences.length);
 
-    // Find sentences that don't exist yet
-    const newPhrases = fetchedPhrases.filter((phrase: string) => {
-      const normalizedPhrase = phrase.toLowerCase();
-      return !existingPhrases.some(existing => 
-        existing.includes(normalizedPhrase.substring(0, 30)) ||
-        normalizedPhrase.includes(existing.substring(0, 30))
-      );
-    });
+    // Find sentences that don't exist yet - using improved similarity check
+    const newSentences: string[] = [];
+    for (const sentence of fetchedSentences) {
+      let isNew = true;
+      
+      for (const existingText of existingTexts) {
+        // Check similarity - if > 60% similar, consider it as existing
+        const similarity = calculateSimilarity(sentence, existingText);
+        if (similarity > 0.6) {
+          isNew = false;
+          console.log(`[RefineWithAI] Sentence marked as existing (${(similarity * 100).toFixed(0)}% similar): ${sentence.slice(0, 50)}...`);
+          break;
+        }
+        
+        // Also check if sentence is literally contained
+        if (existingText.toLowerCase().includes(sentence.toLowerCase().slice(0, 50))) {
+          isNew = false;
+          break;
+        }
+      }
+      
+      if (isNew) {
+        newSentences.push(sentence);
+      }
+    }
 
-    if (newPhrases.length === 0) {
-      toast.info('Alle Textinhalte sind bereits vorhanden');
+    console.log('[RefineWithAI] New sentences found:', newSentences.length, 'of', fetchedSentences.length);
+
+    if (newSentences.length === 0) {
+      setProcessingStatus({ 
+        type: 'no-content', 
+        message: 'Alle Textinhalte sind bereits vorhanden', 
+        details: `${fetchedSentences.length} Sätze wurden verglichen, aber alle sind bereits importiert. Verwende "Text manuell einfügen" falls du zusätzlichen Content hast.`
+      });
       return [];
     }
 
-    // Combine new phrases back into text
-    const newTextContent = newPhrases.join('. ');
+    // Combine new sentences back into text
+    const newTextContent = newSentences.join('. ');
     console.log('[RefineWithAI] New text content length:', newTextContent.length);
-    console.log('[RefineWithAI] New phrases:', newPhrases.length, 'of', fetchedPhrases.length);
+
+    setProcessingStatus({ type: 'loading', message: 'Segmentiere Inhalte mit AI...', details: `${newSentences.length} neue Sätze gefunden` });
 
     // Use AI to segment the new text into logical blocks
     return await segmentTextWithAI(newTextContent);
   };
 
+  // NEW: Process manually entered text
+  const processManualText = async (): Promise<ContentBlock[]> => {
+    if (!manualTextInput.trim() || manualTextInput.trim().length < 50) {
+      setProcessingStatus({ 
+        type: 'error', 
+        message: 'Zu wenig Text eingegeben', 
+        details: 'Bitte gib mindestens 50 Zeichen ein.'
+      });
+      return [];
+    }
+
+    setProcessingStatus({ type: 'loading', message: 'Segmentiere manuellen Text...', details: `${manualTextInput.length} Zeichen` });
+    
+    // Use AI to segment the manual text into logical blocks
+    return await segmentTextWithAI(manualTextInput.trim());
+  };
+
   // Generate preview with block segmentation
   const handleGeneratePreview = async () => {
-    if (selectedOptions.length === 0) {
+    if (selectedOptions.length === 0 && !showManualInput) {
       toast.error('Bitte wähle mindestens eine Option');
       return;
     }
 
     setIsProcessing(true);
     setContentBlocks([]);
+    setProcessingStatus({ type: 'idle', message: '' });
     
     try {
       // Load existing segments first
       await loadExistingSegments();
 
+      let blocks: ContentBlock[] = [];
+
+      // Check if manual text input is being used
+      if (showManualInput && manualTextInput.trim().length > 0) {
+        blocks = await processManualText();
+      }
       // Process "Fetch Additional Content" option
-      if (selectedOptions.includes('refetch-content')) {
+      else if (selectedOptions.includes('refetch-content')) {
         setProcessingStep('Analysiere Quelldaten...');
-        const blocks = await fetchAndAnalyzeContent();
-        
-        if (blocks.length > 0) {
-          setContentBlocks(blocks);
-          setExpandedBlocks(blocks.slice(0, 2).map(b => b.id));
-          setShowBlockPreview(true);
-          toast.success(`${blocks.length} neue Inhaltsblöcke gefunden`, {
-            description: 'Ordne die Blöcke den passenden Segmenten zu.'
-          });
-        } else {
-          // Explicit feedback when no blocks found
-          toast.info('Keine neuen Inhalte gefunden', {
-            description: 'Die Quelldaten enthalten keine neuen Textinhalte für diese Seite.'
-          });
-        }
+        blocks = await fetchAndAnalyzeContent();
       }
       
-      // TODO: Handle other options (add-segments, expand-texts, etc.)
+      if (blocks.length > 0) {
+        setContentBlocks(blocks);
+        setExpandedBlocks(blocks.slice(0, 3).map(b => b.id));
+        setShowBlockPreview(true);
+        setProcessingStatus({ 
+          type: 'success', 
+          message: `${blocks.length} neue Inhaltsblöcke gefunden`,
+          details: 'Ordne die Blöcke den passenden Segmenten zu und klicke "Übernehmen".'
+        });
+      }
+      // Note: processingStatus is already set by fetchAndAnalyzeContent or processManualText when no content found
       
     } catch (error) {
       console.error('Preview generation error:', error);
-      toast.error('Fehler bei der Vorschau-Generierung', {
-        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      setProcessingStatus({ 
+        type: 'error', 
+        message: 'Fehler bei der Vorschau-Generierung', 
+        details: error instanceof Error ? error.message : 'Unbekannter Fehler'
       });
     } finally {
       setIsProcessing(false);
       setProcessingStep(null);
+    }
+  };
+
+  // Handle manual text submission
+  const handleManualTextSubmit = async () => {
+    setIsProcessing(true);
+    setContentBlocks([]);
+    setProcessingStatus({ type: 'idle', message: '' });
+    
+    try {
+      await loadExistingSegments();
+      const blocks = await processManualText();
+      
+      if (blocks.length > 0) {
+        setContentBlocks(blocks);
+        setExpandedBlocks(blocks.slice(0, 3).map(b => b.id));
+        setShowBlockPreview(true);
+        setProcessingStatus({ 
+          type: 'success', 
+          message: `${blocks.length} Inhaltsblöcke aus manuellem Text erstellt`,
+          details: 'Ordne die Blöcke den passenden Segmenten zu und klicke "Übernehmen".'
+        });
+      }
+    } catch (error) {
+      console.error('Manual text processing error:', error);
+      setProcessingStatus({ 
+        type: 'error', 
+        message: 'Fehler bei der Textverarbeitung', 
+        details: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -1051,6 +1178,106 @@ ${rawText}`
                     ))}
                   </div>
                 </div>
+
+                <Separator className="bg-gray-700" />
+
+                {/* Manual Text Input Section */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <MessageSquarePlus className="h-5 w-5 text-green-400" />
+                      <h4 className="font-semibold text-base text-white">Text manuell einfügen</h4>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowManualInput(!showManualInput)}
+                      className="text-green-400 hover:text-green-300 hover:bg-green-900/20"
+                    >
+                      {showManualInput ? 'Schließen' : 'Öffnen'}
+                    </Button>
+                  </div>
+                  
+                  {showManualInput && (
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-400">
+                        Füge hier zusätzlichen Text ein, der auf der Seite importiert werden soll. 
+                        Der Text wird automatisch in logische Blöcke segmentiert.
+                      </p>
+                      <textarea
+                        value={manualTextInput}
+                        onChange={(e) => setManualTextInput(e.target.value)}
+                        placeholder="Füge hier den zusätzlichen Text ein, z.B. Produktbeschreibungen, technische Details, etc..."
+                        className="w-full h-40 p-3 text-sm bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 resize-none"
+                      />
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">{manualTextInput.length} Zeichen</span>
+                        <Button
+                          onClick={handleManualTextSubmit}
+                          disabled={manualTextInput.trim().length < 50 || isProcessing}
+                          className="gap-2 bg-green-600 hover:bg-green-500 text-white"
+                        >
+                          {isProcessing ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Verarbeite...
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4" />
+                              Text analysieren
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Processing Status Display */}
+                {processingStatus.type !== 'idle' && (
+                  <div className={`rounded-lg border p-4 ${
+                    processingStatus.type === 'loading' ? 'bg-blue-900/20 border-blue-700/50' :
+                    processingStatus.type === 'success' ? 'bg-green-900/20 border-green-700/50' :
+                    processingStatus.type === 'error' ? 'bg-red-900/20 border-red-700/50' :
+                    'bg-yellow-900/20 border-yellow-700/50'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      {processingStatus.type === 'loading' && (
+                        <Loader2 className="h-5 w-5 text-blue-400 animate-spin mt-0.5" />
+                      )}
+                      {processingStatus.type === 'success' && (
+                        <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                      )}
+                      {processingStatus.type === 'error' && (
+                        <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5" />
+                      )}
+                      {processingStatus.type === 'no-content' && (
+                        <AlertTriangle className="h-5 w-5 text-yellow-400 mt-0.5" />
+                      )}
+                      <div className="flex-1">
+                        <p className={`text-sm font-medium ${
+                          processingStatus.type === 'loading' ? 'text-blue-300' :
+                          processingStatus.type === 'success' ? 'text-green-300' :
+                          processingStatus.type === 'error' ? 'text-red-300' :
+                          'text-yellow-300'
+                        }`}>
+                          {processingStatus.message}
+                        </p>
+                        {processingStatus.details && (
+                          <p className={`text-xs mt-1 ${
+                            processingStatus.type === 'loading' ? 'text-blue-400/80' :
+                            processingStatus.type === 'success' ? 'text-green-400/80' :
+                            processingStatus.type === 'error' ? 'text-red-400/80' :
+                            'text-yellow-400/80'
+                          }`}>
+                            {processingStatus.details}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </ScrollArea>
 
