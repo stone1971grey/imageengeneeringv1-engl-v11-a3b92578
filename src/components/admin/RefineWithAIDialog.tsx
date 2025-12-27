@@ -362,21 +362,24 @@ ${rawText}`
     }
   };
 
-  // Improved similarity check - more accurate comparison
-  const calculateSimilarity = (text1: string, text2: string): number => {
-    const words1 = new Set(text1.toLowerCase().split(/\s+/).filter(w => w.length > 3));
-    const words2 = new Set(text2.toLowerCase().split(/\s+/).filter(w => w.length > 3));
+  // Check if text is an exact duplicate (very high threshold)
+  const isExactDuplicate = (newText: string, existingTexts: string[]): boolean => {
+    const normalizedNew = newText.toLowerCase().replace(/\s+/g, ' ').trim();
     
-    if (words1.size === 0 || words2.size === 0) return 0;
-    
-    let intersection = 0;
-    words1.forEach(word => {
-      if (words2.has(word)) intersection++;
-    });
-    
-    // Jaccard similarity
-    const union = words1.size + words2.size - intersection;
-    return intersection / union;
+    for (const existing of existingTexts) {
+      const normalizedExisting = existing.toLowerCase().replace(/\s+/g, ' ').trim();
+      
+      // Only consider exact matches (text literally contained)
+      if (normalizedExisting.includes(normalizedNew) || normalizedNew.includes(normalizedExisting)) {
+        // But only if they're substantially similar (>80% of the shorter text is contained)
+        const shorter = Math.min(normalizedNew.length, normalizedExisting.length);
+        const longer = Math.max(normalizedNew.length, normalizedExisting.length);
+        if (shorter / longer > 0.8) {
+          return true;
+        }
+      }
+    }
+    return false;
   };
 
   // Extract new text content from source
@@ -483,51 +486,42 @@ ${rawText}`
 
     console.log('[RefineWithAI] Fetched sentences:', fetchedSentences.length);
 
-    // Find sentences that don't exist yet - using improved similarity check
+    // Filter only exact duplicates - be VERY permissive to import new content
     const newSentences: string[] = [];
     for (const sentence of fetchedSentences) {
-      let isNew = true;
-      
-      for (const existingText of existingTexts) {
-        // Check similarity - if > 60% similar, consider it as existing
-        const similarity = calculateSimilarity(sentence, existingText);
-        if (similarity > 0.6) {
-          isNew = false;
-          console.log(`[RefineWithAI] Sentence marked as existing (${(similarity * 100).toFixed(0)}% similar): ${sentence.slice(0, 50)}...`);
-          break;
-        }
-        
-        // Also check if sentence is literally contained
-        if (existingText.toLowerCase().includes(sentence.toLowerCase().slice(0, 50))) {
-          isNew = false;
-          break;
-        }
-      }
-      
-      if (isNew) {
+      // Only skip if this exact sentence exists
+      if (!isExactDuplicate(sentence, existingTexts)) {
         newSentences.push(sentence);
+        console.log(`[RefineWithAI] NEW sentence: ${sentence.slice(0, 60)}...`);
+      } else {
+        console.log(`[RefineWithAI] DUPLICATE skipped: ${sentence.slice(0, 60)}...`);
       }
     }
 
     console.log('[RefineWithAI] New sentences found:', newSentences.length, 'of', fetchedSentences.length);
 
-    if (newSentences.length === 0) {
+    // If we have at least SOME new content, proceed (even if most is duplicated)
+    // Only fail if literally ALL sentences are exact duplicates
+    if (newSentences.length === 0 && fetchedSentences.length > 0) {
       setProcessingStatus({ 
         type: 'no-content', 
-        message: 'Alle Textinhalte sind bereits vorhanden', 
-        details: `${fetchedSentences.length} Sätze wurden verglichen, aber alle sind bereits importiert. Verwende "Text manuell einfügen" falls du zusätzlichen Content hast.`
+        message: 'Alle Textinhalte sind exakte Duplikate', 
+        details: `${fetchedSentences.length} Sätze wurden geprüft - alle sind bereits wortgleich vorhanden.`
       });
       return [];
     }
+    
+    // Also include ALL fetched content if very few new sentences (provide full context to AI)
+    const contentForSegmentation = newSentences.length < 3 && fetchedSentences.length > 3
+      ? fetchedSentences.join('. ')
+      : newSentences.join('. ');
 
-    // Combine new sentences back into text
-    const newTextContent = newSentences.join('. ');
-    console.log('[RefineWithAI] New text content length:', newTextContent.length);
+    console.log('[RefineWithAI] Content for segmentation length:', contentForSegmentation.length);
 
-    setProcessingStatus({ type: 'loading', message: 'Segmentiere Inhalte mit AI...', details: `${newSentences.length} neue Sätze gefunden` });
+    setProcessingStatus({ type: 'loading', message: 'Segmentiere Inhalte mit AI...', details: `${contentForSegmentation.length} Zeichen werden analysiert` });
 
     // Use AI to segment the new text into logical blocks
-    return await segmentTextWithAI(newTextContent);
+    return await segmentTextWithAI(contentForSegmentation);
   };
 
   // NEW: Process manually entered text
