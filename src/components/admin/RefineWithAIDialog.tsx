@@ -16,6 +16,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { GeminiIcon } from '@/components/GeminiIcon';
+import { FirecrawlIcon } from '@/components/FirecrawlIcon';
 import { 
   Sparkles, 
   RefreshCw, 
@@ -580,7 +581,11 @@ export const RefineWithAIDialog = ({
               </>
             ) : (
               <>
-                <Sparkles className="h-6 w-6 text-purple-400" />
+                <div className="flex items-center gap-2">
+                  <FirecrawlIcon className="h-5 w-5 text-white" />
+                  <span className="text-gray-400">+</span>
+                  <GeminiIcon className="h-5 w-5" rainbow />
+                </div>
                 <span>Refine Content with AI</span>
               </>
             )}
@@ -601,7 +606,7 @@ export const RefineWithAIDialog = ({
                 {/* Re-Fetch Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <RefreshCw className="h-5 w-5 text-blue-400" />
+                    <FirecrawlIcon className="h-5 w-5 text-white" />
                     <h4 className="font-semibold text-base text-white">Content Fetching</h4>
                     <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">Firecrawl</Badge>
                   </div>
@@ -619,6 +624,7 @@ export const RefineWithAIDialog = ({
                         <Checkbox
                           checked={selectedOptions.includes(option.id)}
                           onCheckedChange={() => toggleOption(option.id)}
+                          onClick={(e) => e.stopPropagation()}
                           className="border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                         />
                         <div className="text-blue-400 flex-shrink-0">
@@ -656,6 +662,7 @@ export const RefineWithAIDialog = ({
                         <Checkbox
                           checked={selectedOptions.includes(option.id)}
                           onCheckedChange={() => toggleOption(option.id)}
+                          onClick={(e) => e.stopPropagation()}
                           className="border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                         />
                         <div className="text-purple-400 flex-shrink-0">
