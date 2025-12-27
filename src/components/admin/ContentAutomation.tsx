@@ -359,23 +359,108 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       console.log('[ContentAutomation] Found storage images:', storageImages.length);
       console.log('[ContentAutomation] Found storage PDFs:', storagePdfs.length);
 
+      // === DOWNLOAD EXTERNAL FILES TO STORAGE ===
+      // If no local images exist, download scraped images to storage
+      const downloadedImages: { url: string; title: string }[] = [];
+      const downloadedPdfs: { url: string; title: string; filename: string }[] = [];
+      
+      if (storageImages.length === 0 && parsedContent.images.length > 0) {
+        console.log('[ContentAutomation] No local images, downloading external images...');
+        for (let i = 0; i < Math.min(parsedContent.images.length, 6); i++) {
+          const img = parsedContent.images[i];
+          try {
+            // Generate filename from URL or index
+            const urlParts = img.url.split('/');
+            let filename = urlParts[urlParts.length - 1].split('?')[0];
+            if (!filename.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+              filename = `product-image-${i + 1}.jpg`;
+            }
+            filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
+            
+            const targetPath = `${folderPath}/${filename}`;
+            
+            const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
+              body: { fileUrl: img.url, targetPath, bucketId: 'page-images' }
+            });
+            
+            if (!dlError && dlResult?.success) {
+              console.log(`[ContentAutomation] Downloaded image: ${filename}`);
+              downloadedImages.push({
+                url: dlResult.publicUrl,
+                title: img.title || parsedContent.title || 'Product Image',
+              });
+            } else {
+              console.warn(`[ContentAutomation] Failed to download image:`, dlError || dlResult?.error);
+            }
+          } catch (err) {
+            console.warn(`[ContentAutomation] Error downloading image ${i}:`, err);
+          }
+        }
+      }
+      
+      // Download external PDFs to storage
+      if (storagePdfs.length === 0 && parsedContent.downloads.length > 0) {
+        console.log('[ContentAutomation] No local PDFs, downloading external PDFs...');
+        for (const dl of parsedContent.downloads.filter(d => d.url.toLowerCase().includes('.pdf'))) {
+          try {
+            const urlParts = dl.url.split('/');
+            let filename = urlParts[urlParts.length - 1].split('?')[0];
+            if (!filename.toLowerCase().endsWith('.pdf')) {
+              filename = `${dl.title.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`;
+            }
+            filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
+            
+            const targetPath = `${folderPath}/${filename}`;
+            
+            const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
+              body: { fileUrl: dl.url, targetPath, bucketId: 'page-images' }
+            });
+            
+            if (!dlError && dlResult?.success) {
+              console.log(`[ContentAutomation] Downloaded PDF: ${filename}`);
+              downloadedPdfs.push({
+                url: dlResult.publicUrl,
+                title: dl.title,
+                filename,
+              });
+            } else {
+              console.warn(`[ContentAutomation] Failed to download PDF:`, dlError || dlResult?.error);
+            }
+          } catch (err) {
+            console.warn(`[ContentAutomation] Error downloading PDF:`, err);
+          }
+        }
+      }
+      
+      // Merge: use local files first, then downloaded files
+      const finalImages = storageImages.length > 0 ? storageImages : downloadedImages;
+      const finalPdfs = storagePdfs.length > 0 ? storagePdfs : downloadedPdfs;
+      
+      console.log('[ContentAutomation] Final images count:', finalImages.length);
+      console.log('[ContentAutomation] Final PDFs count:', finalPdfs.length);
+
       // Filter downloads by language (include 'en' as fallback if current language has none)
-      // Merge with storage PDFs
+      // Merge with storage/downloaded PDFs
       let filteredDownloads = parsedContent.downloads.filter(d => d.language === language);
       if (filteredDownloads.length === 0) {
         filteredDownloads = parsedContent.downloads.filter(d => d.language === 'en');
       }
       
-      // Add storage PDFs to downloads (they take priority)
-      const storageDownloads = storagePdfs.map(pdf => ({
+      // Add local/downloaded PDFs to downloads (they take priority)
+      const localDownloads: { title: string; description: string; url: string; language: typeof language }[] = finalPdfs.map(pdf => ({
         title: pdf.title,
         description: getDownloadDescriptionFromTitle(pdf.title, language),
         url: pdf.url,
         language: language,
       }));
       
-      // Combine: storage PDFs first, then scraped downloads
-      const allDownloads = [...storageDownloads, ...filteredDownloads];
+      // Combine: local PDFs first, then scraped downloads (avoiding duplicates)
+      const allDownloads: { title: string; description: string; url: string; language: typeof language }[] = [...localDownloads];
+      for (const dl of filteredDownloads) {
+        if (!allDownloads.some(d => d.url === dl.url)) {
+          allDownloads.push({ ...dl, language: dl.language as typeof language });
+        }
+      }
 
       // Build concise, clean description (max 2-3 sentences, no markdown artifacts)
       const buildCleanDescription = () => {
@@ -410,22 +495,22 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        // Use storage images if available, otherwise use scraped images
+        // Use finalImages (local or downloaded from external source)
         const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
         let heroImages: { imageUrl: string; title: string; description: string; maxWidth: number | null; maxHeight: number | null }[] = [];
         
-        if (storageImages.length > 0) {
-          // Use images from media folder
-          heroImages = storageImages.slice(0, 4).map((img, idx) => ({
+        if (finalImages.length > 0) {
+          // Use images from storage (local or downloaded)
+          heroImages = finalImages.slice(0, 4).map((img, idx) => ({
             imageUrl: img.url,
             title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
             description: '',
             maxWidth: null,
             maxHeight: null,
           }));
-          console.log('[ContentAutomation] Using storage images for hero:', heroImages.length);
+          console.log('[ContentAutomation] Using final images for hero:', heroImages.length);
         } else {
-          // Fall back to scraped images
+          // Fall back to scraped images (external URLs - not downloaded)
           heroImages = parsedContent.images.slice(0, 4).map((img, idx) => ({
             imageUrl: img.url,
             title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
@@ -433,7 +518,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             maxWidth: null,
             maxHeight: null,
           }));
-          console.log('[ContentAutomation] Using scraped images for hero:', heroImages.length);
+          console.log('[ContentAutomation] Using external scraped images for hero:', heroImages.length);
         }
         
         // If still no images, add placeholder
