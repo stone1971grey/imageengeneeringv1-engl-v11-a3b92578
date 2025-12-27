@@ -1537,12 +1537,14 @@ const DynamicCMSPage = () => {
                 window.location.reload();
               }}
             />
-            <Link
-              to="/admin"
+            <a
+              href="/admin"
+              target="_blank"
+              rel="noopener noreferrer"
               className="ml-2 h-9 px-4 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Edit in Admin Dashboard
-            </Link>
+            </a>
           </div>
         </div>
       )}
