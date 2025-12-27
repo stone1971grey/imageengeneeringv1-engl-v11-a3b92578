@@ -77,20 +77,20 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
   const getStatusConfig = () => {
     if (contentStatus === 'draft') {
       return { 
-        label: 'Entwurf - Nicht freigegeben', 
+        label: 'Draft - Not Approved', 
         icon: Edit3, 
         bgClass: 'bg-yellow-500', 
         textClass: 'text-yellow-950',
-        description: 'Dieser Inhalt wurde importiert und wartet auf Ihre Freigabe.'
+        description: 'This content was imported and awaits your approval.'
       };
     }
     if (contentStatus === 'pending') {
       return { 
-        label: 'Wartet auf Freigabe', 
+        label: 'Pending Approval', 
         icon: Clock, 
         bgClass: 'bg-orange-500', 
         textClass: 'text-orange-950',
-        description: 'Dieser Inhalt wurde bearbeitet und wartet auf Admin-Freigabe.'
+        description: 'This content was edited and awaits admin approval.'
       };
     }
     if (isStage2) {
@@ -99,7 +99,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
         icon: Layers, 
         bgClass: 'bg-blue-500', 
         textClass: 'text-blue-950',
-        description: 'Dieser Inhalt wurde in einem weiteren Import aktualisiert.'
+        description: 'This content was updated in a subsequent import.'
       };
     }
     return null;
@@ -126,12 +126,12 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
 
       if (error) {
         console.error('[EditableSegment] Approve error:', error);
-        toast.error('Freigabe fehlgeschlagen');
+        toast.error('Approval failed');
         return;
       }
 
-      toast.success('Segment freigegeben!', {
-        description: 'Alle Inhalte in diesem Segment wurden freigegeben.'
+      toast.success('Segment approved!', {
+        description: 'All content in this segment has been approved.'
       });
       onContentUpdate?.();
     } catch (error) {
@@ -160,17 +160,17 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
 
       if (error) {
         console.error('[EditableSegment] Reject error:', error);
-        toast.error('Verwerfen fehlgeschlagen');
+        toast.error('Discard failed');
         return;
       }
 
-      toast.info('Änderungen verworfen', {
-        description: 'Die Entwürfe wurden verworfen.'
+      toast.info('Changes discarded', {
+        description: 'The drafts have been discarded.'
       });
       onContentUpdate?.();
     } catch (error) {
       console.error('[EditableSegment] Reject error:', error);
-      toast.error('Verwerfen fehlgeschlagen');
+      toast.error('Discard failed');
     } finally {
       setIsRejecting(false);
     }
@@ -233,33 +233,33 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
             
             {/* Approval Actions */}
             {canApprove && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <Button
-                  size="sm"
+                  size="default"
                   onClick={handleApproveSegment}
                   disabled={isApproving || isRejecting}
-                  className="bg-green-600 hover:bg-green-500 text-white font-medium shadow-lg gap-1.5"
+                  className="h-9 bg-green-600 hover:bg-green-500 text-white font-semibold shadow-lg gap-2 text-base"
                 >
                   {isApproving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <CheckCircle2 className="h-4 w-4" />
+                    <CheckCircle2 className="h-5 w-5" />
                   )}
-                  Segment freigeben
+                  Approve Segment
                 </Button>
                 <Button
-                  size="sm"
+                  size="default"
                   variant="outline"
                   onClick={handleRejectSegment}
                   disabled={isApproving || isRejecting}
-                  className="border-red-500/50 text-red-600 hover:bg-red-500/10 hover:text-red-500 font-medium shadow-lg gap-1.5"
+                  className="h-9 border-red-500/50 text-red-600 hover:bg-red-500/10 hover:text-red-500 font-semibold shadow-lg gap-2 text-base"
                 >
                   {isRejecting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <X className="h-4 w-4" />
+                    <X className="h-5 w-5" />
                   )}
-                  Verwerfen
+                  Discard
                 </Button>
               </div>
             )}
@@ -279,20 +279,20 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
           </div>
         )}
 
-        {/* Editing Mode Banner */}
+        {/* Editing Mode Banner - Fixed position aligned with Preview/Admin Dashboard buttons */}
         {isSegmentEditing && (
-          <div className="absolute -top-3 left-0 right-0 z-30 flex items-center justify-between px-4">
-            <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-3 py-1.5 rounded-lg shadow-lg font-medium text-sm">
-              <Edit3 className="h-4 w-4" />
-              <span>Bearbeitungsmodus aktiv</span>
+          <div className="fixed top-[110px] right-6 z-40 flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-4 py-2 rounded-lg shadow-lg font-semibold text-base">
+              <Edit3 className="h-5 w-5" />
+              <span>Editing Mode Active</span>
             </div>
             <Button
-              size="sm"
+              size="default"
               onClick={handleDoneEditing}
-              className="bg-black text-[#f9dc24] hover:bg-gray-900 font-medium shadow-lg"
+              className="h-9 px-4 bg-black text-[#f9dc24] hover:bg-gray-900 font-semibold shadow-lg text-base"
             >
-              <Save className="h-4 w-4 mr-1.5" />
-              Fertig
+              <Save className="h-5 w-5 mr-2" />
+              Done
             </Button>
           </div>
         )}
@@ -313,7 +313,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
                   variant="ghost"
                   className="h-8 w-8 p-0 rounded text-[#f9dc24] hover:text-white hover:bg-[#f9dc24]/20"
                   onClick={handleEditClick}
-                  title="Segment bearbeiten"
+                  title="Edit segment"
                 >
                   <Edit3 className="h-4 w-4" />
                 </Button>
