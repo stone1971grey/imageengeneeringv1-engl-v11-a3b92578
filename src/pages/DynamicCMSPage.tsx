@@ -52,6 +52,11 @@ const DynamicCMSPage = () => {
   const [pageNotFound, setPageNotFound] = useState(false);
   const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
   const [childPages, setChildPages] = useState<any[]>([]);
+  const [isDraftPage, setIsDraftPage] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'editor' | null>(null);
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
@@ -109,11 +114,58 @@ const DynamicCMSPage = () => {
     }
   }, [isHubPage, pageSlug]);
 
+  // Check authentication status on mount
   useEffect(() => {
-    if (pageSlug) {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setCurrentUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Check user role
+        const { data: adminData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        
+        if (adminData) {
+          setUserRole('admin');
+        } else {
+          const { data: editorData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "editor")
+            .maybeSingle();
+          
+          if (editorData) {
+            setUserRole('editor');
+          }
+        }
+      }
+      
+      setAuthChecked(true);
+    };
+    
+    checkAuth();
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setCurrentUser(session?.user ?? null);
+      if (!session?.user) {
+        setUserRole(null);
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (pageSlug && authChecked) {
       loadContent();
     }
-  }, [pageSlug, currentUrlLanguage]);
+  }, [pageSlug, currentUrlLanguage, authChecked]);
 
   const loadContent = async () => {
     if (!pageSlug) {
@@ -128,12 +180,10 @@ const DynamicCMSPage = () => {
     const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
     // Check if page exists in page_registry and if it's a shortcut
-    // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
-    // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
-    // generischen "Page Created Successfully" Screen statt einer 404.
+    // Also check page status for draft visibility
     const { data: pageData } = await supabase
       .from("page_registry")
-      .select("page_slug, target_page_slug")
+      .select("page_slug, target_page_slug, status")
       .eq("page_slug", pageSlug)
       .maybeSingle();
 
@@ -141,6 +191,24 @@ const DynamicCMSPage = () => {
       console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
       setLoading(false);
       return;
+    }
+
+    // Check if page is a draft and user has access
+    if (pageData.status === 'draft') {
+      setIsDraftPage(true);
+      
+      // Draft pages are only visible to logged-in admins and editors
+      if (!currentUser || !userRole) {
+        console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access denied (not logged in or no role)`);
+        setAccessDenied(true);
+        setLoading(false);
+        return;
+      }
+      
+      console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access granted for ${userRole}`);
+    } else {
+      setIsDraftPage(false);
+      setAccessDenied(false);
     }
 
     // If this page is a shortcut, redirect to the target page
@@ -1378,6 +1446,42 @@ const DynamicCMSPage = () => {
     );
   }
 
+  // Access denied for draft pages (not logged in or no admin/editor role)
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Eye className="h-10 w-10 text-amber-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Draft Page</h1>
+            <p className="text-lg text-gray-600 mb-6">
+              This page is currently in draft mode and not yet published. 
+              Only logged-in administrators and editors can preview draft pages.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                to="/auth"
+                className="inline-flex items-center justify-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                Sign In to Preview
+              </Link>
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              >
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   // Extract Meta Navigation segment (must render before all other segments)
   const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
   
@@ -1410,6 +1514,26 @@ const DynamicCMSPage = () => {
         robotsFollow={seoData?.robotsFollow ? 'follow' : 'nofollow'}
       />
       <Navigation />
+      
+      {/* Draft Preview Banner - shown only to logged-in admins/editors */}
+      {isDraftPage && currentUser && userRole && (
+        <div className="fixed top-[70px] left-0 right-0 z-40 bg-amber-500 text-white py-2 px-4 shadow-md">
+          <div className="container mx-auto flex items-center justify-center gap-3">
+            <Eye className="h-4 w-4" />
+            <span className="font-medium">Draft Preview</span>
+            <span className="text-amber-100">—</span>
+            <span className="text-sm text-amber-100">
+              This page is not published. Only admins and editors can see this preview.
+            </span>
+            <Link
+              to="/admin"
+              className="ml-4 px-3 py-1 bg-white text-amber-600 rounded text-sm font-medium hover:bg-amber-50 transition-colors"
+            >
+              Edit in Admin
+            </Link>
+          </div>
+        </div>
+      )}
       
       {/* Hub Page Display (e.g., Styleguide) */}
       {isHubPage && isEmpty && (
