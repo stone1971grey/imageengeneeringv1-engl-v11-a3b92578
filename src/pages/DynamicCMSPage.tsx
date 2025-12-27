@@ -1523,8 +1523,8 @@ const DynamicCMSPage = () => {
           <div className="container mx-auto flex items-center justify-center gap-3">
             <Eye className="h-4 w-4" />
             <span className="font-medium">Draft Preview</span>
-            <span className="text-amber-100">—</span>
-            <span className="text-sm text-amber-100">
+            <span className="text-black">—</span>
+            <span className="text-sm text-black">
               This page is not published. Only admins and editors can see this preview.
             </span>
             <RefineWithAIDialog
