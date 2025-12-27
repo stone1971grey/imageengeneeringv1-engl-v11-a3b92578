@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -41,7 +42,9 @@ import {
   ArrowLeft,
   AlertTriangle,
   Layers,
-  Plus
+  Plus,
+  ExternalLink,
+  CheckCircle
 } from 'lucide-react';
 
 interface RefineWithAIDialogProps {
@@ -62,6 +65,15 @@ interface ContentBlock {
   selectedSegment: TargetSegment;
   accepted: boolean;
   isNew: boolean; // true if segment needs to be created
+}
+
+// Applied result for success view
+interface AppliedResult {
+  blockType: string;
+  segmentKey: string;
+  segmentType: string;
+  isNew: boolean;
+  contentPreview: string;
 }
 
 interface TargetSegment {
@@ -133,6 +145,7 @@ export const RefineWithAIDialog = ({
   variant = 'button',
   className = ''
 }: RefineWithAIDialogProps) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -147,6 +160,10 @@ export const RefineWithAIDialog = ({
   
   const [isApplying, setIsApplying] = useState(false);
   const [expandedBlocks, setExpandedBlocks] = useState<string[]>([]);
+  
+  // NEW: Success view state
+  const [showSuccessView, setShowSuccessView] = useState(false);
+  const [appliedResults, setAppliedResults] = useState<AppliedResult[]>([]);
 
   const toggleOption = (optionId: string) => {
     setSelectedOptions(prev => 
@@ -488,11 +505,13 @@ ${rawText}`
     }
 
     setIsApplying(true);
+    const results: AppliedResult[] = [];
 
     try {
       for (const block of acceptedBlocks) {
         const segmentType = block.selectedSegment.type;
-        const segmentKey = block.selectedSegment.segmentKey;
+        let segmentKey = block.selectedSegment.segmentKey;
+        let isNewSegment = false;
         
         console.log('[RefineWithAI] Applying block to:', segmentType, segmentKey || '(new)');
 
@@ -556,6 +575,7 @@ ${rawText}`
           }
         } else if (block.isNew) {
           // CREATE new segment
+          isNewSegment = true;
           const { data: maxIdData } = await supabase
             .from('segment_registry')
             .select('segment_id')
@@ -564,7 +584,7 @@ ${rawText}`
             .single();
 
           const nextSegmentId = (maxIdData?.segment_id || 0) + 1;
-          const newSegmentKey = `${segmentType}-${nextSegmentId}`;
+          segmentKey = `${segmentType}-${nextSegmentId}`;
 
           // Get max position for this page
           const { data: maxPosData } = await supabase
@@ -583,7 +603,7 @@ ${rawText}`
             .insert({
               page_slug: pageSlug,
               segment_id: nextSegmentId,
-              segment_key: newSegmentKey,
+              segment_key: segmentKey,
               segment_type: segmentType,
               position: nextPosition
             });
@@ -630,24 +650,31 @@ ${rawText}`
             .from('page_content')
             .insert({
               page_slug: pageSlug,
-              section_key: newSegmentKey,
+              section_key: segmentKey,
               language,
               content_type: 'json',
               content_value: JSON.stringify(contentValue)
             });
 
-          console.log('[RefineWithAI] Created new segment:', newSegmentKey);
+          console.log('[RefineWithAI] Created new segment:', segmentKey);
         }
+
+        // Track result
+        results.push({
+          blockType: block.type,
+          segmentKey: segmentKey || 'unknown',
+          segmentType,
+          isNew: isNewSegment,
+          contentPreview: block.content.substring(0, 100) + (block.content.length > 100 ? '...' : '')
+        });
       }
 
-      toast.success('Änderungen übernommen!', {
-        description: `${acceptedBlocks.length} Inhaltsblock(e) wurden verarbeitet.`
-      });
-      
-      setOpen(false);
+      // Show success view instead of closing
+      setAppliedResults(results);
       setShowBlockPreview(false);
-      setContentBlocks([]);
-      setSelectedOptions([]);
+      setShowSuccessView(true);
+      
+      // Trigger reload for parent
       onRefineComplete?.();
       
     } catch (error) {
@@ -660,6 +687,22 @@ ${rawText}`
     }
   };
 
+  // Preview on frontend
+  const handlePreviewOnFrontend = () => {
+    const frontendUrl = `/${language}/${pageSlug}`;
+    window.open(frontendUrl, '_blank');
+  };
+
+  // Close and reset everything
+  const handleCloseSuccess = () => {
+    setOpen(false);
+    setShowSuccessView(false);
+    setShowBlockPreview(false);
+    setContentBlocks([]);
+    setSelectedOptions([]);
+    setAppliedResults([]);
+  };
+
   const handleBackToSelection = () => {
     setShowBlockPreview(false);
     setContentBlocks([]);
@@ -668,8 +711,10 @@ ${rawText}`
   const handleClose = () => {
     setOpen(false);
     setShowBlockPreview(false);
+    setShowSuccessView(false);
     setContentBlocks([]);
     setSelectedOptions([]);
+    setAppliedResults([]);
   };
 
   const fetchOptions = REFINE_OPTIONS.filter(o => o.category === 'fetch');
@@ -772,7 +817,12 @@ ${rawText}`
       <DialogContent className="sm:max-w-[800px] max-h-[80vh] flex flex-col bg-gray-900 border-gray-700 text-white top-[55%] translate-y-[-50%] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl">
-            {showBlockPreview ? (
+            {showSuccessView ? (
+              <>
+                <CheckCircle className="h-6 w-6 text-green-400" />
+                <span>Inhalte erfolgreich übernommen!</span>
+              </>
+            ) : showBlockPreview ? (
               <>
                 <Layers className="h-6 w-6 text-purple-400" />
                 <span>Content-Blöcke zuordnen</span>
@@ -788,15 +838,85 @@ ${rawText}`
             )}
           </DialogTitle>
           <DialogDescription className="text-gray-400 text-base">
-            {showBlockPreview 
+            {showSuccessView
+              ? `${appliedResults.length} Inhaltsblock(e) wurden erfolgreich verarbeitet.`
+              : showBlockPreview 
               ? 'Ordne jeden Inhaltsblock dem passenden Segment zu. Neue Segmente werden automatisch erstellt.'
               : 'Select the improvements you want to apply to this page.'
             }
           </DialogDescription>
         </DialogHeader>
 
+        {/* Success View */}
+        {showSuccessView && (
+          <>
+            <ScrollArea className="flex-1 pr-4">
+              <div className="space-y-4 py-4">
+                {appliedResults.map((result, index) => (
+                  <div 
+                    key={index}
+                    className="rounded-lg border border-green-700/50 bg-green-900/20 p-4"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white">
+                            {result.segmentType === 'intro' ? 'Intro Segment' :
+                             result.segmentType === 'feature-overview' ? 'Feature Overview' :
+                             result.segmentType === 'specification' ? 'Specification' :
+                             result.segmentType === 'banner-p' ? 'Banner' : result.segmentType}
+                          </span>
+                          {result.isNew && (
+                            <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">
+                              <Plus className="h-3 w-3 mr-1" />
+                              Neu erstellt
+                            </Badge>
+                          )}
+                          {!result.isNew && (
+                            <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">
+                              Ergänzt
+                            </Badge>
+                          )}
+                        </div>
+                        <code className="text-xs text-gray-400">{result.segmentKey}</code>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-300 bg-gray-800/60 rounded p-2 mt-2">
+                      {result.contentPreview}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            <div className="flex justify-between items-center pt-4 border-t border-gray-700">
+              <div className="text-sm text-green-400 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Alle Änderungen wurden gespeichert
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleCloseSuccess}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  Schließen
+                </Button>
+                <Button 
+                  onClick={handlePreviewOnFrontend}
+                  className="gap-2 bg-blue-600 hover:bg-blue-500 text-white"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Im Frontend ansehen
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Selection View */}
-        {!showBlockPreview && (
+        {!showBlockPreview && !showSuccessView && (
           <>
             <ScrollArea className="flex-1 pr-4">
               <div className="space-y-6 py-4">
@@ -941,7 +1061,7 @@ ${rawText}`
         )}
 
         {/* Block Preview View */}
-        {showBlockPreview && (
+        {showBlockPreview && !showSuccessView && (
           <>
             {/* Quick Actions */}
             <div className="flex items-center justify-between py-3 border-b border-gray-700">
