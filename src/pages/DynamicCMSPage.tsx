@@ -1541,7 +1541,7 @@ const DynamicCMSPage = () => {
               to="/admin"
               className="ml-2 h-7 px-3 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
             >
-              Edit in Admin
+              Edit in Admin Dashboard
             </Link>
           </div>
         </div>
