@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FirecrawlIcon } from '@/components/FirecrawlIcon';
+import { RefineWithAIDialog } from '@/components/admin/RefineWithAIDialog';
 import { 
   Globe, 
   Download, 
@@ -22,7 +23,8 @@ import {
   AlertCircle,
   Sparkles,
   ArrowRight,
-  Link2
+  Link2,
+  Wand2
 } from 'lucide-react';
 
 interface ParsedContent {
@@ -991,91 +993,130 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           </div>
         )}
 
-        {/* URL Input */}
-        <div className="space-y-3">
-          <Label htmlFor="sourceUrl" className="text-white text-lg flex items-center gap-2 font-medium">
-            <Globe className="h-5 w-5 text-[#f9dc24]" />
-            Source URL {language !== 'en' && <Badge variant="outline" className="ml-2 text-xs">{language.toUpperCase()}</Badge>}
-          </Label>
-          <p className="text-gray-400 text-sm">
-            Enter the source page URL to import content from.
-            Images and PDFs should be uploaded to the Media Management folder beforehand.
-          </p>
-          <div className="flex gap-3">
-            <Input
-              id="sourceUrl"
-              type="url"
-              value={sourceUrl}
-              onChange={(e) => setSourceUrl(e.target.value)}
-              placeholder="https://www.example.com/products/your-product"
-              className="bg-gray-700/80 border-gray-500 text-white placeholder:text-gray-400 flex-1 h-12 text-base px-4 focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
-            />
-            <Button
-              onClick={handleFetchContent}
-              disabled={isLoading || !sourceUrl}
-              className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] text-black hover:from-[#f5c800] hover:to-[#f9dc24] font-semibold h-12 px-6"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Download className="h-5 w-5 mr-2" />
-                  Fetch Content
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Redirect Status/Checkbox with Save Button */}
-          <div className={`flex items-center gap-3 p-4 rounded-lg border mt-4 ${
-            existingRedirectId 
-              ? 'bg-green-500/10 border-green-500/30' 
-              : 'bg-gray-700/50 border-gray-600'
-          }`}>
-            <Checkbox
-              id="createRedirect"
-              checked={createRedirect}
-              onCheckedChange={(checked) => setCreateRedirect(checked === true)}
-              disabled={!!existingRedirectId}
-              className="border-gray-400 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
-            />
-            <div className="flex-1">
-              <Label htmlFor="createRedirect" className={`font-medium flex items-center gap-2 ${existingRedirectId ? 'cursor-default' : 'cursor-pointer'} ${existingRedirectId ? 'text-green-300' : 'text-white'}`}>
-                <Link2 className={`h-4 w-4 ${existingRedirectId ? 'text-green-400' : 'text-[#f9dc24]'}`} />
-                {existingRedirectId ? '301 Redirect Active' : 'Create 301 Redirect'}
-              </Label>
-              <p className="text-gray-400 text-sm mt-0.5">
-                {existingRedirectId 
-                  ? 'A redirect from the source URL to this page is already configured'
-                  : 'The source URL will be saved as a permanent redirect to the new page (SEO Settings)'
-                }
-              </p>
+        {/* Phase 1: URL Input */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#f9dc24]/20 text-[#f9dc24] flex items-center justify-center font-bold text-sm">
+              1
             </div>
-            {existingRedirectId ? (
-              <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
-                <Check className="h-3 w-3 mr-1" />
-                Saved
-              </Badge>
-            ) : (
+            <h3 className="text-white font-semibold">Import Content</h3>
+          </div>
+          
+          <div className="space-y-3 pl-10">
+            <Label htmlFor="sourceUrl" className="text-white text-base flex items-center gap-2 font-medium">
+              <Globe className="h-5 w-5 text-[#f9dc24]" />
+              Source URL {language !== 'en' && <Badge variant="outline" className="ml-2 text-xs">{language.toUpperCase()}</Badge>}
+            </Label>
+            <p className="text-gray-400 text-sm">
+              Enter the source page URL to import content from.
+              Images and PDFs should be uploaded to the Media Management folder beforehand.
+            </p>
+            <div className="flex gap-3">
+              <Input
+                id="sourceUrl"
+                type="url"
+                value={sourceUrl}
+                onChange={(e) => setSourceUrl(e.target.value)}
+                placeholder="https://www.example.com/products/your-product"
+                className="bg-gray-700/80 border-gray-500 text-white placeholder:text-gray-400 flex-1 h-12 text-base px-4 focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+              />
               <Button
-                onClick={handleSaveRedirect}
-                disabled={!sourceUrl || isSavingRedirect}
-                size="sm"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                onClick={handleFetchContent}
+                disabled={isLoading || !sourceUrl}
+                className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] text-black hover:from-[#f5c800] hover:to-[#f9dc24] font-semibold h-12 px-6"
               >
-                {isSavingRedirect ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
                 ) : (
                   <>
-                    <Check className="h-4 w-4 mr-1" />
-                    Save Redirect
+                    <Download className="h-5 w-5 mr-2" />
+                    Fetch Content
                   </>
                 )}
               </Button>
-            )}
+            </div>
+
+            {/* Redirect Status/Checkbox with Save Button */}
+            <div className={`flex items-center gap-3 p-4 rounded-lg border mt-4 ${
+              existingRedirectId 
+                ? 'bg-green-500/10 border-green-500/30' 
+                : 'bg-gray-700/50 border-gray-600'
+            }`}>
+              <Checkbox
+                id="createRedirect"
+                checked={createRedirect}
+                onCheckedChange={(checked) => setCreateRedirect(checked === true)}
+                disabled={!!existingRedirectId}
+                className="border-gray-400 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+              />
+              <div className="flex-1">
+                <Label htmlFor="createRedirect" className={`font-medium flex items-center gap-2 ${existingRedirectId ? 'cursor-default' : 'cursor-pointer'} ${existingRedirectId ? 'text-green-300' : 'text-white'}`}>
+                  <Link2 className={`h-4 w-4 ${existingRedirectId ? 'text-green-400' : 'text-[#f9dc24]'}`} />
+                  {existingRedirectId ? '301 Redirect Active' : 'Create 301 Redirect'}
+                </Label>
+                <p className="text-gray-400 text-sm mt-0.5">
+                  {existingRedirectId 
+                    ? 'A redirect from the source URL to this page is already configured'
+                    : 'The source URL will be saved as a permanent redirect to the new page (SEO Settings)'
+                  }
+                </p>
+              </div>
+              {existingRedirectId ? (
+                <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                  <Check className="h-3 w-3 mr-1" />
+                  Saved
+                </Badge>
+              ) : (
+                <Button
+                  onClick={handleSaveRedirect}
+                  disabled={!sourceUrl || isSavingRedirect}
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                >
+                  {isSavingRedirect ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 mr-1" />
+                      Save Redirect
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Phase 2: Refine with AI */}
+        <Separator className="bg-gray-700" />
+        
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
+              2
+            </div>
+            <h3 className="text-white font-semibold">Refine with AI</h3>
+            <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Optional</Badge>
+          </div>
+          
+          <div className="flex items-start gap-4 p-4 rounded-lg border border-purple-500/30 bg-purple-900/10">
+            <Wand2 className="h-5 w-5 text-purple-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium">Enhance imported content with AI</p>
+              <p className="text-gray-400 text-sm mt-1">
+                After importing content, use AI to expand texts, generate FAQs, optimize SEO meta descriptions, 
+                or suggest additional segments. All changes are previewed before applying.
+              </p>
+            </div>
+            <RefineWithAIDialog 
+              pageSlug={pageSlug} 
+              language={language} 
+              onRefineComplete={onImportComplete}
+              variant="compact"
+            />
           </div>
         </div>
 
