@@ -37,7 +37,7 @@ interface RefineWithAIDialogProps {
   pageSlug: string;
   language: 'en' | 'de' | 'ja' | 'ko' | 'zh';
   onRefineComplete?: () => void;
-  variant?: 'button' | 'compact';
+  variant?: 'button' | 'compact' | 'inline';
   className?: string;
 }
 
@@ -63,41 +63,40 @@ interface ProposedChange {
 const REFINE_OPTIONS: RefineOption[] = [
   {
     id: 'refetch-content',
-    label: 'Mehr Content laden',
-    description: 'Originalseite erneut abrufen und zusätzliche Inhalte extrahieren',
-    icon: <Globe className="h-4 w-4" />,
+    label: 'Fetch Additional Content',
+    description: 'Re-scrape the original source page to extract more content',
+    icon: <Globe className="h-5 w-5" />,
     category: 'fetch',
   },
   {
     id: 'add-segments',
-    label: 'Neue Segmente vorschlagen',
-    description: 'KI analysiert den Content und schlägt passende Segment-Typen vor',
-    icon: <ListPlus className="h-4 w-4" />,
+    label: 'Suggest New Segments',
+    description: 'AI analyzes content and proposes suitable segment types to add',
+    icon: <ListPlus className="h-5 w-5" />,
     category: 'enhance',
   },
   {
     id: 'expand-texts',
-    label: 'Texte erweitern',
-    description: 'Bestehende Texte mit KI-generierten Inhalten ergänzen',
-    icon: <MessageSquarePlus className="h-4 w-4" />,
+    label: 'Expand Existing Texts',
+    description: 'Enrich current texts with AI-generated additional information',
+    icon: <MessageSquarePlus className="h-5 w-5" />,
     category: 'enhance',
   },
   {
     id: 'generate-faq',
-    label: 'FAQs generieren',
-    description: 'Häufige Fragen aus dem vorhandenen Content ableiten',
-    icon: <Lightbulb className="h-4 w-4" />,
+    label: 'Generate FAQs',
+    description: 'Create frequently asked questions from existing page content',
+    icon: <Lightbulb className="h-5 w-5" />,
     category: 'enhance',
   },
   {
     id: 'seo-optimize',
-    label: 'SEO optimieren',
-    description: 'Meta-Beschreibungen und Überschriften für Suchmaschinen verbessern',
-    icon: <FileText className="h-4 w-4" />,
+    label: 'Optimize SEO',
+    description: 'Improve meta descriptions and headlines for search engines',
+    icon: <FileText className="h-5 w-5" />,
     category: 'enhance',
   },
 ];
-
 export const RefineWithAIDialog = ({ 
   pageSlug, 
   language, 
@@ -526,18 +525,32 @@ export const RefineWithAIDialog = ({
   const enhanceOptions = REFINE_OPTIONS.filter(o => o.category === 'enhance');
   const acceptedCount = proposedChanges.filter(c => c.accepted).length;
 
+  // Inline variant - just the button trigger without Dialog wrapper
+  if (variant === 'inline') {
+    return (
+      <Button 
+        onClick={() => setOpen(true)}
+        variant="outline"
+        className={`gap-2 border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 ${className}`}
+      >
+        <Wand2 className="h-4 w-4" />
+        Refine with AI
+      </Button>
+    );
+  }
+
   const triggerButton = variant === 'compact' ? (
     <Button 
       variant="outline" 
       size="sm" 
-      className={`gap-2 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 hover:text-purple-800 ${className}`}
+      className={`gap-2 bg-purple-900/30 border-purple-500/30 text-purple-300 hover:bg-purple-800/40 hover:text-purple-200 ${className}`}
     >
       <Wand2 className="h-4 w-4" />
       Refine with AI
     </Button>
   ) : (
     <Button 
-      className={`gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white ${className}`}
+      className={`gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white ${className}`}
     >
       <Sparkles className="h-4 w-4" />
       Refine with AI
@@ -557,25 +570,25 @@ export const RefineWithAIDialog = ({
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] flex flex-col bg-gray-900 border-gray-700 text-white">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-3 text-xl">
             {showPreview ? (
               <>
-                <Eye className="h-5 w-5 text-purple-600" />
-                Vorschau der Änderungen
+                <Eye className="h-6 w-6 text-purple-400" />
+                <span>Review Proposed Changes</span>
               </>
             ) : (
               <>
-                <Sparkles className="h-5 w-5 text-purple-600" />
-                Content mit KI verfeinern
+                <Sparkles className="h-6 w-6 text-purple-400" />
+                <span>Refine Content with AI</span>
               </>
             )}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-400 text-base">
             {showPreview 
-              ? 'Prüfe die vorgeschlagenen Änderungen und wähle aus, welche übernommen werden sollen.'
-              : 'Wähle die Verbesserungen aus, die du auf diese Seite anwenden möchtest.'
+              ? 'Review the AI-generated suggestions below. Accept or reject each change before applying.'
+              : 'Select the improvements you want to apply to this page. Changes will be previewed before saving.'
             }
           </DialogDescription>
         </DialogHeader>
@@ -587,68 +600,70 @@ export const RefineWithAIDialog = ({
               <div className="space-y-6 py-4">
                 {/* Re-Fetch Section */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <RefreshCw className="h-4 w-4 text-blue-600" />
-                    <h4 className="font-medium text-sm">Content laden</h4>
-                    <Badge variant="secondary" className="text-xs">Fetch</Badge>
+                  <div className="flex items-center gap-3 mb-4">
+                    <RefreshCw className="h-5 w-5 text-blue-400" />
+                    <h4 className="font-semibold text-base text-white">Content Fetching</h4>
+                    <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">Firecrawl</Badge>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {fetchOptions.map(option => (
                       <div
                         key={option.id}
-                        className={`flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                        className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${
                           selectedOptions.includes(option.id)
-                            ? 'bg-blue-50 border-blue-200'
-                            : 'bg-white border-gray-200 hover:bg-gray-50'
+                            ? 'bg-blue-900/30 border-blue-500/50'
+                            : 'bg-gray-800/50 border-gray-700 hover:bg-gray-800 hover:border-gray-600'
                         }`}
                         onClick={() => toggleOption(option.id)}
                       >
                         <Checkbox
                           checked={selectedOptions.includes(option.id)}
                           onCheckedChange={() => toggleOption(option.id)}
+                          className="border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            {option.icon}
-                            <span className="font-medium text-sm">{option.label}</span>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">{option.description}</p>
+                        <div className="text-blue-400 flex-shrink-0">
+                          {option.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium text-base text-white block">{option.label}</span>
+                          <p className="text-sm text-gray-400 mt-0.5">{option.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <Separator />
+                <Separator className="bg-gray-700" />
 
                 {/* AI Enhancement Section */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Wand2 className="h-4 w-4 text-purple-600" />
-                    <h4 className="font-medium text-sm">KI-Verbesserungen</h4>
-                    <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">AI</Badge>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Wand2 className="h-5 w-5 text-purple-400" />
+                    <h4 className="font-semibold text-base text-white">AI Enhancements</h4>
+                    <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Gemini 2.5</Badge>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {enhanceOptions.map(option => (
                       <div
                         key={option.id}
-                        className={`flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                        className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${
                           selectedOptions.includes(option.id)
-                            ? 'bg-purple-50 border-purple-200'
-                            : 'bg-white border-gray-200 hover:bg-gray-50'
+                            ? 'bg-purple-900/30 border-purple-500/50'
+                            : 'bg-gray-800/50 border-gray-700 hover:bg-gray-800 hover:border-gray-600'
                         }`}
                         onClick={() => toggleOption(option.id)}
                       >
                         <Checkbox
                           checked={selectedOptions.includes(option.id)}
                           onCheckedChange={() => toggleOption(option.id)}
+                          className="border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            {option.icon}
-                            <span className="font-medium text-sm">{option.label}</span>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">{option.description}</p>
+                        <div className="text-purple-400 flex-shrink-0">
+                          {option.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium text-base text-white block">{option.label}</span>
+                          <p className="text-sm text-gray-400 mt-0.5">{option.description}</p>
                         </div>
                       </div>
                     ))}
@@ -657,28 +672,33 @@ export const RefineWithAIDialog = ({
               </div>
             </ScrollArea>
 
-            <div className="flex justify-between items-center pt-4 border-t">
-              <div className="text-sm text-gray-500">
-                {selectedOptions.length} ausgewählt
+            <div className="flex justify-between items-center pt-4 border-t border-gray-700">
+              <div className="text-sm text-gray-400">
+                {selectedOptions.length} option{selectedOptions.length !== 1 ? 's' : ''} selected
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleClose} disabled={isProcessing}>
-                  Abbrechen
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleClose} 
+                  disabled={isProcessing}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  Cancel
                 </Button>
                 <Button 
                   onClick={handleGeneratePreview}
                   disabled={selectedOptions.length === 0 || isProcessing}
-                  className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  className="gap-2 bg-purple-600 hover:bg-purple-500 text-white"
                 >
                   {isProcessing ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      {processingStep || 'Generiere Vorschau...'}
+                      {processingStep || 'Generating Preview...'}
                     </>
                   ) : (
                     <>
                       <Eye className="h-4 w-4" />
-                      Vorschau generieren
+                      Generate Preview
                     </>
                   )}
                 </Button>
@@ -691,34 +711,34 @@ export const RefineWithAIDialog = ({
         {showPreview && (
           <>
             {/* Quick Actions */}
-            <div className="flex items-center justify-between py-2 border-b">
+            <div className="flex items-center justify-between py-3 border-b border-gray-700">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleBackToSelection}
-                className="gap-1 text-gray-600"
+                className="gap-2 text-gray-400 hover:text-white hover:bg-gray-800"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Zurück
+                Back to Options
               </Button>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={acceptAllChanges}
-                  className="gap-1 text-green-600 border-green-200 hover:bg-green-50"
+                  className="gap-1 text-green-400 border-green-700 hover:bg-green-900/30 hover:text-green-300"
                 >
-                  <Check className="h-3 w-3" />
-                  Alle akzeptieren
+                  <Check className="h-3.5 w-3.5" />
+                  Accept All
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={rejectAllChanges}
-                  className="gap-1 text-red-600 border-red-200 hover:bg-red-50"
+                  className="gap-1 text-red-400 border-red-700 hover:bg-red-900/30 hover:text-red-300"
                 >
-                  <X className="h-3 w-3" />
-                  Alle ablehnen
+                  <X className="h-3.5 w-3.5" />
+                  Reject All
                 </Button>
               </div>
             </div>
@@ -732,35 +752,37 @@ export const RefineWithAIDialog = ({
                     onOpenChange={() => toggleChangeExpanded(change.id)}
                   >
                     <div
-                      className={`rounded-lg border transition-colors ${
+                      className={`rounded-lg border transition-all ${
                         change.accepted
-                          ? 'bg-green-50 border-green-200'
-                          : 'bg-gray-50 border-gray-200'
+                          ? 'bg-green-900/20 border-green-700/50'
+                          : 'bg-gray-800/50 border-gray-700'
                       }`}
                     >
-                      <div className="flex items-center gap-3 p-3">
+                      <div className="flex items-center gap-4 p-4">
                         <Checkbox
                           checked={change.accepted}
                           onCheckedChange={() => toggleChangeAccepted(change.id)}
+                          className="border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                         />
-                        <CollapsibleTrigger className="flex-1 flex items-center gap-2 text-left">
-                          {expandedChanges.includes(change.id) 
-                            ? <ChevronDown className="h-4 w-4 text-gray-400" />
-                            : <ChevronRight className="h-4 w-4 text-gray-400" />
-                          }
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{change.title}</div>
-                            <div className="text-xs text-gray-500">{change.description}</div>
+                        <CollapsibleTrigger className="flex-1 flex items-center gap-3 text-left">
+                          <div className="text-gray-400">
+                            {expandedChanges.includes(change.id) 
+                              ? <ChevronDown className="h-4 w-4" />
+                              : <ChevronRight className="h-4 w-4" />
+                            }
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-base text-white">{change.title}</div>
+                            <div className="text-sm text-gray-400 mt-0.5">{change.description}</div>
                           </div>
                         </CollapsibleTrigger>
                         <Badge 
-                          variant="secondary" 
-                          className={`text-xs ${
-                            change.type === 'text-expand' ? 'bg-blue-100 text-blue-700' :
-                            change.type === 'faq' ? 'bg-amber-100 text-amber-700' :
-                            change.type === 'seo' ? 'bg-green-100 text-green-700' :
-                            change.type === 'segment-suggestion' ? 'bg-purple-100 text-purple-700' :
-                            'bg-gray-100 text-gray-700'
+                          className={`text-xs flex-shrink-0 ${
+                            change.type === 'text-expand' ? 'bg-blue-900/50 text-blue-300 border-blue-700' :
+                            change.type === 'faq' ? 'bg-amber-900/50 text-amber-300 border-amber-700' :
+                            change.type === 'seo' ? 'bg-green-900/50 text-green-300 border-green-700' :
+                            change.type === 'segment-suggestion' ? 'bg-purple-900/50 text-purple-300 border-purple-700' :
+                            'bg-gray-700 text-gray-300 border-gray-600'
                           }`}
                         >
                           {change.type === 'text-expand' ? 'Text' :
@@ -772,18 +794,18 @@ export const RefineWithAIDialog = ({
                       </div>
                       
                       <CollapsibleContent>
-                        <div className="px-3 pb-3 pt-0 space-y-2">
+                        <div className="px-4 pb-4 pt-0 space-y-3">
                           {change.originalValue && (
-                            <div className="bg-red-50 border border-red-100 rounded p-2">
-                              <div className="text-xs font-medium text-red-600 mb-1">Aktuell:</div>
-                              <div className="text-xs text-red-800 whitespace-pre-wrap">
+                            <div className="bg-red-900/20 border border-red-800/50 rounded-lg p-3">
+                              <div className="text-xs font-medium text-red-400 mb-2">Current:</div>
+                              <div className="text-sm text-red-200/80 whitespace-pre-wrap">
                                 {change.originalValue}
                               </div>
                             </div>
                           )}
-                          <div className="bg-green-50 border border-green-100 rounded p-2">
-                            <div className="text-xs font-medium text-green-600 mb-1">Neu:</div>
-                            <div className="text-xs text-green-800 whitespace-pre-wrap">
+                          <div className="bg-green-900/20 border border-green-800/50 rounded-lg p-3">
+                            <div className="text-xs font-medium text-green-400 mb-2">Proposed:</div>
+                            <div className="text-sm text-green-200/80 whitespace-pre-wrap">
                               {change.proposedValue}
                             </div>
                           </div>
@@ -795,28 +817,33 @@ export const RefineWithAIDialog = ({
               </div>
             </ScrollArea>
 
-            <div className="flex justify-between items-center pt-4 border-t">
-              <div className="text-sm text-gray-500">
-                {acceptedCount} von {proposedChanges.length} Änderung(en) ausgewählt
+            <div className="flex justify-between items-center pt-4 border-t border-gray-700">
+              <div className="text-sm text-gray-400">
+                {acceptedCount} of {proposedChanges.length} change{proposedChanges.length !== 1 ? 's' : ''} selected
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleClose} disabled={isApplying}>
-                  Abbrechen
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleClose} 
+                  disabled={isApplying}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  Cancel
                 </Button>
                 <Button 
                   onClick={handleApplyChanges}
                   disabled={acceptedCount === 0 || isApplying}
-                  className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                  className="gap-2 bg-green-600 hover:bg-green-500 text-white"
                 >
                   {isApplying ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Speichere...
+                      Saving...
                     </>
                   ) : (
                     <>
                       <Check className="h-4 w-4" />
-                      {acceptedCount} Änderung(en) übernehmen
+                      Apply {acceptedCount} Change{acceptedCount !== 1 ? 's' : ''}
                     </>
                   )}
                 </Button>
