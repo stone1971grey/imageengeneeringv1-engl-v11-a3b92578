@@ -26,6 +26,8 @@ import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
 import { RefineWithAIDialog } from "@/components/admin/RefineWithAIDialog";
+import { FrontendEditProvider } from "@/contexts/FrontendEditContext";
+import { EditModeToggle } from "@/components/frontend-edit";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -1503,6 +1505,7 @@ const DynamicCMSPage = () => {
   }
 
   return (
+    <FrontendEditProvider pageSlug={pageSlug} language={currentUrlLanguage}>
     <div className="min-h-screen bg-gray-50">
       <SEOHead
         title={seoData?.title || "Image Engineering"}
@@ -1516,35 +1519,51 @@ const DynamicCMSPage = () => {
       />
       <Navigation />
       
-      {/* Draft Preview Banner - shown only to logged-in admins/editors */}
+      {/* Editor Toolbar - shown to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
-      {isDraftPage && currentUser && userRole && (
-        <div className="fixed top-[110px] left-0 right-0 z-40 bg-yellow text-black py-4 px-4 shadow-md">
-          <div className="container mx-auto flex items-center justify-center gap-4">
-            <Eye className="h-5 w-5" />
-            <span className="font-semibold text-base">Draft Preview</span>
-            <span className="text-black">—</span>
-            <span className="text-sm text-black">
-              This page is not published. Only admins and editors can see this preview.
-            </span>
-            <RefineWithAIDialog
-              pageSlug={pageSlug}
-              language={currentUrlLanguage as 'en' | 'de' | 'ja' | 'ko' | 'zh'}
-              variant="compact"
-              className="ml-3"
-              onRefineComplete={() => {
-                // Reload the page to show updated content
-                window.location.reload();
-              }}
-            />
-            <a
-              href={`/${currentUrlLanguage}/admin-dashboard`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-2 h-9 px-4 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
-            >
-              Admin Dashboard
-            </a>
+      {currentUser && userRole && (
+        <div className={`fixed top-[110px] left-0 right-0 z-40 py-3 px-4 shadow-md ${isDraftPage ? 'bg-yellow text-black' : 'bg-gray-900 text-white'}`}>
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {isDraftPage && (
+                <>
+                  <Eye className="h-5 w-5" />
+                  <span className="font-semibold text-base">Draft Preview</span>
+                  <span className={isDraftPage ? 'text-black' : 'text-gray-400'}>—</span>
+                  <span className={`text-sm ${isDraftPage ? 'text-black' : 'text-gray-300'}`}>
+                    This page is not published.
+                  </span>
+                </>
+              )}
+              {!isDraftPage && (
+                <span className="text-sm text-gray-300">
+                  Frontend Editing Mode
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <EditModeToggle />
+              <RefineWithAIDialog
+                pageSlug={pageSlug}
+                language={currentUrlLanguage as 'en' | 'de' | 'ja' | 'ko' | 'zh'}
+                variant="compact"
+                onRefineComplete={() => {
+                  window.location.reload();
+                }}
+              />
+              <a
+                href={`/${currentUrlLanguage}/admin-dashboard`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`h-9 px-4 inline-flex items-center rounded text-sm font-medium transition-colors ${
+                  isDraftPage 
+                    ? 'bg-black text-white hover:bg-gray-800' 
+                    : 'bg-white text-black hover:bg-gray-100'
+                }`}
+              >
+                Admin Dashboard
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -1750,6 +1769,7 @@ const DynamicCMSPage = () => {
       {/* Conditionally render MiniFooter or regular Footer */}
       {pageSegments.some(seg => seg.type === 'mini-footer') ? <MiniFooter /> : <Footer />}
     </div>
+    </FrontendEditProvider>
   );
 };
 
