@@ -1563,17 +1563,6 @@ const AdminDashboard = () => {
                 setIsContentAutomationOpen(false);
               }}
             />
-            {/* Refine with AI Button - shown alongside Content Automation */}
-            <div className="mt-4 pt-4 border-t border-gray-700 flex items-center gap-3">
-              <span className="text-sm text-gray-400">Bereits importierte Inhalte verfeinern:</span>
-              <RefineWithAIDialog
-                pageSlug={resolvedPageSlug || selectedPage}
-                language={editorLanguage}
-                onRefineComplete={() => {
-                  loadContent();
-                }}
-              />
-            </div>
           </div>
         )}
 
