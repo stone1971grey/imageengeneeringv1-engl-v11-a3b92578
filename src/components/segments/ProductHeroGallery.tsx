@@ -4,12 +4,24 @@ import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
+interface ImageMetadata {
+  url?: string;
+  originalFileName?: string;
+  width?: number;
+  height?: number;
+  fileSizeKB?: number;
+  format?: string;
+  uploadDate?: string;
+  altText?: string;
+}
+
 interface ProductImage {
   imageUrl: string;
   title: string;
   description: string;
   maxWidth?: number | null;
   maxHeight?: number | null;
+  metadata?: ImageMetadata;
 }
 
 interface ProductHeroGalleryProps {
@@ -202,7 +214,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
       >
         <img 
           src={data.images[currentImageIndex]?.imageUrl} 
-          alt={data.images[currentImageIndex]?.title || data.title}
+          alt={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || data.title}
           className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
           style={getCurrentImageStyle()}
         />
@@ -215,11 +227,11 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
         </div>
       </div>
       
-      {/* Image Title - zwischen Bild und Thumbnails */}
-      {data.images[currentImageIndex]?.title && (
+      {/* Image Title - from Alt Text (zwischen Bild und Thumbnails) */}
+      {(data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title) && (
         <div className="text-center mt-3">
           <h4 className="font-medium text-light-foreground text-sm lg:text-base">
-            {data.images[currentImageIndex].title}
+            {data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title}
           </h4>
         </div>
       )}
@@ -239,7 +251,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
             >
               <img 
                 src={image.imageUrl} 
-                alt={image.title || `Image ${index + 1}`}
+                alt={image.metadata?.altText || image.title || `Image ${index + 1}`}
                 className="w-full h-full object-contain bg-white"
               />
             </button>
@@ -277,7 +289,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
           <div className="relative">
             <img 
               src={data.images[currentImageIndex]?.imageUrl} 
-              alt={data.images[currentImageIndex]?.title || data.title}
+              alt={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || data.title}
               className="w-full h-full max-h-[75vh] object-contain"
             />
             
