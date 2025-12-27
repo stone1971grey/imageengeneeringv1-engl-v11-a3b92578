@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FirecrawlIcon } from '@/components/FirecrawlIcon';
 import { RefineWithAIDialog } from '@/components/admin/RefineWithAIDialog';
+import { GeminiIcon } from '@/components/GeminiIcon';
 import { 
   Globe, 
   Download, 
@@ -1091,8 +1092,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         </div>
 
         {/* Phase 2: Refine with AI */}
-        <Separator className="bg-gray-700" />
-        
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
@@ -1102,13 +1101,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Optional</Badge>
           </div>
           
-          <div className="flex items-start gap-4 p-4 rounded-lg border border-purple-500/30 bg-purple-900/10">
-            <Wand2 className="h-5 w-5 text-purple-400 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-4 pl-10">
+            <GeminiIcon className="h-5 w-5 text-purple-400 flex-shrink-0 mt-0.5" rainbow />
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium">Enhance imported content with AI</p>
-              <p className="text-gray-400 text-sm mt-1">
-                After importing content, use AI to expand texts, generate FAQs, optimize SEO meta descriptions, 
-                or suggest additional segments. All changes are previewed before applying.
+              <p className="text-gray-400 text-sm">
+                Use AI to expand texts, generate FAQs, optimize SEO, or suggest additional segments.
               </p>
             </div>
             <RefineWithAIDialog 

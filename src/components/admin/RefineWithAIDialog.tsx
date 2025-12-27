@@ -15,12 +15,12 @@ import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { GeminiIcon } from '@/components/GeminiIcon';
 import { 
   Sparkles, 
   RefreshCw, 
   FileText, 
   Loader2,
-  Wand2,
   Globe,
   ListPlus,
   MessageSquarePlus,
@@ -533,7 +533,7 @@ export const RefineWithAIDialog = ({
         variant="outline"
         className={`gap-2 border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 ${className}`}
       >
-        <Wand2 className="h-4 w-4" />
+        <GeminiIcon className="h-4 w-4" rainbow />
         Refine with AI
       </Button>
     );
@@ -545,14 +545,14 @@ export const RefineWithAIDialog = ({
       size="sm" 
       className={`gap-2 bg-purple-900/30 border-purple-500/30 text-purple-300 hover:bg-purple-800/40 hover:text-purple-200 ${className}`}
     >
-      <Wand2 className="h-4 w-4" />
+      <GeminiIcon className="h-4 w-4" rainbow />
       Refine with AI
     </Button>
   ) : (
     <Button 
       className={`gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white ${className}`}
     >
-      <Sparkles className="h-4 w-4" />
+      <GeminiIcon className="h-4 w-4" rainbow />
       Refine with AI
     </Button>
   );
@@ -638,7 +638,7 @@ export const RefineWithAIDialog = ({
                 {/* AI Enhancement Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <Wand2 className="h-5 w-5 text-purple-400" />
+                    <GeminiIcon className="h-5 w-5 text-purple-400" rainbow />
                     <h4 className="font-semibold text-base text-white">AI Enhancements</h4>
                     <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Gemini 2.5</Badge>
                   </div>
