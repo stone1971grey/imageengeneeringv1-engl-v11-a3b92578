@@ -266,9 +266,9 @@ function parseFirecrawlContent(
   
   console.log('[Firecrawl] Total extracted paragraphs:', paragraphs.length);
   
-  // Build description from paragraphs, fallback to meta
+  // Build description from ALL paragraphs (no limit), fallback to meta
   if (paragraphs.length > 0) {
-    result.description = paragraphs.slice(0, 5).join('\n\n');
+    result.description = paragraphs.join('\n\n');  // ALL paragraphs, no limit
   } else if (metaDescription.length > 30) {
     result.description = metaDescription;
   }
@@ -314,7 +314,7 @@ function parseFirecrawlContent(
     listItems.push(...sentences.slice(0, 8 - listItems.length));
   }
   
-  result.benefits = [...new Set(listItems)].slice(0, 12);
+  result.benefits = [...new Set(listItems)];  // ALL benefits, no limit
   console.log('[Firecrawl] Extracted benefits:', result.benefits.length);
 
   // === SPECIFICATIONS ===
@@ -364,7 +364,7 @@ function parseFirecrawlContent(
     }
   }
   
-  result.specifications = result.specifications.slice(0, 25);
+  // NO LIMIT on specifications - take all extracted specs
   console.log('[Firecrawl] Extracted specifications:', result.specifications.length);
 
   // === USE CASES ===
