@@ -1538,12 +1538,12 @@ const DynamicCMSPage = () => {
               }}
             />
             <a
-              href="/admin"
+              href={`/${currentUrlLanguage}/admin-dashboard`}
               target="_blank"
               rel="noopener noreferrer"
               className="ml-2 h-9 px-4 inline-flex items-center bg-black text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors"
             >
-              Edit in Admin Dashboard
+              Admin Dashboard
             </a>
           </div>
         </div>
