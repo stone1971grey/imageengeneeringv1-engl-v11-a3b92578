@@ -443,14 +443,16 @@ export const RefineWithAIDialog = ({
                 let updatedValue = existing.content_value;
                 try {
                   const parsed = JSON.parse(existing.content_value);
+                  // APPEND logic: add new text as additional paragraph instead of replacing
                   if (parsed.description) {
-                    parsed.description = change.proposedValue;
+                    parsed.description = parsed.description + '\n\n' + change.proposedValue;
                   } else if (parsed.text) {
-                    parsed.text = change.proposedValue;
+                    parsed.text = parsed.text + '\n\n' + change.proposedValue;
                   }
                   updatedValue = JSON.stringify(parsed);
                 } catch {
-                  updatedValue = change.proposedValue;
+                  // Append to plain text
+                  updatedValue = existing.content_value + '\n\n' + change.proposedValue;
                 }
 
                 await supabase
@@ -479,8 +481,76 @@ export const RefineWithAIDialog = ({
             break;
 
           case 'faq':
-            // FAQs would be added to a FAQ segment
-            console.log('FAQ to be added:', change.title, change.proposedValue);
+            // APPEND FAQs to existing FAQ segment instead of replacing
+            const { data: faqSegment } = await supabase
+              .from('page_content')
+              .select('content_value, section_key')
+              .eq('page_slug', pageSlug)
+              .eq('language', language)
+              .like('section_key', '%faq%')
+              .maybeSingle();
+
+            const newFaq = {
+              question: change.title.replace('FAQ: ', ''),
+              answer: change.proposedValue
+            };
+
+            if (faqSegment?.content_value) {
+              // Append to existing FAQs
+              try {
+                const existingFaqs = JSON.parse(faqSegment.content_value);
+                const faqsArray = existingFaqs.faqs || existingFaqs.items || [];
+                faqsArray.push(newFaq);
+                
+                const updatedFaqContent = existingFaqs.faqs 
+                  ? { ...existingFaqs, faqs: faqsArray }
+                  : { ...existingFaqs, items: faqsArray };
+
+                await supabase
+                  .from('page_content')
+                  .update({ content_value: JSON.stringify(updatedFaqContent) })
+                  .eq('page_slug', pageSlug)
+                  .eq('section_key', faqSegment.section_key)
+                  .eq('language', language);
+              } catch {
+                console.error('Failed to parse existing FAQ content');
+              }
+            } else {
+              // Create new FAQ segment if none exists
+              const { data: maxIdData } = await supabase
+                .from('segment_registry')
+                .select('segment_id')
+                .order('segment_id', { ascending: false })
+                .limit(1)
+                .single();
+
+              const nextSegmentId = (maxIdData?.segment_id || 0) + 1;
+
+              // Add to segment registry
+              await supabase
+                .from('segment_registry')
+                .insert({
+                  page_slug: pageSlug,
+                  segment_id: nextSegmentId,
+                  segment_key: `faq-${nextSegmentId}`,
+                  segment_type: 'faq',
+                  position: 99
+                });
+
+              // Add FAQ content
+              await supabase
+                .from('page_content')
+                .insert({
+                  page_slug: pageSlug,
+                  section_key: `faq-${nextSegmentId}`,
+                  language,
+                  content_type: 'json',
+                  content_value: JSON.stringify({
+                    headline: language === 'de' ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions',
+                    faqs: [newFaq]
+                  })
+                });
+            }
             break;
 
           case 'segment-suggestion':
@@ -581,10 +651,9 @@ export const RefineWithAIDialog = ({
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <FirecrawlIcon className="h-5 w-5 text-white" />
-                  <span className="text-gray-400">+</span>
-                  <GeminiIcon className="h-5 w-5" rainbow />
+                  <GeminiIcon className="h-5 w-5 text-white" />
                 </div>
                 <span>Refine Content with AI</span>
               </>
@@ -644,7 +713,7 @@ export const RefineWithAIDialog = ({
                 {/* AI Enhancement Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <GeminiIcon className="h-5 w-5 text-purple-400" rainbow />
+                    <GeminiIcon className="h-5 w-5 text-white" />
                     <h4 className="font-semibold text-base text-white">AI Enhancements</h4>
                     <Badge className="text-xs bg-purple-900/50 text-purple-300 border-purple-700">Gemini 2.5</Badge>
                   </div>
