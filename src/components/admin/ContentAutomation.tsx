@@ -127,53 +127,47 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     setSourceUrl(newUrl);
   }, [pageSlug, language]);
 
-  // Check if redirect already exists for this page on mount and when sourceUrl changes
+  // Check if redirect already exists for this page on mount and when pageSlug/language changes
+  // Also load the original source URL from existing redirect
   useEffect(() => {
     const checkExistingRedirect = async () => {
       // Build target URL
       const targetUrl = `/${language}/${pageSlug}`;
       
-      // Check by target URL
+      // Check by target URL - this also loads the original source URL for the field
       const { data: byTarget } = await supabase
         .from('redirects')
-        .select('id, source_url')
+        .select('id, source_url, notes')
         .eq('target_url', targetUrl)
         .maybeSingle();
       
       if (byTarget) {
         setCreateRedirect(true);
         setExistingRedirectId(byTarget.id);
+        
+        // If we don't have a source URL from mapping, try to extract full URL from redirect notes
+        // Notes format: "Content Automation for page ... | Source: https://www.example.com/..."
+        if (!sourceUrl && byTarget.notes) {
+          const sourceMatch = byTarget.notes.match(/Source:\s*(https?:\/\/[^\s]+)/);
+          if (sourceMatch && sourceMatch[1]) {
+            setSourceUrl(sourceMatch[1]);
+            console.log('[ContentAutomation] Loaded source URL from redirect notes:', sourceMatch[1]);
+          } else if (byTarget.source_url) {
+            // Fall back to source_url path (less ideal but better than nothing)
+            // Try to reconstruct full URL for common domains
+            const fullUrl = `https://www.image-engineering.de${byTarget.source_url}`;
+            setSourceUrl(fullUrl);
+            console.log('[ContentAutomation] Reconstructed source URL from redirect path:', fullUrl);
+          }
+        }
         return;
-      }
-
-      // Also check if source URL already has a redirect
-      if (sourceUrl) {
-        let sourceUrlPath = sourceUrl;
-        try {
-          const urlObj = new URL(sourceUrl);
-          sourceUrlPath = urlObj.pathname;
-        } catch {
-          // Already a path
-        }
-        
-        const { data: bySource } = await supabase
-          .from('redirects')
-          .select('id')
-          .eq('source_url', sourceUrlPath)
-          .maybeSingle();
-        
-        if (bySource) {
-          setCreateRedirect(true);
-          setExistingRedirectId(bySource.id);
-          return;
-        }
       }
       
       setExistingRedirectId(null);
     };
     
     checkExistingRedirect();
-  }, [pageSlug, language, sourceUrl]);
+  }, [pageSlug, language]); // Removed sourceUrl from deps to avoid infinite loop
 
   const handleSaveRedirect = async () => {
     if (!sourceUrl) {
@@ -1031,38 +1025,53 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             </Button>
           </div>
 
-          {/* Redirect Checkbox with Save Button */}
-          <div className="flex items-center gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600 mt-4">
+          {/* Redirect Status/Checkbox with Save Button */}
+          <div className={`flex items-center gap-3 p-4 rounded-lg border mt-4 ${
+            existingRedirectId 
+              ? 'bg-green-500/10 border-green-500/30' 
+              : 'bg-gray-700/50 border-gray-600'
+          }`}>
             <Checkbox
               id="createRedirect"
               checked={createRedirect}
               onCheckedChange={(checked) => setCreateRedirect(checked === true)}
+              disabled={!!existingRedirectId}
               className="border-gray-400 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
             />
             <div className="flex-1">
-              <Label htmlFor="createRedirect" className="text-white font-medium flex items-center gap-2 cursor-pointer">
-                <Link2 className="h-4 w-4 text-[#f9dc24]" />
-                Create 301 Redirect
+              <Label htmlFor="createRedirect" className={`font-medium flex items-center gap-2 ${existingRedirectId ? 'cursor-default' : 'cursor-pointer'} ${existingRedirectId ? 'text-green-300' : 'text-white'}`}>
+                <Link2 className={`h-4 w-4 ${existingRedirectId ? 'text-green-400' : 'text-[#f9dc24]'}`} />
+                {existingRedirectId ? '301 Redirect Active' : 'Create 301 Redirect'}
               </Label>
               <p className="text-gray-400 text-sm mt-0.5">
-                The source URL will be saved as a permanent redirect to the new page (SEO Settings)
+                {existingRedirectId 
+                  ? 'A redirect from the source URL to this page is already configured'
+                  : 'The source URL will be saved as a permanent redirect to the new page (SEO Settings)'
+                }
               </p>
             </div>
-            <Button
-              onClick={handleSaveRedirect}
-              disabled={!sourceUrl || isSavingRedirect}
-              size="sm"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-            >
-              {isSavingRedirect ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Check className="h-4 w-4 mr-1" />
-                  Save Redirect
-                </>
-              )}
-            </Button>
+            {existingRedirectId ? (
+              <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                <Check className="h-3 w-3 mr-1" />
+                Saved
+              </Badge>
+            ) : (
+              <Button
+                onClick={handleSaveRedirect}
+                disabled={!sourceUrl || isSavingRedirect}
+                size="sm"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isSavingRedirect ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Save Redirect
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
