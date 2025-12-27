@@ -661,7 +661,7 @@ export const RefineWithAIDialog = ({
     <Button 
       variant="outline" 
       size="sm" 
-      className={`gap-2 bg-purple-900/30 border-purple-500/30 text-purple-300 hover:bg-purple-800/40 hover:text-purple-200 ${className}`}
+      className={`gap-2 bg-white border-black/20 text-black hover:bg-gray-100 hover:text-black ${className}`}
     >
       <GeminiIcon className="h-4 w-4" rainbow />
       Refine with AI
