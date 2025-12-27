@@ -27,7 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
 import { RefineWithAIDialog } from "@/components/admin/RefineWithAIDialog";
 import { FrontendEditProvider } from "@/contexts/FrontendEditContext";
-import { EditModeToggle } from "@/components/frontend-edit";
+import { EditModeToggle, EditableSegment } from "@/components/frontend-edit";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -60,6 +60,11 @@ const DynamicCMSPage = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<'admin' | 'editor' | null>(null);
+  // Content metadata for frontend editing (content_status, import_stage per segment)
+  const [segmentContentMeta, setSegmentContentMeta] = useState<Record<string, { 
+    content_status: 'draft' | 'pending' | 'approved'; 
+    import_stage: number;
+  }>>({});
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
@@ -268,8 +273,19 @@ const DynamicCMSPage = () => {
         const localIntroLegacyMap: Record<string, { title?: string; description?: string }> = {};
         const localIndustriesOverrideMap: Record<string, any> = {};
         const segmentDataMap: Record<string, any> = {}; // Map segment_key -> data für alle Segmente
+        // Track content status metadata for frontend editing
+        const contentMetaMap: Record<string, { content_status: 'draft' | 'pending' | 'approved'; import_stage: number }> = {};
 
         (rows || []).forEach((item: any) => {
+          // Extract content metadata for all rows
+          const sectionKey = item.section_key;
+          if (sectionKey && !['page_segments', 'tab_order', 'seo'].includes(sectionKey)) {
+            contentMetaMap[sectionKey] = {
+              content_status: (item.content_status as 'draft' | 'pending' | 'approved') || 'approved',
+              import_stage: item.import_stage || 1
+            };
+          }
+          
           if (item.section_key === "page_segments") {
             try {
               segments = JSON.parse(item.content_value || "[]");
@@ -377,11 +393,14 @@ const DynamicCMSPage = () => {
           return seg;
         });
 
-        return { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap };
+        return { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap, contentMetaMap };
       };
 
       // Zuerst versuchen, die Inhalte der gewünschten Sprache zu verwenden
-      let { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap } = parseContentRows(data);
+      let { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap, contentMetaMap } = parseContentRows(data);
+      
+      // Store content metadata for frontend editing
+      let mergedContentMeta = { ...contentMetaMap };
 
       // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
       // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
@@ -414,6 +433,8 @@ const DynamicCMSPage = () => {
           tabs = fallbackParsed.tabs;
           localIntroLegacyMap = fallbackParsed.localIntroLegacyMap;
           localIndustriesOverrideMap = fallbackParsed.localIndustriesOverrideMap;
+          // Merge content metadata from fallback
+          mergedContentMeta = { ...mergedContentMeta, ...fallbackParsed.contentMetaMap };
           
           // WICHTIG: Sprachspezifische Inhalte auf englische Segment-Struktur anwenden
           segments = segments.map((seg: any) => {
@@ -712,6 +733,7 @@ const DynamicCMSPage = () => {
       
       setPageSegments(enrichedSegments);
       setTabOrder(loadedTabOrder);
+      setSegmentContentMeta(mergedContentMeta);
 
       console.log('[DynamicCMSPage] Loaded content', {
         pageSlug,
@@ -1419,6 +1441,39 @@ const DynamicCMSPage = () => {
     }
   };
 
+  // Wrapper function to wrap rendered segments with EditableSegment
+  const renderEditableSegment = (segmentId: string) => {
+    const renderedContent = renderSegment(segmentId);
+    if (!renderedContent) return null;
+    
+    // Find the segment to get its key
+    const segment = pageSegments.find((s) =>
+      String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
+    );
+    
+    if (!segment) return renderedContent;
+    
+    const segmentKey = String(segment.segment_key || segment.id);
+    const meta = segmentContentMeta[segmentKey] || { content_status: 'approved', import_stage: 1 };
+    
+    return (
+      <EditableSegment
+        key={`editable-${segmentId}`}
+        segmentKey={segmentKey}
+        pageSlug={pageSlug}
+        language={currentUrlLanguage}
+        contentStatus={meta.content_status}
+        importStage={meta.import_stage}
+        onContentUpdate={() => {
+          // Reload the page to show updated content
+          loadContent();
+        }}
+      >
+        {renderedContent}
+      </EditableSegment>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -1759,7 +1814,7 @@ const DynamicCMSPage = () => {
                 return segment?.type !== 'meta-navigation' && segment?.type !== 'footer' && segment?.type !== 'mini-footer';
               })
               .map((segmentId) => {
-                const content = renderSegment(segmentId);
+                const content = renderEditableSegment(segmentId);
                 return content || null;
               })
             }
