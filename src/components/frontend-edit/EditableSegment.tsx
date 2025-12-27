@@ -70,10 +70,15 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
     onContentUpdate?.();
   };
 
-  // Extract clean segment name from key (e.g., "intro-549" -> "Intro")
-  const getSegmentDisplayName = () => {
-    const baseName = segmentKey.split('-')[0];
-    return baseName.charAt(0).toUpperCase() + baseName.slice(1);
+  // Extract segment ID from key (e.g., "intro-549" -> "549")
+  const getSegmentId = () => {
+    const parts = segmentKey.split('-');
+    const lastPart = parts[parts.length - 1];
+    // Check if last part is a number
+    if (/^\d+$/.test(lastPart)) {
+      return lastPart;
+    }
+    return segmentKey;
   };
 
   return (
@@ -103,29 +108,29 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
         </div>
       )}
 
-      {/* Floating Action Bar - appears on hover, positioned at top-right corner */}
+      {/* Floating Action Bar - appears on hover, positioned below navigation */}
       {isEditMode && isHovered && (
-        <div className="absolute -top-3 right-4 z-30 flex items-center gap-2">
-          {/* Segment Info Pill */}
-          <div className="flex items-center gap-2 bg-gray-800/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg border border-gray-600">
-            <span className="text-xs text-gray-300 font-medium">{getSegmentDisplayName()}</span>
-            <span className="text-xs text-gray-500 font-mono">{segmentKey}</span>
+        <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
+          {/* Segment ID Badge - Black with Yellow */}
+          <div className="flex items-center bg-black rounded-md px-3 py-1.5 shadow-lg">
+            <span className="text-sm text-[#f9dc24] font-medium">ID: {getSegmentId()}</span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1 bg-gray-800/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg border border-gray-600">
+          <div className="flex items-center gap-1 bg-black rounded-md px-2 py-1.5 shadow-lg">
             {canEdit && (
               <Button 
                 size="sm"
                 variant="ghost"
-                className="h-7 w-7 p-0 rounded-full text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+                className="h-8 w-8 p-0 rounded text-[#f9dc24] hover:text-white hover:bg-[#f9dc24]/20"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // TODO: Trigger inline edit mode
-                  console.log('Edit clicked for:', segmentKey);
+                  // Open admin dashboard with this segment selected
+                  const adminUrl = `/${window.location.pathname.split('/')[1] || 'en'}/admin-dashboard?page=${pageSlug}&segment=${segmentKey}`;
+                  window.open(adminUrl, '_blank');
                 }}
               >
-                <Edit3 className="h-3.5 w-3.5" />
+                <Edit3 className="h-4 w-4" />
               </Button>
             )}
             
@@ -134,7 +139,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
                 <Button 
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 rounded-full text-green-400 hover:text-green-300 hover:bg-green-500/20"
+                  className="h-8 w-8 p-0 rounded text-green-400 hover:text-green-300 hover:bg-green-500/20"
                   onClick={(e) => {
                     e.stopPropagation();
                     editContext.approveSegment(segmentKey).then(success => {
@@ -142,12 +147,12 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
                     });
                   }}
                 >
-                  <Check className="h-3.5 w-3.5" />
+                  <Check className="h-4 w-4" />
                 </Button>
                 <Button 
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 rounded-full text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                  className="h-8 w-8 p-0 rounded text-red-400 hover:text-red-300 hover:bg-red-500/20"
                   onClick={(e) => {
                     e.stopPropagation();
                     editContext.rejectSegment(segmentKey).then(success => {
@@ -155,7 +160,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
                     });
                   }}
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
                 </Button>
               </>
             )}
