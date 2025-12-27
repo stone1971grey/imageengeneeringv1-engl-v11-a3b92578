@@ -64,7 +64,7 @@ const Navigation = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdminOrEditor, setIsAdminOrEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
-  const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
+  const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; status?: string; children?: Array<{ slug: string; title: string; status?: string }> }>>([]);
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
   const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; descriptions: Record<string, string> }>>({});
@@ -99,12 +99,19 @@ const Navigation = () => {
   // ALWAYS load (not just when on styleguide path) so flyout menu shows current data
   useEffect(() => {
     const loadStyleguidePages = async () => {
-      const { data, error } = await supabase
+      // For admins/editors, also load draft pages
+      let query = supabase
         .from('page_registry')
         .select('page_slug, page_title, parent_slug, page_id, position, status')
         .ilike('page_slug', 'styleguide%')
-        .eq('status', 'published') // Only show published pages in navigation
-        .order('position', { ascending: true }); // Sort by position (drag & drop order)
+        .order('position', { ascending: true });
+      
+      // Non-admin users only see published pages
+      if (!isAdminOrEditor) {
+        query = query.eq('status', 'published');
+      }
+      
+      const { data, error } = await query;
 
       if (!error && data) {
         // Build hierarchy: pages directly under styleguide
@@ -114,11 +121,16 @@ const Navigation = () => {
         const pagesWithChildren = directChildren.map(parent => {
           const children = data
             .filter(p => p.parent_slug === parent.page_slug)
-            .map(child => ({ slug: child.page_slug, title: child.page_title }));
+            .map(child => ({ 
+              slug: child.page_slug, 
+              title: child.page_title,
+              status: child.status 
+            }));
           
           return {
             slug: parent.page_slug,
             title: parent.page_title,
+            status: parent.status,
             children: children.length > 0 ? children : undefined
           };
         });
@@ -129,16 +141,22 @@ const Navigation = () => {
 
     // Load styleguide pages immediately on mount for flyout menu
     loadStyleguidePages();
-  }, []); // Empty dependency array - load once on mount
+  }, [isAdminOrEditor]); // Reload when admin status changes
 
   // Load design icons for pages (used in navigation)
   useEffect(() => {
     const loadDesignIcons = async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('page_registry')
         .select('page_slug, design_icon, status')
-        .not('design_icon', 'is', null)
-        .eq('status', 'published'); // Only show published pages in navigation
+        .not('design_icon', 'is', null);
+      
+      // Non-admin users only see published pages
+      if (!isAdminOrEditor) {
+        query = query.eq('status', 'published');
+      }
+      
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error loading design icons:', error);
@@ -155,16 +173,22 @@ const Navigation = () => {
     };
 
     loadDesignIcons();
-  }, []);
+  }, [isAdminOrEditor]);
 
   // Load flyout images and descriptions for pages (used for enriched navigation hover)
   useEffect(() => {
     const loadFlyoutData = async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('page_registry')
         .select('page_slug, flyout_image_url, flyout_description, flyout_description_translations, status')
-        .not('flyout_image_url', 'is', null)
-        .eq('status', 'published'); // Only show published pages in navigation
+        .not('flyout_image_url', 'is', null);
+      
+      // Non-admin users only see published pages
+      if (!isAdminOrEditor) {
+        query = query.eq('status', 'published');
+      }
+      
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error loading flyout data:', error);
@@ -193,16 +217,22 @@ const Navigation = () => {
     };
 
     loadFlyoutData();
-  }, []);
+  }, [isAdminOrEditor]);
 
   // Load CTA configuration for navigation buttons (per group like "your-solution" or "products")
   useEffect(() => {
     const loadCtaConfig = async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('page_registry')
         .select('page_slug, cta_group, cta_label, cta_icon, status')
-        .not('cta_group', 'is', null)
-        .eq('status', 'published'); // Only show published pages in navigation
+        .not('cta_group', 'is', null);
+      
+      // Non-admin users only see published pages
+      if (!isAdminOrEditor) {
+        query = query.eq('status', 'published');
+      }
+      
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error loading CTA config:', error);
@@ -224,7 +254,7 @@ const Navigation = () => {
     };
 
     loadCtaConfig();
-  }, []);
+  }, [isAdminOrEditor]);
   // Check authentication status
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -488,6 +518,9 @@ const Navigation = () => {
                               >
                                 <ChevronRight className="h-4 w-4 flex-shrink-0" />
                                 <span>{translatedSubTitle}</span>
+                                {subpage.status === 'draft' && (
+                                  <span className="text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded font-medium">Draft</span>
+                                )}
                               </Link>
                             );
                           })}
@@ -520,6 +553,9 @@ const Navigation = () => {
                                   >
                                     <FileText className="h-5 w-5 flex-shrink-0" />
                                     <span>{translatedTitle}</span>
+                                    {page.status === 'draft' && (
+                                      <span className="text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded font-medium">Draft</span>
+                                    )}
                                   </Link>
                                 </div>
                               );
@@ -1433,7 +1469,12 @@ const Navigation = () => {
                       {styleguidePages.map((page) => (
                         <AccordionItem key={page.slug} value={page.slug} className="border-none">
                           <AccordionTrigger className="px-4 py-3 text-base font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                            {page.title}
+                            <span className="flex items-center gap-2">
+                              {page.title}
+                              {page.status === 'draft' && (
+                                <span className="text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded font-medium">Draft</span>
+                              )}
+                            </span>
                           </AccordionTrigger>
                           <AccordionContent className="px-0 pb-3">
                             <div className="space-y-1">
@@ -1450,10 +1491,13 @@ const Navigation = () => {
                                     <Link
                                       key={child.slug}
                                       to={`/${language}/${child.slug}`}
-                                      className="block px-4 py-1 text-sm text-gray-600 hover:text-gray-800"
+                                      className="flex items-center gap-2 px-4 py-1 text-sm text-gray-600 hover:text-gray-800"
                                       onClick={() => setIsOpen(false)}
                                     >
                                       {child.title}
+                                      {child.status === 'draft' && (
+                                        <span className="text-xs bg-amber-500 text-white px-1 py-0.5 rounded font-medium">Draft</span>
+                                      )}
                                     </Link>
                                   ))}
                                 </div>
