@@ -543,9 +543,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
           position: position++,
         });
         
-        // Clean specification values from markdown artifacts
+        // Clean specification values from markdown artifacts - NO LIMIT
         const cleanSpecs = parsedContent.specifications
-          .slice(0, 20)  // Max 20 specifications
           .map(s => ({
             specification: s.name.replace(/[*#_`\[\]]/g, '').trim(),
             value: s.value.replace(/[*#_`\[\]]/g, '').replace(/\([^)]*\)/g, '').trim(),
