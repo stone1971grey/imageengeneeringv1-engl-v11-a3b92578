@@ -392,10 +392,10 @@ export const AdminHeader = ({
             {isAdmin && selectedPage && setIsContentAutomationOpen && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-[#8B0000] hover:bg-[#6B0000] text-white shadow-soft hover:shadow-lg"
                 onClick={() => setIsContentAutomationOpen(!isContentAutomationOpen)}
               >
-                <FirecrawlIcon className="h-4 w-4" />
+                <FirecrawlIcon className="h-4 w-4 text-white" />
                 Content Automation
               </Button>
             )}

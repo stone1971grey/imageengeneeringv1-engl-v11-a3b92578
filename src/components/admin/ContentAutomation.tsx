@@ -935,11 +935,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border-gray-600 shadow-2xl">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl">
+          <div className="p-3 bg-[#8B0000] rounded-xl">
             <FirecrawlIcon className="h-8 w-8 text-white" />
           </div>
-          <div>
-            <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-white text-2xl font-bold tracking-tight">Content Automation</CardTitle>
+              <Badge variant="outline" className="text-xs text-gray-400 border-gray-600 bg-gray-800/50">
+                Powered by Firecrawl
+              </Badge>
+            </div>
             <CardDescription className="text-gray-300 text-base mt-1">
               Import content from external URLs and create segments automatically
             </CardDescription>
