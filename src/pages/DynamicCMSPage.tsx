@@ -1577,8 +1577,8 @@ const DynamicCMSPage = () => {
       {/* Editor Toolbar - shown to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {currentUser && userRole && (
-        <div className={`fixed top-[110px] left-0 right-0 z-40 py-2 ${isDraftPage ? 'bg-yellow text-black' : 'bg-transparent'}`}>
-          <div className="container mx-auto flex items-center gap-3 pl-4">
+        <div className={`fixed top-[110px] z-40 py-2 ${isDraftPage ? 'left-0 right-0 bg-yellow text-black' : ''}`}>
+          <div className={`flex items-center gap-2 ${isDraftPage ? 'container mx-auto pl-4' : 'pl-6'}`}>
             {isDraftPage && (
               <>
                 <Eye className="h-5 w-5" />
@@ -1596,7 +1596,8 @@ const DynamicCMSPage = () => {
                   href={`/${currentUrlLanguage}/admin-dashboard`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-9 px-3 inline-flex items-center gap-2 rounded text-sm font-medium transition-colors bg-white text-black hover:bg-gray-100 border border-gray-200"
+                  className="h-9 px-3 inline-flex items-center gap-2 rounded text-sm font-medium transition-colors bg-white text-black hover:bg-gray-100 border border-black/10"
+                  style={{ padding: '1px' }}
                 >
                   <Settings className="h-4 w-4" />
                   Admin
