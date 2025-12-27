@@ -1037,12 +1037,28 @@ export function DataHubDialog({
                               loading="lazy"
                               onClick={() => {
                                 if (selectionMode && onSelect) {
+                                  // Pass complete metadata from Media Management
+                                  const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
                                   onSelect(fileUrl, {
-                                    name: file.name,
+                                    name: getDisplayFileName(file.name),
+                                    originalFileName: getDisplayFileName(file.name),
                                     folder: folder.storage_path,
                                     created_at: file.created_at,
+                                    uploadDate: file.created_at,
+                                    // Size from Supabase storage metadata (in bytes, convert to KB)
+                                    fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                    size: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                    // Format from mimetype or file extension
+                                    format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
+                                    mimeType: file.metadata?.mimetype || '',
+                                    // Alt text
+                                    altText: file.metadata?.alt_text || '',
                                     alt_text: file.metadata?.alt_text || '',
-                                    alt_text_translations: file.metadata?.alt_text_translations || null
+                                    alt_text_translations: file.metadata?.alt_text_translations || null,
+                                    // Note: width/height are not available from Supabase Storage API
+                                    // They would need to be extracted from the image itself
+                                    width: 0,
+                                    height: 0
                                   });
                                 }
                               }}
@@ -1087,13 +1103,22 @@ export function DataHubDialog({
                             className={`aspect-video bg-gray-900 overflow-hidden relative ${selectionMode ? 'cursor-pointer' : ''}`}
                             onClick={() => {
                               if (selectionMode && onSelect) {
+                                const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
                                 onSelect(fileUrl, {
-                                  name: file.name,
+                                  name: getDisplayFileName(file.name),
+                                  originalFileName: getDisplayFileName(file.name),
                                   folder: folder.storage_path,
                                   created_at: file.created_at,
+                                  uploadDate: file.created_at,
+                                  fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                  format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
+                                  mimeType: file.metadata?.mimetype || '',
                                   isVideo: true,
+                                  altText: file.metadata?.alt_text || '',
                                   alt_text: file.metadata?.alt_text || '',
-                                  alt_text_translations: file.metadata?.alt_text_translations || null
+                                  alt_text_translations: file.metadata?.alt_text_translations || null,
+                                  width: 0,
+                                  height: 0
                                 });
                               }
                             }}
@@ -1167,10 +1192,17 @@ export function DataHubDialog({
                             onClick={() => {
                               if (selectionMode && onSelect) {
                                 onSelect(fileUrl, {
-                                  name: file.name,
+                                  name: getDisplayFileName(file.name),
+                                  originalFileName: getDisplayFileName(file.name),
                                   folder: folder.storage_path,
                                   created_at: file.created_at,
-                                  isPdf: true
+                                  uploadDate: file.created_at,
+                                  fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                  format: 'PDF',
+                                  mimeType: file.metadata?.mimetype || 'application/pdf',
+                                  isPdf: true,
+                                  width: 0,
+                                  height: 0
                                 });
                               }
                             }}
@@ -1240,10 +1272,21 @@ export function DataHubDialog({
                                 className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
                                 onClick={() => {
                                   if (onSelect) {
+                                    const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
                                     onSelect(fileUrl, {
-                                      name: file.name,
+                                      name: getDisplayFileName(file.name),
+                                      originalFileName: getDisplayFileName(file.name),
                                       folder: folder.storage_path,
-                                      created_at: file.created_at
+                                      created_at: file.created_at,
+                                      uploadDate: file.created_at,
+                                      fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                      format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
+                                      mimeType: file.metadata?.mimetype || '',
+                                      altText: file.metadata?.alt_text || '',
+                                      alt_text: file.metadata?.alt_text || '',
+                                      alt_text_translations: file.metadata?.alt_text_translations || null,
+                                      width: 0,
+                                      height: 0
                                     });
                                   }
                                 }}
