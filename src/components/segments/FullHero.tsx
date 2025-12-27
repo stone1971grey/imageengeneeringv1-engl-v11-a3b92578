@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { ImageMetadata } from "@/types/imageMetadata";
 import { navigateToLink } from "@/lib/utils";
+import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
+import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableImage } from '@/components/frontend-edit/EditableImage';
 
 interface FullHeroProps {
   id?: string | number;
@@ -26,6 +29,10 @@ interface FullHeroProps {
   kenBurnsEffect?: 'none' | 'standard' | 'slow' | 'fast' | 'zoom-out' | 'pan-left' | 'pan-right';
   overlayOpacity?: number;
   useH1?: boolean;
+  segmentKey?: string;
+  pageSlug?: string;
+  language?: string;
+  onContentUpdate?: () => void;
 }
 
 const FullHero = ({
@@ -51,7 +58,13 @@ const FullHero = ({
   kenBurnsEffect = 'standard',
   overlayOpacity = 15,
   useH1 = false,
+  segmentKey = '',
+  pageSlug = '',
+  language = 'en',
+  onContentUpdate,
 }: FullHeroProps) => {
+  const segmentEdit = useSegmentEdit();
+  const isEditing = segmentEdit?.isSegmentEditing || false;
   
   const getTopPaddingClass = () => {
     // Navigation ist ~100-120px hoch, Meta Navigation (wenn vorhanden) ist ~60px hoch zusätzlich
@@ -144,15 +157,28 @@ const FullHero = ({
       {/* Background layer: image or video full-width */}
       {backgroundType === 'image' && imageUrl && (
         <div className="absolute inset-0 z-0 animate-fade-in">
-          <img
-            src={imageUrl}
-            alt={imageAlt || "Full hero background"}
-            className={`w-full h-full object-cover ${getKenBurnsClass()}`}
-            style={{ 
-              objectPosition: 'center center',
-              transform: kenBurnsEffect !== 'none' ? 'scale(1.3)' : 'scale(1)' 
-            }}
-          />
+          {isEditing ? (
+            <EditableImage
+              src={imageUrl}
+              alt={imageAlt || "Full hero background"}
+              sectionKey={`${segmentKey}-background`}
+              pageSlug={pageSlug}
+              language={language}
+              className="w-full h-full"
+              imgClassName={`w-full h-full object-cover ${getKenBurnsClass()}`}
+              onUpdate={onContentUpdate}
+            />
+          ) : (
+            <img
+              src={imageUrl}
+              alt={imageAlt || "Full hero background"}
+              className={`w-full h-full object-cover ${getKenBurnsClass()}`}
+              style={{ 
+                objectPosition: 'center center',
+                transform: kenBurnsEffect !== 'none' ? 'scale(1.3)' : 'scale(1)' 
+              }}
+            />
+          )}
           <div
             className="absolute inset-0 bg-black"
             style={{ opacity: overlayOpacity / 100 }}
@@ -183,24 +209,89 @@ const FullHero = ({
       {/* Content layer */}
       <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <div className="max-w-4xl w-full">
-          {useH1 ? (
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
-              {titleLine1}
-              <br />
-              <span className="font-medium">{titleLine2}</span>
-            </h1>
-          ) : (
-            <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
-              {titleLine1}
-              <br />
-              <span className="font-medium">{titleLine2}</span>
-            </h2>
-          )}
+          {isEditing ? (
+            <>
+              {useH1 ? (
+                <div className="mb-6">
+                  <EditableText
+                    value={titleLine1}
+                    sectionKey={`${segmentKey}-titleLine1`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight"
+                    as="span"
+                    onUpdate={onContentUpdate}
+                  />
+                  <br />
+                  <EditableText
+                    value={titleLine2}
+                    sectionKey={`${segmentKey}-titleLine2`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="text-5xl lg:text-6xl xl:text-7xl font-medium text-white leading-[1.05] tracking-tight"
+                    as="span"
+                    onUpdate={onContentUpdate}
+                  />
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <EditableText
+                    value={titleLine1}
+                    sectionKey={`${segmentKey}-titleLine1`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight"
+                    as="span"
+                    onUpdate={onContentUpdate}
+                  />
+                  <br />
+                  <EditableText
+                    value={titleLine2}
+                    sectionKey={`${segmentKey}-titleLine2`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="text-5xl lg:text-6xl xl:text-7xl font-medium text-white leading-[1.05] tracking-tight"
+                    as="span"
+                    onUpdate={onContentUpdate}
+                  />
+                </div>
+              )}
 
-          {subtitle && (
-            <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl whitespace-pre-line">
-              {subtitle}
-            </p>
+              {subtitle && (
+                <EditableText
+                  value={subtitle}
+                  sectionKey={`${segmentKey}-subtitle`}
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl"
+                  as="p"
+                  multiline
+                  onUpdate={onContentUpdate}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              {useH1 ? (
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
+                  {titleLine1}
+                  <br />
+                  <span className="font-medium">{titleLine2}</span>
+                </h1>
+              ) : (
+                <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
+                  {titleLine1}
+                  <br />
+                  <span className="font-medium">{titleLine2}</span>
+                </h2>
+              )}
+
+              {subtitle && (
+                <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl whitespace-pre-line">
+                  {subtitle}
+                </p>
+              )}
+            </>
           )}
 
           {(button1Text || button2Text) && (
