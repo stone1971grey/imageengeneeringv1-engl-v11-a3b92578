@@ -13,6 +13,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { GeminiIcon } from '@/components/GeminiIcon';
@@ -31,7 +38,10 @@ import {
   Check,
   X,
   Eye,
-  ArrowLeft
+  ArrowLeft,
+  AlertTriangle,
+  Layers,
+  Plus
 } from 'lucide-react';
 
 interface RefineWithAIDialogProps {
@@ -42,23 +52,30 @@ interface RefineWithAIDialogProps {
   className?: string;
 }
 
+// Content block with target segment assignment
+interface ContentBlock {
+  id: string;
+  type: 'description' | 'technical' | 'benefits' | 'use-cases' | 'notes' | 'specifications';
+  content: string;
+  suggestedSegment: TargetSegment;
+  alternativeSegments: TargetSegment[];
+  selectedSegment: TargetSegment;
+  accepted: boolean;
+  isNew: boolean; // true if segment needs to be created
+}
+
+interface TargetSegment {
+  type: 'intro' | 'feature-overview' | 'specification' | 'faq' | 'banner-p' | 'skip';
+  segmentKey?: string; // existing segment key if updating
+  label: string;
+}
+
 interface RefineOption {
   id: string;
   label: string;
   description: string;
   icon: React.ReactNode;
   category: 'fetch' | 'enhance';
-}
-
-interface ProposedChange {
-  id: string;
-  type: 'text-expand' | 'faq' | 'seo' | 'segment-suggestion' | 'refetch';
-  title: string;
-  description: string;
-  originalValue?: string;
-  proposedValue: string;
-  segmentKey?: string;
-  accepted: boolean;
 }
 
 const REFINE_OPTIONS: RefineOption[] = [
@@ -98,6 +115,17 @@ const REFINE_OPTIONS: RefineOption[] = [
     category: 'enhance',
   },
 ];
+
+// Segment type options for user selection
+const SEGMENT_OPTIONS: TargetSegment[] = [
+  { type: 'intro', label: 'Intro Segment (Beschreibungstext)' },
+  { type: 'feature-overview', label: 'Feature Overview (Benefits/Features)' },
+  { type: 'specification', label: 'Specification (Technische Details)' },
+  { type: 'banner-p', label: 'Banner (Hinweis/Info-Box)' },
+  { type: 'faq', label: 'FAQ (Frage & Antwort)' },
+  { type: 'skip', label: '⏭️ Überspringen' },
+];
+
 export const RefineWithAIDialog = ({ 
   pageSlug, 
   language, 
@@ -112,11 +140,13 @@ export const RefineWithAIDialog = ({
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [isLoadingSourceUrl, setIsLoadingSourceUrl] = useState(false);
   
-  // Preview mode state
-  const [showPreview, setShowPreview] = useState(false);
-  const [proposedChanges, setProposedChanges] = useState<ProposedChange[]>([]);
+  // NEW: Content blocks with segment assignment
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
+  const [showBlockPreview, setShowBlockPreview] = useState(false);
+  const [existingSegments, setExistingSegments] = useState<{key: string, type: string}[]>([]);
+  
   const [isApplying, setIsApplying] = useState(false);
-  const [expandedChanges, setExpandedChanges] = useState<string[]>([]);
+  const [expandedBlocks, setExpandedBlocks] = useState<string[]>([]);
 
   const toggleOption = (optionId: string) => {
     setSelectedOptions(prev => 
@@ -126,106 +156,321 @@ export const RefineWithAIDialog = ({
     );
   };
 
-  const toggleChangeExpanded = (changeId: string) => {
-    setExpandedChanges(prev =>
-      prev.includes(changeId)
-        ? prev.filter(id => id !== changeId)
-        : [...prev, changeId]
+  const toggleBlockExpanded = (blockId: string) => {
+    setExpandedBlocks(prev =>
+      prev.includes(blockId)
+        ? prev.filter(id => id !== blockId)
+        : [...prev, blockId]
     );
   };
 
-  const toggleChangeAccepted = (changeId: string) => {
-    setProposedChanges(prev =>
-      prev.map(c => c.id === changeId ? { ...c, accepted: !c.accepted } : c)
+  const toggleBlockAccepted = (blockId: string) => {
+    setContentBlocks(prev =>
+      prev.map(b => b.id === blockId ? { ...b, accepted: !b.accepted } : b)
     );
   };
 
-  const acceptAllChanges = () => {
-    setProposedChanges(prev => prev.map(c => ({ ...c, accepted: true })));
+  const updateBlockSegment = (blockId: string, segmentType: string) => {
+    const segment = SEGMENT_OPTIONS.find(s => s.type === segmentType);
+    if (!segment) return;
+    
+    // Check if there's an existing segment of this type
+    const existingSegment = existingSegments.find(s => s.type === segmentType);
+    
+    setContentBlocks(prev =>
+      prev.map(b => b.id === blockId ? { 
+        ...b, 
+        selectedSegment: {
+          ...segment,
+          segmentKey: existingSegment?.key
+        },
+        isNew: !existingSegment && segmentType !== 'skip'
+      } : b)
+    );
   };
 
-  const rejectAllChanges = () => {
-    setProposedChanges(prev => prev.map(c => ({ ...c, accepted: false })));
+  const acceptAllBlocks = () => {
+    setContentBlocks(prev => prev.map(b => ({ ...b, accepted: b.selectedSegment.type !== 'skip' })));
   };
 
-  // Generate preview without saving
+  const rejectAllBlocks = () => {
+    setContentBlocks(prev => prev.map(b => ({ ...b, accepted: false })));
+  };
+
+  // Load existing segments for this page
+  const loadExistingSegments = async () => {
+    const { data: segments } = await supabase
+      .from('segment_registry')
+      .select('segment_key, segment_type')
+      .eq('page_slug', pageSlug)
+      .eq('deleted', false);
+    
+    if (segments) {
+      setExistingSegments(segments.map(s => ({ key: s.segment_key, type: s.segment_type })));
+    }
+  };
+
+  // Intelligent text segmentation using AI
+  const segmentTextWithAI = async (rawText: string): Promise<ContentBlock[]> => {
+    console.log('[RefineWithAI] Segmenting text with AI, length:', rawText.length);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-cluster-content', {
+        body: {
+          type: 'segment-text',
+          pageSlug,
+          language,
+          content: rawText,
+          prompt: `Analysiere den folgenden Text und teile ihn in logische Inhaltsblöcke auf.
+          
+WICHTIG: Jeder Block soll einem dieser Typen zugeordnet werden:
+- "description": Allgemeine Produktbeschreibung, Einleitung
+- "technical": Technische Details, Spezifikationen, Messwerte
+- "benefits": Vorteile, Features, Highlights
+- "use-cases": Anwendungsfälle, Einsatzgebiete
+- "notes": Hinweise, Disclaimers, Kontaktinfos (oft am Ende)
+- "specifications": Zahlen, Daten, technische Parameter
+
+REGELN:
+1. Trenne den Text an logischen Stellen (Themenwechsel)
+2. Jeder Block sollte 1-3 Absätze enthalten
+3. "notes" Blöcke mit Kontaktinfos oder "*" Hinweisen sollten übersprungen werden
+4. Behalte den EXAKTEN Originaltext, keine Umformulierungen!
+
+Antworte im JSON-Format:
+{
+  "blocks": [
+    { "type": "description", "content": "Exakter Originaltext...", "shouldSkip": false },
+    { "type": "technical", "content": "Exakter Originaltext...", "shouldSkip": false },
+    { "type": "notes", "content": "Kontaktinfo...", "shouldSkip": true }
+  ]
+}
+
+TEXT ZUM ANALYSIEREN:
+${rawText}`
+        }
+      });
+
+      if (error) {
+        console.error('[RefineWithAI] AI segmentation error:', error);
+        // Fallback: treat entire text as one block
+        return [{
+          id: `block-${Date.now()}`,
+          type: 'description',
+          content: rawText,
+          suggestedSegment: { type: 'intro', label: 'Intro Segment' },
+          alternativeSegments: SEGMENT_OPTIONS.filter(s => s.type !== 'intro'),
+          selectedSegment: { type: 'intro', label: 'Intro Segment' },
+          accepted: true,
+          isNew: false
+        }];
+      }
+
+      if (!data?.blocks || !Array.isArray(data.blocks)) {
+        console.log('[RefineWithAI] No blocks returned from AI');
+        return [];
+      }
+
+      // Map AI blocks to ContentBlocks with segment suggestions
+      const blocks: ContentBlock[] = data.blocks
+        .filter((b: any) => !b.shouldSkip && b.content?.trim().length > 20)
+        .map((block: any, index: number) => {
+          // Suggest segment based on block type
+          let suggestedSegment: TargetSegment;
+          let alternativeSegments: TargetSegment[];
+          
+          switch (block.type) {
+            case 'description':
+              suggestedSegment = { type: 'intro', label: 'Intro Segment (Beschreibungstext)' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'intro');
+              break;
+            case 'technical':
+            case 'specifications':
+              suggestedSegment = { type: 'specification', label: 'Specification (Technische Details)' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'specification');
+              break;
+            case 'benefits':
+              suggestedSegment = { type: 'feature-overview', label: 'Feature Overview (Benefits/Features)' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'feature-overview');
+              break;
+            case 'use-cases':
+              suggestedSegment = { type: 'feature-overview', label: 'Feature Overview (Benefits/Features)' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'feature-overview');
+              break;
+            case 'notes':
+              suggestedSegment = { type: 'skip', label: '⏭️ Überspringen' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'skip');
+              break;
+            default:
+              suggestedSegment = { type: 'intro', label: 'Intro Segment' };
+              alternativeSegments = SEGMENT_OPTIONS.filter(s => s.type !== 'intro');
+          }
+
+          // Check if segment already exists
+          const existingSegment = existingSegments.find(s => s.type === suggestedSegment.type);
+          
+          return {
+            id: `block-${Date.now()}-${index}`,
+            type: block.type as ContentBlock['type'],
+            content: block.content,
+            suggestedSegment,
+            alternativeSegments,
+            selectedSegment: {
+              ...suggestedSegment,
+              segmentKey: existingSegment?.key
+            },
+            accepted: suggestedSegment.type !== 'skip',
+            isNew: !existingSegment && suggestedSegment.type !== 'skip'
+          };
+        });
+
+      console.log('[RefineWithAI] Created', blocks.length, 'content blocks');
+      return blocks;
+
+    } catch (error) {
+      console.error('[RefineWithAI] Segmentation failed:', error);
+      return [];
+    }
+  };
+
+  // Extract new text content from source
+  const fetchAndAnalyzeContent = async (): Promise<ContentBlock[]> => {
+    // Load existing content for comparison
+    const { data: existingContent } = await supabase
+      .from('page_content')
+      .select('section_key, content_value, content_type')
+      .eq('page_slug', pageSlug)
+      .eq('language', language);
+
+    // Extract all existing text for comparison
+    let existingText = '';
+    if (existingContent) {
+      for (const item of existingContent) {
+        try {
+          const parsed = JSON.parse(item.content_value);
+          if (parsed.description) existingText += ' ' + parsed.description;
+          if (parsed.text) existingText += ' ' + parsed.text;
+          if (parsed.introText) existingText += ' ' + parsed.introText;
+        } catch {
+          if (item.content_type === 'text') existingText += ' ' + item.content_value;
+        }
+      }
+    }
+    existingText = existingText.toLowerCase().trim();
+
+    // Find source URL
+    const productName = pageSlug.split('/').pop();
+    let sourceUrlToFetch = sourceUrl;
+    
+    if (!sourceUrlToFetch) {
+      const { data: redirect } = await supabase
+        .from('redirects')
+        .select('source_url')
+        .ilike('target_url', `%${productName}%`)
+        .maybeSingle();
+      
+      if (redirect?.source_url) {
+        sourceUrlToFetch = redirect.source_url.startsWith('http')
+          ? redirect.source_url
+          : `https://www.image-engineering.de${redirect.source_url}`;
+      }
+    }
+
+    if (!sourceUrlToFetch) {
+      toast.error('Keine Source-URL gefunden', {
+        description: 'Diese Seite hat keine verknüpfte Ursprungsseite.'
+      });
+      return [];
+    }
+
+    console.log('[RefineWithAI] Fetching from:', sourceUrlToFetch);
+
+    // Fetch content from source
+    const { data, error } = await supabase.functions.invoke('fetch-external-content', {
+      body: { url: sourceUrlToFetch }
+    });
+
+    if (error || !data?.data) {
+      console.error('[RefineWithAI] Fetch error:', error);
+      toast.error('Fehler beim Laden der Quelldaten');
+      return [];
+    }
+
+    const fetchedData = data.data;
+    console.log('[RefineWithAI] Fetched description length:', fetchedData.description?.length || 0);
+
+    // Extract only NEW text that isn't already on the page
+    if (!fetchedData.description || fetchedData.description.length < 50) {
+      toast.info('Kein neuer Textinhalt gefunden');
+      return [];
+    }
+
+    // Split into phrases and find truly new content
+    const fetchedPhrases = fetchedData.description
+      .split(/[.!?]\s+/)
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 30);
+
+    const existingPhrases = existingText
+      .split(/[.!?]\s+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 20);
+
+    // Find sentences that don't exist yet
+    const newPhrases = fetchedPhrases.filter((phrase: string) => {
+      const normalizedPhrase = phrase.toLowerCase();
+      return !existingPhrases.some(existing => 
+        existing.includes(normalizedPhrase.substring(0, 30)) ||
+        normalizedPhrase.includes(existing.substring(0, 30))
+      );
+    });
+
+    if (newPhrases.length === 0) {
+      toast.info('Alle Textinhalte sind bereits vorhanden');
+      return [];
+    }
+
+    // Combine new phrases back into text
+    const newTextContent = newPhrases.join('. ');
+    console.log('[RefineWithAI] New text content length:', newTextContent.length);
+    console.log('[RefineWithAI] New phrases:', newPhrases.length, 'of', fetchedPhrases.length);
+
+    // Use AI to segment the new text into logical blocks
+    return await segmentTextWithAI(newTextContent);
+  };
+
+  // Generate preview with block segmentation
   const handleGeneratePreview = async () => {
     if (selectedOptions.length === 0) {
-      toast.error('Please select at least one option');
+      toast.error('Bitte wähle mindestens eine Option');
       return;
     }
 
     setIsProcessing(true);
-    setProposedChanges([]);
+    setContentBlocks([]);
     
     try {
-      // Get current segments for the page
-      const { data: segments, error: segmentsError } = await supabase
-        .from('segment_registry')
-        .select('segment_key, segment_type, position')
-        .eq('page_slug', pageSlug)
-        .eq('deleted', false)
-        .order('position');
+      // Load existing segments first
+      await loadExistingSegments();
 
-      if (segmentsError) throw segmentsError;
-
-      // Get current content for these segments
-      const segmentKeys = segments?.map(s => s.segment_key) || [];
-      
-      const { data: content, error: contentError } = await supabase
-        .from('page_content')
-        .select('section_key, content_value, content_type')
-        .eq('page_slug', pageSlug)
-        .eq('language', language)
-        .in('section_key', segmentKeys);
-
-      if (contentError) throw contentError;
-
-      const changes: ProposedChange[] = [];
-
-      // Process each selected option and generate preview
-      for (const optionId of selectedOptions) {
-        setProcessingStep(REFINE_OPTIONS.find(o => o.id === optionId)?.label || optionId);
+      // Process "Fetch Additional Content" option
+      if (selectedOptions.includes('refetch-content')) {
+        setProcessingStep('Analysiere Quelldaten...');
+        const blocks = await fetchAndAnalyzeContent();
         
-        switch (optionId) {
-          case 'refetch-content':
-            const refetchChanges = await generateRefetchPreview();
-            changes.push(...refetchChanges);
-            break;
-          case 'add-segments':
-            const segmentChanges = await generateSegmentSuggestionsPreview(content);
-            changes.push(...segmentChanges);
-            break;
-          case 'expand-texts':
-            const textChanges = await generateExpandTextsPreview(content);
-            changes.push(...textChanges);
-            break;
-          case 'generate-faq':
-            const faqChanges = await generateFAQPreview(content);
-            changes.push(...faqChanges);
-            break;
-          case 'seo-optimize':
-            const seoChanges = await generateSEOPreview();
-            changes.push(...seoChanges);
-            break;
+        if (blocks.length > 0) {
+          setContentBlocks(blocks);
+          setExpandedBlocks(blocks.slice(0, 2).map(b => b.id));
+          setShowBlockPreview(true);
         }
       }
-
-      if (changes.length === 0) {
-        toast.info('No changes proposed', {
-          description: 'AI could not find any improvements for this page.'
-        });
-        return;
-      }
-
-      setProposedChanges(changes);
-      setExpandedChanges(changes.slice(0, 2).map(c => c.id)); // Expand first 2 by default
-      setShowPreview(true);
+      
+      // TODO: Handle other options (add-segments, expand-texts, etc.)
       
     } catch (error) {
       console.error('Preview generation error:', error);
-      toast.error('Error generating preview', {
-        description: error instanceof Error ? error.message : 'Unknown error'
+      toast.error('Fehler bei der Vorschau-Generierung', {
+        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
       });
     } finally {
       setIsProcessing(false);
@@ -233,132 +478,215 @@ export const RefineWithAIDialog = ({
     }
   };
 
-  // Preview generators (return proposed changes without saving)
-  const generateRefetchPreview = async (): Promise<ProposedChange[]> => {
-    // First, load existing content to avoid duplicating
-    const { data: existingContent } = await supabase
-      .from('page_content')
-      .select('section_key, content_value, content_type')
-      .eq('page_slug', pageSlug)
-      .eq('language', language);
+  // Apply accepted content blocks to their target segments
+  const handleApplyBlocks = async () => {
+    const acceptedBlocks = contentBlocks.filter(b => b.accepted && b.selectedSegment.type !== 'skip');
+    
+    if (acceptedBlocks.length === 0) {
+      toast.error('Keine Änderungen ausgewählt');
+      return;
+    }
 
-    // Comprehensive check of what already exists
-    let existingDescription = '';
-    let existingDownloads: string[] = [];
-    let existingImages: string[] = [];
-    let existingSpecifications: string[] = [];
-    let existingBenefits: string[] = [];
-    let existingFeatures: string[] = [];
-    let existingUseCases: string[] = [];
-    let hasIntroSegment = false;
-    let hasSpecificationSegment = false;
-    let hasFeatureSegment = false;
+    setIsApplying(true);
 
-    if (existingContent) {
-      for (const item of existingContent) {
-        try {
-          const parsed = JSON.parse(item.content_value);
-          const sectionKey = item.section_key.toLowerCase();
+    try {
+      for (const block of acceptedBlocks) {
+        const segmentType = block.selectedSegment.type;
+        const segmentKey = block.selectedSegment.segmentKey;
+        
+        console.log('[RefineWithAI] Applying block to:', segmentType, segmentKey || '(new)');
+
+        if (segmentKey) {
+          // UPDATE existing segment - APPEND to existing content
+          const { data: existing } = await supabase
+            .from('page_content')
+            .select('content_value')
+            .eq('page_slug', pageSlug)
+            .eq('section_key', segmentKey)
+            .eq('language', language)
+            .maybeSingle();
+
+          if (existing) {
+            let updatedValue = existing.content_value;
+            try {
+              const parsed = JSON.parse(existing.content_value);
+              
+              // Append to the appropriate field based on segment type
+              if (segmentType === 'intro') {
+                if (parsed.introText) {
+                  parsed.introText = parsed.introText + '\n\n' + block.content;
+                } else if (parsed.description) {
+                  parsed.description = parsed.description + '\n\n' + block.content;
+                } else if (parsed.text) {
+                  parsed.text = parsed.text + '\n\n' + block.content;
+                } else {
+                  parsed.description = block.content;
+                }
+              } else if (segmentType === 'feature-overview') {
+                // Add as new benefit item
+                if (!parsed.items) parsed.items = [];
+                parsed.items.push({
+                  headline: 'Zusätzliche Information',
+                  text: block.content,
+                  icon: 'Info'
+                });
+              } else if (segmentType === 'specification') {
+                // Add to description or as new row
+                if (parsed.description) {
+                  parsed.description = parsed.description + '\n\n' + block.content;
+                } else {
+                  parsed.description = block.content;
+                }
+              }
+              
+              updatedValue = JSON.stringify(parsed);
+            } catch {
+              // Plain text: append
+              updatedValue = existing.content_value + '\n\n' + block.content;
+            }
+
+            await supabase
+              .from('page_content')
+              .update({ content_value: updatedValue })
+              .eq('page_slug', pageSlug)
+              .eq('section_key', segmentKey)
+              .eq('language', language);
+              
+            console.log('[RefineWithAI] Updated segment:', segmentKey);
+          }
+        } else if (block.isNew) {
+          // CREATE new segment
+          const { data: maxIdData } = await supabase
+            .from('segment_registry')
+            .select('segment_id')
+            .order('segment_id', { ascending: false })
+            .limit(1)
+            .single();
+
+          const nextSegmentId = (maxIdData?.segment_id || 0) + 1;
+          const newSegmentKey = `${segmentType}-${nextSegmentId}`;
+
+          // Get max position for this page
+          const { data: maxPosData } = await supabase
+            .from('segment_registry')
+            .select('position')
+            .eq('page_slug', pageSlug)
+            .order('position', { ascending: false })
+            .limit(1)
+            .single();
+
+          const nextPosition = (maxPosData?.position || 0) + 1;
+
+          // Create segment registry entry
+          await supabase
+            .from('segment_registry')
+            .insert({
+              page_slug: pageSlug,
+              segment_id: nextSegmentId,
+              segment_key: newSegmentKey,
+              segment_type: segmentType,
+              position: nextPosition
+            });
+
+          // Create content based on segment type
+          let contentValue: any = {};
           
-          // Track which segment types exist
-          if (sectionKey.includes('intro') || sectionKey.includes('feature-overview')) {
-            hasIntroSegment = true;
+          switch (segmentType) {
+            case 'intro':
+              contentValue = {
+                headline: 'Weitere Informationen',
+                introText: block.content,
+                alignment: 'left',
+                showDivider: true
+              };
+              break;
+            case 'feature-overview':
+              contentValue = {
+                title: 'Features',
+                items: [{
+                  headline: 'Highlight',
+                  text: block.content,
+                  icon: 'Star'
+                }]
+              };
+              break;
+            case 'specification':
+              contentValue = {
+                title: 'Technische Details',
+                description: block.content,
+                rows: []
+              };
+              break;
+            case 'banner-p':
+              contentValue = {
+                title: 'Hinweis',
+                text: block.content,
+                variant: 'info'
+              };
+              break;
           }
-          if (sectionKey.includes('specification') || sectionKey.includes('spec')) {
-            hasSpecificationSegment = true;
-          }
-          if (sectionKey.includes('feature')) {
-            hasFeatureSegment = true;
-          }
-          
-          // Extract existing description/intro text
-          if (parsed.description) {
-            existingDescription += ' ' + parsed.description;
-          }
-          if (parsed.text) {
-            existingDescription += ' ' + parsed.text;
-          }
-          if (parsed.title) {
-            existingDescription += ' ' + parsed.title;
-          }
-          
-          // Extract existing downloads
-          if (parsed.downloads && Array.isArray(parsed.downloads)) {
-            existingDownloads.push(...parsed.downloads.map((d: any) => 
-              (d.url || d.title || '').toLowerCase()
-            ).filter(Boolean));
-          }
-          
-          // Extract existing gallery images
-          if (parsed.images && Array.isArray(parsed.images)) {
-            existingImages.push(...parsed.images.map((img: any) => 
-              img.imageUrl || img.url || ''
-            ).filter(Boolean));
-          }
-          
-          // Extract existing specifications
-          if (parsed.specifications && Array.isArray(parsed.specifications)) {
-            existingSpecifications.push(...parsed.specifications.map((s: any) => 
-              (s.name || s.key || s.label || '').toLowerCase()
-            ).filter(Boolean));
-          }
-          
-          // Extract existing benefits/features from feature-overview or intro segments
-          if (parsed.benefits && Array.isArray(parsed.benefits)) {
-            existingBenefits.push(...parsed.benefits.map((b: any) => 
-              (typeof b === 'string' ? b : b.text || b.title || '').toLowerCase()
-            ).filter(Boolean));
-          }
-          if (parsed.features && Array.isArray(parsed.features)) {
-            existingFeatures.push(...parsed.features.map((f: any) => 
-              (typeof f === 'string' ? f : f.text || f.title || f.name || '').toLowerCase()
-            ).filter(Boolean));
-          }
-          if (parsed.items && Array.isArray(parsed.items)) {
-            // Could be benefits or features in different format
-            existingFeatures.push(...parsed.items.map((i: any) => 
-              (typeof i === 'string' ? i : i.text || i.title || i.headline || '').toLowerCase()
-            ).filter(Boolean));
-          }
-          
-          // Extract use cases
-          if (parsed.useCases && Array.isArray(parsed.useCases)) {
-            existingUseCases.push(...parsed.useCases.map((u: any) => 
-              (u.title || u.name || '').toLowerCase()
-            ).filter(Boolean));
-          }
-        } catch {
-          // Not JSON, check if it's plain text content
-          if (item.content_type === 'text' && item.content_value) {
-            existingDescription += ' ' + item.content_value;
-          }
+
+          await supabase
+            .from('page_content')
+            .insert({
+              page_slug: pageSlug,
+              section_key: newSegmentKey,
+              language,
+              content_type: 'json',
+              content_value: JSON.stringify(contentValue)
+            });
+
+          console.log('[RefineWithAI] Created new segment:', newSegmentKey);
         }
       }
+
+      toast.success('Änderungen übernommen!', {
+        description: `${acceptedBlocks.length} Inhaltsblock(e) wurden verarbeitet.`
+      });
+      
+      setOpen(false);
+      setShowBlockPreview(false);
+      setContentBlocks([]);
+      setSelectedOptions([]);
+      onRefineComplete?.();
+      
+    } catch (error) {
+      console.error('Apply blocks error:', error);
+      toast.error('Fehler beim Speichern', {
+        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      });
+    } finally {
+      setIsApplying(false);
     }
+  };
+
+  const handleBackToSelection = () => {
+    setShowBlockPreview(false);
+    setContentBlocks([]);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setShowBlockPreview(false);
+    setContentBlocks([]);
+    setSelectedOptions([]);
+  };
+
+  const fetchOptions = REFINE_OPTIONS.filter(o => o.category === 'fetch');
+  const enhanceOptions = REFINE_OPTIONS.filter(o => o.category === 'enhance');
+  const acceptedCount = contentBlocks.filter(b => b.accepted && b.selectedSegment.type !== 'skip').length;
+
+  // Load source URL when dialog opens
+  const loadSourceUrl = async () => {
+    setIsLoadingSourceUrl(true);
+    console.log('[RefineWithAI] Loading source URL for pageSlug:', pageSlug);
     
-    // Normalize existing description for comparison
-    existingDescription = existingDescription.toLowerCase().trim();
-
-    console.log('[RefineWithAI] === EXISTING CONTENT ANALYSIS ===');
-    console.log('[RefineWithAI] Description length:', existingDescription.length);
-    console.log('[RefineWithAI] Existing downloads:', existingDownloads.length);
-    console.log('[RefineWithAI] Existing images:', existingImages.length);
-    console.log('[RefineWithAI] Existing specifications:', existingSpecifications.length);
-    console.log('[RefineWithAI] Existing benefits:', existingBenefits.length);
-    console.log('[RefineWithAI] Existing features:', existingFeatures.length);
-    console.log('[RefineWithAI] Has intro segment:', hasIntroSegment);
-    console.log('[RefineWithAI] Has specification segment:', hasSpecificationSegment);
-
-    // Try multiple URL patterns to find the redirect
     const urlPatterns = [
       `/${language}/${pageSlug}`,
       `/${pageSlug}`,
       `/en/${pageSlug}`,
     ];
     
-    let sourceUrl: string | null = null;
-    
-    // First try exact match
     for (const targetUrl of urlPatterns) {
       const { data: redirect } = await supabase
         .from('redirects')
@@ -367,676 +695,45 @@ export const RefineWithAIDialog = ({
         .maybeSingle();
       
       if (redirect?.source_url) {
-        sourceUrl = redirect.source_url;
-        break;
+        const fullUrl = redirect.source_url.startsWith('http') 
+          ? redirect.source_url 
+          : `https://www.image-engineering.de${redirect.source_url}`;
+        setSourceUrl(fullUrl);
+        setIsLoadingSourceUrl(false);
+        return;
       }
     }
     
-    // If no exact match, try LIKE search with pageSlug
-    if (!sourceUrl) {
-      const { data: redirect } = await supabase
-        .from('redirects')
-        .select('source_url, target_url')
-        .ilike('target_url', `%${pageSlug.split('/').pop()}%`)
-        .maybeSingle();
-      
-      if (redirect?.source_url) {
-        sourceUrl = redirect.source_url;
-        console.log('[RefineWithAI] Found redirect via LIKE search:', redirect.target_url, '->', sourceUrl);
-      }
-    }
-
-    if (!sourceUrl) {
-      console.log('[RefineWithAI] No redirect found for pageSlug:', pageSlug);
-      return [];
-    }
-
-    // Build full URL if relative
-    const fullUrl = sourceUrl.startsWith('http') 
-      ? sourceUrl 
-      : `https://www.image-engineering.de${sourceUrl}`;
+    // Try LIKE search
+    const productName = pageSlug.split('/').pop();
+    const { data: redirect } = await supabase
+      .from('redirects')
+      .select('source_url')
+      .ilike('target_url', `%${productName}%`)
+      .maybeSingle();
     
-    console.log('[RefineWithAI] Fetching content from:', fullUrl);
-
-    const { data, error } = await supabase.functions.invoke('fetch-external-content', {
-      body: { url: fullUrl }
-    });
-
-    if (error) {
-      console.error('[RefineWithAI] Fetch error:', error);
-      return [];
+    if (redirect?.source_url) {
+      const fullUrl = redirect.source_url.startsWith('http') 
+        ? redirect.source_url 
+        : `https://www.image-engineering.de${redirect.source_url}`;
+      setSourceUrl(fullUrl);
+    } else {
+      setSourceUrl(null);
     }
-    
-    if (!data?.data) {
-      console.log('[RefineWithAI] No data returned from fetch');
-      return [];
-    }
-
-    const fetchedData = data.data;
-
-    console.log('[RefineWithAI] === FETCHED CONTENT ===');
-    console.log('[RefineWithAI] Description:', fetchedData.description?.length || 0, 'chars');
-    console.log('[RefineWithAI] Benefits:', fetchedData.benefits?.length || 0);
-    console.log('[RefineWithAI] Specifications:', fetchedData.specifications?.length || 0);
-    console.log('[RefineWithAI] Downloads:', fetchedData.downloads?.length || 0);
-    console.log('[RefineWithAI] UseCases:', fetchedData.useCases?.length || 0);
-
-    // Helper function to check if content is truly new
-    const isContentNew = (newText: string, existingTexts: string[]): boolean => {
-      const normalizedNew = newText.toLowerCase().trim();
-      // Check if any existing text contains this or vice versa
-      return !existingTexts.some(existing => 
-        existing.includes(normalizedNew.substring(0, 30)) ||
-        normalizedNew.includes(existing.substring(0, 30))
-      );
-    };
-
-    // Helper to extract key phrases for comparison
-    const extractKeyPhrases = (text: string): string[] => {
-      return text.toLowerCase()
-        .split(/[.,;:\n]+/)
-        .map(s => s.trim())
-        .filter(s => s.length > 20);
-    };
-
-    // Parse the fetched content and create proposed changes
-    // INTELLIGENT MERGE: Only add content that doesn't already exist
-    const changes: ProposedChange[] = [];
-    
-    // === DESCRIPTION ANALYSIS ===
-    // Always propose new text content if there are ANY new phrases
-    if (fetchedData.description && fetchedData.description.length > 50) {
-      const fetchedPhrases = extractKeyPhrases(fetchedData.description);
-      const existingPhrases = extractKeyPhrases(existingDescription);
-      
-      // Find truly new phrases not covered by existing content
-      const newPhrases = fetchedPhrases.filter(phrase => 
-        !existingPhrases.some(existing => 
-          existing.includes(phrase.substring(0, 25)) || 
-          phrase.includes(existing.substring(0, 25))
-        )
-      );
-      
-      const coverageRatio = existingPhrases.length > 0 
-        ? 1 - (newPhrases.length / Math.max(fetchedPhrases.length, 1))
-        : 0;
-      console.log('[RefineWithAI] Description coverage:', Math.round(coverageRatio * 100) + '%');
-      console.log('[RefineWithAI] New phrases found:', newPhrases.length, 'of', fetchedPhrases.length);
-      
-      // Suggest if we have ANY new content (not already covered)
-      if (newPhrases.length > 0) {
-        // Build the actual new text from new phrases only
-        const newTextContent = newPhrases.join('. ');
-        changes.push({
-          id: `refetch-desc-${Date.now()}`,
-          type: 'refetch',
-          title: 'Zusätzlicher Textinhalt',
-          description: `${newPhrases.length} neue Textabschnitte gefunden (${Math.round(coverageRatio * 100)}% bereits vorhanden)`,
-          proposedValue: newTextContent,
-          originalValue: existingDescription.length > 0 ? `Bereits vorhanden: ${existingDescription.substring(0, 200)}...` : undefined,
-          accepted: true
-        });
-      } else {
-        console.log('[RefineWithAI] Skipping description - all content already exists');
-      }
-    }
-    
-    // === BENEFITS ANALYSIS ===
-    if (fetchedData.benefits && Array.isArray(fetchedData.benefits) && fetchedData.benefits.length > 0) {
-      // Combine existing benefits and features for comparison
-      const allExistingBenefits = [...existingBenefits, ...existingFeatures];
-      
-      // Filter to only truly new benefits
-      const newBenefits = fetchedData.benefits.filter((benefit: string) => {
-        const normalizedBenefit = benefit.toLowerCase();
-        return !allExistingBenefits.some(existing => 
-          existing.includes(normalizedBenefit.substring(0, 20)) ||
-          normalizedBenefit.includes(existing.substring(0, 20))
-        );
-      });
-      
-      console.log('[RefineWithAI] Benefits: ${fetchedData.benefits.length} fetched, ${newBenefits.length} are new');
-      
-      if (newBenefits.length > 0) {
-        changes.push({
-          id: `refetch-benefits-${Date.now()}`,
-          type: 'refetch',
-          title: 'New benefits from source',
-          description: `${newBenefits.length} new benefits (${fetchedData.benefits.length - newBenefits.length} already exist)`,
-          proposedValue: newBenefits.map((b: string) => `• ${b}`).join('\n'),
-          accepted: true
-        });
-      } else {
-        console.log('[RefineWithAI] Skipping benefits - all already covered');
-      }
-    }
-    
-    // === SPECIFICATIONS ANALYSIS ===
-    if (fetchedData.specifications && Array.isArray(fetchedData.specifications) && fetchedData.specifications.length > 0) {
-      const newSpecs = fetchedData.specifications.filter((s: any) => {
-        const specName = (s.name || '').toLowerCase();
-        return !existingSpecifications.some(existing => 
-          existing.includes(specName) || specName.includes(existing)
-        );
-      });
-      
-      console.log('[RefineWithAI] Specifications: ${fetchedData.specifications.length} fetched, ${newSpecs.length} are new');
-      
-      if (newSpecs.length > 0) {
-        changes.push({
-          id: `refetch-specs-${Date.now()}`,
-          type: 'refetch',
-          title: 'New specifications from source',
-          description: `${newSpecs.length} new specs (${existingSpecifications.length} already exist)`,
-          proposedValue: newSpecs.map((s: any) => `${s.name}: ${s.value}`).join('\n'),
-          accepted: true
-        });
-      } else {
-        console.log('[RefineWithAI] Skipping specifications - all already exist');
-      }
-    }
-    
-    // === USE CASES ANALYSIS ===
-    if (fetchedData.useCases && Array.isArray(fetchedData.useCases) && fetchedData.useCases.length > 0) {
-      const newUseCases = fetchedData.useCases.filter((u: any) => {
-        const useCaseTitle = (u.title || '').toLowerCase();
-        return !existingUseCases.some(existing => 
-          existing.includes(useCaseTitle.substring(0, 15)) || 
-          useCaseTitle.includes(existing.substring(0, 15))
-        );
-      });
-      
-      if (newUseCases.length > 0) {
-        changes.push({
-          id: `refetch-usecases-${Date.now()}`,
-          type: 'refetch',
-          title: 'New use cases from source',
-          description: `${newUseCases.length} new use cases found`,
-          proposedValue: newUseCases.map((u: any) => `**${u.title}**: ${u.description}`).join('\n\n'),
-          accepted: true
-        });
-      }
-    }
-    
-    // === DOWNLOADS ANALYSIS - Intelligent check ===
-    if (fetchedData.downloads && Array.isArray(fetchedData.downloads) && fetchedData.downloads.length > 0) {
-      // Check if there's already a downloads segment configured
-      const hasDownloadsSegment = existingContent?.some(item => 
-        item.section_key.toLowerCase().includes('download')
-      );
-      
-      if (hasDownloadsSegment && existingDownloads.length > 0) {
-        console.log('[RefineWithAI] SKIP downloads - segment already configured with', existingDownloads.length, 'items');
-      } else {
-        // Check if PDFs exist in storage for this page
-        const productPath = pageSlug.replace(/\//g, '/');
-        const { data: storagePdfs } = await supabase
-          .from('file_segment_mappings')
-          .select('file_path, alt_text, segment_ids')
-          .ilike('file_path', `%${pageSlug.split('/').pop()}%`)
-          .ilike('file_path', '%.pdf');
-        
-        const pdfsInStorage = storagePdfs || [];
-        
-        console.log('[RefineWithAI] Downloads analysis:');
-        console.log('[RefineWithAI] - Fetched downloads:', fetchedData.downloads.length);
-        console.log('[RefineWithAI] - PDFs in storage:', pdfsInStorage.length);
-        console.log('[RefineWithAI] - Has downloads segment:', hasDownloadsSegment);
-        
-        if (pdfsInStorage.length > 0) {
-          // PDFs exist in storage - suggest creating a downloads segment
-          const pdfList = pdfsInStorage.map((p: any) => 
-            `• ${p.alt_text || p.file_path.split('/').pop()}`
-          ).join('\n');
-          
-          changes.push({
-            id: `refetch-downloads-segment-${Date.now()}`,
-            type: 'refetch',
-            title: 'Create Downloads Segment',
-            description: `${pdfsInStorage.length} PDFs found in Media Management - ready to link`,
-            proposedValue: `PDFs available in storage:\n${pdfList}\n\n→ Create a downloads-segment to display these documents`,
-            accepted: true
-          });
-        } else {
-          // PDFs not in storage yet - inform user to upload first
-          const pdfUrls = fetchedData.downloads
-            .filter((d: any) => d.url?.toLowerCase().includes('.pdf'))
-            .map((d: any) => `• ${d.title}: ${d.url}`)
-            .join('\n');
-          
-          if (pdfUrls) {
-            changes.push({
-              id: `refetch-downloads-upload-${Date.now()}`,
-              type: 'refetch',
-              title: 'PDFs need to be uploaded first',
-              description: `${fetchedData.downloads.length} downloads found on source - upload PDFs to Media Management first`,
-              proposedValue: `Source page has these downloads:\n${pdfUrls}\n\n⚠️ ACTION REQUIRED: Upload these PDFs to Media Management (folder: ${pageSlug}), then run "Fetch Additional Content" again to create the downloads segment.`,
-              accepted: false // Default OFF - requires manual action first
-            });
-          }
-        }
-      }
-    }
-
-    // === IMAGES - NEVER auto-import, they're managed in Media Management ===
-    // Images are uploaded manually and linked via file_segment_mappings
-    if (existingImages.length > 0) {
-      console.log('[RefineWithAI] Gallery images already configured:', existingImages.length);
-    } else if (fetchedData.images && fetchedData.images.length > 0) {
-      // Check if images exist in storage but aren't linked to a segment yet
-      const { data: storageImages } = await supabase
-        .from('file_segment_mappings')
-        .select('file_path, alt_text, segment_ids')
-        .ilike('file_path', `%${pageSlug.split('/').pop()}%`)
-        .not('file_path', 'ilike', '%.pdf');
-      
-      if (storageImages && storageImages.length > 0) {
-        const unlinkedImages = storageImages.filter((img: any) => 
-          !img.segment_ids || img.segment_ids.length === 0
-        );
-        
-        if (unlinkedImages.length > 0) {
-          console.log('[RefineWithAI] Found', unlinkedImages.length, 'unlinked images in storage');
-          changes.push({
-            id: `refetch-images-link-${Date.now()}`,
-            type: 'refetch',
-            title: 'Link existing images to gallery',
-            description: `${unlinkedImages.length} images in storage are not linked to any segment`,
-            proposedValue: `Images available in storage:\n${unlinkedImages.map((i: any) => `• ${i.alt_text || i.file_path}`).join('\n')}\n\n→ These should be linked to the product-hero-gallery segment`,
-            accepted: true
-          });
-        }
-      } else {
-        console.log('[RefineWithAI] No images in storage yet - user needs to upload via Media Management');
-      }
-    }
-    
-    // === SUMMARY ===
-    console.log('[RefineWithAI] === PROPOSED CHANGES SUMMARY ===');
-    console.log('[RefineWithAI] Total changes proposed:', changes.length);
-    changes.forEach(c => console.log(`[RefineWithAI] - ${c.title}: ${c.description}`));
-
-    return changes;
+    setIsLoadingSourceUrl(false);
   };
 
-  const generateSegmentSuggestionsPreview = async (content: any[] | null): Promise<ProposedChange[]> => {
-    if (!content || content.length === 0) return [];
-
-    const contentSummary = content.map(c => {
-      try {
-        const parsed = JSON.parse(c.content_value);
-        return { type: c.content_type, key: c.section_key, data: parsed };
-      } catch {
-        return { type: c.content_type, key: c.section_key, data: c.content_value };
-      }
-    });
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-cluster-content', {
-        body: {
-          type: 'suggest-segments',
-          pageSlug,
-          language,
-          currentContent: contentSummary,
-          prompt: `Analysiere den vorhandenen Content dieser Produktseite und schlage 2-3 zusätzliche Segment-Typen vor, 
-                   die den Content ergänzen würden. Verfügbare Segment-Typen sind NUR diese existierenden Typen: 
-                   action-hero, intro, specification, feature-overview, faq, table, video, banner-p, 
-                   downloads-segment, events-segment, industries-segment, news-segment, news-list-segment, 
-                   product-list-segment, product-hero-gallery, full-hero.
-                   WICHTIG: Verwende NUR Typen aus dieser Liste! Keine anderen Typen erfinden!
-                   Antworte im JSON-Format: { suggestions: [{ type: string, reason: string }] }`
-        }
-      });
-
-      if (error || !data?.suggestions) return [];
-
-      return data.suggestions.map((s: any, i: number) => ({
-        id: `segment-${Date.now()}-${i}`,
-        type: 'segment-suggestion' as const,
-        title: `Neues Segment: ${s.type}`,
-        description: s.reason || 'KI-Vorschlag für zusätzliches Segment',
-        proposedValue: `Segment-Typ: ${s.type}`,
-        accepted: true
-      }));
-    } catch {
-      return [];
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setOpen(true);
+      loadSourceUrl();
+      loadExistingSegments();
+    } else {
+      handleClose();
     }
   };
 
-  const generateExpandTextsPreview = async (content: any[] | null): Promise<ProposedChange[]> => {
-    if (!content || content.length === 0) return [];
-
-    const introContent = content.find(c => 
-      c.section_key.includes('intro') || c.section_key.includes('description')
-    );
-
-    if (!introContent) return [];
-
-    try {
-      // Parse current content
-      let currentText = '';
-      try {
-        const parsed = JSON.parse(introContent.content_value);
-        currentText = parsed.description || parsed.text || introContent.content_value;
-      } catch {
-        currentText = introContent.content_value;
-      }
-
-      const { data, error } = await supabase.functions.invoke('generate-intro-text', {
-        body: {
-          pageSlug,
-          language,
-          currentText,
-          action: 'expand'
-        }
-      });
-
-      if (error || !data?.text) return [];
-
-      return [{
-        id: `text-expand-${Date.now()}`,
-        type: 'text-expand',
-        title: 'Intro-Text erweitert',
-        description: 'Der bestehende Intro-Text wurde mit zusätzlichen Informationen ergänzt',
-        originalValue: currentText.substring(0, 200) + (currentText.length > 200 ? '...' : ''),
-        proposedValue: data.text,
-        segmentKey: introContent.section_key,
-        accepted: true
-      }];
-    } catch {
-      return [];
-    }
-  };
-
-  const generateFAQPreview = async (content: any[] | null): Promise<ProposedChange[]> => {
-    if (!content || content.length === 0) return [];
-
-    const allText = content.map(c => c.content_value).join('\n\n');
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-cluster-content', {
-        body: {
-          type: 'generate-faq',
-          pageSlug,
-          language,
-          content: allText,
-          prompt: `Generiere 3-5 häufig gestellte Fragen (FAQs) basierend auf dem folgenden Produktcontent. 
-                   Die Fragen sollten typische Kundenfragen sein.
-                   Antworte im JSON-Format: { faqs: [{ question: string, answer: string }] }`
-        }
-      });
-
-      if (error || !data?.faqs) return [];
-
-      return data.faqs.map((faq: any, i: number) => ({
-        id: `faq-${Date.now()}-${i}`,
-        type: 'faq' as const,
-        title: `FAQ: ${faq.question}`,
-        description: 'Neue FAQ basierend auf dem Seiteninhalt',
-        proposedValue: faq.answer,
-        accepted: true
-      }));
-    } catch {
-      return [];
-    }
-  };
-
-  const generateSEOPreview = async (): Promise<ProposedChange[]> => {
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-seo-description', {
-        body: {
-          pageSlug,
-          language
-        }
-      });
-
-      if (error || !data?.description) return [];
-
-      return [{
-        id: `seo-${Date.now()}`,
-        type: 'seo',
-        title: 'SEO Meta-Beschreibung',
-        description: 'Optimierte Meta-Beschreibung für Suchmaschinen',
-        proposedValue: data.description,
-        accepted: true
-      }];
-    } catch {
-      return [];
-    }
-  };
-
-  // Apply accepted changes
-  const handleApplyChanges = async () => {
-    const acceptedChanges = proposedChanges.filter(c => c.accepted);
-    
-    if (acceptedChanges.length === 0) {
-      toast.error('No changes selected', {
-        description: 'Please accept at least one change.'
-      });
-      return;
-    }
-
-    setIsApplying(true);
-
-    try {
-      for (const change of acceptedChanges) {
-        switch (change.type) {
-          case 'text-expand':
-            if (change.segmentKey) {
-              // Update the intro text in page_content
-              const { data: existing } = await supabase
-                .from('page_content')
-                .select('content_value')
-                .eq('page_slug', pageSlug)
-                .eq('section_key', change.segmentKey)
-                .eq('language', language)
-                .maybeSingle();
-
-              if (existing) {
-                let updatedValue = existing.content_value;
-                try {
-                  const parsed = JSON.parse(existing.content_value);
-                  // APPEND logic: add new text as additional paragraph instead of replacing
-                  if (parsed.description) {
-                    parsed.description = parsed.description + '\n\n' + change.proposedValue;
-                  } else if (parsed.text) {
-                    parsed.text = parsed.text + '\n\n' + change.proposedValue;
-                  }
-                  updatedValue = JSON.stringify(parsed);
-                } catch {
-                  // Append to plain text
-                  updatedValue = existing.content_value + '\n\n' + change.proposedValue;
-                }
-
-                await supabase
-                  .from('page_content')
-                  .update({ content_value: updatedValue })
-                  .eq('page_slug', pageSlug)
-                  .eq('section_key', change.segmentKey)
-                  .eq('language', language);
-              }
-            }
-            break;
-
-          case 'seo':
-            // Update SEO content
-            await supabase
-              .from('page_content')
-              .upsert({
-                page_slug: pageSlug,
-                section_key: 'seo',
-                language,
-                content_type: 'json',
-                content_value: JSON.stringify({ description: change.proposedValue })
-              }, {
-                onConflict: 'page_slug,section_key,language'
-              });
-            break;
-
-          case 'faq':
-            // APPEND FAQs to existing FAQ segment instead of replacing
-            const { data: faqSegment } = await supabase
-              .from('page_content')
-              .select('content_value, section_key')
-              .eq('page_slug', pageSlug)
-              .eq('language', language)
-              .like('section_key', '%faq%')
-              .maybeSingle();
-
-            const newFaq = {
-              question: change.title.replace('FAQ: ', ''),
-              answer: change.proposedValue
-            };
-
-            if (faqSegment?.content_value) {
-              // Append to existing FAQs
-              try {
-                const existingFaqs = JSON.parse(faqSegment.content_value);
-                const faqsArray = existingFaqs.faqs || existingFaqs.items || [];
-                faqsArray.push(newFaq);
-                
-                const updatedFaqContent = existingFaqs.faqs 
-                  ? { ...existingFaqs, faqs: faqsArray }
-                  : { ...existingFaqs, items: faqsArray };
-
-                await supabase
-                  .from('page_content')
-                  .update({ content_value: JSON.stringify(updatedFaqContent) })
-                  .eq('page_slug', pageSlug)
-                  .eq('section_key', faqSegment.section_key)
-                  .eq('language', language);
-              } catch {
-                console.error('Failed to parse existing FAQ content');
-              }
-            } else {
-              // Create new FAQ segment if none exists
-              const { data: maxIdData } = await supabase
-                .from('segment_registry')
-                .select('segment_id')
-                .order('segment_id', { ascending: false })
-                .limit(1)
-                .single();
-
-              const nextSegmentId = (maxIdData?.segment_id || 0) + 1;
-
-              // Add to segment registry
-              await supabase
-                .from('segment_registry')
-                .insert({
-                  page_slug: pageSlug,
-                  segment_id: nextSegmentId,
-                  segment_key: `faq-${nextSegmentId}`,
-                  segment_type: 'faq',
-                  position: 99
-                });
-
-              // Add FAQ content
-              await supabase
-                .from('page_content')
-                .insert({
-                  page_slug: pageSlug,
-                  section_key: `faq-${nextSegmentId}`,
-                  language,
-                  content_type: 'json',
-                  content_value: JSON.stringify({
-                    headline: language === 'de' ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions',
-                    faqs: [newFaq]
-                  })
-                });
-            }
-            break;
-
-          case 'refetch':
-            // APPEND re-fetched content to existing intro/description instead of replacing
-            const { data: introSegment } = await supabase
-              .from('page_content')
-              .select('content_value, section_key')
-              .eq('page_slug', pageSlug)
-              .eq('language', language)
-              .or('section_key.ilike.%intro%,section_key.ilike.%description%')
-              .limit(1)
-              .maybeSingle();
-
-            if (introSegment?.content_value) {
-              try {
-                const existingContent = JSON.parse(introSegment.content_value);
-                // Append new content as additional paragraph
-                if (existingContent.description) {
-                  existingContent.description = existingContent.description + '\n\n' + change.proposedValue;
-                } else if (existingContent.text) {
-                  existingContent.text = existingContent.text + '\n\n' + change.proposedValue;
-                } else {
-                  // If no description/text field, add it
-                  existingContent.additionalContent = (existingContent.additionalContent || '') + '\n\n' + change.proposedValue;
-                }
-
-                await supabase
-                  .from('page_content')
-                  .update({ content_value: JSON.stringify(existingContent) })
-                  .eq('page_slug', pageSlug)
-                  .eq('section_key', introSegment.section_key)
-                  .eq('language', language);
-                  
-                console.log('Re-fetched content appended to:', introSegment.section_key);
-              } catch {
-                // Plain text fallback
-                const appendedValue = introSegment.content_value + '\n\n' + change.proposedValue;
-                await supabase
-                  .from('page_content')
-                  .update({ content_value: appendedValue })
-                  .eq('page_slug', pageSlug)
-                  .eq('section_key', introSegment.section_key)
-                  .eq('language', language);
-              }
-            } else {
-              console.log('No intro segment found to append re-fetched content');
-            }
-            break;
-
-          case 'segment-suggestion':
-            // Segment suggestions are informational
-            console.log('Segment suggestion:', change.title);
-            break;
-        }
-      }
-
-      toast.success('Changes applied!', {
-        description: `${acceptedChanges.length} change(s) have been saved.`
-      });
-      
-      setOpen(false);
-      setShowPreview(false);
-      setProposedChanges([]);
-      setSelectedOptions([]);
-      onRefineComplete?.();
-      
-    } catch (error) {
-      console.error('Apply changes error:', error);
-      toast.error('Error saving changes', {
-        description: error instanceof Error ? error.message : 'Unknown error'
-      });
-    } finally {
-      setIsApplying(false);
-    }
-  };
-
-  const handleBackToSelection = () => {
-    setShowPreview(false);
-    setProposedChanges([]);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setShowPreview(false);
-    setProposedChanges([]);
-    setSelectedOptions([]);
-  };
-
-  const fetchOptions = REFINE_OPTIONS.filter(o => o.category === 'fetch');
-  const enhanceOptions = REFINE_OPTIONS.filter(o => o.category === 'enhance');
-  const acceptedCount = proposedChanges.filter(c => c.accepted).length;
-
-  // Inline variant - just the button trigger without Dialog wrapper
+  // Inline variant
   if (variant === 'inline') {
     return (
       <Button 
@@ -1067,84 +764,18 @@ export const RefineWithAIDialog = ({
     </Button>
   );
 
-  // Load source URL when dialog opens
-  const loadSourceUrl = async () => {
-    setIsLoadingSourceUrl(true);
-    console.log('[RefineWithAI] Loading source URL for pageSlug:', pageSlug, 'language:', language);
-    
-    // Build all possible target URL patterns
-    const urlPatterns = [
-      `/${language}/${pageSlug}`,
-      `/${pageSlug}`,
-      `/en/${pageSlug}`,
-      `/${language}/products/${pageSlug.split('/').slice(-2).join('/')}`,
-      `/en/products/${pageSlug.split('/').slice(-2).join('/')}`,
-    ];
-    
-    console.log('[RefineWithAI] Trying URL patterns:', urlPatterns);
-    
-    for (const targetUrl of urlPatterns) {
-      const { data: redirect } = await supabase
-        .from('redirects')
-        .select('source_url')
-        .eq('target_url', targetUrl)
-        .maybeSingle();
-      
-      if (redirect?.source_url) {
-        const fullUrl = redirect.source_url.startsWith('http') 
-          ? redirect.source_url 
-          : `https://www.image-engineering.de${redirect.source_url}`;
-        console.log('[RefineWithAI] Found source URL:', fullUrl);
-        setSourceUrl(fullUrl);
-        setIsLoadingSourceUrl(false);
-        return;
-      }
-    }
-    
-    // Try LIKE search with just the product name
-    const productName = pageSlug.split('/').pop();
-    console.log('[RefineWithAI] Trying LIKE search with:', productName);
-    
-    const { data: redirect } = await supabase
-      .from('redirects')
-      .select('source_url, target_url')
-      .ilike('target_url', `%${productName}%`)
-      .maybeSingle();
-    
-    if (redirect?.source_url) {
-      const fullUrl = redirect.source_url.startsWith('http') 
-        ? redirect.source_url 
-        : `https://www.image-engineering.de${redirect.source_url}`;
-      console.log('[RefineWithAI] Found via LIKE search:', fullUrl, 'target:', redirect.target_url);
-      setSourceUrl(fullUrl);
-    } else {
-      console.log('[RefineWithAI] No source URL found');
-      setSourceUrl(null);
-    }
-    setIsLoadingSourceUrl(false);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen) {
-      setOpen(true);
-      loadSourceUrl();
-    } else {
-      handleClose();
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[75vh] flex flex-col bg-gray-900 border-gray-700 text-white top-[55%] translate-y-[-50%] overflow-hidden">
+      <DialogContent className="sm:max-w-[800px] max-h-[80vh] flex flex-col bg-gray-900 border-gray-700 text-white top-[55%] translate-y-[-50%] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl">
-            {showPreview ? (
+            {showBlockPreview ? (
               <>
-                <Eye className="h-6 w-6 text-purple-400" />
-                <span>Review Proposed Changes</span>
+                <Layers className="h-6 w-6 text-purple-400" />
+                <span>Content-Blöcke zuordnen</span>
               </>
             ) : (
               <>
@@ -1157,19 +788,19 @@ export const RefineWithAIDialog = ({
             )}
           </DialogTitle>
           <DialogDescription className="text-gray-400 text-base">
-            {showPreview 
-              ? 'Review the AI-generated suggestions below. Accept or reject each change before applying.'
-              : 'Select the improvements you want to apply to this page. Changes will be previewed before saving.'
+            {showBlockPreview 
+              ? 'Ordne jeden Inhaltsblock dem passenden Segment zu. Neue Segmente werden automatisch erstellt.'
+              : 'Select the improvements you want to apply to this page.'
             }
           </DialogDescription>
         </DialogHeader>
 
         {/* Selection View */}
-        {!showPreview && (
+        {!showBlockPreview && (
           <>
             <ScrollArea className="flex-1 pr-4">
               <div className="space-y-6 py-4">
-                {/* Re-Fetch Section */}
+                {/* Fetch Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <FirecrawlIcon className="h-5 w-5 text-white" />
@@ -1193,14 +824,14 @@ export const RefineWithAIDialog = ({
                   )}
                   {!sourceUrl && !isLoadingSourceUrl && (
                     <div className="mb-4 p-3 rounded-md bg-yellow-900/20 border border-yellow-700/50">
-                      <p className="text-sm text-yellow-400">No source URL found for this page</p>
+                      <p className="text-sm text-yellow-400">Keine Source-URL für diese Seite gefunden</p>
                     </div>
                   )}
                   {isLoadingSourceUrl && (
                     <div className="mb-4 p-3 rounded-md bg-gray-800/60 border border-gray-700">
                       <p className="text-sm text-gray-400 flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Loading source URL...
+                        Lade Source-URL...
                       </p>
                     </div>
                   )}
@@ -1276,7 +907,7 @@ export const RefineWithAIDialog = ({
 
             <div className="flex justify-between items-center pt-4 border-t border-gray-700">
               <div className="text-sm text-gray-400">
-                {selectedOptions.length} option{selectedOptions.length !== 1 ? 's' : ''} selected
+                {selectedOptions.length} Option{selectedOptions.length !== 1 ? 'en' : ''} ausgewählt
               </div>
               <div className="flex gap-3">
                 <Button 
@@ -1285,7 +916,7 @@ export const RefineWithAIDialog = ({
                   disabled={isProcessing}
                   className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                 >
-                  Cancel
+                  Abbrechen
                 </Button>
                 <Button 
                   onClick={handleGeneratePreview}
@@ -1295,12 +926,12 @@ export const RefineWithAIDialog = ({
                   {isProcessing ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      {processingStep || 'Generating Preview...'}
+                      {processingStep || 'Analysiere...'}
                     </>
                   ) : (
                     <>
                       <Eye className="h-4 w-4" />
-                      Generate Preview
+                      Vorschau generieren
                     </>
                   )}
                 </Button>
@@ -1309,8 +940,8 @@ export const RefineWithAIDialog = ({
           </>
         )}
 
-        {/* Preview View */}
-        {showPreview && (
+        {/* Block Preview View */}
+        {showBlockPreview && (
           <>
             {/* Quick Actions */}
             <div className="flex items-center justify-between py-3 border-b border-gray-700">
@@ -1321,107 +952,131 @@ export const RefineWithAIDialog = ({
                 className="gap-2 text-gray-400 hover:text-white hover:bg-gray-800"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Options
+                Zurück
               </Button>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={acceptAllChanges}
+                  onClick={acceptAllBlocks}
                   className="gap-1 text-green-400 border-green-700 hover:bg-green-900/30 hover:text-green-300"
                 >
                   <Check className="h-3.5 w-3.5" />
-                  Accept All
+                  Alle akzeptieren
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={rejectAllChanges}
+                  onClick={rejectAllBlocks}
                   className="gap-1 text-red-400 border-red-700 hover:bg-red-900/30 hover:text-red-300"
                 >
                   <X className="h-3.5 w-3.5" />
-                  Reject All
+                  Alle ablehnen
                 </Button>
               </div>
             </div>
 
             <ScrollArea className="flex-1 pr-4">
-              <div className="space-y-3 py-4">
-                {proposedChanges.map((change) => (
-                  <Collapsible
-                    key={change.id}
-                    open={expandedChanges.includes(change.id)}
-                    onOpenChange={() => toggleChangeExpanded(change.id)}
-                  >
-                    <div
-                      className={`rounded-lg border transition-all ${
-                        change.accepted
-                          ? 'bg-green-900/20 border-green-700/50'
-                          : 'bg-gray-800/50 border-gray-700'
-                      }`}
+              <div className="space-y-4 py-4">
+                {contentBlocks.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
+                    <p>Keine neuen Inhalte gefunden</p>
+                    <p className="text-sm mt-2">Alle Textinhalte sind bereits auf der Seite vorhanden.</p>
+                  </div>
+                ) : (
+                  contentBlocks.map((block, index) => (
+                    <Collapsible
+                      key={block.id}
+                      open={expandedBlocks.includes(block.id)}
+                      onOpenChange={() => toggleBlockExpanded(block.id)}
                     >
-                      <div className="flex items-center gap-4 p-4">
-                        <Checkbox
-                          checked={change.accepted}
-                          onCheckedChange={() => toggleChangeAccepted(change.id)}
-                          className="border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                        />
-                        <CollapsibleTrigger className="flex-1 flex items-center gap-3 text-left">
-                          <div className="text-gray-400">
-                            {expandedChanges.includes(change.id) 
-                              ? <ChevronDown className="h-4 w-4" />
-                              : <ChevronRight className="h-4 w-4" />
-                            }
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-base text-white">{change.title}</div>
-                            <div className="text-sm text-gray-400 mt-0.5">{change.description}</div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <Badge 
-                          className={`text-xs flex-shrink-0 ${
-                            change.type === 'text-expand' ? 'bg-blue-900/50 text-blue-300 border-blue-700' :
-                            change.type === 'faq' ? 'bg-amber-900/50 text-amber-300 border-amber-700' :
-                            change.type === 'seo' ? 'bg-green-900/50 text-green-300 border-green-700' :
-                            change.type === 'segment-suggestion' ? 'bg-purple-900/50 text-purple-300 border-purple-700' :
-                            'bg-gray-700 text-gray-300 border-gray-600'
-                          }`}
-                        >
-                          {change.type === 'text-expand' ? 'Text' :
-                           change.type === 'faq' ? 'FAQ' :
-                           change.type === 'seo' ? 'SEO' :
-                           change.type === 'segment-suggestion' ? 'Segment' :
-                           'Fetch'}
-                        </Badge>
-                      </div>
-                      
-                      <CollapsibleContent>
-                        <div className="px-4 pb-4 pt-0 space-y-3">
-                          {change.originalValue && (
-                            <div className="bg-red-900/20 border border-red-800/50 rounded-lg p-3">
-                              <div className="text-xs font-medium text-red-400 mb-2">Current:</div>
-                              <div className="text-sm text-red-200/80 whitespace-pre-wrap">
-                                {change.originalValue}
-                              </div>
+                      <div
+                        className={`rounded-lg border transition-all ${
+                          block.accepted && block.selectedSegment.type !== 'skip'
+                            ? 'bg-green-900/20 border-green-700/50'
+                            : block.selectedSegment.type === 'skip'
+                            ? 'bg-gray-800/30 border-gray-700/50 opacity-60'
+                            : 'bg-gray-800/50 border-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 p-4">
+                          <Checkbox
+                            checked={block.accepted}
+                            onCheckedChange={() => toggleBlockAccepted(block.id)}
+                            disabled={block.selectedSegment.type === 'skip'}
+                            className="border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                          />
+                          
+                          <CollapsibleTrigger className="flex items-center gap-2 text-left">
+                            <div className="text-gray-400">
+                              {expandedBlocks.includes(block.id) 
+                                ? <ChevronDown className="h-4 w-4" />
+                                : <ChevronRight className="h-4 w-4" />
+                              }
                             </div>
-                          )}
-                          <div className="bg-green-900/20 border border-green-800/50 rounded-lg p-3">
-                            <div className="text-xs font-medium text-green-400 mb-2">Proposed:</div>
-                            <div className="text-sm text-green-200/80 whitespace-pre-wrap">
-                              {change.proposedValue}
+                            <div className="font-medium text-white">
+                              Block {index + 1}: {block.type}
                             </div>
+                          </CollapsibleTrigger>
+                          
+                          <div className="flex-1" />
+                          
+                          {/* Segment selector */}
+                          <div className="flex items-center gap-2">
+                            {block.isNew && block.selectedSegment.type !== 'skip' && (
+                              <Badge className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">
+                                <Plus className="h-3 w-3 mr-1" />
+                                Neu
+                              </Badge>
+                            )}
+                            <Select
+                              value={block.selectedSegment.type}
+                              onValueChange={(value) => updateBlockSegment(block.id, value)}
+                            >
+                              <SelectTrigger className="w-[240px] bg-gray-800 border-gray-600 text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-gray-800 border-gray-700">
+                                {SEGMENT_OPTIONS.map(seg => (
+                                  <SelectItem 
+                                    key={seg.type} 
+                                    value={seg.type}
+                                    className="text-white hover:bg-gray-700"
+                                  >
+                                    {seg.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
-                      </CollapsibleContent>
-                    </div>
-                  </Collapsible>
-                ))}
+                        
+                        <CollapsibleContent>
+                          <div className="px-4 pb-4">
+                            <div className="bg-gray-800/60 border border-gray-700 rounded-lg p-3">
+                              <div className="text-xs font-medium text-gray-400 mb-2">Inhalt:</div>
+                              <div className="text-sm text-gray-200 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                {block.content}
+                              </div>
+                            </div>
+                            {block.selectedSegment.segmentKey && (
+                              <div className="mt-2 text-xs text-gray-500">
+                                → Wird an Segment <code className="bg-gray-800 px-1 rounded">{block.selectedSegment.segmentKey}</code> angehängt
+                              </div>
+                            )}
+                          </div>
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  ))
+                )}
               </div>
             </ScrollArea>
 
             <div className="flex justify-between items-center pt-4 border-t border-gray-700">
               <div className="text-sm text-gray-400">
-                {acceptedCount} of {proposedChanges.length} change{proposedChanges.length !== 1 ? 's' : ''} selected
+                {acceptedCount} von {contentBlocks.length} Block{contentBlocks.length !== 1 ? 's' : ''} ausgewählt
               </div>
               <div className="flex gap-3">
                 <Button 
@@ -1430,22 +1085,22 @@ export const RefineWithAIDialog = ({
                   disabled={isApplying}
                   className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                 >
-                  Cancel
+                  Abbrechen
                 </Button>
                 <Button 
-                  onClick={handleApplyChanges}
+                  onClick={handleApplyBlocks}
                   disabled={acceptedCount === 0 || isApplying}
                   className="gap-2 bg-green-600 hover:bg-green-500 text-white"
                 >
                   {isApplying ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving...
+                      Übernehme...
                     </>
                   ) : (
                     <>
                       <Check className="h-4 w-4" />
-                      Apply {acceptedCount} Change{acceptedCount !== 1 ? 's' : ''}
+                      {acceptedCount} Block{acceptedCount !== 1 ? 's' : ''} übernehmen
                     </>
                   )}
                 </Button>
