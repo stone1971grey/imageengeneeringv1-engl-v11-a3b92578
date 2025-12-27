@@ -163,7 +163,7 @@ export const PagePublishControl = ({
           
           <AlertDialog open={showUnpublishDialog} onOpenChange={setShowUnpublishDialog}>
             <AlertDialogTrigger asChild>
-              <Button size="sm" variant="outline" className="gap-1 text-amber-600 border-amber-300 hover:bg-amber-50">
+              <Button size="sm" className="gap-1 h-7 bg-amber-500 text-white border-0 hover:bg-amber-600">
                 <EyeOff className="h-3 w-3" />
                 Unpublish
               </Button>
