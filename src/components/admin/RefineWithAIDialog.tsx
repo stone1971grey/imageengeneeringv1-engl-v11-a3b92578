@@ -480,6 +480,14 @@ ${rawText}`
           setContentBlocks(blocks);
           setExpandedBlocks(blocks.slice(0, 2).map(b => b.id));
           setShowBlockPreview(true);
+          toast.success(`${blocks.length} neue Inhaltsblöcke gefunden`, {
+            description: 'Ordne die Blöcke den passenden Segmenten zu.'
+          });
+        } else {
+          // Explicit feedback when no blocks found
+          toast.info('Keine neuen Inhalte gefunden', {
+            description: 'Die Quelldaten enthalten keine neuen Textinhalte für diese Seite.'
+          });
         }
       }
       
