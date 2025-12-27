@@ -98,6 +98,10 @@ export default {
 					'icon-bg': 'hsl(var(--automotive-icon-bg))',
 					'tests-bg': 'hsl(var(--automotive-tests-bg))'
 				},
+				yellow: {
+					DEFAULT: 'hsl(var(--yellow))',
+					foreground: 'hsl(var(--yellow-foreground))'
+				},
 				training: {
 					button: 'hsl(var(--training-button))',
 					bg: 'hsl(var(--training-bg))'
