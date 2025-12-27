@@ -1240,14 +1240,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   <p className="text-xs text-gray-400">Leave empty for auto-sizing.</p>
                 </div>
 
-                <div>
-                  <Label>Image Title (optional)</Label>
-                  <Input
-                    value={image.title}
-                    onChange={(e) => handleImageChange(index, 'title', e.target.value)}
-                    placeholder="Image title"
-                  />
-                </div>
               </div>
             ))}
           </TabsContent>
