@@ -110,6 +110,7 @@ export const RefineWithAIDialog = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState<string | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
+  const [isLoadingSourceUrl, setIsLoadingSourceUrl] = useState(false);
   
   // Preview mode state
   const [showPreview, setShowPreview] = useState(false);
@@ -1068,11 +1069,19 @@ export const RefineWithAIDialog = ({
 
   // Load source URL when dialog opens
   const loadSourceUrl = async () => {
+    setIsLoadingSourceUrl(true);
+    console.log('[RefineWithAI] Loading source URL for pageSlug:', pageSlug, 'language:', language);
+    
+    // Build all possible target URL patterns
     const urlPatterns = [
       `/${language}/${pageSlug}`,
       `/${pageSlug}`,
       `/en/${pageSlug}`,
+      `/${language}/products/${pageSlug.split('/').slice(-2).join('/')}`,
+      `/en/products/${pageSlug.split('/').slice(-2).join('/')}`,
     ];
+    
+    console.log('[RefineWithAI] Trying URL patterns:', urlPatterns);
     
     for (const targetUrl of urlPatterns) {
       const { data: redirect } = await supabase
@@ -1085,26 +1094,34 @@ export const RefineWithAIDialog = ({
         const fullUrl = redirect.source_url.startsWith('http') 
           ? redirect.source_url 
           : `https://www.image-engineering.de${redirect.source_url}`;
+        console.log('[RefineWithAI] Found source URL:', fullUrl);
         setSourceUrl(fullUrl);
+        setIsLoadingSourceUrl(false);
         return;
       }
     }
     
-    // Try LIKE search
+    // Try LIKE search with just the product name
+    const productName = pageSlug.split('/').pop();
+    console.log('[RefineWithAI] Trying LIKE search with:', productName);
+    
     const { data: redirect } = await supabase
       .from('redirects')
-      .select('source_url')
-      .ilike('target_url', `%${pageSlug.split('/').pop()}%`)
+      .select('source_url, target_url')
+      .ilike('target_url', `%${productName}%`)
       .maybeSingle();
     
     if (redirect?.source_url) {
       const fullUrl = redirect.source_url.startsWith('http') 
         ? redirect.source_url 
         : `https://www.image-engineering.de${redirect.source_url}`;
+      console.log('[RefineWithAI] Found via LIKE search:', fullUrl, 'target:', redirect.target_url);
       setSourceUrl(fullUrl);
     } else {
+      console.log('[RefineWithAI] No source URL found');
       setSourceUrl(null);
     }
+    setIsLoadingSourceUrl(false);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -1174,9 +1191,17 @@ export const RefineWithAIDialog = ({
                       </a>
                     </div>
                   )}
-                  {!sourceUrl && (
+                  {!sourceUrl && !isLoadingSourceUrl && (
                     <div className="mb-4 p-3 rounded-md bg-yellow-900/20 border border-yellow-700/50">
                       <p className="text-sm text-yellow-400">No source URL found for this page</p>
+                    </div>
+                  )}
+                  {isLoadingSourceUrl && (
+                    <div className="mb-4 p-3 rounded-md bg-gray-800/60 border border-gray-700">
+                      <p className="text-sm text-gray-400 flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Loading source URL...
+                      </p>
                     </div>
                   )}
                   
