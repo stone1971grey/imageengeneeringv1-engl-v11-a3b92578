@@ -87,61 +87,97 @@ export const EditableText: React.FC<EditableTextProps> = ({
     setIsSaving(true);
 
     try {
-      const { data: existing, error: fetchError } = await supabase
+      // Parse sectionKey to extract segmentKey and field name
+      // Format: "{segmentKey}-{fieldName}" e.g., "product-hero-gallery-549-title"
+      const lastDashIndex = sectionKey.lastIndexOf('-');
+      if (lastDashIndex === -1) {
+        console.error('[EditableText] Invalid sectionKey format:', sectionKey);
+        toast.error('Error saving');
+        setIsSaving(false);
+        return;
+      }
+      
+      const fieldName = sectionKey.substring(lastDashIndex + 1);
+      const segmentKey = sectionKey.substring(0, lastDashIndex);
+      
+      console.log('[EditableText] Saving field:', fieldName, 'for segment:', segmentKey);
+
+      // Load current page_segments JSON
+      const { data: pageSegmentsData, error: loadError } = await supabase
         .from('page_content')
         .select('id, content_value')
         .eq('page_slug', pageSlug)
-        .eq('section_key', sectionKey)
+        .eq('section_key', 'page_segments')
         .eq('language', language)
         .maybeSingle();
 
-      if (fetchError) {
-        console.error('[EditableText] Fetch error:', fetchError);
-        toast.error('Fehler beim Laden');
+      if (loadError) {
+        console.error('[EditableText] Error loading page_segments:', loadError);
+        toast.error('Error loading content');
+        setIsSaving(false);
         return;
       }
 
-      if (existing) {
-        const { error: updateError } = await supabase
-          .from('page_content')
-          .update({
-            content_value: editValue,
-            draft_value: null,
-            content_status: 'approved',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existing.id);
-
-        if (updateError) {
-          console.error('[EditableText] Update error:', updateError);
-          toast.error('Fehler beim Speichern');
-          return;
-        }
-      } else {
-        const { error: insertError } = await supabase
-          .from('page_content')
-          .insert({
-            page_slug: pageSlug,
-            section_key: sectionKey,
-            language: language,
-            content_type: 'text',
-            content_value: editValue,
-            content_status: 'approved'
-          });
-
-        if (insertError) {
-          console.error('[EditableText] Insert error:', insertError);
-          toast.error('Fehler beim Speichern');
-          return;
-        }
+      if (!pageSegmentsData) {
+        console.error('[EditableText] page_segments not found');
+        toast.error('Page content not found');
+        setIsSaving(false);
+        return;
       }
 
-      toast.success('Gespeichert!');
+      // Parse and update the segments array
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        console.error('[EditableText] Error parsing page_segments:', e);
+        toast.error('Error parsing content');
+        setIsSaving(false);
+        return;
+      }
+
+      // Find the segment by matching segment_key or id
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.segment_key || seg.id || seg.segmentId);
+        return segmentKey === segId || segmentKey.endsWith(`-${segId}`);
+      });
+
+      if (segmentIndex === -1) {
+        console.error('[EditableText] Segment not found:', segmentKey, 'in', segments.map(s => s.segment_key || s.id));
+        toast.error('Segment not found');
+        setIsSaving(false);
+        return;
+      }
+
+      // Update the specific field in the segment data
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data[fieldName] = editValue;
+
+      // Save the updated page_segments JSON
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (updateError) {
+        console.error('[EditableText] Error updating page_segments:', updateError);
+        toast.error('Error saving');
+        setIsSaving(false);
+        return;
+      }
+
+      toast.success('Saved!');
+      // Call onUpdate with new value to refresh the component
       onUpdate?.(editValue);
       setIsEditing(false);
     } catch (error) {
       console.error('[EditableText] Save error:', error);
-      toast.error('Fehler beim Speichern');
+      toast.error('Error saving');
     } finally {
       setIsSaving(false);
     }
@@ -163,15 +199,15 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
       if (error) {
         console.error('[EditableText] Approve error:', error);
-        toast.error('Freigabe fehlgeschlagen');
+        toast.error('Approval failed');
         return;
       }
 
-      toast.success('Inhalt freigegeben!');
+      toast.success('Content approved!');
       onUpdate?.(value);
     } catch (error) {
       console.error('[EditableText] Approve error:', error);
-      toast.error('Freigabe fehlgeschlagen');
+      toast.error('Approval failed');
     } finally {
       setIsApproving(false);
     }
@@ -206,14 +242,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
       return {
         border: 'border-l-4 border-l-yellow-400 pl-3',
         bg: 'bg-yellow-400/10',
-        indicator: { icon: Edit3, color: 'text-yellow-500', label: 'Entwurf' }
+        indicator: { icon: Edit3, color: 'text-yellow-500', label: 'Draft' }
       };
     }
     if (contentStatus === 'pending') {
       return {
         border: 'border-l-4 border-l-orange-400 pl-3',
         bg: 'bg-orange-400/10',
-        indicator: { icon: Clock, color: 'text-orange-500', label: 'Wartet auf Freigabe' }
+        indicator: { icon: Clock, color: 'text-orange-500', label: 'Pending Approval' }
       };
     }
     if (isStage2Import) {
@@ -252,14 +288,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
               <button
                 onClick={handleApprove}
                 disabled={isApproving}
-                className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg"
+                className="flex items-center gap-1.5 px-3 py-1 rounded text-sm font-semibold bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg"
               >
                 {isApproving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Check className="h-3 w-3" />
+                  <Check className="h-4 w-4" />
                 )}
-                <span>Freigeben</span>
+                <span>Approve</span>
               </button>
             )}
           </div>
@@ -285,20 +321,20 @@ export const EditableText: React.FC<EditableTextProps> = ({
         >
           {value}
           {editContext?.canEdit && (
-            <span className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-[10px] px-1.5 py-0.5 rounded font-medium">
-              Klicken zum Bearbeiten
+            <span className="absolute -top-3 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-2 py-1 rounded font-semibold whitespace-nowrap">
+              Click to edit
             </span>
           )}
         </Component>
         
         {/* Status badge and approval button */}
         {needsApproval && (
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-3 mt-3">
             <div className={cn(
-              "flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-black shadow-lg",
+              "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-semibold bg-black shadow-lg",
               statusStyles.indicator?.color
             )}>
-              <StatusIcon className="h-3 w-3" />
+              <StatusIcon className="h-4 w-4" />
               <span>{statusStyles.indicator?.label}</span>
             </div>
             
@@ -306,14 +342,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
               <button
                 onClick={handleApprove}
                 disabled={isApproving}
-                className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg"
+                className="flex items-center gap-2 px-4 py-1.5 rounded text-sm font-semibold bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg"
               >
                 {isApproving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Check className="h-3 w-3" />
+                  <Check className="h-4 w-4" />
                 )}
-                <span>Freigeben</span>
+                <span>Approve</span>
               </button>
             )}
           </div>
@@ -358,30 +394,30 @@ export const EditableText: React.FC<EditableTextProps> = ({
       )}
 
       {/* Action Buttons */}
-      <div className="absolute -bottom-12 right-0 flex items-center gap-2 bg-black rounded-lg px-2 py-1.5 shadow-xl border border-gray-800 z-50">
+      <div className="absolute -bottom-14 right-0 flex items-center gap-3 bg-black rounded-lg px-3 py-2 shadow-xl border border-gray-800 z-50">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f9dc24] text-black rounded font-medium text-sm hover:bg-[#e6c820] disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#f9dc24] text-black rounded font-semibold text-base hover:bg-[#e6c820] disabled:opacity-50 transition-colors"
         >
           {isSaving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <Check className="h-4 w-4" />
+            <Check className="h-5 w-5" />
           )}
-          <span>Speichern</span>
+          <span>Save</span>
         </button>
         <button
           onClick={handleCancel}
           disabled={isSaving}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-gray-300 hover:text-white hover:bg-gray-800 rounded font-medium text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded font-semibold text-base transition-colors"
         >
-          <X className="h-4 w-4" />
-          <span>Abbrechen</span>
+          <X className="h-5 w-5" />
+          <span>Cancel</span>
         </button>
         {multiline && (
-          <span className="text-xs text-gray-500 ml-2">
-            Ctrl+Enter speichern
+          <span className="text-sm text-gray-400 ml-2">
+            Ctrl+Enter to save
           </span>
         )}
       </div>

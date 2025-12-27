@@ -1596,10 +1596,10 @@ const DynamicCMSPage = () => {
                   href={`/${currentUrlLanguage}/admin-dashboard`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-9 px-4 inline-flex items-center gap-2 rounded font-medium transition-colors bg-white text-black hover:bg-gray-100"
-                  style={{ border: '1px solid rgba(0,0,0,0.1)', fontSize: '15px' }}
+                  className="h-9 px-4 inline-flex items-center gap-2 rounded font-semibold transition-colors bg-white text-black hover:bg-gray-100"
+                  style={{ border: '1px solid rgba(0,0,0,0.1)', fontSize: '16px' }}
                 >
-                  <Settings className="h-4 w-4" />
+                  <Settings className="h-5 w-5" />
                   Admin Dashboard
                 </a>
               </>
