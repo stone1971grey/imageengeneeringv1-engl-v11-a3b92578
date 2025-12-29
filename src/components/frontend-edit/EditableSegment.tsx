@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useCallback } from 'react';
+import React, { useState, createContext, useContext, useCallback, useRef, useEffect } from 'react';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -29,6 +29,7 @@ interface EditableSegmentProps {
   contentStatus?: 'draft' | 'pending' | 'approved';
   importStage?: number;
   onContentUpdate?: () => void;
+  onRegisterRef?: (segmentId: number, element: HTMLElement | null) => void;
   className?: string;
 }
 
@@ -40,6 +41,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
   contentStatus = 'approved',
   importStage = 1,
   onContentUpdate,
+  onRegisterRef,
   className
 }) => {
   const editContext = useFrontendEditOptional();
@@ -47,6 +49,20 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
   const [isSegmentEditing, setIsSegmentEditing] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const segmentRef = useRef<HTMLDivElement>(null);
+  
+  // Extract numeric segment ID from segmentKey
+  const segmentId = parseInt(segmentKey.replace(/\D/g, ''), 10) || 0;
+  
+  // Register ref with parent for scroll tracking
+  useEffect(() => {
+    if (onRegisterRef && segmentRef.current) {
+      onRegisterRef(segmentId, segmentRef.current);
+      return () => {
+        onRegisterRef(segmentId, null);
+      };
+    }
+  }, [onRegisterRef, segmentId]);
 
   // If no edit context, just render children
   if (!editContext) {
@@ -208,6 +224,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
       language
     }}>
       <div 
+        ref={segmentRef}
         className={cn(
           "relative transition-all duration-200",
           showIndicator && "border-l-4 pl-4",
@@ -298,27 +315,21 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
         )}
 
         {/* Floating Action Bar - appears on hover when NOT in segment editing mode and NOT needing approval */}
-        {isEditMode && isHovered && !isSegmentEditing && !needsApproval && (
+        {/* Only shows Edit button - ID is now in the toolbar */}
+        {isEditMode && isHovered && !isSegmentEditing && !needsApproval && canEdit && (
           <div className="absolute top-4 left-4 z-30 flex items-center gap-2">
-            {/* Segment ID Badge - now on the left */}
-            <div className="flex items-center bg-black rounded-md px-3 py-1.5 shadow-lg">
-              <span className="text-sm text-[#f9dc24] font-medium">ID: {getSegmentId()}</span>
-            </div>
-
             {/* Edit Button */}
-            {canEdit && (
-              <div className="flex items-center gap-1 bg-black rounded-md px-2 py-1.5 shadow-lg">
-                <Button 
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 rounded text-[#f9dc24] hover:text-white hover:bg-[#f9dc24]/20"
-                  onClick={handleEditClick}
-                  title="Edit segment"
-                >
-                  <Edit3 className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center gap-1 bg-black rounded-md px-2 py-1.5 shadow-lg">
+              <Button 
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 rounded text-[#f9dc24] hover:text-white hover:bg-[#f9dc24]/20"
+                onClick={handleEditClick}
+                title="Edit segment"
+              >
+                <Edit3 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
 

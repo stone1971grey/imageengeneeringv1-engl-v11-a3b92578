@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings } from "lucide-react";
+import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings, Hash } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MiniFooter from "@/components/MiniFooter";
@@ -67,6 +67,9 @@ const DynamicCMSPage = () => {
     content_status: 'draft' | 'pending' | 'approved'; 
     import_stage: number;
   }>>({});
+  // Current visible segment ID for dynamic toolbar display
+  const [currentVisibleSegmentId, setCurrentVisibleSegmentId] = useState<number | null>(null);
+  const segmentRefs = useRef<Map<number, HTMLElement>>(new Map());
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
@@ -123,6 +126,42 @@ const DynamicCMSPage = () => {
       loadChildPages();
     }
   }, [isHubPage, pageSlug]);
+
+  // Scroll handler to track which segment is currently visible
+  const updateVisibleSegment = useCallback(() => {
+    const viewportTop = window.scrollY + 150; // Account for toolbar
+    const viewportCenter = viewportTop + window.innerHeight / 3;
+    
+    let closestSegment: { id: number; distance: number } | null = null;
+    
+    segmentRefs.current.forEach((element, segmentId) => {
+      const rect = element.getBoundingClientRect();
+      const elementTop = rect.top + window.scrollY;
+      const elementCenter = elementTop + rect.height / 2;
+      const distance = Math.abs(viewportCenter - elementCenter);
+      
+      if (!closestSegment || distance < closestSegment.distance) {
+        closestSegment = { id: segmentId, distance };
+      }
+    });
+    
+    if (closestSegment) {
+      setCurrentVisibleSegmentId(closestSegment.id);
+    }
+  }, []);
+
+  // Set up scroll listener for segment tracking
+  useEffect(() => {
+    if (currentUser && userRole) {
+      window.addEventListener('scroll', updateVisibleSegment, { passive: true });
+      // Initial check
+      updateVisibleSegment();
+      
+      return () => {
+        window.removeEventListener('scroll', updateVisibleSegment);
+      };
+    }
+  }, [currentUser, userRole, updateVisibleSegment]);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -1478,6 +1517,9 @@ const DynamicCMSPage = () => {
     const segmentKey = String(segment.segment_key || segment.id);
     const meta = segmentContentMeta[segmentKey] || { content_status: 'approved', import_stage: 1 };
     
+    // Extract numeric ID for scroll tracking
+    const numericId = parseInt(segmentKey.replace(/\D/g, ''), 10) || 0;
+    
     return (
       <EditableSegment
         key={`editable-${segmentId}`}
@@ -1489,6 +1531,13 @@ const DynamicCMSPage = () => {
         onContentUpdate={() => {
           // Reload the page to show updated content
           loadContent();
+        }}
+        onRegisterRef={(id, element) => {
+          if (element) {
+            segmentRefs.current.set(id, element);
+          } else {
+            segmentRefs.current.delete(id);
+          }
         }}
       >
         {renderedContent}
@@ -1600,17 +1649,10 @@ const DynamicCMSPage = () => {
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {currentUser && userRole && (
         <div className="fixed top-[110px] left-6 z-40 py-2 flex items-center gap-2">
-            {/* Draft Badge - compact indicator instead of full banner */}
-            {isDraftPage && (
-              <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-3 py-2 rounded-lg font-semibold shadow-lg">
-                <Eye className="h-4 w-4" />
-                <span className="text-sm">Draft</span>
-              </div>
-            )}
-            
-            {/* Edit Mode Toggle - shown for both draft and published pages */}
+            {/* Edit Mode Toggle - always first */}
             <EditModeToggle />
             
+            {/* Admin Dashboard - second */}
             <a
               href={`/${currentUrlLanguage}/admin-dashboard`}
               target="_blank"
@@ -1621,6 +1663,22 @@ const DynamicCMSPage = () => {
               <Settings className="h-5 w-5" />
               Admin Dashboard
             </a>
+            
+            {/* Draft Badge - third (after Admin Dashboard) */}
+            {isDraftPage && (
+              <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-3 py-2 rounded-lg font-semibold shadow-lg">
+                <Eye className="h-4 w-4" />
+                <span className="text-sm">Draft</span>
+              </div>
+            )}
+            
+            {/* Dynamic Segment ID Badge - last (shows current segment in viewport) */}
+            {currentVisibleSegmentId !== null && (
+              <div className="flex items-center gap-2 bg-black text-[#f9dc24] px-3 py-2 rounded-lg font-semibold shadow-lg">
+                <Hash className="h-4 w-4" />
+                <span className="text-sm">ID: {currentVisibleSegmentId}</span>
+              </div>
+            )}
         </div>
       )}
       
