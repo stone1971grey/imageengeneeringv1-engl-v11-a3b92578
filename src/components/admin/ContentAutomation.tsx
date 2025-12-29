@@ -334,7 +334,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
   // Handle preparing segments for approval (not saving yet)
   const handlePrepareForApproval = async () => {
-    if (!parsedContent) return;
+    console.log('[ContentAutomation] handlePrepareForApproval called');
+    
+    if (!parsedContent) {
+      console.error('[ContentAutomation] No parsedContent available!');
+      toast.error('No content to import. Please fetch content first.');
+      return;
+    }
+
+    console.log('[ContentAutomation] Starting import with parsedContent:', {
+      title: parsedContent.title,
+      description: parsedContent.description?.length,
+      specifications: parsedContent.specifications?.length,
+      useCases: parsedContent.useCases?.length,
+      benefits: parsedContent.benefits?.length,
+      images: parsedContent.images?.length,
+      downloads: parsedContent.downloads?.length,
+    });
 
     setIsImporting(true);
 
@@ -350,13 +366,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
 
       // Get existing segments for this page
-      const { data: existingRegistry } = await supabase
+      const { data: existingRegistry, error: registryFetchError } = await supabase
         .from('segment_registry')
         .select('*')
         .eq('page_slug', pageSlug)
         .eq('deleted', false);
 
+      if (registryFetchError) {
+        console.error('[ContentAutomation] Error fetching existing registry:', registryFetchError);
+      }
+
       const existingSegmentTypes = new Set(existingRegistry?.map(s => s.segment_type) || []);
+      console.log('[ContentAutomation] Existing segment types on page:', Array.from(existingSegmentTypes));
+      console.log('[ContentAutomation] Selected segments:', selectedSegments);
 
       // Prepare new segments to add
       const newRegistryEntries: any[] = [];
@@ -944,7 +966,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // NOTE: Banner-P segment removed - does not exist in the system
 
+      console.log('[ContentAutomation] New segments prepared:', newSegments.length);
+      console.log('[ContentAutomation] New registry entries:', newRegistryEntries.length);
+
       if (newSegments.length === 0) {
+        console.warn('[ContentAutomation] No new segments to import!');
         toast.info('No new segments to import (segments already exist or none selected)');
         setIsImporting(false);
         return;
