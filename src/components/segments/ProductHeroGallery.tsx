@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ImageMetadata {
   url?: string;
@@ -65,6 +67,24 @@ const ProductHeroGallery = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  
+  // Local state for button editing
+  const [cta1Text, setCta1Text] = useState(data.cta1Text);
+  const [cta1Link, setCta1Link] = useState(data.cta1Link);
+  const [cta1Style, setCta1Style] = useState(data.cta1Style);
+  const [cta2Text, setCta2Text] = useState(data.cta2Text);
+  const [cta2Link, setCta2Link] = useState(data.cta2Link);
+  const [cta2Style, setCta2Style] = useState(data.cta2Style);
+  
+  // Sync local state with props
+  useEffect(() => {
+    setCta1Text(data.cta1Text);
+    setCta1Link(data.cta1Link);
+    setCta1Style(data.cta1Style);
+    setCta2Text(data.cta2Text);
+    setCta2Link(data.cta2Link);
+    setCta2Style(data.cta2Style);
+  }, [data.cta1Text, data.cta1Link, data.cta1Style, data.cta2Text, data.cta2Link, data.cta2Style]);
   
   // Use FrontendEditContext directly instead of SegmentEditContext
   const editContext = useFrontendEditOptional();
@@ -152,121 +172,151 @@ const ProductHeroGallery = ({
     { value: 'outline-white', label: 'White', color: '#ffffff' }
   ];
 
-  const renderButton = (text: string, link: string, style: string, size: string = 'lg', buttonId: string = 'cta1') => {
+  // Save button data to page_segments
+  const saveButtonData = async (buttonId: 'cta1' | 'cta2', field: 'Text' | 'Link' | 'Style', value: string) => {
+    try {
+      // Get the segment ID from segmentKey (e.g., "product-hero-gallery-123" -> "123")
+      const segmentIdMatch = segmentKey.match(/-(\d+)$/);
+      if (!segmentIdMatch) {
+        console.error('[ProductHeroGallery] Cannot extract segment ID from segmentKey:', segmentKey);
+        return;
+      }
+      
+      // Fetch current page_segments
+      const { data: pageData, error: fetchError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+      
+      if (fetchError) {
+        console.error('[ProductHeroGallery] Error fetching page_segments:', fetchError);
+        toast.error('Error loading page data');
+        return;
+      }
+      
+      if (!pageData) {
+        console.error('[ProductHeroGallery] No page_segments found');
+        toast.error('Page data not found');
+        return;
+      }
+      
+      // Parse and update the segments
+      const segments = JSON.parse(pageData.content_value);
+      const segmentIndex = segments.findIndex((s: any) => 
+        String(s.id) === segmentIdMatch[1] || 
+        s.type === 'product-hero-gallery' && String(s.id) === segmentIdMatch[1]
+      );
+      
+      if (segmentIndex === -1) {
+        console.error('[ProductHeroGallery] Segment not found in page_segments');
+        toast.error('Segment not found');
+        return;
+      }
+      
+      // Update the button field
+      const fieldKey = `${buttonId}${field}`;
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data[fieldKey] = value;
+      
+      // Save back to database
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageData.id);
+      
+      if (updateError) {
+        console.error('[ProductHeroGallery] Error saving button data:', updateError);
+        toast.error('Error saving');
+        return;
+      }
+      
+      toast.success('Saved');
+      onContentUpdate?.();
+    } catch (error) {
+      console.error('[ProductHeroGallery] Error in saveButtonData:', error);
+      toast.error('Error saving');
+    }
+  };
+
+  const renderButton = (text: string, link: string, style: string, size: string = 'lg', buttonId: 'cta1' | 'cta2' = 'cta1') => {
     const buttonStyle = getButtonStyle(style, true, buttonId);
     const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300`;
+    const localText = buttonId === 'cta1' ? cta1Text : cta2Text;
+    const localLink = buttonId === 'cta1' ? cta1Link : cta2Link;
+    const localStyle = buttonId === 'cta1' ? cta1Style : cta2Style;
+    const setLocalText = buttonId === 'cta1' ? setCta1Text : setCta2Text;
+    const setLocalLink = buttonId === 'cta1' ? setCta1Link : setCta2Link;
+    const setLocalStyle = buttonId === 'cta1' ? setCta1Style : setCta2Style;
 
     // In editing mode, render editable button
     if (isEditing) {
       return (
-        <div className="flex flex-col gap-2">
-          {/* Editable Button Text */}
-          <div 
-            className={`${buttonClasses} inline-flex items-center justify-center rounded-md`}
-            style={buttonStyle}
-          >
-            <EditableText
-              value={text}
-              sectionKey={`${segmentKey}-${buttonId}-text`}
-              pageSlug={pageSlug}
-              language={language}
-              className="font-medium"
-              as="span"
-              onUpdate={onContentUpdate}
+        <div className="flex flex-col gap-2 bg-white/90 p-3 rounded-lg border border-gray-200 shadow-sm">
+          {/* Button Text Input */}
+          <div className="flex gap-2 items-center">
+            <span className="text-xs text-gray-500 w-10">Text:</span>
+            <input
+              type="text"
+              value={localText}
+              onChange={(e) => setLocalText(e.target.value)}
+              onBlur={() => saveButtonData(buttonId, 'Text', localText)}
+              className="text-sm px-3 py-2 border border-gray-300 rounded flex-1 font-medium"
+              placeholder="Button text"
             />
           </div>
+          
           {/* Style Selector */}
-          <div className="flex gap-1 items-center">
-            <span className="text-xs text-gray-500 mr-1">Style:</span>
-            {buttonStyles.map((s) => (
-              <button
-                key={s.value}
-                onClick={async () => {
-                  // Save the new style to the database
-                  const { supabase } = await import('@/integrations/supabase/client');
-                  const sectionKey = `${segmentKey}-${buttonId}-style`;
-                  
-                  const { data: existing } = await supabase
-                    .from('page_content')
-                    .select('id')
-                    .eq('page_slug', pageSlug)
-                    .eq('section_key', sectionKey)
-                    .eq('language', language)
-                    .maybeSingle();
-                  
-                  if (existing) {
-                    await supabase
-                      .from('page_content')
-                      .update({ content_value: s.value, updated_at: new Date().toISOString() })
-                      .eq('id', existing.id);
-                  } else {
-                    await supabase
-                      .from('page_content')
-                      .insert({
-                        page_slug: pageSlug,
-                        section_key: sectionKey,
-                        language: language,
-                        content_type: 'text',
-                        content_value: s.value,
-                        content_status: 'draft'
-                      });
-                  }
-                  
-                  onContentUpdate?.();
-                }}
-                className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  style === s.value ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
-                }`}
-                style={{ backgroundColor: s.color }}
-                title={s.label}
-              />
-            ))}
+          <div className="flex gap-2 items-center">
+            <span className="text-xs text-gray-500 w-10">Style:</span>
+            <div className="flex gap-2">
+              {buttonStyles.map((s) => (
+                <button
+                  key={s.value}
+                  type="button"
+                  onClick={() => {
+                    setLocalStyle(s.value as any);
+                    saveButtonData(buttonId, 'Style', s.value);
+                  }}
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${
+                    localStyle === s.value ? 'border-blue-500 ring-2 ring-blue-200 scale-110' : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                  style={{ backgroundColor: s.color }}
+                  title={s.label}
+                />
+              ))}
+            </div>
           </div>
           
           {/* Link Editor */}
-          <div className="flex gap-1 items-center">
-            <span className="text-xs text-gray-500 mr-1">Link:</span>
+          <div className="flex gap-2 items-center">
+            <span className="text-xs text-gray-500 w-10">Link:</span>
             <input
               type="text"
-              defaultValue={link}
-              onBlur={async (e) => {
-                const newLink = e.target.value;
-                if (newLink !== link) {
-                  const { supabase } = await import('@/integrations/supabase/client');
-                  const sectionKey = `${segmentKey}-${buttonId}-link`;
-                  
-                  const { data: existing } = await supabase
-                    .from('page_content')
-                    .select('id')
-                    .eq('page_slug', pageSlug)
-                    .eq('section_key', sectionKey)
-                    .eq('language', language)
-                    .maybeSingle();
-                  
-                  if (existing) {
-                    await supabase
-                      .from('page_content')
-                      .update({ content_value: newLink, updated_at: new Date().toISOString() })
-                      .eq('id', existing.id);
-                  } else {
-                    await supabase
-                      .from('page_content')
-                      .insert({
-                        page_slug: pageSlug,
-                        section_key: sectionKey,
-                        language: language,
-                        content_type: 'text',
-                        content_value: newLink,
-                        content_status: 'draft'
-                      });
-                  }
-                  
-                  onContentUpdate?.();
-                }
-              }}
-              className="text-xs px-2 py-1 border border-gray-300 rounded flex-1 max-w-[200px]"
-              placeholder="Link URL"
+              value={localLink}
+              onChange={(e) => setLocalLink(e.target.value)}
+              onBlur={() => saveButtonData(buttonId, 'Link', localLink)}
+              className="text-sm px-3 py-2 border border-gray-300 rounded flex-1"
+              placeholder="/page-url or https://..."
             />
+          </div>
+          
+          {/* Preview */}
+          <div className="mt-2 pt-2 border-t border-gray-200">
+            <span className="text-xs text-gray-400 mb-1 block">Preview:</span>
+            <div 
+              className={`${buttonClasses} inline-flex items-center justify-center rounded-md`}
+              style={getButtonStyle(localStyle, true, buttonId)}
+            >
+              {localText || 'Button Text'}
+            </div>
           </div>
         </div>
       );
@@ -364,9 +414,9 @@ const ProductHeroGallery = ({
         )}
       </div>
       
-      <div className="pt-4 flex gap-4">
-        {data.cta1Text && renderButton(data.cta1Text, data.cta1Link, data.cta1Style, 'lg', 'cta1')}
-        {data.cta2Text && renderButton(data.cta2Text, data.cta2Link, data.cta2Style, 'lg', 'cta2')}
+      <div className="pt-4 flex gap-4 flex-wrap">
+        {(data.cta1Text || isEditing) && renderButton(data.cta1Text, data.cta1Link, data.cta1Style, 'lg', 'cta1')}
+        {(data.cta2Text || isEditing) && renderButton(data.cta2Text, data.cta2Link, data.cta2Style, 'lg', 'cta2')}
       </div>
     </div>
   );
