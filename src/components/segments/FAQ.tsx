@@ -290,9 +290,9 @@ const FAQ: React.FC<FAQProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleAddItem}
-                    className="text-[#f9dc24] hover:text-[#f9dc24] border-dashed border-[#f9dc24] hover:bg-[#f9dc24]/10"
+                    className="bg-[#000000] text-white hover:bg-[#1a1a1a] hover:text-white border-[#000000]"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2 text-white" />
                     Add FAQ Item
                   </Button>
                 </div>
