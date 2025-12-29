@@ -409,7 +409,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
           </div>
 
           {/* Right Column - Team Quote */}
-          <div className="bg-[#3B3A3A] border border-[#5B5A5A] rounded-lg p-8">
+          <div className="bg-[#4B4A4A] border border-[#5B5A5A] rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 {isEditing ? (
