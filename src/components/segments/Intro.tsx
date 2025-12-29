@@ -36,9 +36,9 @@ const Intro = ({
   }
 
   return (
-    <section className="pt-10 pb-2 bg-white">
+    <section className="pt-6 pb-2 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           {isEditing ? (
             <>
               <EditableText
