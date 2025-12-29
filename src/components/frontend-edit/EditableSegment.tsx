@@ -314,24 +314,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
           </div>
         )}
 
-        {/* Floating Action Bar - appears on hover when NOT in segment editing mode and NOT needing approval */}
-        {/* Only shows Edit button - ID is now in the toolbar */}
-        {isEditMode && isHovered && !isSegmentEditing && !needsApproval && canEdit && (
-          <div className="absolute top-4 left-4 z-30 flex items-center gap-2">
-            {/* Edit Button */}
-            <div className="flex items-center gap-1 bg-black rounded-md px-2 py-1.5 shadow-lg">
-              <Button 
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 rounded text-[#f9dc24] hover:text-white hover:bg-[#f9dc24]/20"
-                onClick={handleEditClick}
-                title="Edit segment"
-              >
-                <Edit3 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+        {/* Floating Action Bar removed - ID is now in the toolbar, edit functionality via segment click */}
 
         {/* Content */}
         <div className={cn(

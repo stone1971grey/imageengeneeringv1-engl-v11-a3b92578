@@ -67,9 +67,9 @@ const DynamicCMSPage = () => {
     content_status: 'draft' | 'pending' | 'approved'; 
     import_stage: number;
   }>>({});
-  // Current visible segment ID for dynamic toolbar display
-  const [currentVisibleSegmentId, setCurrentVisibleSegmentId] = useState<number | null>(null);
-  const segmentRefs = useRef<Map<number, HTMLElement>>(new Map());
+  // Current visible segment info for dynamic toolbar display
+  const [currentVisibleSegment, setCurrentVisibleSegment] = useState<{ id: number; type: string } | null>(null);
+  const segmentRefs = useRef<Map<number, { element: HTMLElement; type: string }>>(new Map());
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
@@ -94,6 +94,37 @@ const DynamicCMSPage = () => {
     // No language prefix, return as is (or 'index' if empty)
     const slug = parts.join('/');
     return slug || 'index';
+  };
+
+  // Format segment type name for display (e.g., "product-hero-gallery" -> "Product Hero Gallery")
+  const formatSegmentTypeName = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      'product-hero-gallery': 'Product Hero Gallery',
+      'product-hero': 'Product Hero',
+      'full-hero': 'Full Hero',
+      'action-hero': 'Action Hero',
+      'intro': 'Intro',
+      'tiles': 'Tiles',
+      'banner': 'Banner',
+      'banner-p': 'Banner P',
+      'image-text': 'Image & Text',
+      'video': 'Video',
+      'feature-overview': 'Feature Overview',
+      'table': 'Table',
+      'faq': 'FAQ',
+      'specification': 'Specification',
+      'industries': 'Industries',
+      'news': 'News',
+      'news-list': 'News List',
+      'events': 'Events',
+      'product-list': 'Product List',
+      'downloads': 'Downloads',
+      'meta-navigation': 'Meta Navigation',
+      'footer': 'Footer',
+      'mini-footer': 'Mini Footer',
+      'debug': 'Debug',
+    };
+    return typeMap[type] || type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
   const pageSlug = extractPageSlug(location.pathname);
@@ -132,21 +163,21 @@ const DynamicCMSPage = () => {
     const viewportTop = window.scrollY + 150; // Account for toolbar
     const viewportCenter = viewportTop + window.innerHeight / 3;
     
-    let closestSegment: { id: number; distance: number } | null = null;
+    let closestSegment: { id: number; type: string; distance: number } | null = null;
     
-    segmentRefs.current.forEach((element, segmentId) => {
-      const rect = element.getBoundingClientRect();
+    segmentRefs.current.forEach((data, segmentId) => {
+      const rect = data.element.getBoundingClientRect();
       const elementTop = rect.top + window.scrollY;
       const elementCenter = elementTop + rect.height / 2;
       const distance = Math.abs(viewportCenter - elementCenter);
       
       if (!closestSegment || distance < closestSegment.distance) {
-        closestSegment = { id: segmentId, distance };
+        closestSegment = { id: segmentId, type: data.type, distance };
       }
     });
     
     if (closestSegment) {
-      setCurrentVisibleSegmentId(closestSegment.id);
+      setCurrentVisibleSegment({ id: closestSegment.id, type: closestSegment.type });
     }
   }, []);
 
@@ -1520,6 +1551,9 @@ const DynamicCMSPage = () => {
     // Extract numeric ID for scroll tracking
     const numericId = parseInt(segmentKey.replace(/\D/g, ''), 10) || 0;
     
+    // Get segment type for toolbar display
+    const segmentType = segment.segment_type || segment.type || 'Unknown';
+    
     return (
       <EditableSegment
         key={`editable-${segmentId}`}
@@ -1534,7 +1568,7 @@ const DynamicCMSPage = () => {
         }}
         onRegisterRef={(id, element) => {
           if (element) {
-            segmentRefs.current.set(id, element);
+            segmentRefs.current.set(id, { element, type: segmentType });
           } else {
             segmentRefs.current.delete(id);
           }
@@ -1671,11 +1705,13 @@ const DynamicCMSPage = () => {
               </div>
             )}
             
-            {/* Dynamic Segment ID Badge - last (shows current segment in viewport) */}
-            {currentVisibleSegmentId !== null && (
+            {/* Dynamic Segment Badge - shows segment type and ID */}
+            {currentVisibleSegment !== null && (
               <div className="flex items-center gap-2 bg-black text-[#f9dc24] px-3 py-2 rounded-lg font-semibold shadow-lg">
                 <Hash className="h-4 w-4" />
-                <span className="text-sm">ID: {currentVisibleSegmentId}</span>
+                <span className="text-base" style={{ letterSpacing: '0.02em' }}>
+                  {formatSegmentTypeName(currentVisibleSegment.type)} ID: {currentVisibleSegment.id}
+                </span>
               </div>
             )}
         </div>
