@@ -45,6 +45,7 @@ export const FrontendEditProvider: React.FC<{
   pageSlug: string;
   language: string;
 }> = ({ children, pageSlug, language }) => {
+  console.log('[FrontendEditProvider] Mounting for pageSlug:', pageSlug, 'language:', language);
   const [searchParams, setSearchParams] = useSearchParams();
   
   // Check URL parameter for initial edit mode
@@ -65,10 +66,16 @@ export const FrontendEditProvider: React.FC<{
   const hasProcessedEditParam = useRef(false);
   
   useEffect(() => {
+    console.log('[FrontendEdit] URL param effect - isLoading:', isLoading, 'editFromUrl:', editFromUrl, 'canEdit:', canEdit, 'isEditMode:', isEditMode, 'hasProcessed:', hasProcessedEditParam.current);
+    
     // Only process once per page load
-    if (hasProcessedEditParam.current) return;
+    if (hasProcessedEditParam.current) {
+      console.log('[FrontendEdit] Already processed, skipping');
+      return;
+    }
     
     if (!isLoading && editFromUrl && canEdit && !isEditMode) {
+      console.log('[FrontendEdit] Activating edit mode from URL');
       hasProcessedEditParam.current = true;
       setIsEditMode(true);
       
@@ -79,10 +86,13 @@ export const FrontendEditProvider: React.FC<{
           newParams.delete('edit');
           const newUrl = window.location.pathname + (newParams.toString() ? '?' + newParams.toString() : '');
           window.history.replaceState({}, '', newUrl);
+          console.log('[FrontendEdit] Cleaned URL:', newUrl);
         } catch (error) {
           console.error('[FrontendEdit] Error removing edit param:', error);
         }
       }, 100);
+    } else if (!isLoading && editFromUrl && !canEdit) {
+      console.warn('[FrontendEdit] User has no edit permission but edit=true in URL');
     }
   }, [isLoading, editFromUrl, canEdit, isEditMode]);
 
@@ -272,6 +282,8 @@ export const FrontendEditProvider: React.FC<{
       return false;
     }
   }, [canApprove, userId, pageSlug, language, removePendingChange]);
+
+  console.log('[FrontendEditProvider] Rendering children, isLoading:', isLoading, 'canEdit:', canEdit, 'isEditMode:', isEditMode);
 
   return (
     <FrontendEditContext.Provider value={{
