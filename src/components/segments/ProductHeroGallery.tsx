@@ -280,23 +280,36 @@ const ProductHeroGallery = ({
       return (
         <>
           <div ref={buttonRef} className="relative inline-block">
-            {/* The actual button - always rendered to maintain layout */}
-            <div 
-              className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-pointer transition-all ${
-                isThisButtonEditing ? 'ring-2 ring-[#f9dc24]' : 'ring-2 ring-dashed ring-gray-400 hover:ring-gray-600'
-              }`}
-              style={buttonStyle}
-              onClick={() => !isThisButtonEditing && setEditingButton(buttonId)}
-              title={isThisButtonEditing ? '' : 'Click to edit'}
-            >
-              {localText || 'Button Text'}
-            </div>
+            {/* The actual button - editable inline when active */}
+            {isThisButtonEditing ? (
+              <input
+                type="text"
+                value={localText}
+                onChange={(e) => setLocalText(e.target.value)}
+                className={`${buttonClasses} inline-flex items-center justify-center rounded-md ring-2 ring-[#f9dc24] bg-transparent border-none outline-none text-center`}
+                style={{ 
+                  ...buttonStyle,
+                  minWidth: '120px'
+                }}
+                autoFocus
+                placeholder="Button text"
+              />
+            ) : (
+              <div 
+                className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-pointer transition-all ring-2 ring-dashed ring-gray-400 hover:ring-gray-600`}
+                style={buttonStyle}
+                onClick={() => setEditingButton(buttonId)}
+                title="Click to edit"
+              >
+                {localText || 'Button Text'}
+              </div>
+            )}
           </div>
           
-          {/* Editor as portal - uses absolute positioning relative to page to scroll with content */}
+          {/* Editor as portal - only Style and Link, no Text field */}
           {isThisButtonEditing && createPortal(
             <div 
-              className="absolute bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]"
+              className="absolute bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[280px]"
               style={{ 
                 position: 'absolute',
                 top: editorPosition.top, 
@@ -304,19 +317,6 @@ const ProductHeroGallery = ({
                 zIndex: 99999
               }}
             >
-              {/* Text Input */}
-              <div className="flex gap-2 items-center mb-3">
-                <span className="text-xs text-gray-600 w-10 font-medium">Text:</span>
-                <input
-                  type="text"
-                  value={localText}
-                  onChange={(e) => setLocalText(e.target.value)}
-                  className="text-sm px-3 py-2 border border-gray-300 rounded flex-1 font-medium"
-                  placeholder="Button text"
-                  autoFocus
-                />
-              </div>
-              
               {/* Style Selector - quadratisch, aktiv = größer */}
               <div className="flex gap-2 items-center mb-3">
                 <span className="text-xs text-gray-600 w-10 font-medium">Style:</span>
