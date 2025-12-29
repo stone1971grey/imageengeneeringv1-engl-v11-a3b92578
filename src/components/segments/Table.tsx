@@ -12,6 +12,7 @@ interface TableProps {
   title?: string;
   subtext?: string;
   headers?: string[];
+  columns?: string[]; // Alternative field name from Content Automation
   rows?: string[][];
   segmentKey?: string;
   pageSlug?: string;
@@ -24,26 +25,29 @@ const Table = ({
   title = '', 
   subtext = '', 
   headers = [], 
+  columns = [], // Alternative field name
   rows = [],
   segmentKey = '',
   pageSlug = '',
   language = 'en',
   onContentUpdate
 }: TableProps) => {
+  // Use headers if available, otherwise fall back to columns
+  const effectiveHeaders = headers.length > 0 ? headers : columns;
   const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
   const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
 
   // Local state for editing
-  const [localHeaders, setLocalHeaders] = useState<string[]>(headers);
+  const [localHeaders, setLocalHeaders] = useState<string[]>(effectiveHeaders);
   const [localRows, setLocalRows] = useState<string[][]>(rows);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Sync local state with props
   useEffect(() => {
-    setLocalHeaders(headers);
-  }, [headers]);
+    setLocalHeaders(effectiveHeaders);
+  }, [effectiveHeaders]);
 
   useEffect(() => {
     setLocalRows(rows);
