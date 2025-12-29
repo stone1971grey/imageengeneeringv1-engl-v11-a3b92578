@@ -312,8 +312,10 @@ const DynamicCMSPage = () => {
   }, [pageSlug, currentUrlLanguage, authChecked]);
 
   const loadContent = async () => {
+    console.log('[DynamicCMSPage] loadContent started for:', pageSlug, 'language:', currentUrlLanguage);
     try {
       if (!pageSlug) {
+        console.log('[DynamicCMSPage] No pageSlug, setting pageNotFound');
         setPageNotFound(true);
         setLoading(false);
         return;
@@ -1611,6 +1613,8 @@ const DynamicCMSPage = () => {
       tabOrder,
     });
   }
+
+  console.log('[DynamicCMSPage] RENDER START - pageSlug:', pageSlug, 'loading:', loading, 'pageSegments:', pageSegments.length, 'tabOrder:', tabOrder.length);
 
   return (
     <PageErrorBoundary>
