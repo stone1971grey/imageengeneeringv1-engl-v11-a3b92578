@@ -46,15 +46,21 @@ const isValidSegmentType = (type: string): type is SegmentType => {
   return type in SEGMENT_CONFIG;
 };
 
-// Get valid segment types for content automation (subset of all types)
+// Get valid segment types for content automation (ALL content segments)
 const CONTENT_AUTOMATION_SEGMENT_TYPES: SegmentType[] = [
+  // Hero segments
+  'hero',
   'product-hero-gallery',
+  // Content segments
   'intro',
-  'specification',
-  'feature-overview',
+  'image-text',
   'tiles',
-  'faq',
+  'banner',
+  'feature-overview',
+  'table',
   'video',
+  'specification',
+  'faq',
 ];
 
 interface ParsedContent {
