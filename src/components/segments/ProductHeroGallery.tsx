@@ -308,7 +308,7 @@ const ProductHeroGallery = ({
                 type="text"
                 value={localLink}
                 onChange={(e) => setLocalLink(e.target.value)}
-                className="text-sm px-3 py-2 border border-gray-300 rounded flex-1"
+                className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
                 placeholder="/page-url or https://..."
               />
             </div>
