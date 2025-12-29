@@ -1,0 +1,430 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
+import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
+import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface ImageTextItem {
+  title: string;
+  description: string;
+  imageUrl?: string;
+  metadata?: { altText?: string };
+}
+
+interface ImageTextSegmentProps {
+  id?: string;
+  title?: string;
+  subtext?: string;
+  layout?: '1-col' | '2-col' | '3-col';
+  heroImageUrl?: string;
+  heroImageMetadata?: { altText?: string };
+  items?: ImageTextItem[];
+  segmentKey?: string;
+  pageSlug?: string;
+  language?: string;
+  onContentUpdate?: () => void;
+}
+
+const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
+  id,
+  title = '',
+  subtext = '',
+  layout = '2-col',
+  heroImageUrl = '',
+  heroImageMetadata,
+  items = [],
+  segmentKey = '',
+  pageSlug = '',
+  language = 'en',
+  onContentUpdate
+}) => {
+  const editContext = useFrontendEditOptional();
+  const segmentEdit = useSegmentEdit();
+  const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
+
+  // Local state for editing
+  const [localItems, setLocalItems] = useState<ImageTextItem[]>(items);
+  const [localLayout, setLocalLayout] = useState<'1-col' | '2-col' | '3-col'>(layout);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync local items with props
+  useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    setLocalLayout(layout);
+  }, [layout]);
+
+  // Enable save button when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setHasChanges(true);
+    }
+  }, [isEditing]);
+
+  const displayTitle = title || (isEditing ? '[Click to add section title]' : '');
+  const displaySubtext = subtext || (isEditing ? '[Click to add section description]' : '');
+
+  // Hide if no content and not editing
+  if (!title && !subtext && localItems.length === 0 && !isEditing) {
+    return null;
+  }
+
+  const getLayoutClass = () => {
+    switch (localLayout) {
+      case '1-col':
+        return 'grid-cols-1';
+      case '3-col':
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+      default:
+        return 'grid-cols-1 md:grid-cols-2';
+    }
+  };
+
+  const getImageHeightClass = () => {
+    return localLayout === '1-col' ? 'h-[512px]' : 'h-64';
+  };
+
+  const handleItemChange = (index: number, field: keyof ImageTextItem, newValue: any) => {
+    const updatedItems = [...localItems];
+    updatedItems[index] = { ...updatedItems[index], [field]: newValue };
+    setLocalItems(updatedItems);
+    setHasChanges(true);
+  };
+
+  const handleAddItem = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLocalItems([...localItems, { 
+      title: '', 
+      description: '', 
+      imageUrl: ''
+    }]);
+    setHasChanges(true);
+  };
+
+  const handleDeleteItem = (index: number) => {
+    const updatedItems = localItems.filter((_, i) => i !== index);
+    setLocalItems(updatedItems);
+    setHasChanges(true);
+  };
+
+  const handleLayoutChange = (newLayout: '1-col' | '2-col' | '3-col') => {
+    setLocalLayout(newLayout);
+    setHasChanges(true);
+  };
+
+  const handleCancel = () => {
+    setLocalItems(items);
+    setLocalLayout(layout);
+    setHasChanges(false);
+  };
+
+  const handleSave = useCallback(async () => {
+    if (!hasChanges) return;
+    
+    setIsSaving(true);
+    
+    try {
+      // Load page_segments
+      const { data: pageSegmentsData, error: loadError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+
+      if (loadError) {
+        console.error('[ImageTextSegment] Error loading page_segments:', loadError);
+        toast.error('Error loading content');
+        setIsSaving(false);
+        return;
+      }
+
+      if (!pageSegmentsData) {
+        console.error('[ImageTextSegment] page_segments not found');
+        toast.error('Content not found');
+        setIsSaving(false);
+        return;
+      }
+
+      // Parse segments
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        console.error('[ImageTextSegment] Error parsing page_segments:', e);
+        toast.error('Error parsing content');
+        setIsSaving(false);
+        return;
+      }
+
+      // Find the segment by ID
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        return segId === segmentKey;
+      });
+
+      if (segmentIndex === -1) {
+        console.error('[ImageTextSegment] Segment not found:', segmentKey);
+        toast.error('Segment not found');
+        setIsSaving(false);
+        return;
+      }
+
+      // Update segment data
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data.items = localItems;
+      segments[segmentIndex].data.layout = localLayout;
+
+      // Save
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (updateError) {
+        console.error('[ImageTextSegment] Error saving:', updateError);
+        toast.error('Error saving');
+        setIsSaving(false);
+        return;
+      }
+
+      toast.success('Image & Text saved!');
+      setHasChanges(false);
+      onContentUpdate?.();
+    } catch (error) {
+      console.error('[ImageTextSegment] Save error:', error);
+      toast.error('Error saving');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [hasChanges, localItems, localLayout, pageSlug, language, segmentKey, onContentUpdate]);
+
+  return (
+    <section id={id} className="pt-[60px] pb-20 bg-gray-50">
+      <div className="container mx-auto px-6">
+        {/* Section Title & Subtext */}
+        {(displayTitle || isEditing) && (
+          <div className="text-center mb-16">
+            {isEditing ? (
+              <EditableText
+                value={displayTitle}
+                sectionKey={`${segmentKey}-title`}
+                pageSlug={pageSlug}
+                language={language}
+                className="text-4xl font-bold text-gray-900 mb-4"
+                as="h2"
+                onUpdate={onContentUpdate}
+                fieldLabel="Section Title"
+              />
+            ) : (
+              title && <h2 className="text-4xl font-bold text-gray-900 mb-4">{title}</h2>
+            )}
+            
+            {(displaySubtext || isEditing) && (
+              isEditing ? (
+                <EditableText
+                  value={displaySubtext}
+                  sectionKey={`${segmentKey}-subtext`}
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line"
+                  as="p"
+                  multiline
+                  onUpdate={onContentUpdate}
+                  fieldLabel="Section Description"
+                />
+              ) : (
+                subtext && (
+                  <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
+                    {subtext}
+                  </p>
+                )
+              )
+            )}
+          </div>
+        )}
+
+        {/* Layout Selector (Edit Mode Only) */}
+        {isEditing && (
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+              <span className="text-xs text-gray-500 font-medium px-2">Columns:</span>
+              <button
+                type="button"
+                onClick={() => handleLayoutChange('1-col')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localLayout === '1-col' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                1 Column
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLayoutChange('2-col')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localLayout === '2-col' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                2 Columns
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLayoutChange('3-col')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localLayout === '3-col' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                3 Columns
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Grid with Items */}
+        <div className={`grid gap-8 max-w-7xl mx-auto ${getLayoutClass()}`}>
+          {localItems.map((item, idx) => {
+            // Prefer item-level image, fallback to hero image for first item
+            const imageSrc = item.imageUrl || (idx === 0 ? heroImageUrl : undefined);
+            const imageAlt = item.metadata?.altText || item.title || heroImageMetadata?.altText || title;
+
+            return (
+              <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow relative group">
+                {isEditing && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteItem(idx)}
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+                
+                {/* Image Section */}
+                {isEditing ? (
+                  <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
+                    <EditableImage
+                      src={imageSrc || ''}
+                      alt={imageAlt || 'Item image'}
+                      sectionKey={`${segmentKey}-item-${idx}-image`}
+                      pageSlug={pageSlug}
+                      language={language}
+                      className="w-full h-full object-cover"
+                      onUpdate={() => {
+                        setHasChanges(true);
+                        onContentUpdate?.();
+                      }}
+                    />
+                  </div>
+                ) : (
+                  imageSrc && (
+                    <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
+                      <img
+                        src={imageSrc}
+                        alt={imageAlt || "Section image"}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )
+                )}
+                
+                {/* Content Section */}
+                <div className="p-8">
+                  {isEditing ? (
+                    <>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => handleItemChange(idx, 'title', e.target.value)}
+                        className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 mb-4 hover:bg-[#f9dc24]/10 transition-colors"
+                        placeholder="Item title..."
+                      />
+                      <textarea
+                        value={item.description || ''}
+                        onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
+                        className="text-gray-600 leading-relaxed w-full bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-3 hover:bg-[#f9dc24]/10 transition-colors resize-y min-h-[200px]"
+                        placeholder="Item description... (supports HTML)"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <div 
+                        className="text-gray-600 leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1"
+                        dangerouslySetInnerHTML={{ __html: item.description || '' }}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Add Item Button */}
+        {isEditing && (
+          <div className="flex justify-center mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => handleAddItem(e)}
+              className="bg-black text-white hover:bg-gray-900 hover:text-white border-black z-20"
+            >
+              <Plus className="h-4 w-4 mr-2 text-white" />
+              Add Item
+            </Button>
+          </div>
+        )}
+
+        {/* Save/Cancel buttons */}
+        {isEditing && (
+          <div className="mt-8 flex justify-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+              disabled={isSaving}
+              className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : null}
+              Save
+            </Button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default ImageTextSegment;

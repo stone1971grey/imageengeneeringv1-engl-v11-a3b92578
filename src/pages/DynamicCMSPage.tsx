@@ -23,6 +23,7 @@ import EventsSegment from "@/components/segments/EventsSegment";
 import ProductListSegment from "@/components/segments/ProductListSegment";
 import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import Tiles from "@/components/segments/Tiles";
+import ImageTextSegment from "@/components/segments/ImageTextSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
@@ -1344,70 +1345,21 @@ const DynamicCMSPage = () => {
 
       case "image-text":
       case "solutions":
-        const layoutClass =
-          segment.data?.layout === "1-col"
-            ? "grid-cols-1"
-            : segment.data?.layout === "3-col"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            : "grid-cols-1 md:grid-cols-2";
-
         return (
-          <section
-            key={segmentId}
+          <ImageTextSegment
+            key={`${segmentId}-${refreshCounter}`}
             id={segmentDbId?.toString()}
-            data-segment-key={segment.segment_key || segment.id}
-            data-segment-id={segmentDbId?.toString()}
-            className="pt-[60px] pb-20 bg-gray-50"
-          >
-            <div className="container mx-auto px-6">
-              {/* Section Title & Subtext FIRST */}
-              {segment.data?.title && (
-                <div className="text-center mb-16">
-                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.title}
-                  </h2>
-                  {segment.data?.subtext && (
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
-                      {segment.data.subtext}
-                    </p>
-                  )}
-                </div>
-              )}
-              
-              {/* Grid with Items - Each item has integrated image */}
-              <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segment.data?.items || []).map((solution: any, idx: number) => {
-                  // Prefer item-level image, fallback to section hero image for first item
-                  const imageSrc = solution.imageUrl || (idx === 0 ? segment.data?.heroImageUrl : undefined);
-                  const imageAlt = solution.metadata?.altText || solution.title || segment.data?.heroImageMetadata?.altText || segment.data?.title;
-                  
-                  // Dynamic image height based on layout (1-col needs double height)
-                  const imageHeightClass = segment.data?.layout === "1-col" ? "h-[512px]" : "h-64";
-
-                  return (
-                    <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                      {imageSrc && (
-                        <div className={`w-full ${imageHeightClass} overflow-hidden`}>
-                          <img
-                            src={imageSrc}
-                            alt={imageAlt || "Section image"}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
-                      <div className="p-8">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
-                        <div 
-                          className="text-gray-600 leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1"
-                          dangerouslySetInnerHTML={{ __html: solution.description || '' }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
+            title={segment.data?.title || ""}
+            subtext={segment.data?.subtext || ""}
+            layout={segment.data?.layout || "2-col"}
+            heroImageUrl={segment.data?.heroImageUrl}
+            heroImageMetadata={segment.data?.heroImageMetadata}
+            items={segment.data?.items || []}
+            segmentKey={String(segment.segment_key || segment.id)}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
+          />
         );
 
       default:
