@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
@@ -43,22 +43,37 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
   const canEdit = editContext?.canEdit || false;
 
-  // Local state for items editing
+  // Local state for items editing - use ref to track if we're in an active editing session
   const [localItems, setLocalItems] = useState<FeatureItem[]>(items);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Use ref to track editing session - this survives re-renders
+  const isEditingSessionActive = useRef(false);
+  const itemsVersion = useRef(0);
 
-  // Sync local items with props - only on initial load or when items reference changes AND we haven't made local changes
+  // Track when editing starts/stops
   useEffect(() => {
-    if (!isInitialized) {
-      setLocalItems(items);
-      setIsInitialized(true);
-    } else if (!hasChanges && !isEditing) {
-      // Only sync if we don't have local changes and we're not editing
-      setLocalItems(items);
+    if (isEditing && !isEditingSessionActive.current) {
+      // Entering edit mode - mark session as active
+      isEditingSessionActive.current = true;
+      console.log('[FeatureOverview] Edit session started, items:', localItems.length);
+    } else if (!isEditing && isEditingSessionActive.current) {
+      // Leaving edit mode - reset session
+      isEditingSessionActive.current = false;
+      console.log('[FeatureOverview] Edit session ended');
     }
-  }, [items, hasChanges, isEditing, isInitialized]);
+  }, [isEditing, localItems.length]);
+
+  // Sync local items with props - ONLY when NOT in an active editing session
+  useEffect(() => {
+    if (!isEditingSessionActive.current && !hasChanges) {
+      console.log('[FeatureOverview] Syncing items from props:', items.length);
+      setLocalItems(items);
+    } else {
+      console.log('[FeatureOverview] Skipping sync - editing session active or has changes');
+    }
+  }, [items]); // Only depend on items prop changes
   
   // Enable save button when entering edit mode
   useEffect(() => {
@@ -166,15 +181,19 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   };
 
   const handleAddItem = useCallback(() => {
-    console.log('[FeatureOverview] handleAddItem called');
+    console.log('[FeatureOverview] handleAddItem called, isEditingSessionActive:', isEditingSessionActive.current);
+    // Ensure we're marked as in an active editing session
+    isEditingSessionActive.current = true;
+    itemsVersion.current += 1;
+    
     setLocalItems(prevItems => {
       const newItem: FeatureItem = { title: '', description: '' };
       const newItems = [...prevItems, newItem];
-      console.log('[FeatureOverview] Previous items:', prevItems.length, 'New items:', newItems.length);
-      toast.success(`Feature Item hinzugefügt (${newItems.length} Items)`);
+      console.log('[FeatureOverview] Added item. Previous:', prevItems.length, 'New:', newItems.length, 'Version:', itemsVersion.current);
       return newItems;
     });
     setHasChanges(true);
+    toast.success('Feature Item hinzugefügt');
   }, []);
 
   const handleDeleteItem = (globalIndex: number) => {
