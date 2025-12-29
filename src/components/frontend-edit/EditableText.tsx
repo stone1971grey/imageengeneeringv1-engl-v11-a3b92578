@@ -404,7 +404,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         >
           {value}
           {editContext?.canEdit && (
-            <span className="absolute left-1/2 -translate-x-1/2 -top-8 z-[200] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-xs px-3 py-1.5 rounded font-semibold whitespace-nowrap pointer-events-none shadow-lg">
+            <span className="absolute left-1/2 -translate-x-1/2 -top-10 z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-semibold whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]/30">
               Click to edit
             </span>
           )}
@@ -452,12 +452,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
           onKeyDown={handleKeyDown}
           disabled={isSaving}
           className={cn(
-            "w-full bg-black/90 border-2 border-[#f9dc24] rounded-lg p-3",
-            "text-white placeholder-gray-400",
+            "w-full bg-black/90 border-2 border-[#f9dc24] rounded-lg p-4",
+            "text-white placeholder-gray-400 text-base leading-relaxed",
             "focus:outline-none focus:ring-2 focus:ring-[#f9dc24]/50",
-            "disabled:opacity-50 resize-y min-h-[100px]"
+            "disabled:opacity-50 resize-y min-h-[200px]"
           )}
-          rows={Math.min(10, Math.max(3, editValue.split('\n').length + 1))}
+          rows={Math.min(15, Math.max(6, editValue.split('\n').length + 2))}
         />
       ) : (
         <input

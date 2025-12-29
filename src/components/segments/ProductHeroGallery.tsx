@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -260,26 +261,48 @@ const ProductHeroGallery = ({
     const setLocalStyle = buttonId === 'cta1' ? setCta1Style : setCta2Style;
     const isThisButtonEditing = editingButton === buttonId;
 
-    // In editing mode, render editable button
+    // In editing mode, render editable button with portal for editor
     if (isEditing) {
-      // Show the button normally, with editor as overlay when active
+      const buttonRef = useRef<HTMLDivElement>(null);
+      const [editorPosition, setEditorPosition] = useState({ top: 0, left: 0 });
+
+      // Update editor position when button editing starts
+      useEffect(() => {
+        if (isThisButtonEditing && buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect();
+          setEditorPosition({
+            top: rect.bottom + window.scrollY + 8,
+            left: rect.left + window.scrollX
+          });
+        }
+      }, [isThisButtonEditing]);
+
       return (
-        <div className="relative inline-block">
-          {/* The actual button - always rendered to maintain layout */}
-          <div 
-            className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-pointer transition-all ${
-              isThisButtonEditing ? 'ring-2 ring-[#f9dc24]' : 'ring-2 ring-dashed ring-gray-400 hover:ring-gray-600'
-            }`}
-            style={buttonStyle}
-            onClick={() => !isThisButtonEditing && setEditingButton(buttonId)}
-            title={isThisButtonEditing ? '' : 'Click to edit'}
-          >
-            {localText || 'Button Text'}
+        <>
+          <div ref={buttonRef} className="relative inline-block">
+            {/* The actual button - always rendered to maintain layout */}
+            <div 
+              className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-pointer transition-all ${
+                isThisButtonEditing ? 'ring-2 ring-[#f9dc24]' : 'ring-2 ring-dashed ring-gray-400 hover:ring-gray-600'
+              }`}
+              style={buttonStyle}
+              onClick={() => !isThisButtonEditing && setEditingButton(buttonId)}
+              title={isThisButtonEditing ? '' : 'Click to edit'}
+            >
+              {localText || 'Button Text'}
+            </div>
           </div>
           
-          {/* Editor overlay - positioned below the button with high z-index */}
-          {isThisButtonEditing && (
-            <div className="absolute top-full left-0 mt-2 z-[200] bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]">
+          {/* Editor as portal - renders at document body level to avoid z-index issues */}
+          {isThisButtonEditing && createPortal(
+            <div 
+              className="fixed bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]"
+              style={{ 
+                top: editorPosition.top, 
+                left: editorPosition.left,
+                zIndex: 99999
+              }}
+            >
               {/* Text Input */}
               <div className="flex gap-2 items-center mb-3">
                 <span className="text-xs text-gray-600 w-10 font-medium">Text:</span>
@@ -361,9 +384,10 @@ const ProductHeroGallery = ({
                   Cancel
                 </Button>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
-        </div>
+        </>
       );
     }
 
