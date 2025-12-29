@@ -108,8 +108,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
       
       console.log('[EditableText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId);
 
-      // Load current page_segments JSON
-      const { data: pageSegmentsData, error: loadError } = await supabase
+      // First, try to find page_segments JSON (newer CMS format)
+      let { data: pageSegmentsData, error: loadError } = await supabase
         .from('page_content')
         .select('id, content_value')
         .eq('page_slug', pageSlug)
@@ -124,60 +124,116 @@ export const EditableText: React.FC<EditableTextProps> = ({
         return;
       }
 
-      if (!pageSegmentsData) {
-        console.error('[EditableText] page_segments not found for', pageSlug, language);
-        toast.error('Page content not found');
-        setIsSaving(false);
-        return;
-      }
+      // If page_segments exists, use it
+      if (pageSegmentsData) {
+        console.log('[EditableText] Using page_segments format');
+        
+        // Parse and update the segments array
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsData.content_value || '[]');
+        } catch (e) {
+          console.error('[EditableText] Error parsing page_segments:', e);
+          toast.error('Error parsing content');
+          setIsSaving(false);
+          return;
+        }
 
-      // Parse and update the segments array
-      let segments: any[] = [];
-      try {
-        segments = JSON.parse(pageSegmentsData.content_value || '[]');
-      } catch (e) {
-        console.error('[EditableText] Error parsing page_segments:', e);
-        toast.error('Error parsing content');
-        setIsSaving(false);
-        return;
-      }
+        // Find the segment by matching id (trying multiple formats)
+        const segmentIndex = segments.findIndex((seg: any) => {
+          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+          // Match against segmentId directly, or the full segmentKey contains it
+          return segId === segmentId || segmentKey === `${seg.type}-${segId}`;
+        });
 
-      // Find the segment by matching id (trying multiple formats)
-      const segmentIndex = segments.findIndex((seg: any) => {
-        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-        // Match against segmentId directly, or the full segmentKey contains it
-        return segId === segmentId || segmentKey === `${seg.type}-${segId}`;
-      });
+        if (segmentIndex === -1) {
+          console.error('[EditableText] Segment not found. segmentId:', segmentId, 'segmentKey:', segmentKey, 'Available segments:', segments.map(s => ({ id: s.id, type: s.type })));
+          toast.error('Segment not found');
+          setIsSaving(false);
+          return;
+        }
 
-      if (segmentIndex === -1) {
-        console.error('[EditableText] Segment not found. segmentId:', segmentId, 'segmentKey:', segmentKey, 'Available segments:', segments.map(s => ({ id: s.id, type: s.type })));
-        toast.error('Segment not found');
-        setIsSaving(false);
-        return;
-      }
+        console.log('[EditableText] Found segment at index:', segmentIndex, 'type:', segments[segmentIndex].type, 'Updating field:', fieldName);
 
-      console.log('[EditableText] Found segment at index:', segmentIndex, 'type:', segments[segmentIndex].type, 'Updating field:', fieldName);
+        // Update the specific field in the segment data
+        if (!segments[segmentIndex].data) {
+          segments[segmentIndex].data = {};
+        }
+        segments[segmentIndex].data[fieldName] = editValue;
 
-      // Update the specific field in the segment data
-      if (!segments[segmentIndex].data) {
-        segments[segmentIndex].data = {};
-      }
-      segments[segmentIndex].data[fieldName] = editValue;
+        // Save the updated page_segments JSON
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsData.id);
 
-      // Save the updated page_segments JSON
-      const { error: updateError } = await supabase
-        .from('page_content')
-        .update({
-          content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', pageSegmentsData.id);
-
-      if (updateError) {
-        console.error('[EditableText] Error updating page_segments:', updateError);
-        toast.error('Error saving');
-        setIsSaving(false);
-        return;
+        if (updateError) {
+          console.error('[EditableText] Error updating page_segments:', updateError);
+          toast.error('Error saving');
+          setIsSaving(false);
+          return;
+        }
+      } else {
+        // Fallback: Try to find individual segment entry (older CMS format)
+        // segmentId is the section_key directly
+        console.log('[EditableText] page_segments not found, trying individual section_key:', segmentId);
+        
+        const { data: segmentData, error: segmentError } = await supabase
+          .from('page_content')
+          .select('id, content_value, content_type')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', segmentId)
+          .eq('language', language)
+          .maybeSingle();
+        
+        if (segmentError) {
+          console.error('[EditableText] Error loading segment:', segmentError);
+          toast.error('Error loading content');
+          setIsSaving(false);
+          return;
+        }
+        
+        if (!segmentData) {
+          console.error('[EditableText] Segment not found with section_key:', segmentId);
+          toast.error('Content not found');
+          setIsSaving(false);
+          return;
+        }
+        
+        console.log('[EditableText] Found individual segment, updating field:', fieldName);
+        
+        // Parse the content_value JSON and update the field
+        let contentObj: any = {};
+        try {
+          contentObj = JSON.parse(segmentData.content_value || '{}');
+        } catch (e) {
+          console.error('[EditableText] Error parsing segment content:', e);
+          toast.error('Error parsing content');
+          setIsSaving(false);
+          return;
+        }
+        
+        // Update the field
+        contentObj[fieldName] = editValue;
+        
+        // Save back
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(contentObj),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', segmentData.id);
+        
+        if (updateError) {
+          console.error('[EditableText] Error updating segment:', updateError);
+          toast.error('Error saving');
+          setIsSaving(false);
+          return;
+        }
       }
 
       toast.success('Saved!');
