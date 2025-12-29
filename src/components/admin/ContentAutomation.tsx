@@ -514,12 +514,20 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         }
       }
       
-      if (storageImages.length === 0 && parsedContent.images.length > 0) {
+      // OPTIMIZATION: Skip downloads entirely and use external URLs directly
+      // This prevents the import from hanging on slow external servers
+      // Downloads can be done manually via Media Management later
+      const SKIP_EXTERNAL_DOWNLOADS = true;
+      
+      if (!SKIP_EXTERNAL_DOWNLOADS && storageImages.length === 0 && parsedContent.images.length > 0) {
         console.log('[ContentAutomation] No local images, downloading external images in parallel...');
         setImportStep('Downloading images...');
         
-        // Download images in parallel for speed
-        const imageDownloadPromises = parsedContent.images.slice(0, 6).map(async (img, i) => {
+        // Download images in parallel with timeout
+        const downloadWithTimeout = async (img: { url: string; title?: string }, i: number): Promise<{ url: string; title: string; filePath: string } | null> => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per image
+          
           try {
             const urlParts = img.url.split('/');
             let filename = urlParts[urlParts.length - 1].split('?')[0];
@@ -534,6 +542,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               body: { fileUrl: img.url, targetPath, bucketId: 'page-images' }
             });
             
+            clearTimeout(timeoutId);
+            
             if (!dlError && dlResult?.success) {
               console.log(`[ContentAutomation] Downloaded image: ${filename}`);
               return {
@@ -546,23 +556,31 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               return null;
             }
           } catch (err) {
-            console.warn(`[ContentAutomation] Error downloading image ${i}:`, err);
+            clearTimeout(timeoutId);
+            console.warn(`[ContentAutomation] Error/timeout downloading image ${i}:`, err);
             return null;
           }
-        });
+        };
         
+        const imageDownloadPromises = parsedContent.images.slice(0, 4).map((img, i) => downloadWithTimeout(img, i));
         const imageResults = await Promise.all(imageDownloadPromises);
         downloadedImages.push(...imageResults.filter((r): r is NonNullable<typeof r> => r !== null));
+      } else if (storageImages.length === 0) {
+        console.log('[ContentAutomation] Skipping downloads - will use external URLs directly');
       }
       
-      // Download external PDFs to storage in parallel
-      if (storagePdfs.length === 0 && parsedContent.downloads.length > 0) {
+      // OPTIMIZATION: Skip PDF downloads too - use external URLs directly
+      if (!SKIP_EXTERNAL_DOWNLOADS && storagePdfs.length === 0 && parsedContent.downloads.length > 0) {
         console.log('[ContentAutomation] No local PDFs, downloading external PDFs in parallel...');
         setImportStep('Downloading PDFs...');
         
         const pdfDownloadPromises = parsedContent.downloads
           .filter(d => d.url.toLowerCase().includes('.pdf'))
+          .slice(0, 4) // Limit to 4 PDFs max
           .map(async (dl) => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout for PDFs
+            
             try {
               const urlParts = dl.url.split('/');
               let filename = urlParts[urlParts.length - 1].split('?')[0];
@@ -577,6 +595,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 body: { fileUrl: dl.url, targetPath, bucketId: 'page-images' }
               });
               
+              clearTimeout(timeoutId);
+              
               if (!dlError && dlResult?.success) {
                 console.log(`[ContentAutomation] Downloaded PDF: ${filename}`);
                 return {
@@ -590,13 +610,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 return null;
               }
             } catch (err) {
-              console.warn(`[ContentAutomation] Error downloading PDF:`, err);
+              clearTimeout(timeoutId);
+              console.warn(`[ContentAutomation] Error/timeout downloading PDF:`, err);
               return null;
             }
           });
         
         const pdfResults = await Promise.all(pdfDownloadPromises);
         downloadedPdfs.push(...pdfResults.filter((r): r is NonNullable<typeof r> => r !== null));
+      } else if (storagePdfs.length === 0) {
+        console.log('[ContentAutomation] Skipping PDF downloads - will use external URLs directly');
       }
       
       // Merge: use local files first, then downloaded files
