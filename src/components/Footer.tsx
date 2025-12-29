@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, Clock, Loader2 } from "lucide-react";
+import { Phone, Clock, Loader2, Upload, FolderOpen, ImageIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
 import { useFrontendEditOptional } from "@/contexts/FrontendEditContext";
 import { EditableText } from "@/components/frontend-edit/EditableText";
-import { EditableImage } from "@/components/frontend-edit/EditableImage";
+import { DataHubDialog } from "@/components/admin/DataHubDialog";
 import { toast } from "sonner";
 import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
@@ -33,6 +33,9 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const getNormalizedPath = (pathname: string) => {
     const parts = pathname.split('/').filter(Boolean);
@@ -219,10 +222,103 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
     toast.success('Footer saved!');
   }, [onContentUpdate]);
 
+  // Handle file upload for team image
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be max 5MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${pageSlug}/footer/team-image-${Date.now()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadError) {
+        console.error('[Footer] Upload error:', uploadError);
+        toast.error('Upload failed');
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(uploadData.path);
+
+      const newUrl = urlData.publicUrl;
+      
+      // Save to page_content
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: 'footer_team_image_url',
+          content_type: 'image',
+          content_value: newUrl,
+          language: language,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'page_slug,section_key,language' });
+
+      toast.success('Image uploaded!');
+      loadFooterContent();
+      handleContentChange();
+    } catch (error) {
+      console.error('[Footer] Upload error:', error);
+      toast.error('Upload failed');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  // Handle media selection from DataHub
+  const handleMediaSelect = async (url: string, metadata?: any) => {
+    try {
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: 'footer_team_image_url',
+          content_type: 'image',
+          content_value: url,
+          language: language,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'page_slug,section_key,language' });
+
+      if (metadata?.altText) {
+        await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: pageSlug,
+            section_key: 'footer_team_image_metadata',
+            content_type: 'json',
+            content_value: JSON.stringify({ altText: metadata.altText }),
+            language: language,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'page_slug,section_key,language' });
+      }
+
+      toast.success('Image selected!');
+      loadFooterContent();
+      handleContentChange();
+    } catch (error) {
+      console.error('[Footer] Media select error:', error);
+      toast.error('Failed to save image');
+    }
+    setShowMediaDialog(false);
+  };
+
   // Segment ID badge for toolbar
   const segmentLabel = segmentId ? `Footer ID: ${segmentId}` : 'Footer';
 
   return (
+    <>
     <footer 
       id="footer" 
       className="bg-[#4B4A4A] relative"
@@ -405,17 +501,56 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 {isEditing ? (
-                  <EditableImage
-                    src={hasCMSContent && footerContent.footer_team_image_url 
-                      ? footerContent.footer_team_image_url
-                      : getDefaultTeamImage()}
-                    alt={getTeamImageAlt()}
-                    sectionKey="footer_team_image_url"
-                    pageSlug={pageSlug}
-                    language={language}
-                    className="w-[150px] h-[150px] rounded-lg object-cover"
-                    onUpdate={() => { handleContentChange(); loadFooterContent(); }}
-                  />
+                  <div className="w-[150px] h-[150px] rounded-lg bg-gray-600 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-400 relative overflow-hidden">
+                    {/* Show existing image as background */}
+                    {(hasCMSContent && footerContent.footer_team_image_url) || getDefaultTeamImage() ? (
+                      <img 
+                        src={hasCMSContent && footerContent.footer_team_image_url 
+                          ? footerContent.footer_team_image_url
+                          : getDefaultTeamImage()}
+                        alt={getTeamImageAlt()}
+                        className="absolute inset-0 w-full h-full object-cover opacity-50"
+                      />
+                    ) : null}
+                    
+                    {isUploadingImage ? (
+                      <div className="flex items-center gap-1 text-white z-10">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      </div>
+                    ) : (
+                      <div className="z-10 flex flex-col items-center gap-2">
+                        <ImageIcon className="h-6 w-6 text-white" />
+                        <div className="flex gap-1">
+                          {/* Upload from Computer */}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleFileUpload(file);
+                            }}
+                            className="hidden"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                          >
+                            <Upload className="h-3 w-3" />
+                          </button>
+                          {/* Select from Media */}
+                          <button
+                            type="button"
+                            onClick={() => setShowMediaDialog(true)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                          >
+                            <FolderOpen className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <img 
                     src={
@@ -572,6 +707,17 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
         </div>
       </div>
     </footer>
+
+    {/* Media Management Dialog */}
+    {showMediaDialog && (
+      <DataHubDialog
+        isOpen={showMediaDialog}
+        onClose={() => setShowMediaDialog(false)}
+        selectionMode={true}
+        onSelect={handleMediaSelect}
+      />
+    )}
+    </>
   );
 };
 
