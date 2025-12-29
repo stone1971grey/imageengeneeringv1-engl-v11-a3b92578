@@ -127,6 +127,7 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
     const parentSlug = slugParts.length > 1 ? slugParts.slice(0, -1).join('/') : null;
 
     // Get next page_id atomically (prevents reuse of deleted IDs)
+    // CRITICAL: Page IDs must NEVER be reused - each new page gets a unique, incrementing ID
     const { data: nextIdResult, error: nextIdError } = await supabase
       .rpc('get_next_page_id');
 
@@ -136,6 +137,23 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
     }
 
     const nextPageId = nextIdResult as number;
+
+    // Safety check: Verify this ID doesn't already exist (should never happen with atomic RPC)
+    const { data: existingPage } = await supabase
+      .from('page_registry')
+      .select('page_id')
+      .eq('page_id', nextPageId)
+      .maybeSingle();
+    
+    if (existingPage) {
+      console.error(`CRITICAL: Page ID ${nextPageId} already exists! This should never happen.`);
+      toast.error(`Page ID conflict detected. Please try again.`);
+      setIsCreatingCMS(false);
+      return;
+    }
+
+    console.log(`[CMS Page Creation] Assigning Page ID ${nextPageId} to new page "${slug}"`);
+
 
     let parent_id: number | null = null;
     let parent_slug_value: string | null = null;
