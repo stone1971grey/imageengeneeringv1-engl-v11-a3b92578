@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
+import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 
@@ -66,8 +66,9 @@ const ProductHeroGallery = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   
-  const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || false;
+  // Use FrontendEditContext directly instead of SegmentEditContext
+  const editContext = useFrontendEditOptional();
+  const isEditing = editContext?.isEditMode && editContext?.canEdit;
 
   const imagePosition = data.imagePosition || 'right';
   const layoutRatio = data.layoutRatio || '1-1';
