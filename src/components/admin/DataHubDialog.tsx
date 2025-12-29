@@ -1267,32 +1267,56 @@ export function DataHubDialog({
 
                            <div className="flex gap-2">
                             {selectionMode ? (
-                              <Button
-                                size="sm"
-                                className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
-                                onClick={() => {
-                                  if (onSelect) {
-                                    const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
-                                    onSelect(fileUrl, {
-                                      name: getDisplayFileName(file.name),
-                                      originalFileName: getDisplayFileName(file.name),
-                                      folder: folder.storage_path,
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
+                                  onClick={() => {
+                                    if (onSelect) {
+                                      const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
+                                      onSelect(fileUrl, {
+                                        name: getDisplayFileName(file.name),
+                                        originalFileName: getDisplayFileName(file.name),
+                                        folder: folder.storage_path,
+                                        created_at: file.created_at,
+                                        uploadDate: file.created_at,
+                                        fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
+                                        format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
+                                        mimeType: file.metadata?.mimetype || '',
+                                        altText: file.metadata?.alt_text || '',
+                                        alt_text: file.metadata?.alt_text || '',
+                                        alt_text_translations: file.metadata?.alt_text_translations || null,
+                                        width: 0,
+                                        height: 0
+                                      });
+                                    }
+                                  }}
+                                >
+                                  Select
+                                </Button>
+                                {/* Edit button also in selection mode for Alt-Text editing */}
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8 bg-blue-900/50 hover:bg-blue-900 border-blue-800"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingAsset({
+                                      name: file.name,
+                                      url: fileUrl,
                                       created_at: file.created_at,
-                                      uploadDate: file.created_at,
-                                      fileSizeKB: file.metadata?.size ? Math.round(file.metadata.size / 1024) : 0,
-                                      format: file.metadata?.mimetype?.split('/').pop()?.toUpperCase() || fileExtension,
-                                      mimeType: file.metadata?.mimetype || '',
-                                      altText: file.metadata?.alt_text || '',
-                                      alt_text: file.metadata?.alt_text || '',
-                                      alt_text_translations: file.metadata?.alt_text_translations || null,
-                                      width: 0,
-                                      height: 0
+                                      metadata: file.metadata,
+                                      bucket_id: file.bucket_id,
+                                      segmentIds: segmentIds,
+                                      filePath: `${folder.storage_path}/${file.name}`,
+                                      id: file.id
                                     });
-                                  }
-                                }}
-                              >
-                                Select
-                              </Button>
+                                  }}
+                                  title="Edit asset info and alt text"
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              </>
                             ) : (
                               <>
                                  <Button
