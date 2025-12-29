@@ -85,6 +85,7 @@ const Tiles: React.FC<TilesProps> = ({
 
   // Local state for items editing
   const [localItems, setLocalItems] = useState<TileItem[]>(items);
+  const [localColumns, setLocalColumns] = useState<'2' | '3' | '4'>(columns);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -92,6 +93,10 @@ const Tiles: React.FC<TilesProps> = ({
   useEffect(() => {
     setLocalItems(items);
   }, [items]);
+
+  useEffect(() => {
+    setLocalColumns(columns);
+  }, [columns]);
   
   // Enable save button when entering edit mode
   useEffect(() => {
@@ -109,7 +114,7 @@ const Tiles: React.FC<TilesProps> = ({
   }
 
   const getGridColumns = () => {
-    switch (columns) {
+    switch (localColumns) {
       case '4':
         return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
       case '3':
@@ -117,6 +122,11 @@ const Tiles: React.FC<TilesProps> = ({
       default:
         return 'grid-cols-1 md:grid-cols-2';
     }
+  };
+
+  const handleColumnsChange = (newColumns: '2' | '3' | '4') => {
+    setLocalColumns(newColumns);
+    setHasChanges(true);
   };
 
   const handleItemChange = (index: number, field: keyof TileItem, newValue: any) => {
@@ -203,11 +213,12 @@ const Tiles: React.FC<TilesProps> = ({
         return;
       }
 
-      // Update items in segment data
+      // Update items and columns in segment data
       if (!segments[segmentIndex].data) {
         segments[segmentIndex].data = {};
       }
       segments[segmentIndex].data.items = localItems;
+      segments[segmentIndex].data.columns = localColumns;
 
       // Save
       const { error: updateError } = await supabase
@@ -234,7 +245,7 @@ const Tiles: React.FC<TilesProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [hasChanges, localItems, pageSlug, language, segmentKey, onContentUpdate]);
+  }, [hasChanges, localItems, localColumns, pageSlug, language, segmentKey, onContentUpdate]);
 
   return (
     <section id={id} className="pt-[60px] pb-20 bg-gray-50">
@@ -278,6 +289,48 @@ const Tiles: React.FC<TilesProps> = ({
                 )
               )
             )}
+          </div>
+        )}
+
+        {/* Column Selector (Edit Mode Only) */}
+        {isEditing && (
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+              <span className="text-xs text-gray-500 font-medium px-2">Columns:</span>
+              <button
+                type="button"
+                onClick={() => handleColumnsChange('2')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localColumns === '2' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                2
+              </button>
+              <button
+                type="button"
+                onClick={() => handleColumnsChange('3')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localColumns === '3' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                3
+              </button>
+              <button
+                type="button"
+                onClick={() => handleColumnsChange('4')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  localColumns === '4' 
+                    ? 'bg-[#f9dc24] text-black' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                4
+              </button>
+            </div>
           </div>
         )}
 
