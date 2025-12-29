@@ -1664,11 +1664,10 @@ const DynamicCMSPage = () => {
               Admin Dashboard
             </a>
             
-            {/* Draft Badge - third (after Admin Dashboard) */}
+            {/* Draft Badge - third (after Admin Dashboard), red background, no icon */}
             {isDraftPage && (
-              <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-3 py-2 rounded-lg font-semibold shadow-lg">
-                <Eye className="h-4 w-4" />
-                <span className="text-sm">Draft</span>
+              <div className="flex items-center bg-red-600 text-white px-3 py-2 rounded-lg font-semibold shadow-lg">
+                <span className="text-base">Draft</span>
               </div>
             )}
             
