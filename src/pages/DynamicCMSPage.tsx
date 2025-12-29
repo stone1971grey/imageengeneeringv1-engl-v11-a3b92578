@@ -1804,11 +1804,43 @@ const DynamicCMSPage = () => {
         (() => {
           // Find footer segment ID for dynamic toolbar display
           const footerSegment = pageSegments.find(seg => seg.type === 'footer');
-          const footerSegmentId = footerSegment ? (segmentIdMap[`footer-${footerSegment.id}`] || footerSegment.segment_id || footerSegment.id) : undefined;
+          
+          // Try multiple sources for footer segment ID
+          let footerSegmentId: number | undefined = undefined;
+          
+          if (footerSegment) {
+            // Try segmentIdMap with different key formats
+            footerSegmentId = segmentIdMap[footerSegment.segment_key] 
+              || segmentIdMap[`footer-${footerSegment.id}`]
+              || footerSegment.segment_id 
+              || footerSegment.segmentId;
+            
+            // If still no ID, try to parse from segment_key (e.g., "footer-999" -> 999)
+            if (!footerSegmentId && footerSegment.segment_key) {
+              const match = String(footerSegment.segment_key).match(/footer-(\d+)/);
+              if (match) {
+                footerSegmentId = parseInt(match[1], 10);
+              }
+            }
+            
+            // Fallback to segment.id if it looks like a number
+            if (!footerSegmentId && footerSegment.id) {
+              const numId = parseInt(String(footerSegment.id), 10);
+              if (!isNaN(numId)) {
+                footerSegmentId = numId;
+              }
+            }
+          }
+          
+          // Use a consistent fallback ID for footers without explicit segment
+          // This ensures the footer is always trackable in the toolbar
+          if (!footerSegmentId) {
+            footerSegmentId = 0; // Fallback ID for static footer
+          }
           
           return (
             <Footer 
-              segmentId={footerSegmentId ? Number(footerSegmentId) : undefined}
+              segmentId={footerSegmentId}
               pageSlug={pageSlug}
               onRegisterRef={(id, element) => {
                 if (element) {
