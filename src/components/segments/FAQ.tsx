@@ -57,6 +57,59 @@ const FAQ: React.FC<FAQProps> = ({
     }
   }, [isEditing]);
 
+  // Auto-save when leaving edit mode
+  useEffect(() => {
+    if (!isEditing && hasChanges && localItems.length > 0) {
+      // Save when edit mode is deactivated
+      const autoSave = async () => {
+        try {
+          const { data: pageSegmentsData, error: loadError } = await supabase
+            .from('page_content')
+            .select('id, content_value')
+            .eq('page_slug', pageSlug)
+            .eq('section_key', 'page_segments')
+            .eq('language', language)
+            .maybeSingle();
+
+          if (loadError || !pageSegmentsData) return;
+
+          let segments: any[] = [];
+          try {
+            segments = JSON.parse(pageSegmentsData.content_value || '[]');
+          } catch (e) {
+            return;
+          }
+
+          const segmentIndex = segments.findIndex((seg: any) => {
+            const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+            return segId === segmentKey;
+          });
+
+          if (segmentIndex === -1) return;
+
+          if (!segments[segmentIndex].data) {
+            segments[segmentIndex].data = {};
+          }
+          segments[segmentIndex].data.items = localItems;
+
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(segments),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', pageSegmentsData.id);
+
+          setHasChanges(false);
+          onContentUpdate?.();
+        } catch (error) {
+          console.error('[FAQ] Auto-save error:', error);
+        }
+      };
+      autoSave();
+    }
+  }, [isEditing, hasChanges, localItems, pageSlug, language, segmentKey, onContentUpdate]);
+
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
   const displaySubtext = subtext || (isEditing ? '[Click to add subtext]' : '');
 
