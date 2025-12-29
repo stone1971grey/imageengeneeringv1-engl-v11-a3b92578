@@ -290,7 +290,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
       </div>
 
       {/* Contact & Team Quote Section */}
-      <div className="border-t border-[#5B5A5A] bg-[#4B4A4A]">
+      <div className="bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
@@ -409,7 +409,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
           </div>
 
           {/* Right Column - Team Quote */}
-          <div className="bg-[#4B4A4A] border border-[#5B5A5A] rounded-lg p-8">
+          <div className="bg-[#4B4A4A] rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 {isEditing ? (
