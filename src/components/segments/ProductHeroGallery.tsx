@@ -473,11 +473,12 @@ const ProductHeroGallery = ({
             sectionKey={`${segmentKey}-description`}
             pageSlug={pageSlug}
             language={language}
-            className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl"
+            className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
             as="div"
             multiline
             onUpdate={onContentUpdate}
             fieldLabel="Description"
+            renderAsHtml
           />
         ) : (
           <div 
