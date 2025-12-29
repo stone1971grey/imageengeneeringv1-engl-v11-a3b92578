@@ -314,7 +314,39 @@ export const CMSPageOverview = () => {
 
       if (pageError) throw pageError;
 
-      // Step 6: Update all navigationData.ts files to remove the deleted page
+      // Step 6: Delete 301/302 redirects that target this page
+      // Delete redirects where target_url matches the page slug (with all language prefixes)
+      const languages = ['en', 'de', 'ja', 'ko', 'zh'];
+      let redirectsDeleted = 0;
+      for (const lang of languages) {
+        const targetUrlWithLang = `/${lang}/${pageToDelete.page_slug}`;
+        const { data: deletedRedirects, error: redirectError } = await supabase
+          .from('redirects')
+          .delete()
+          .eq('target_url', targetUrlWithLang)
+          .select('id');
+        
+        if (!redirectError && deletedRedirects) {
+          redirectsDeleted += deletedRedirects.length;
+        }
+      }
+      
+      // Also delete redirects matching the slug without language prefix
+      const { data: deletedSlugRedirects } = await supabase
+        .from('redirects')
+        .delete()
+        .or(`target_url.eq./${pageToDelete.page_slug},target_url.eq.${pageToDelete.page_slug}`)
+        .select('id');
+      
+      if (deletedSlugRedirects) {
+        redirectsDeleted += deletedSlugRedirects.length;
+      }
+      
+      if (redirectsDeleted > 0) {
+        console.log(`[CMSPageOverview] Deleted ${redirectsDeleted} redirects targeting page "${pageToDelete.page_slug}"`);
+      }
+
+      // Step 7: Update all navigationData.ts files to remove the deleted page
       for (const filePath of NAVIGATION_DATA_FILES) {
         try {
           const { data: fileData } = await supabase.functions.invoke('read-file', {
@@ -337,7 +369,7 @@ export const CMSPageOverview = () => {
       }
 
       toast.success(`Page "${pageToDelete.page_title}" (ID ${pageToDelete.page_id}) permanently deleted`, {
-        description: "All segments, content, navigation links, and navigationData entries have been removed"
+        description: `All segments, content, navigation links, navigationData entries${redirectsDeleted > 0 ? `, and ${redirectsDeleted} redirect(s)` : ''} have been removed`
       });
 
       setDeleteDialogOpen(false);
