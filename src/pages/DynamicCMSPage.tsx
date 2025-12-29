@@ -1024,7 +1024,7 @@ const DynamicCMSPage = () => {
             layout={segment.data?.layout}
             rows={segment.data?.rows}
             items={segment.data?.items || []}
-            segmentKey={String(segmentDbId)}
+            segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
             onContentUpdate={refreshPageContent}
@@ -1051,7 +1051,7 @@ const DynamicCMSPage = () => {
             title={segment.data?.title || ""}
             subtext={segment.data?.subtext}
             items={segment.data?.items || []}
-            segmentKey={String(segmentDbId)}
+            segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
             onContentUpdate={refreshPageContent}
@@ -1066,7 +1066,7 @@ const DynamicCMSPage = () => {
             title={segment.data?.title || ""}
             rows={segment.data?.rows || []}
             description={segment.data?.description}
-            segmentKey={String(segmentDbId)}
+            segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
             onContentUpdate={refreshPageContent}
@@ -1259,7 +1259,7 @@ const DynamicCMSPage = () => {
             description={segment.data?.description || ""}
             columns={segment.data?.columns || "3"}
             items={segment.data?.items || []}
-            segmentKey={String(segmentDbId)}
+            segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
             onContentUpdate={refreshPageContent}
