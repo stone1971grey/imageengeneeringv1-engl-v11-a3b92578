@@ -39,7 +39,9 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
 }) => {
   const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
+  // isEditing is true if segment editing is active OR if global edit mode is enabled
+  const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
+  const canEdit = editContext?.canEdit || false;
 
   // Local state for items editing
   const [localItems, setLocalItems] = useState<FeatureItem[]>(items);
