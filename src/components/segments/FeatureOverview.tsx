@@ -158,15 +158,18 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
     setHasChanges(true);
   };
 
-  const handleAddItem = useCallback((e: React.MouseEvent) => {
+  const handleAddItem = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[FeatureOverview] handleAddItem called, current items:', localItems.length);
-    const newItems = [...localItems, { title: '', description: '' }];
-    console.log('[FeatureOverview] New items array:', newItems.length);
-    setLocalItems(newItems);
+    console.log('[FeatureOverview] handleAddItem called');
+    setLocalItems(prevItems => {
+      console.log('[FeatureOverview] Previous items:', prevItems.length);
+      const newItems = [...prevItems, { title: '', description: '' }];
+      console.log('[FeatureOverview] New items:', newItems.length);
+      return newItems;
+    });
     setHasChanges(true);
-  }, [localItems]);
+  };
 
   const handleDeleteItem = (globalIndex: number) => {
     const updatedItems = localItems.filter((_, i) => i !== globalIndex);
