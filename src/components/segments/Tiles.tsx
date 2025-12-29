@@ -382,14 +382,17 @@ const Tiles: React.FC<TilesProps> = ({
                           <div className="pt-4 space-y-3 border-t border-gray-200 mt-4">
                             <p className="text-xs text-gray-500 font-medium">Button Settings</p>
                             
-                            {/* Button Text - Inline Editable */}
-                            <input
-                              type="text"
-                              value={tile.ctaText || ''}
-                              onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
-                              className="w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 hover:bg-[#f9dc24]/10 transition-colors font-medium"
-                              placeholder="Button text..."
-                            />
+                            {/* Button Text - With Label */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500 w-10">Text:</span>
+                              <input
+                                type="text"
+                                value={tile.ctaText || ''}
+                                onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
+                                className="flex-1 text-center bg-white border border-gray-300 rounded px-3 py-2 focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none hover:bg-[#f9dc24]/10 transition-colors font-medium"
+                                placeholder="Button text..."
+                              />
+                            </div>
                             
                             {/* Button Link */}
                             <div className="flex items-center gap-2">
