@@ -1263,6 +1263,14 @@ const DynamicCMSPage = () => {
         );
 
       case "tiles":
+        // Normalize tile items to support both buttonText/buttonLink and ctaText/ctaLink field names
+        const tilesItems = (segment.data?.items || []).map((item: any) => ({
+          ...item,
+          ctaText: item.ctaText || item.buttonText || '',
+          ctaLink: item.ctaLink || item.buttonLink || '',
+          ctaStyle: item.ctaStyle || item.buttonStyle || 'standard',
+          showButton: item.showButton !== false
+        }));
         return (
           <Tiles
             key={segmentId}
@@ -1270,7 +1278,7 @@ const DynamicCMSPage = () => {
             title={segment.data?.title || ""}
             description={segment.data?.description || ""}
             columns={segment.data?.columns || "3"}
-            items={segment.data?.items || []}
+            items={tilesItems}
             segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
