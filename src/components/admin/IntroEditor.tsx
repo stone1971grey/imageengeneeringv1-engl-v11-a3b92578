@@ -111,8 +111,9 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
           }
 
           if (introSegment?.data) {
-            setTitle(introSegment.data.title || "");
-            setDescription(introSegment.data.description || "");
+            // Support both field name variants: title/description (legacy) and headline/introText (Content Automation)
+            setTitle(introSegment.data.title || introSegment.data.headline || "");
+            setDescription(introSegment.data.description || introSegment.data.introText || "");
             setIsLoading(false);
             return;
           }
@@ -265,9 +266,12 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
                     ...seg,
                     data: {
                       ...(seg.data || {}),
+                      // Keep both field name variants in sync for compatibility
                       title,
                       description,
-                      headingLevel: 'h1'
+                      headline: title, // Frontend field name
+                      introText: description, // Frontend field name
+                      headingLevel: seg.data?.headingLevel || 'h1'
                     },
                   };
                   console.log('[IntroEditor] Updating segment:', updated);
