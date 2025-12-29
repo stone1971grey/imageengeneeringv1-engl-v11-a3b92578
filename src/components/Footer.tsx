@@ -225,7 +225,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
   return (
     <footer 
       id="footer" 
-      className={`bg-[#4B4A4A] border-t border-[#4B4A4A] relative ${isEditing ? 'border-l-4 border-l-[#f9dc24] pl-4' : ''}`}
+      className={`bg-[#4B4A4A] relative ${isEditing ? 'border-l-4 border-l-[#f9dc24] pl-4' : ''}`}
       data-segment-id={segmentId}
       data-segment-type="footer"
     >
@@ -521,16 +521,16 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             variant="outline"
             size="sm"
             onClick={handleCancel}
-            disabled={isSaving || !hasChanges}
-            className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
+            disabled={isSaving}
+            className="bg-black text-white hover:bg-gray-900 border-black"
           >
             Cancel
           </Button>
           <Button
             size="sm"
             onClick={handleSave}
-            disabled={isSaving || !hasChanges}
-            className="bg-black text-[#f9dc24] hover:bg-gray-900"
+            disabled={isSaving}
+            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -541,7 +541,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
       )}
 
       {/* Bottom Section - Footer Menu */}
-      <div className="border-t border-[#5B5A5A] bg-[#4B4A4A]">
+      <div className="bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-white">
