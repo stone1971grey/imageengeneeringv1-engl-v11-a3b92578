@@ -90,7 +90,7 @@ export const PagePublishControl = ({
   if (!isAdmin) {
     // Editors can see status but not change it
     return (
-      <Badge variant={currentStatus === 'published' ? 'default' : 'secondary'} className="gap-1">
+      <Badge variant={currentStatus === 'published' ? 'default' : 'secondary'} className={currentStatus === 'draft' ? 'gap-1 bg-red-600 text-white border-red-600' : 'gap-1'}>
         {currentStatus === 'published' ? (
           <>
             <Eye className="h-3 w-3" />
@@ -98,7 +98,6 @@ export const PagePublishControl = ({
           </>
         ) : (
           <>
-            <EyeOff className="h-3 w-3" />
             Draft
           </>
         )}
@@ -110,8 +109,7 @@ export const PagePublishControl = ({
     <div className="flex items-center gap-2">
       {currentStatus === 'draft' ? (
         <>
-          <Badge variant="secondary" className="gap-1 bg-amber-100 text-amber-800 border-amber-200">
-            <EyeOff className="h-3 w-3" />
+          <Badge variant="secondary" className="bg-red-600 text-white border-red-600">
             Draft
           </Badge>
           
