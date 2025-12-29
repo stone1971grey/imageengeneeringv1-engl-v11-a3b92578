@@ -22,6 +22,7 @@ import ActionHero from "@/components/segments/ActionHero";
 import EventsSegment from "@/components/segments/EventsSegment";
 import ProductListSegment from "@/components/segments/ProductListSegment";
 import DownloadsSegment from "@/components/segments/DownloadsSegment";
+import Tiles from "@/components/segments/Tiles";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
@@ -1251,80 +1252,18 @@ const DynamicCMSPage = () => {
 
       case "tiles":
         return (
-          <section
+          <Tiles
             key={segmentId}
             id={segmentDbId?.toString()}
-            data-segment-key={segment.segment_key || segment.id}
-            data-segment-id={segmentDbId?.toString()}
-            className="pt-[60px] pb-20 bg-gray-50"
-          >
-            <div className="container mx-auto px-6">
-              {segment.data?.title && (
-                <div className="text-center mb-16">
-                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.title}
-                  </h2>
-                  {segment.data?.description && (
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
-                      {segment.data.description}
-                    </p>
-                  )}
-                </div>
-              )}
-              <div className={`grid gap-8 ${
-                segment.data?.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                segment.data?.columns === '3' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
-                'grid-cols-1 md:grid-cols-2'
-              }`}>
-                {(segment.data?.items || []).map((tile: any, idx: number) => {
-                  const Icon = iconMap[tile.icon] || FileText;
-                  const hasImage = tile.imageUrl;
-                  
-                  return (
-                    <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden">
-                      <CardContent className="p-0">
-                        {hasImage ? (
-                          <div className="w-full max-h-[200px] overflow-hidden">
-                            <img 
-                              src={tile.imageUrl} 
-                              alt={tile.metadata?.altText || tile.title}
-                              className="w-full h-full max-h-[200px] object-cover hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex justify-center pt-8">
-                            <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
-                              <Icon className="h-8 w-8 text-gray-900" />
-                            </div>
-                          </div>
-                        )}
-                        <div className="p-8">
-                          <div className="space-y-3 flex-1 text-center">
-                            <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
-                            <p className="text-gray-600 leading-relaxed whitespace-pre-line">{tile.description}</p>
-                          </div>
-                          {tile.showButton !== false && tile.ctaText && tile.ctaLink && (
-                            <div className="mt-6 flex justify-center">
-                              <Link
-                                to={tile.ctaLink}
-                                className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                                  tile.ctaStyle === "technical"
-                                    ? "bg-gray-800 text-white hover:bg-gray-900"
-                                    : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
-                                }`}
-                              >
-                                {tile.ctaText}
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
+            title={segment.data?.title || ""}
+            description={segment.data?.description || ""}
+            columns={segment.data?.columns || "3"}
+            items={segment.data?.items || []}
+            segmentKey={String(segmentDbId)}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
+          />
         );
 
       case "banner":
