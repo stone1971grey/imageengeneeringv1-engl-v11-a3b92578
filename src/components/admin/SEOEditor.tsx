@@ -523,7 +523,7 @@ export const SEOEditor = ({
     let autoH1 = '';
     let h1Source: { type: string; key: string; id: string | number; label: string } | null = null;
     
-    // 1. Check Intro segment first (highest priority)
+    // 1. Check Intro segment first (highest priority) - ONLY if headingLevel is 'h1'
     // IMPORTANT: Intro segments are stored INSIDE page_segments JSON array, NOT as separate section_keys
     if (introRegistry && !introRegistry.deleted) {
       const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
@@ -533,15 +533,22 @@ export const SEOEditor = ({
           const introSegment = segments.find((seg: any) => 
             seg.type === 'intro' && String(seg.id) === String(introRegistry.segment_id)
           );
-          if (introSegment?.data?.title) {
-            autoH1 = introSegment.data.title;
+          // Support both field variants: title (standard) and headline (Content Automation)
+          const introTitle = introSegment?.data?.title || introSegment?.data?.headline || '';
+          const introHeadingLevel = introSegment?.data?.headingLevel || 'h2';
+          
+          // ONLY use Intro as H1 source if it has headingLevel: 'h1'
+          if (introTitle && introHeadingLevel === 'h1') {
+            autoH1 = introTitle;
             h1Source = {
               type: 'intro',
               key: introRegistry.segment_key,
               id: introRegistry.segment_id,
               label: 'Intro'
             };
-            console.log('[SEO Editor] H1 from Intro title (in page_segments):', autoH1);
+            console.log('[SEO Editor] H1 from Intro title (headingLevel=h1):', autoH1);
+          } else {
+            console.log('[SEO Editor] Intro found but headingLevel is:', introHeadingLevel, '- skipping for H1');
           }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse page_segments for intro H1:', e);
@@ -577,28 +584,60 @@ export const SEOEditor = ({
     }
     
     // 3. Check Product Hero Gallery segment
+    // IMPORTANT: Product Hero Gallery stores data INSIDE page_segments JSON array
     if (!autoH1) {
       const productHeroGalleryRegistry = segmentRegistry.find(seg => seg.segment_type === 'product-hero-gallery' && !seg.deleted);
       if (productHeroGalleryRegistry) {
-        const phgContent = pageContent.find(item => item.section_key === productHeroGalleryRegistry.segment_key);
-        if (phgContent) {
+        // First try page_segments array (where Content Automation stores data)
+        const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+        if (pageSegmentsEntry) {
           try {
-            const phgData = JSON.parse(phgContent.content_value);
-            const title = phgData.title || '';
-            const subtitle = phgData.subtitle || '';
-            const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
-            if (combinedTitle) {
-              autoH1 = combinedTitle;
-              h1Source = {
-                type: 'product-hero-gallery',
-                key: productHeroGalleryRegistry.segment_key,
-                id: productHeroGalleryRegistry.segment_id,
-                label: 'Product Hero Gallery'
-              };
-              console.log('[SEO Editor] H1 from Product Hero Gallery:', autoH1);
+            const segments = JSON.parse(pageSegmentsEntry.content_value);
+            const phgSegment = segments.find((seg: any) => 
+              seg.type === 'product-hero-gallery' && String(seg.id) === String(productHeroGalleryRegistry.segment_id)
+            );
+            if (phgSegment?.data) {
+              const title = phgSegment.data.title || '';
+              const subtitle = phgSegment.data.subtitle || '';
+              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+              if (combinedTitle) {
+                autoH1 = combinedTitle;
+                h1Source = {
+                  type: 'product-hero-gallery',
+                  key: productHeroGalleryRegistry.segment_key,
+                  id: productHeroGalleryRegistry.segment_id,
+                  label: 'Product Hero Gallery'
+                };
+                console.log('[SEO Editor] H1 from Product Hero Gallery (page_segments):', autoH1);
+              }
             }
           } catch (e) {
-            console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
+            console.error('[SEO Editor] Failed to parse page_segments for PHG H1:', e);
+          }
+        }
+        
+        // Fallback: check individual section_key (legacy storage)
+        if (!autoH1) {
+          const phgContent = pageContent.find(item => item.section_key === productHeroGalleryRegistry.segment_key);
+          if (phgContent) {
+            try {
+              const phgData = JSON.parse(phgContent.content_value);
+              const title = phgData.title || '';
+              const subtitle = phgData.subtitle || '';
+              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+              if (combinedTitle) {
+                autoH1 = combinedTitle;
+                h1Source = {
+                  type: 'product-hero-gallery',
+                  key: productHeroGalleryRegistry.segment_key,
+                  id: productHeroGalleryRegistry.segment_id,
+                  label: 'Product Hero Gallery'
+                };
+                console.log('[SEO Editor] H1 from Product Hero Gallery (legacy section_key):', autoH1);
+              }
+            } catch (e) {
+              console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
+            }
           }
         }
       }
