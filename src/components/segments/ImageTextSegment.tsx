@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, Upload, FolderOpen, ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { DataHubDialog } from '@/components/admin/DataHubDialog';
 
 interface ImageTextItem {
   title: string;
@@ -52,6 +54,10 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
   const [localLayout, setLocalLayout] = useState<'1-col' | '2-col' | '3-col'>(layout);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState<number | null>(null);
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Sync local items with props
   useEffect(() => {
@@ -119,6 +125,66 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
   const handleLayoutChange = (newLayout: '1-col' | '2-col' | '3-col') => {
     setLocalLayout(newLayout);
     setHasChanges(true);
+  };
+
+  // Handle file upload for item image
+  const handleFileUpload = async (index: number, file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be max 5MB');
+      return;
+    }
+
+    setIsUploading(index);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `page-images/${pageSlug}/image-text/${segmentKey}-item-${index}-${Date.now()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('cms-media')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadError) {
+        console.error('[ImageTextSegment] Upload error:', uploadError);
+        toast.error('Upload failed');
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('cms-media')
+        .getPublicUrl(uploadData.path);
+
+      const newUrl = urlData.publicUrl;
+      handleItemChange(index, 'imageUrl', newUrl);
+      toast.success('Image uploaded!');
+    } catch (error) {
+      console.error('[ImageTextSegment] Upload error:', error);
+      toast.error('Upload failed');
+    } finally {
+      setIsUploading(null);
+    }
+  };
+
+  // Handle media selection from DataHub
+  const handleMediaSelect = (url: string, metadata?: any) => {
+    if (activeItemIndex !== null) {
+      handleItemChange(activeItemIndex, 'imageUrl', url);
+      if (metadata?.altText) {
+        const updatedItems = [...localItems];
+        updatedItems[activeItemIndex] = { 
+          ...updatedItems[activeItemIndex], 
+          imageUrl: url,
+          metadata: { ...updatedItems[activeItemIndex].metadata, altText: metadata.altText }
+        };
+        setLocalItems(updatedItems);
+      }
+      setHasChanges(true);
+    }
+    setShowMediaDialog(false);
+    setActiveItemIndex(null);
   };
 
   const handleCancel = () => {
@@ -323,20 +389,70 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 
                 {/* Image Section */}
                 {isEditing ? (
-                  <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
-                    <EditableImage
-                      src={imageSrc || ''}
-                      alt={imageAlt || 'Item image'}
-                      sectionKey={`${segmentKey}-item-${idx}-image`}
-                      pageSlug={pageSlug}
-                      language={language}
-                      className="w-full h-full object-cover"
-                      onUpdate={() => {
-                        setHasChanges(true);
-                        onContentUpdate?.();
-                      }}
-                    />
-                  </div>
+                  imageSrc ? (
+                    <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
+                      <EditableImage
+                        src={imageSrc}
+                        alt={imageAlt || 'Item image'}
+                        sectionKey={`${segmentKey}-item-${idx}-image`}
+                        pageSlug={pageSlug}
+                        language={language}
+                        className="w-full h-full object-cover"
+                        onUpdate={() => {
+                          setHasChanges(true);
+                          onContentUpdate?.();
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    // Empty image placeholder with upload options
+                    <div className={`w-full ${getImageHeightClass()} bg-gray-100 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-gray-300`}>
+                      {isUploading === idx ? (
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span>Uploading...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <ImageIcon className="h-12 w-12 text-gray-400" />
+                          <p className="text-sm text-gray-500 font-medium">Add Image</p>
+                          <div className="flex gap-2">
+                            {/* Upload from Computer */}
+                            <input
+                              ref={(el) => { fileInputRefs.current[idx] = el; }}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleFileUpload(idx, file);
+                              }}
+                              className="hidden"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => fileInputRefs.current[idx]?.click()}
+                              className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                            >
+                              <Upload className="h-4 w-4" />
+                              Upload
+                            </button>
+                            {/* Select from Media */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveItemIndex(idx);
+                                setShowMediaDialog(true);
+                              }}
+                              className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                            >
+                              <FolderOpen className="h-4 w-4" />
+                              Media
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )
                 ) : (
                   imageSrc && (
                     <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
@@ -423,6 +539,19 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
           </div>
         )}
       </div>
+
+      {/* Media Management Dialog */}
+      {showMediaDialog && (
+        <DataHubDialog
+          isOpen={showMediaDialog}
+          onClose={() => {
+            setShowMediaDialog(false);
+            setActiveItemIndex(null);
+          }}
+          selectionMode={true}
+          onSelect={handleMediaSelect}
+        />
+      )}
     </section>
   );
 };
