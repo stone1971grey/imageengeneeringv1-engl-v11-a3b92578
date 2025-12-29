@@ -85,9 +85,10 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const numberOfRows = parseInt(rows);
   const itemsPerRow = columnsPerRow;
 
-  // Group items into rows
+  // Group items into rows - in edit mode, show ALL items (not limited by numberOfRows)
   const groupedItems: FeatureItem[][] = [];
-  for (let i = 0; i < numberOfRows; i++) {
+  const maxRows = isEditing ? Math.ceil(localItems.length / itemsPerRow) + 1 : numberOfRows;
+  for (let i = 0; i < maxRows; i++) {
     const startIndex = i * itemsPerRow;
     const endIndex = startIndex + itemsPerRow;
     const rowItems = localItems.slice(startIndex, endIndex);
@@ -317,9 +318,9 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleAddItem}
-                className="text-[#f9dc24] hover:text-[#f9dc24] border-dashed border-[#f9dc24] hover:bg-[#f9dc24]/10"
+                className="bg-black text-white hover:bg-gray-900 hover:text-white border-black"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 mr-2 text-white" />
                 Add Feature Item
               </Button>
             </div>
