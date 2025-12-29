@@ -300,7 +300,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   }, [hasChanges, localItems, pageSlug, language, segmentKey, onContentUpdate]);
 
   return (
-    <section id={id} className="bg-gradient-to-br from-gray-50 to-blue-50 pt-[40px] pb-16">
+    <section id={id} className="bg-gradient-to-br from-gray-50 to-blue-50 pt-8 pb-12">
       <div className="container mx-auto px-4">
         {(displayTitle || isEditing) && (
           isEditing ? (
