@@ -48,8 +48,8 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({ className }) => 
     >
       {isEditMode ? (
         <>
-          <Eye className="h-4 w-4" />
-          Preview
+          <Edit3 className="h-4 w-4" />
+          Editing active
           {pendingCount > 0 && (
             <span className="ml-1 bg-black text-[#f9dc24] text-xs px-1.5 py-0.5 rounded-full font-medium">
               {pendingCount}

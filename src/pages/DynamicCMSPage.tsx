@@ -1599,34 +1599,28 @@ const DynamicCMSPage = () => {
       {/* Editor Toolbar - shown to logged-in admins/editors */}
       {/* Position below Navigation (70px) + UtilityNavigation (40px) = 110px */}
       {currentUser && userRole && (
-        <div className={`fixed top-[110px] z-40 py-2 ${isDraftPage ? 'left-0 right-0 bg-yellow text-black' : ''}`}>
-          <div className={`flex items-center gap-2 ${isDraftPage ? 'container mx-auto pl-4' : 'pl-6'}`}>
+        <div className="fixed top-[110px] left-6 z-40 py-2 flex items-center gap-2">
+            {/* Draft Badge - compact indicator instead of full banner */}
             {isDraftPage && (
-              <>
-                <Eye className="h-5 w-5" />
-                <span className="font-semibold text-base">Draft Preview</span>
-                <span className="text-black">—</span>
-                <span className="text-sm text-black">
-                  This page is not published.
-                </span>
-              </>
+              <div className="flex items-center gap-2 bg-[#f9dc24] text-black px-3 py-2 rounded-lg font-semibold shadow-lg">
+                <Eye className="h-4 w-4" />
+                <span className="text-sm">Draft</span>
+              </div>
             )}
-            {!isDraftPage && (
-              <>
-                <EditModeToggle />
-                <a
-                  href={`/${currentUrlLanguage}/admin-dashboard`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-9 px-4 inline-flex items-center gap-2 rounded font-semibold transition-colors bg-white text-black hover:bg-gray-100"
-                  style={{ border: '1px solid rgba(0,0,0,0.1)', fontSize: '16px' }}
-                >
-                  <Settings className="h-5 w-5" />
-                  Admin Dashboard
-                </a>
-              </>
-            )}
-          </div>
+            
+            {/* Edit Mode Toggle - shown for both draft and published pages */}
+            <EditModeToggle />
+            
+            <a
+              href={`/${currentUrlLanguage}/admin-dashboard`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-9 px-4 inline-flex items-center gap-2 rounded font-semibold transition-colors bg-white text-black hover:bg-gray-100"
+              style={{ border: '1px solid rgba(0,0,0,0.1)', fontSize: '16px' }}
+            >
+              <Settings className="h-5 w-5" />
+              Admin Dashboard
+            </a>
         </div>
       )}
       

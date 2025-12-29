@@ -299,8 +299,8 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
 
         {/* Floating Action Bar - appears on hover when NOT in segment editing mode and NOT needing approval */}
         {isEditMode && isHovered && !isSegmentEditing && !needsApproval && (
-          <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
-            {/* Segment ID Badge */}
+          <div className="absolute top-4 left-4 z-30 flex items-center gap-2">
+            {/* Segment ID Badge - now on the left */}
             <div className="flex items-center bg-black rounded-md px-3 py-1.5 shadow-lg">
               <span className="text-sm text-[#f9dc24] font-medium">ID: {getSegmentId()}</span>
             </div>
