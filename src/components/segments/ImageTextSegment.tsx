@@ -6,6 +6,7 @@ import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { FrontendRichTextEditor } from '@/components/frontend-edit/FrontendRichTextEditor';
 import { Plus, Trash2, Loader2, Upload, FolderOpen, ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -469,11 +470,11 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                         className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 mb-4 hover:bg-[#f9dc24]/10 transition-colors"
                         placeholder="Item title..."
                       />
-                      <textarea
+                      <FrontendRichTextEditor
                         value={item.description || ''}
-                        onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
-                        className="text-gray-600 leading-relaxed w-full bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-3 hover:bg-[#f9dc24]/10 transition-colors resize-y min-h-[200px]"
-                        placeholder="Item description... (supports HTML)"
+                        onChange={(newValue) => handleItemChange(idx, 'description', newValue)}
+                        placeholder="Enter description..."
+                        minHeight="180px"
                       />
                     </>
                   ) : (
