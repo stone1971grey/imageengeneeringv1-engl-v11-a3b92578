@@ -229,8 +229,8 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
       data-segment-id={segmentId}
       data-segment-type="footer"
     >
-      {/* Segment ID Badge in edit mode */}
-      {isEditing && segmentId && (
+      {/* Segment ID Badge in edit mode - only show when has a real ID (not fallback 0) */}
+      {isEditing && segmentId && segmentId !== 0 && (
         <div className="absolute -top-3 left-4 z-20">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm font-medium shadow-lg bg-[#f9dc24] text-black">
             <span># Footer ID: {segmentId}</span>
@@ -522,7 +522,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             size="sm"
             onClick={handleCancel}
             disabled={isSaving}
-            className="bg-black text-white hover:bg-gray-900 border-black"
+            className="bg-[#000000] text-white hover:bg-[#1a1a1a] border-[#000000]"
           >
             Cancel
           </Button>
@@ -530,7 +530,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+            className="bg-[#f9dc24] text-[#000000] hover:bg-[#f9dc24]/90"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
