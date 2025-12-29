@@ -748,7 +748,10 @@ export const SEOEditor = ({
             
             if (introSegment?.data) {
               introTitle = ''; // Never use title for Intro segment in Introduction display
-              introDescription = introSegment.data.description || '';
+              // Support both 'description' and 'introText' field names
+              introDescription = introSegment.data.description || introSegment.data.introText || '';
+              // Strip HTML tags for clean SEO text
+              introDescription = introDescription.replace(/<[^>]*>/g, '').trim();
               console.log('[SEO Editor] Extracted intro description from page_segments:', introDescription);
             }
           } catch (e) {
