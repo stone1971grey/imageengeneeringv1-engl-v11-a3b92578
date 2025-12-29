@@ -517,25 +517,27 @@ export const EditableText: React.FC<EditableTextProps> = ({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 px-4 py-2 bg-[#f9dc24] text-black rounded font-semibold text-base hover:bg-[#e6c820] disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#f9dc24] text-black rounded font-medium text-sm hover:bg-[#e6c820] disabled:opacity-50 transition-colors"
+          style={{ letterSpacing: '0.05em' }}
         >
           {isSaving ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Check className="h-5 w-5" />
+            <Check className="h-4 w-4" />
           )}
           <span>Save</span>
         </button>
         <button
           onClick={handleCancel}
           disabled={isSaving}
-          className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded font-semibold text-base transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded font-medium text-sm transition-colors"
+          style={{ letterSpacing: '0.05em' }}
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
           <span>Cancel</span>
         </button>
         {multiline && (
-          <span className="text-sm text-gray-400 ml-2">
+          <span className="text-xs text-gray-400 ml-2" style={{ letterSpacing: '0.05em' }}>
             Ctrl+Enter to save
           </span>
         )}
