@@ -1832,6 +1832,12 @@ const DynamicCMSPage = () => {
             }
           }
           
+          // If no footer in pageSegments, check segmentIdMap directly for "footer" key
+          // This handles cases where footer is in segment_registry but not in page_segments JSON
+          if (!footerSegmentId && segmentIdMap['footer']) {
+            footerSegmentId = segmentIdMap['footer'];
+          }
+          
           // Use a consistent fallback ID for footers without explicit segment
           // This ensures the footer is always trackable in the toolbar
           if (!footerSegmentId) {
