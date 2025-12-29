@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
-import { Plus, Trash2, Loader2, FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from 'lucide-react';
+import { Plus, Trash2, Loader2, FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings, Camera, Clock, Globe, Mail, MapPin, Search, Star, Users, Wrench, Target, Activity, Award, BookOpen, Briefcase, Calendar, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -23,7 +24,25 @@ const iconMap: Record<string, any> = {
   CheckCircle,
   Lightbulb,
   Monitor,
+  Settings,
+  Camera,
+  Clock,
+  Globe,
+  Mail,
+  MapPin,
+  Search,
+  Star,
+  Users,
+  Wrench,
+  Target,
+  Activity,
+  Award,
+  BookOpen,
+  Briefcase,
+  Calendar,
 };
+
+const iconOptions = Object.keys(iconMap);
 
 interface TileItem {
   title: string;
@@ -283,7 +302,7 @@ const Tiles: React.FC<TilesProps> = ({
                 
                 <CardContent className="p-0">
                   {isEditing ? (
-                    // Edit mode: Editable image or icon
+                    // Edit mode: Editable image or icon with selector
                     hasImage ? (
                       <div className="w-full max-h-[200px] overflow-hidden">
                         <EditableImage
@@ -300,9 +319,24 @@ const Tiles: React.FC<TilesProps> = ({
                         />
                       </div>
                     ) : (
-                      <div className="flex justify-center pt-8">
+                      <div className="flex flex-col items-center pt-8 gap-2">
                         <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20">
                           <Icon className="h-8 w-8 text-gray-900" />
+                        </div>
+                        {/* Icon Selector Dropdown */}
+                        <div className="relative">
+                          <select
+                            value={tile.icon || 'FileText'}
+                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value)}
+                            className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
+                          >
+                            {iconOptions.map((iconName) => (
+                              <option key={iconName} value={iconName}>
+                                {iconName}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
                       </div>
                     )
@@ -336,29 +370,63 @@ const Tiles: React.FC<TilesProps> = ({
                             className="text-2xl font-bold text-gray-900 w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
                             placeholder="Tile title..."
                           />
+                          {/* Larger Description Field */}
                           <textarea
                             value={tile.description}
                             onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
-                            className="text-gray-600 leading-relaxed w-full text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-2 hover:bg-[#f9dc24]/10 transition-colors resize-none min-h-[80px]"
+                            className="text-gray-600 leading-relaxed w-full text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-3 hover:bg-[#f9dc24]/10 transition-colors resize-y min-h-[150px]"
                             placeholder="Tile description..."
                           />
                           
-                          {/* CTA Fields in Edit Mode */}
-                          <div className="pt-4 space-y-2">
+                          {/* Button Editor with Style Selector */}
+                          <div className="pt-4 space-y-3 border-t border-gray-200 mt-4">
+                            <p className="text-xs text-gray-500 font-medium">Button Settings</p>
+                            
+                            {/* Button Text - Inline Editable */}
                             <input
                               type="text"
                               value={tile.ctaText || ''}
                               onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
-                              className="w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors text-sm"
+                              className="w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 hover:bg-[#f9dc24]/10 transition-colors font-medium"
                               placeholder="Button text..."
                             />
-                            <input
-                              type="text"
-                              value={tile.ctaLink || ''}
-                              onChange={(e) => handleItemChange(idx, 'ctaLink', e.target.value)}
-                              className="w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors text-sm"
-                              placeholder="Button link..."
-                            />
+                            
+                            {/* Button Link */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500 w-10">Link:</span>
+                              <input
+                                type="text"
+                                value={tile.ctaLink || ''}
+                                onChange={(e) => handleItemChange(idx, 'ctaLink', e.target.value)}
+                                className="flex-1 bg-gray-900 text-white text-sm px-3 py-2 rounded border border-gray-600 placeholder:text-gray-400"
+                                placeholder="/page-url or https://..."
+                              />
+                            </div>
+                            
+                            {/* Button Style Selector */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500 w-10">Style:</span>
+                              <div className="flex gap-2 items-end">
+                                <button
+                                  type="button"
+                                  onClick={() => handleItemChange(idx, 'ctaStyle', 'standard')}
+                                  className={`rounded transition-all border border-gray-400 ${
+                                    (tile.ctaStyle || 'standard') === 'standard' ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
+                                  }`}
+                                  style={{ backgroundColor: '#f9dc24' }}
+                                  title="Yellow (Standard)"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleItemChange(idx, 'ctaStyle', 'technical')}
+                                  className={`rounded transition-all border border-gray-400 ${
+                                    tile.ctaStyle === 'technical' ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
+                                  }`}
+                                  style={{ backgroundColor: '#1f2937' }}
+                                  title="Dark (Technical)"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </>
                       ) : (
