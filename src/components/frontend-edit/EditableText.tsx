@@ -18,6 +18,7 @@ interface EditableTextProps {
   contentStatus?: 'draft' | 'pending' | 'approved';
   importStage?: number;
   fieldLabel?: string; // e.g., "Title H1", "Subtitle H1", "Description"
+  renderAsHtml?: boolean; // If true, render value as HTML using dangerouslySetInnerHTML
 }
 
 export const EditableText: React.FC<EditableTextProps> = ({
@@ -31,7 +32,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
   as: Component = 'div',
   contentStatus = 'approved',
   importStage = 1,
-  fieldLabel
+  fieldLabel,
+  renderAsHtml = false
 }) => {
   const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
@@ -356,7 +358,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
       const StatusIcon = statusStyles.indicator?.icon || Edit3;
       return (
         <div className={cn("relative group", statusStyles.border, statusStyles.bg, "rounded-r")}>
-          <Component className={className}>{value}</Component>
+          {renderAsHtml ? (
+            <Component className={className} dangerouslySetInnerHTML={{ __html: value }} />
+          ) : (
+            <Component className={className}>{value}</Component>
+          )}
           
           {/* Status indicator */}
           <div className="absolute -top-2 -left-1 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -388,7 +394,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
       );
     }
     
-    return <Component className={className}>{value}</Component>;
+    return renderAsHtml ? (
+      <Component className={className} dangerouslySetInnerHTML={{ __html: value }} />
+    ) : (
+      <Component className={className}>{value}</Component>
+    );
   }
 
   // In segment editing mode but not currently editing this element
@@ -396,15 +406,29 @@ export const EditableText: React.FC<EditableTextProps> = ({
     const StatusIcon = statusStyles.indicator?.icon || Edit3;
     return (
       <div className={cn("relative inline", needsApproval && statusStyles.border, needsApproval && statusStyles.bg, "rounded-r")}>
-        <Component 
-          className={cn(
-            className,
-            "cursor-text relative group",
-            editContext?.canEdit && "hover:bg-[#f9dc24]/20 rounded transition-colors duration-150"
+        <div className="relative group">
+          {renderAsHtml ? (
+            <Component 
+              className={cn(
+                className,
+                "cursor-text",
+                editContext?.canEdit && "hover:bg-[#f9dc24]/20 rounded transition-colors duration-150"
+              )}
+              onClick={handleClick}
+              dangerouslySetInnerHTML={{ __html: value }}
+            />
+          ) : (
+            <Component 
+              className={cn(
+                className,
+                "cursor-text",
+                editContext?.canEdit && "hover:bg-[#f9dc24]/20 rounded transition-colors duration-150"
+              )}
+              onClick={handleClick}
+            >
+              {value}
+            </Component>
           )}
-          onClick={handleClick}
-        >
-          {value}
           {editContext?.canEdit && (
             <span 
               className="z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-normal whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]"
@@ -420,7 +444,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
               {fieldLabel ? `Edit: ${fieldLabel}` : 'Click to edit'}
             </span>
           )}
-        </Component>
+        </div>
         
         {/* Status badge and approval button */}
         {needsApproval && (
