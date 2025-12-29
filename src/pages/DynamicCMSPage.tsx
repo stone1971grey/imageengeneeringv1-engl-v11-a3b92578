@@ -60,6 +60,8 @@ const DynamicCMSPage = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<'admin' | 'editor' | null>(null);
+  // Refresh counter to force re-render after frontend editing save
+  const [refreshCounter, setRefreshCounter] = useState(0);
   // Content metadata for frontend editing (content_status, import_stage per segment)
   const [segmentContentMeta, setSegmentContentMeta] = useState<Record<string, { 
     content_status: 'draft' | 'pending' | 'approved'; 
@@ -761,6 +763,8 @@ const DynamicCMSPage = () => {
   // Refresh page content after frontend editing save
   const refreshPageContent = async () => {
     console.log('[DynamicCMSPage] Refreshing page content after edit...');
+    // Increment refresh counter to force re-render of segment components
+    setRefreshCounter(prev => prev + 1);
     await loadContent();
   };
 
@@ -908,7 +912,7 @@ const DynamicCMSPage = () => {
       case "product-hero-gallery":
         return (
           <ProductHeroGallery
-            key={segmentId}
+            key={`${segmentId}-${refreshCounter}`}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
             data={{
@@ -1002,7 +1006,7 @@ const DynamicCMSPage = () => {
 
         return (
           <FullHero
-            key={segmentId}
+            key={`${segmentId}-${refreshCounter}`}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
             titleLine1={heroData.titleLine1 || ""}
@@ -1041,7 +1045,7 @@ const DynamicCMSPage = () => {
         
         return (
           <Intro
-            key={segmentId}
+            key={`${segmentId}-${refreshCounter}`}
             title={introTitle}
             description={introDescription}
             segmentKey={`${segment.type}-${segment.id}`}
