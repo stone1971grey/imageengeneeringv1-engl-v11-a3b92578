@@ -217,6 +217,7 @@ function parseFirecrawlContent(
   
   // Process the content portion - split by double newlines
   const paragraphs: string[] = [];
+  const listBlocks: string[] = []; // Separate list content
   const blocks = contentPortion.split(/\n\n+/);
   
   for (const block of blocks) {
@@ -228,16 +229,17 @@ function parseFirecrawlContent(
     if (trimmed === '×' || trimmed === 'Test Equipment' || trimmed === 'Main Menu') continue;
     // Skip the shop notice
     if (trimmed.includes('web shop is currently unavailable')) continue;
-    // Skip list items separately (will process as benefits)
-    if (trimmed.match(/^[\-\*•]\s/)) continue;
     // Skip footnotes (escaped asterisks at start like \*This is a footnote)
     if (trimmed.match(/^\\\*/)) continue;
     // Skip very short content
-    if (trimmed.length < 40) continue;
+    if (trimmed.length < 30) continue;
     // Skip footer content
     if (isFooterContent(trimmed)) continue;
     // Skip navigation-like content
     if (trimmed.match(/^(Home|Products|Equipment|Software|Services|Company|Contact)\s*$/i)) continue;
+    
+    // Check if this is a list block (multiple list items)
+    const isListBlock = trimmed.split('\n').filter(line => line.match(/^[\-\*•]\s/)).length > 0;
     
     // Clean markdown formatting
     let cleaned = trimmed
@@ -252,7 +254,7 @@ function parseFirecrawlContent(
       .trim();
     
     // Skip if too short after cleaning
-    if (cleaned.length < 40) continue;
+    if (cleaned.length < 30) continue;
     
     // Skip if contains JSON artifacts
     if (cleaned.includes('{"') || cleaned.includes('":"') || cleaned.includes('form_id')) continue;
@@ -260,21 +262,48 @@ function parseFirecrawlContent(
     // Skip if looks like a navigation path
     if (cleaned.match(/^[A-Za-z\s]+>\s/)) continue;
     
-    paragraphs.push(cleaned);
-    console.log(`[Firecrawl] Extracted paragraph: ${cleaned.slice(0, 150)}...`);
+    // Handle list blocks differently - preserve them with newlines
+    if (isListBlock) {
+      // Clean each line individually for lists
+      const cleanedLines = trimmed.split('\n').map(line => {
+        return line
+          .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+          .replace(/\*\*([^*]+)\*\*/g, '$1')
+          .replace(/\*([^*]+)\*/g, '$1')
+          .replace(/\\\*/g, '*')
+          .replace(/\\\\/g, '')
+          .trim();
+      }).filter(line => line.length > 5);
+      
+      if (cleanedLines.length > 0) {
+        listBlocks.push(cleanedLines.join('\n'));
+        console.log(`[Firecrawl] Extracted list block with ${cleanedLines.length} items`);
+      }
+    } else {
+      paragraphs.push(cleaned);
+      console.log(`[Firecrawl] Extracted paragraph: ${cleaned.slice(0, 150)}...`);
+    }
   }
   
   console.log('[Firecrawl] Total extracted paragraphs:', paragraphs.length);
+  console.log('[Firecrawl] Total extracted list blocks:', listBlocks.length);
   
-  // Build description from ALL paragraphs (no limit), fallback to meta
-  if (paragraphs.length > 0) {
-    result.description = paragraphs.join('\n\n');  // ALL paragraphs, no limit
+  // Build description from ALL paragraphs AND list blocks (no limit)
+  const allContent = [...paragraphs];
+  // Include list blocks in description as well (they contain important content!)
+  for (const listBlock of listBlocks) {
+    allContent.push(listBlock);
+  }
+  
+  if (allContent.length > 0) {
+    result.description = allContent.join('\n\n');  // ALL content, no limit
   } else if (metaDescription.length > 30) {
     result.description = metaDescription;
   }
   
   console.log('[Firecrawl] Final description length:', result.description.length);
-  console.log('[Firecrawl] Description preview:', result.description.slice(0, 400));
+  console.log('[Firecrawl] Description preview:', result.description.slice(0, 600));
   
   // Use contentPortion for further extraction
   const cleanedMarkdown = contentPortion;
