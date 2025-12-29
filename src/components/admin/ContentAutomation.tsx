@@ -149,6 +149,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
   const initialSourceUrl = getSourceUrlForLanguage(pageSlug, language);
   const [sourceUrl, setSourceUrl] = useState(initialSourceUrl);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<string>('');
   const [parsedContent, setParsedContent] = useState<ParsedContent | null>(null);
   const [createRedirect, setCreateRedirect] = useState(false);
   const [existingRedirectId, setExistingRedirectId] = useState<string | null>(null);
@@ -312,25 +313,42 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     }
 
     setIsLoading(true);
+    setLoadingStep('Connecting to Firecrawl...');
     setParsedContent(null);
 
     try {
+      // Create an AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+
+      setLoadingStep('Fetching page content...');
+      
       const { data, error } = await supabase.functions.invoke('fetch-external-content', {
         body: { url: sourceUrl, language },
       });
 
+      clearTimeout(timeoutId);
+
       if (error) throw error;
 
+      setLoadingStep('Processing extracted data...');
+      
       if (data?.success && data?.data) {
         setParsedContent(data.data);
-        toast.success('Content fetched successfully!');
+        setLoadingStep('');
+        toast.success('Content fetched successfully!', {
+          description: `Found ${data.data.images?.length || 0} images, ${data.data.downloads?.length || 0} downloads`,
+        });
       } else {
         throw new Error(data?.error || 'Failed to parse content');
       }
     } catch (error: unknown) {
       console.error('Error fetching content:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch content';
+      const errorMessage = error instanceof Error 
+        ? (error.name === 'AbortError' ? 'Request timeout - try again' : error.message)
+        : 'Failed to fetch content';
       toast.error(errorMessage);
+      setLoadingStep('');
     } finally {
       setIsLoading(false);
     }
@@ -1326,13 +1344,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               <Button
                 onClick={handleFetchContent}
                 disabled={isLoading || !sourceUrl}
-                className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] text-black hover:from-[#f5c800] hover:to-[#f9dc24] font-semibold h-12 px-6"
+                className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] text-black hover:from-[#f5c800] hover:to-[#f9dc24] font-semibold h-12 px-6 min-w-[180px]"
               >
                 {isLoading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Analyzing...
-                  </>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span className="text-sm">{loadingStep || 'Loading...'}</span>
+                  </div>
                 ) : (
                   <>
                     <Download className="h-5 w-5 mr-2" />
@@ -1341,6 +1359,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 )}
               </Button>
             </div>
+            
+            {/* Loading Progress Indicator */}
+            {isLoading && (
+              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 mt-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-10 h-10 border-4 border-gray-600 border-t-[#f9dc24] rounded-full animate-spin"></div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white font-medium">{loadingStep || 'Processing...'}</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      This may take up to 2 minutes depending on page size and assets
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Redirect Status/Checkbox with Save Button */}
             <div className={`flex items-center gap-3 p-4 rounded-lg border mt-4 ${
