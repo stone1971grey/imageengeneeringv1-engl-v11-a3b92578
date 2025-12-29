@@ -303,14 +303,13 @@ export const EditableImage: React.FC<EditableImageProps> = ({
                 Upload from Computer
               </button>
               
-              {/* Select from Media Management - Blue */}
+              {/* Select from Media Management - Blue (uses primary from design system) */}
               <button
                 onClick={() => {
                   setShowOptions(false);
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: '#1e3a8a' }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
               >
                 <FolderOpen className="h-5 w-5" />
                 Select from Media
