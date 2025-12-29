@@ -152,6 +152,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     productHero: boolean;
     intro: boolean;
     specification: boolean;
+    table: boolean;
     featureOverview: boolean;
     downloads: boolean;
     video: boolean;
@@ -159,6 +160,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     productHero: true,
     intro: true,
     specification: true,
+    table: true,
     featureOverview: true,
     downloads: true,
     video: true,
@@ -689,6 +691,50 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             description: language === 'de' 
               ? `Detaillierte technische Daten für ${cleanTitle}.`
               : `Detailed technical specifications for ${cleanTitle}.`,
+          },
+          position: position - 1,
+        });
+      }
+
+      // 3b. Table Segment - structured table format from specifications
+      if (selectedSegments.table && parsedContent.specifications.length >= 3 && !existingSegmentTypes.has('table')) {
+        const segId = nextSegmentId++;
+        newRegistryEntries.push({
+          page_slug: pageSlug,
+          segment_id: segId,
+          segment_key: `content-auto-table-${segId}`,
+          segment_type: 'table',
+          position: position++,
+        });
+        
+        // Convert specs to table format with headers
+        const cleanSpecs = parsedContent.specifications
+          .map(s => ({
+            name: s.name.replace(/[*#_`\[\]]/g, '').trim(),
+            value: s.value.replace(/[*#_`\[\]]/g, '').trim(),
+          }))
+          .filter(s => s.name.length > 1 && s.value.length > 0);
+        
+        // Build table data: 2 columns (Parameter, Value)
+        const headers = [
+          language === 'de' ? 'Parameter' : 'Parameter',
+          language === 'de' ? 'Wert' : 'Value'
+        ];
+        const rows = cleanSpecs.map(s => [s.name, s.value]);
+        
+        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
+        
+        newSegments.push({
+          id: String(segId),
+          segmentId: String(segId),
+          type: 'table',
+          data: {
+            title: language === 'de' ? 'Spezifikationen' : 'Specifications',
+            subtext: language === 'de' 
+              ? `Technische Daten für ${cleanTitle}`
+              : `Technical data for ${cleanTitle}`,
+            headers,
+            rows,
           },
           position: position - 1,
         });
@@ -1306,6 +1352,29 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                             <p className="text-gray-500">+{parsedContent.specifications.length - 4} more...</p>
                           )}
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Table (from specifications) */}
+                  {parsedContent.specifications.length >= 3 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="table"
+                          checked={selectedSegments.table}
+                          onCheckedChange={() => toggleSegment('table')}
+                        />
+                        <Label htmlFor="table" className="text-white font-medium flex items-center gap-2">
+                          <Table className="h-4 w-4" />
+                          Table Format ({parsedContent.specifications.length} rows)
+                        </Label>
+                        <Badge variant="outline" className="text-xs">table</Badge>
+                      </div>
+                      <div className="ml-6 p-3 bg-gray-900 rounded-lg">
+                        <p className="text-sm text-gray-400">
+                          Creates a structured table with Parameter/Value columns
+                        </p>
                       </div>
                     </div>
                   )}
