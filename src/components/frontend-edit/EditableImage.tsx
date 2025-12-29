@@ -3,7 +3,9 @@ import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { ImagePlus, Loader2, X } from 'lucide-react';
+import { Upload, FolderOpen, Loader2, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { DataHubDialog } from '@/components/admin/DataHubDialog';
 
 interface EditableImageProps {
   src: string;
@@ -30,7 +32,11 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   const [isHovering, setIsHovering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,17 +44,18 @@ export const EditableImage: React.FC<EditableImageProps> = ({
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Bitte wählen Sie eine Bilddatei aus');
+      toast.error('Please select an image file');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Bild darf maximal 5MB groß sein');
+      toast.error('Image must be max 5MB');
       return;
     }
 
     setIsUploading(true);
+    setShowOptions(false);
 
     try {
       // Create a preview immediately
@@ -71,7 +78,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
 
       if (uploadError) {
         console.error('[EditableImage] Upload error:', uploadError);
-        toast.error('Fehler beim Hochladen');
+        toast.error('Upload failed');
         setPreviewSrc(null);
         return;
       }
@@ -114,12 +121,12 @@ export const EditableImage: React.FC<EditableImageProps> = ({
           });
       }
 
-      toast.success('Bild aktualisiert!');
+      toast.success('Image updated!');
       onUpdate?.(newSrc);
       setPreviewSrc(null);
     } catch (error) {
       console.error('[EditableImage] Error:', error);
-      toast.error('Fehler beim Hochladen');
+      toast.error('Upload failed');
       setPreviewSrc(null);
     } finally {
       setIsUploading(false);
@@ -130,9 +137,58 @@ export const EditableImage: React.FC<EditableImageProps> = ({
     }
   }, [pageSlug, sectionKey, language, onUpdate]);
 
+  const handleMediaSelect = useCallback(async (url: string, metadata?: any) => {
+    setShowMediaDialog(false);
+    setShowOptions(false);
+    
+    try {
+      // Save to page_content
+      const { data: existing } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', sectionKey)
+        .eq('language', language)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from('page_content')
+          .update({
+            content_value: url,
+            content_status: 'approved',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('page_content')
+          .insert({
+            page_slug: pageSlug,
+            section_key: sectionKey,
+            language: language,
+            content_type: 'image',
+            content_value: url,
+            content_status: 'approved'
+          });
+      }
+
+      toast.success('Image updated!');
+      onUpdate?.(url);
+    } catch (error) {
+      console.error('[EditableImage] Media select error:', error);
+      toast.error('Failed to update image');
+    }
+  }, [pageSlug, sectionKey, language, onUpdate]);
+
   const handleClick = useCallback(() => {
-    if (editContext?.isEditMode && editContext?.canEdit && !isUploading) {
-      fileInputRef.current?.click();
+    if (editContext?.isEditMode && editContext?.canEdit && !isUploading && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setOptionsPosition({
+        top: rect.top + rect.height / 2 + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX
+      });
+      setShowOptions(true);
     }
   }, [editContext?.isEditMode, editContext?.canEdit, isUploading]);
 
@@ -153,73 +209,137 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   const displaySrc = previewSrc || src;
 
   return (
-    <div 
-      className={cn(
-        className,
-        "relative group cursor-pointer transition-all duration-200",
-        editContext?.canEdit && "hover:ring-2 hover:ring-[#f9dc24] hover:ring-offset-2 rounded-lg overflow-hidden"
-      )}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onClick={handleClick}
-    >
-      <img 
-        src={displaySrc} 
-        alt={alt} 
+    <>
+      <div 
+        ref={containerRef}
         className={cn(
-          imgClassName,
-          isUploading && "opacity-50"
-        )} 
-      />
+          className,
+          "relative group cursor-pointer transition-all duration-200",
+          editContext?.canEdit && "hover:ring-2 hover:ring-[#f9dc24] hover:ring-offset-2 rounded-lg overflow-hidden"
+        )}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onClick={handleClick}
+      >
+        <img 
+          src={displaySrc} 
+          alt={alt} 
+          className={cn(
+            imgClassName,
+            isUploading && "opacity-50"
+          )} 
+        />
 
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
 
-      {/* Overlay */}
-      {editContext?.canEdit && isHovering && !isUploading && (
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity">
-          <div className="bg-black rounded-lg px-4 py-3 flex items-center gap-2 text-[#f9dc24] border border-[#f9dc24]/30">
-            <ImagePlus className="h-5 w-5" />
-            <span className="font-medium">Bild ändern</span>
+        {/* Overlay */}
+        {editContext?.canEdit && isHovering && !isUploading && !showOptions && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity">
+            <div className="bg-black rounded-lg px-4 py-3 flex items-center gap-2 text-[#f9dc24] border border-[#f9dc24]/30">
+              <Upload className="h-5 w-5" />
+              <span className="font-medium">Change Image</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Uploading indicator */}
-      {isUploading && (
-        <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-          <div className="bg-black rounded-lg px-4 py-3 flex items-center gap-2 text-[#f9dc24] border border-[#f9dc24]/30">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="font-medium">Wird hochgeladen...</span>
+        {/* Uploading indicator */}
+        {isUploading && (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+            <div className="bg-black rounded-lg px-4 py-3 flex items-center gap-2 text-[#f9dc24] border border-[#f9dc24]/30">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="font-medium">Uploading...</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Preview cancel button */}
-      {previewSrc && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            cancelPreview();
-          }}
-          className="absolute top-2 right-2 bg-black/80 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+        {/* Preview cancel button */}
+        {previewSrc && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              cancelPreview();
+            }}
+            className="absolute top-2 right-2 bg-black/80 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Options Portal - Two buttons for upload options */}
+      {showOptions && createPortal(
+        <div 
+          className="fixed inset-0 z-[99998]" 
+          onClick={() => setShowOptions(false)}
         >
-          <X className="h-4 w-4" />
-        </button>
+          <div 
+            className="absolute bg-white rounded-xl shadow-2xl p-4 border border-gray-200"
+            style={{
+              top: optionsPosition.top,
+              left: optionsPosition.left,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99999
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3 min-w-[280px]">
+              <p className="text-sm text-gray-600 font-medium text-center mb-1">Select image source</p>
+              
+              {/* Upload from Computer - Yellow */}
+              <button
+                onClick={() => {
+                  fileInputRef.current?.click();
+                }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+                Upload from Computer
+              </button>
+              
+              {/* Select from Media Management - Blue */}
+              <button
+                onClick={() => {
+                  setShowOptions(false);
+                  setShowMediaDialog(true);
+                }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#1e3a8a' }}
+              >
+                <FolderOpen className="h-5 w-5" />
+                Select from Media
+              </button>
+              
+              {/* Cancel */}
+              <button
+                onClick={() => setShowOptions(false)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors mt-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
-      {/* Edit hint */}
-      {editContext?.canEdit && !isHovering && !isUploading && (
-        <div className="absolute top-2 right-2 bg-black text-[#f9dc24] text-[10px] px-2 py-1 rounded font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-          Klicken zum Ändern
-        </div>
+      {/* Media Management Dialog */}
+      {showMediaDialog && (
+        <DataHubDialog
+          isOpen={showMediaDialog}
+          onClose={() => setShowMediaDialog(false)}
+          selectionMode={true}
+          onSelect={(url, metadata) => {
+            handleMediaSelect(url, metadata);
+          }}
+        />
       )}
-    </div>
+    </>
   );
 };
