@@ -31,7 +31,7 @@ import { IndustriesSegmentEditor } from '@/components/admin/IndustriesSegmentEdi
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEditor';
 import { BannerSegmentEditor } from '@/components/admin/BannerSegmentEditor';
-import { BannerPEditor } from '@/components/admin/BannerPEditor';
+
 
 interface PageSegment {
   id: string;
@@ -89,7 +89,7 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
         else if (segType === 'product-hero-gallery') label = `Product Gallery - G-${displayNumber}`;
         else if (segType === 'tiles') label = `Tiles - H-${displayNumber}`;
         else if (segType === 'banner') label = `Banner - J-${displayNumber}`;
-        else if (segType === 'banner-p') label = `Banner P - ${displayNumber}`;
+        
         else if (segType === 'image-text') label = `Image & Text - I-${displayNumber}`;
         else if (segType === 'full-hero') label = `Full Hero - A-${displayNumber}`;
         else if (segType === 'intro') label = `Intro - B-${displayNumber}`;
@@ -628,26 +628,6 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                   );
                 })()}
 
-                {segment.type === 'banner-p' && (() => {
-                  if (!segment.data) {
-                    segment.data = getDefaultSegmentData('banner-p');
-                  }
-
-                  return (
-                    <BannerPEditor
-                      data={segment.data}
-                      onChange={(newData) => {
-                        const newSegments = [...safePageSegments];
-                        if (newSegments[index]) newSegments[index].data = newData;
-                        setPageSegments(newSegments);
-                      }}
-                      onSave={() => handleSaveSegments()}
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      segmentKey={`segment_${segment.id}`}
-                      language={editorLanguage}
-                    />
-                  );
-                })()}
               </CardContent>
             </Card>
           </TabsContent>

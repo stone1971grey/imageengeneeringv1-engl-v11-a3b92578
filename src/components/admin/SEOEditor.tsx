@@ -2472,7 +2472,7 @@ export const SEOEditor = ({
       'tiles': 'Tiles',
       'image-text': 'Image-Text',
       'banner': 'Banner',
-      'banner-p': 'Banner P',
+      
       'faq': 'FAQ',
       'specification': 'Specification',
       'table': 'Table',
@@ -2496,7 +2496,7 @@ export const SEOEditor = ({
   // Helper to check if segment type stores data in page_segments JSON
   // IMPORTANT: "hero" is legacy for product-hero
   const isPageSegmentType = (segmentType: string): boolean => {
-    return ['full-hero', 'full_hero', 'action-hero', 'hero', 'product-hero', 'product-hero-gallery', 'banner', 'banner-p'].includes(segmentType);
+    return ['full-hero', 'full_hero', 'action-hero', 'hero', 'product-hero', 'product-hero-gallery', 'banner'].includes(segmentType);
   };
 
   // Apply H1 to the suggested segment and convert old H1 to H2

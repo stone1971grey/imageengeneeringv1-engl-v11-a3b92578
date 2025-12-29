@@ -75,15 +75,6 @@ export const getDefaultSegmentData = (templateType: string): Record<string, any>
         buttonLink: '',
         buttonStyle: 'standard'
       };
-    case 'banner-p':
-      return {
-        title: 'New Banner-P Section',
-        subtext: '',
-        images: [],
-        buttonText: '',
-        buttonLink: '',
-        buttonStyle: 'standard'
-      };
     case 'image-text':
       return {
         title: 'New Image & Text Section',
@@ -308,16 +299,6 @@ export const getLanguageIndependentFields = (templateType: string, data: Record<
         buttonText: ''
       };
     
-    case 'banner-p':
-      return {
-        images: data.images || [],
-        buttonLink: data.buttonLink || '',
-        buttonStyle: data.buttonStyle || 'standard',
-        // Text fields empty
-        title: '',
-        subtext: '',
-        buttonText: ''
-      };
     
     case 'image-text':
       return {

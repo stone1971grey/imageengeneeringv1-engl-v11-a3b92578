@@ -103,7 +103,7 @@ export const buildSegmentLabel = (segType: string, displayNumber: number): strin
   if (segType === 'product-hero-gallery') return `Product Gallery - G-${displayNumber}`;
   if (segType === 'tiles') return `Tiles - H-${displayNumber}`;
   if (segType === 'banner') return `Banner - J-${displayNumber}`;
-  if (segType === 'banner-p') return `Banner P - ${displayNumber}`;
+  
   if (segType === 'image-text') return `Image & Text - I-${displayNumber}`;
   if (segType === 'full-hero') return `Full Hero - A-${displayNumber}`;
   if (segType === 'intro') return `Intro - B-${displayNumber}`;
@@ -134,7 +134,7 @@ export const getSegmentTypeName = (type: string): string => {
     'product-hero-gallery': 'Product Hero Gallery',
     'feature-overview': 'Feature Overview',
     'image-text': 'Image Text',
-    'banner-p': 'Banner P',
+    
     'product-list': 'Product List',
     'mini-footer': 'Mini Footer',
   };
