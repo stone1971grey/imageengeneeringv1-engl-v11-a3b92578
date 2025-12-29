@@ -54,7 +54,8 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
   // Extract numeric segment ID from segmentKey
   const segmentId = parseInt(segmentKey.replace(/\D/g, ''), 10) || 0;
   
-  // Register ref with parent for scroll tracking
+  // Register ref with parent for scroll tracking - ALWAYS register, even without edit context
+  // This enables the dynamic segment ID display in the toolbar
   useEffect(() => {
     if (onRegisterRef && segmentRef.current) {
       onRegisterRef(segmentId, segmentRef.current);
@@ -64,16 +65,28 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
     }
   }, [onRegisterRef, segmentId]);
 
-  // If no edit context, just render children
+  // If no edit context, render children wrapped in a div for ref tracking
   if (!editContext) {
+    // Still need to render with ref for scroll tracking to work
+    if (onRegisterRef) {
+      return (
+        <div ref={segmentRef} className={className}>
+          {children}
+        </div>
+      );
+    }
     return <>{children}</>;
   }
 
   const { isEditMode, canEdit, canApprove, userId } = editContext;
 
-  // If not in edit mode, just render children normally
+  // If not in edit mode, render with ref for scroll tracking
   if (!isEditMode) {
-    return <>{children}</>;
+    return (
+      <div ref={segmentRef} className={className}>
+        {children}
+      </div>
+    );
   }
 
   const needsApproval = contentStatus === 'pending' || contentStatus === 'draft';
