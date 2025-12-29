@@ -141,10 +141,10 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
     setIsUploading(index);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `page-images/${pageSlug}/image-text/${segmentKey}-item-${index}-${Date.now()}.${fileExt}`;
+      const fileName = `${pageSlug}/image-text/${segmentKey}-item-${index}-${Date.now()}.${fileExt}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('cms-media')
+        .from('page-images')
         .upload(fileName, file, { cacheControl: '3600', upsert: false });
 
       if (uploadError) {
@@ -154,7 +154,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
       }
 
       const { data: urlData } = supabase.storage
-        .from('cms-media')
+        .from('page-images')
         .getPublicUrl(uploadData.path);
 
       const newUrl = urlData.publicUrl;
