@@ -1073,11 +1073,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       // 8. Redirect to frontend for in-context approval
       const frontendUrl = `/${language}/${pageSlug}?edit=true`;
       
+      console.log('[ContentAutomation] Redirecting to frontend:', frontendUrl);
+      
       if (onRedirectToFrontend) {
         onRedirectToFrontend(frontendUrl);
       } else {
-        // Fallback: open in new tab if no callback provided
-        window.open(frontendUrl, '_blank');
+        // Fallback: direct navigation if no callback provided
+        window.location.href = frontendUrl;
       }
 
       onImportComplete?.();
