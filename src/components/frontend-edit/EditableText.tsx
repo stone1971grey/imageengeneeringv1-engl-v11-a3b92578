@@ -178,26 +178,43 @@ export const EditableText: React.FC<EditableTextProps> = ({
         }
       } else {
         // Fallback: Try to find individual segment entry (older CMS format)
-        // segmentId is the section_key directly
-        console.log('[EditableText] page_segments not found, trying individual section_key:', segmentId);
+        // Try multiple section_key formats:
+        // 1. segmentKey directly (e.g., "news-config-394")
+        // 2. segmentId only (e.g., "394")
+        console.log('[EditableText] page_segments not found, trying individual section_keys:', segmentKey, 'or', segmentId);
         
-        const { data: segmentData, error: segmentError } = await supabase
+        // First try segmentKey (without fieldName)
+        let { data: segmentData, error: segmentError } = await supabase
           .from('page_content')
           .select('id, content_value, content_type')
           .eq('page_slug', pageSlug)
-          .eq('section_key', segmentId)
+          .eq('section_key', segmentKey)
           .eq('language', language)
           .maybeSingle();
         
         if (segmentError) {
-          console.error('[EditableText] Error loading segment:', segmentError);
-          toast.error('Error loading content');
-          setIsSaving(false);
-          return;
+          console.error('[EditableText] Error loading segment by segmentKey:', segmentError);
+        }
+        
+        // If not found with segmentKey, try with segmentId only
+        if (!segmentData && segmentKey !== segmentId) {
+          console.log('[EditableText] Not found with segmentKey, trying segmentId:', segmentId);
+          const result = await supabase
+            .from('page_content')
+            .select('id, content_value, content_type')
+            .eq('page_slug', pageSlug)
+            .eq('section_key', segmentId)
+            .eq('language', language)
+            .maybeSingle();
+          
+          if (result.error) {
+            console.error('[EditableText] Error loading segment by segmentId:', result.error);
+          }
+          segmentData = result.data;
         }
         
         if (!segmentData) {
-          console.error('[EditableText] Segment not found with section_key:', segmentId);
+          console.error('[EditableText] Segment not found with section_key:', segmentKey, 'or', segmentId);
           toast.error('Content not found');
           setIsSaving(false);
           return;
