@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 interface FrontendEditContextType {
@@ -44,6 +45,11 @@ export const FrontendEditProvider: React.FC<{
   pageSlug: string;
   language: string;
 }> = ({ children, pageSlug, language }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Check URL parameter for initial edit mode
+  const editFromUrl = searchParams.get('edit') === 'true';
+  
   const [isEditMode, setIsEditMode] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
   const [canApprove, setCanApprove] = useState(false);
@@ -53,6 +59,17 @@ export const FrontendEditProvider: React.FC<{
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingChanges, setPendingChanges] = useState<Map<string, PendingChange>>(new Map());
+  
+  // Auto-enable edit mode from URL parameter after permissions are loaded
+  useEffect(() => {
+    if (!isLoading && editFromUrl && canEdit && !isEditMode) {
+      setIsEditMode(true);
+      // Remove the edit parameter from URL after activating
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('edit');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [isLoading, editFromUrl, canEdit, isEditMode, searchParams, setSearchParams]);
 
   // Check user permissions
   useEffect(() => {
