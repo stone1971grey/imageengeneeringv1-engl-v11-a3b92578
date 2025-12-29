@@ -158,13 +158,15 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
     setHasChanges(true);
   };
 
-  const handleAddItem = (e: React.MouseEvent) => {
+  const handleAddItem = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[FeatureOverview] handleAddItem called, adding new item');
-    setLocalItems([...localItems, { title: '', description: '' }]);
+    console.log('[FeatureOverview] handleAddItem called, current items:', localItems.length);
+    const newItems = [...localItems, { title: '', description: '' }];
+    console.log('[FeatureOverview] New items array:', newItems.length);
+    setLocalItems(newItems);
     setHasChanges(true);
-  };
+  }, [localItems]);
 
   const handleDeleteItem = (globalIndex: number) => {
     const updatedItems = localItems.filter((_, i) => i !== globalIndex);
@@ -371,15 +373,14 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
           
           {isEditing && (
             <div className="flex justify-center mt-8">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => handleAddItem(e)}
-                className="bg-black text-white hover:bg-gray-900 hover:text-white border-black z-20"
+              <button
+                type="button"
+                onClick={handleAddItem}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-black text-white hover:bg-gray-900 border border-black rounded-md z-20"
               >
                 <Plus className="h-4 w-4 mr-2 text-white" />
                 Add Feature Item
-              </Button>
+              </button>
             </div>
           )}
         </div>
