@@ -45,11 +45,17 @@ const FAQ: React.FC<FAQProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Sync local items with props and reset hasChanges
+  // Sync local items with props
   useEffect(() => {
     setLocalItems(items);
-    setHasChanges(false);
   }, [items]);
+  
+  // Enable save button when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setHasChanges(true);
+    }
+  }, [isEditing]);
 
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
   const displaySubtext = subtext || (isEditing ? '[Click to add subtext]' : '');
@@ -284,7 +290,7 @@ const FAQ: React.FC<FAQProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleAddItem}
-                    className="text-gray-600 hover:text-gray-800 border-dashed"
+                    className="text-[#f9dc24] hover:text-[#f9dc24] border-dashed border-[#f9dc24] hover:bg-[#f9dc24]/10"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add FAQ Item
@@ -322,7 +328,7 @@ const FAQ: React.FC<FAQProps> = ({
               variant="outline"
               size="sm"
               onClick={handleCancel}
-              disabled={isSaving || !hasChanges}
+              disabled={isSaving}
               className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
             >
               Cancel
@@ -330,8 +336,8 @@ const FAQ: React.FC<FAQProps> = ({
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={isSaving || !hasChanges}
-              className="bg-black text-[#f9dc24] hover:bg-gray-900"
+              disabled={isSaving}
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
