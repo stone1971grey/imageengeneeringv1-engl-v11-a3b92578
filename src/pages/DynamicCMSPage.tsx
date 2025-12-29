@@ -254,11 +254,12 @@ const DynamicCMSPage = () => {
   }, [pageSlug, currentUrlLanguage, authChecked]);
 
   const loadContent = async () => {
-    if (!pageSlug) {
-      setPageNotFound(true);
-      setLoading(false);
-      return;
-    }
+    try {
+      if (!pageSlug) {
+        setPageNotFound(true);
+        setLoading(false);
+        return;
+      }
 
     // Extract language from URL
     const pathParts = location.pathname.replace(/^\/+/, "").split('/');
@@ -833,7 +834,11 @@ const DynamicCMSPage = () => {
       }
     }
 
-    setLoading(false);
+      setLoading(false);
+    } catch (error) {
+      console.error('[DynamicCMSPage] Error loading content:', error);
+      setLoading(false);
+    }
   };
 
   // Refresh page content after frontend editing save
