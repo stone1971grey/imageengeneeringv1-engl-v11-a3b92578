@@ -44,11 +44,17 @@ const Specification = ({
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Sync local rows with props and reset hasChanges
+  // Sync local rows with props
   useEffect(() => {
     setLocalRows(rows);
-    setHasChanges(false);
   }, [rows]);
+  
+  // Enable save button when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setHasChanges(true);
+    }
+  }, [isEditing]);
   
   // Show placeholder in edit mode, hide completely if no content and not editing
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
@@ -252,7 +258,7 @@ const Specification = ({
                     variant="outline"
                     size="sm"
                     onClick={handleAddRow}
-                    className="text-gray-600 hover:text-gray-800 border-dashed"
+                    className="text-[#f9dc24] hover:text-[#f9dc24] border-dashed border-[#f9dc24] hover:bg-[#f9dc24]/10"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Row
@@ -295,7 +301,7 @@ const Specification = ({
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
-                disabled={isSaving || !hasChanges}
+                disabled={isSaving}
                 className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
               >
                 Cancel
@@ -303,8 +309,8 @@ const Specification = ({
               <Button
                 size="sm"
                 onClick={handleSave}
-                disabled={isSaving || !hasChanges}
-                className="bg-black text-[#f9dc24] hover:bg-gray-900"
+                disabled={isSaving}
+                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
