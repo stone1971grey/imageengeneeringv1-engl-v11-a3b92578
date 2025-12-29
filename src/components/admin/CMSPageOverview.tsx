@@ -314,36 +314,47 @@ export const CMSPageOverview = () => {
 
       if (pageError) throw pageError;
 
-      // Step 6: Delete 301/302 redirects that target this page
-      // Delete redirects where target_url matches the page slug (with all language prefixes)
+      // Step 6: Update 301/302 redirects that target this page → redirect to homepage instead
+      // This preserves SEO link juice from external links
       const languages = ['en', 'de', 'ja', 'ko', 'zh'];
-      let redirectsDeleted = 0;
+      let redirectsUpdated = 0;
+      
       for (const lang of languages) {
         const targetUrlWithLang = `/${lang}/${pageToDelete.page_slug}`;
-        const { data: deletedRedirects, error: redirectError } = await supabase
+        const homepageUrl = `/${lang}/`;
+        
+        const { data: updatedRedirects, error: redirectError } = await supabase
           .from('redirects')
-          .delete()
+          .update({ 
+            target_url: homepageUrl,
+            notes: `[Auto-updated] Original target "${targetUrlWithLang}" was deleted. Redirecting to homepage.`,
+            updated_at: new Date().toISOString()
+          })
           .eq('target_url', targetUrlWithLang)
           .select('id');
         
-        if (!redirectError && deletedRedirects) {
-          redirectsDeleted += deletedRedirects.length;
+        if (!redirectError && updatedRedirects) {
+          redirectsUpdated += updatedRedirects.length;
         }
       }
       
-      // Also delete redirects matching the slug without language prefix
-      const { data: deletedSlugRedirects } = await supabase
+      // Also update redirects matching the slug without language prefix
+      const { data: updatedSlugRedirects } = await supabase
         .from('redirects')
-        .delete()
+        .update({ 
+          target_url: '/en/',
+          notes: `[Auto-updated] Original target "/${pageToDelete.page_slug}" was deleted. Redirecting to homepage.`,
+          updated_at: new Date().toISOString()
+        })
         .or(`target_url.eq./${pageToDelete.page_slug},target_url.eq.${pageToDelete.page_slug}`)
         .select('id');
       
-      if (deletedSlugRedirects) {
-        redirectsDeleted += deletedSlugRedirects.length;
+      if (updatedSlugRedirects) {
+        redirectsUpdated += updatedSlugRedirects.length;
       }
       
-      if (redirectsDeleted > 0) {
-        console.log(`[CMSPageOverview] Deleted ${redirectsDeleted} redirects targeting page "${pageToDelete.page_slug}"`);
+      if (redirectsUpdated > 0) {
+        console.log(`[CMSPageOverview] Updated ${redirectsUpdated} redirects to point to homepage (page "${pageToDelete.page_slug}" deleted)`);
       }
 
       // Step 7: Update all navigationData.ts files to remove the deleted page
@@ -369,7 +380,7 @@ export const CMSPageOverview = () => {
       }
 
       toast.success(`Page "${pageToDelete.page_title}" (ID ${pageToDelete.page_id}) permanently deleted`, {
-        description: `All segments, content, navigation links, navigationData entries${redirectsDeleted > 0 ? `, and ${redirectsDeleted} redirect(s)` : ''} have been removed`
+        description: `All segments, content, navigation links, navigationData entries${redirectsUpdated > 0 ? ` removed. ${redirectsUpdated} redirect(s) updated to homepage` : ''}`
       });
 
       setDeleteDialogOpen(false);
