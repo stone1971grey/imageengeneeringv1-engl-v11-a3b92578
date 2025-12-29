@@ -142,15 +142,16 @@ export function CopyPageDialog({
         throw new Error("Source page not found in registry");
       }
 
-      // 2. Get next page_id
-      const { data: maxPage } = await supabase
-        .from('page_registry')
-        .select('page_id')
-        .order('page_id', { ascending: false })
-        .limit(1)
-        .single();
+      // 2. Get next page_id atomically (prevents reuse of deleted IDs)
+      const { data: nextIdResult, error: nextIdError } = await supabase
+        .rpc('get_next_page_id');
 
-      const newPageId = (maxPage?.page_id || 0) + 1;
+      if (nextIdError) {
+        console.error('Error getting next page_id:', nextIdError);
+        throw new Error('Failed to get next page ID');
+      }
+
+      const newPageId = nextIdResult as number;
 
       // Determine parent_slug and parent_id for the new page
       const slugParts = trimmedSlug.split('/').filter(Boolean);

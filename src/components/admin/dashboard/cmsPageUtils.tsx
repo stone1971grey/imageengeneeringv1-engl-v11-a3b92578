@@ -126,15 +126,16 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
     const childSlug = slugParts[slugParts.length - 1];
     const parentSlug = slugParts.length > 1 ? slugParts.slice(0, -1).join('/') : null;
 
-    // Get highest page_id
-    const { data: maxPage } = await supabase
-      .from("page_registry")
-      .select("page_id")
-      .order("page_id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Get next page_id atomically (prevents reuse of deleted IDs)
+    const { data: nextIdResult, error: nextIdError } = await supabase
+      .rpc('get_next_page_id');
 
-    const nextPageId = (maxPage?.page_id || 0) + 1;
+    if (nextIdError) {
+      console.error('Error getting next page_id:', nextIdError);
+      throw new Error('Failed to get next page ID');
+    }
+
+    const nextPageId = nextIdResult as number;
 
     let parent_id: number | null = null;
     let parent_slug_value: string | null = null;
@@ -399,14 +400,15 @@ export async function createNewCMSPage(params: {
       toast("Step 2: Page not in registry, creating entry");
       console.log("Page not in registry, creating entry...");
 
-      const { data: maxPage } = await supabase
-        .from("page_registry")
-        .select("page_id")
-        .order("page_id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const { data: nextIdResult, error: nextIdError } = await supabase
+        .rpc('get_next_page_id');
 
-      const nextPageId = (maxPage?.page_id || 0) + 1;
+      if (nextIdError) {
+        console.error('Error getting next page_id:', nextIdError);
+        throw new Error('Failed to get next page ID');
+      }
+
+      const nextPageId = nextIdResult as number;
 
       let parent_id: number | null = null;
       let parent_slug: string | null = null;

@@ -1534,17 +1534,16 @@ export const SEOEditor = ({
     ));
 
     try {
-      // Step 1: Get the next available page_id
-      const { data: maxPageId, error: maxError } = await supabase
-        .from('page_registry')
-        .select('page_id')
-        .order('page_id', { ascending: false })
-        .limit(1)
-        .single();
+      // Step 1: Get the next available page_id atomically (prevents reuse of deleted IDs)
+      const { data: nextIdResult, error: nextIdError } = await supabase
+        .rpc('get_next_page_id');
 
-      if (maxError && maxError.code !== 'PGRST116') throw maxError;
+      if (nextIdError) {
+        console.error('Error getting next page_id:', nextIdError);
+        throw new Error('Failed to get next page ID');
+      }
       
-      const newPageId = (maxPageId?.page_id || 0) + 1;
+      const newPageId = nextIdResult as number;
       
       // CRITICAL FIX: Check if suggestedSlug already contains the full path (from AI)
       // If it starts with the parentSlug, use it directly; otherwise construct the path
