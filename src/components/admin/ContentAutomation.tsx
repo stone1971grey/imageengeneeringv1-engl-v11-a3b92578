@@ -393,6 +393,15 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const storageBaseUrl = 'https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images';
       const folderPath = pageSlug;
       
+      // Check if media folder exists in media_folders table
+      const { data: mediaFolder } = await supabase
+        .from('media_folders')
+        .select('id, storage_path')
+        .eq('storage_path', folderPath)
+        .maybeSingle();
+      
+      console.log('[ContentAutomation] Media folder exists:', !!mediaFolder, mediaFolder?.storage_path);
+      
       // Fetch files from the product's media folder
       const { data: storageFiles } = await supabase
         .storage
@@ -400,27 +409,33 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .list(folderPath, { limit: 50, sortBy: { column: 'name', order: 'asc' } });
       
       // Separate images and PDFs from storage
-      const storageImages: { url: string; title: string }[] = [];
-      const storagePdfs: { url: string; title: string; filename: string }[] = [];
+      const storageImages: { url: string; title: string; filePath: string }[] = [];
+      const storagePdfs: { url: string; title: string; filename: string; filePath: string }[] = [];
       
       if (storageFiles && storageFiles.length > 0) {
+        console.log('[ContentAutomation] Found files in storage folder:', storageFiles.length);
         for (const file of storageFiles) {
+          // Skip folders
+          if (file.id === null) continue;
+          
           if (file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
             // Image file
             const imageUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+            const filePath = `${folderPath}/${file.name}`;
             const title = file.name
               .replace(/\.(png|jpg|jpeg|webp|gif)$/i, '')
               .replace(/[-_]/g, ' ')
               .replace(/dummy/gi, parsedContent.title || 'Product Image');
-            storageImages.push({ url: imageUrl, title });
+            storageImages.push({ url: imageUrl, title, filePath });
           } else if (file.name.match(/\.pdf$/i)) {
             // PDF file
             const pdfUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+            const filePath = `${folderPath}/${file.name}`;
             const title = file.name
               .replace(/\.pdf$/i, '')
               .replace(/[-_]/g, ' ')
               .replace(/([a-z])([A-Z])/g, '$1 $2');
-            storagePdfs.push({ url: pdfUrl, title, filename: file.name });
+            storagePdfs.push({ url: pdfUrl, title, filename: file.name, filePath });
           }
         }
       }
@@ -428,10 +443,57 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.log('[ContentAutomation] Found storage images:', storageImages.length);
       console.log('[ContentAutomation] Found storage PDFs:', storagePdfs.length);
 
+      // Check existing file_segment_mappings for these files
+      const existingMappings: Record<string, { segmentIds: string[]; altText: string | null }> = {};
+      if (storageImages.length > 0 || storagePdfs.length > 0) {
+        const allFilePaths = [
+          ...storageImages.map(img => img.filePath),
+          ...storagePdfs.map(pdf => pdf.filePath),
+        ];
+        
+        const { data: mappings } = await supabase
+          .from('file_segment_mappings')
+          .select('file_path, segment_ids, alt_text')
+          .in('file_path', allFilePaths);
+        
+        if (mappings) {
+          for (const m of mappings) {
+            existingMappings[m.file_path] = {
+              segmentIds: m.segment_ids || [],
+              altText: m.alt_text,
+            };
+          }
+        }
+        console.log('[ContentAutomation] Existing mappings found:', Object.keys(existingMappings).length);
+      }
+
       // === DOWNLOAD EXTERNAL FILES TO STORAGE ===
       // If no local images exist, download scraped images to storage
-      const downloadedImages: { url: string; title: string }[] = [];
-      const downloadedPdfs: { url: string; title: string; filename: string }[] = [];
+      const downloadedImages: { url: string; title: string; filePath: string }[] = [];
+      const downloadedPdfs: { url: string; title: string; filename: string; filePath: string }[] = [];
+      
+      // Create folder if it doesn't exist and we need to download files
+      if (!mediaFolder && (storageImages.length === 0 && parsedContent.images.length > 0)) {
+        console.log('[ContentAutomation] Creating media folder for page:', folderPath);
+        
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        // Create folder in media_folders table
+        const { error: folderError } = await supabase
+          .from('media_folders')
+          .insert({
+            name: pageSlug.split('/').pop() || pageSlug,
+            storage_path: folderPath,
+            created_by: user?.id || null,
+          });
+        
+        if (folderError) {
+          console.warn('[ContentAutomation] Could not create media folder:', folderError);
+        } else {
+          console.log('[ContentAutomation] Media folder created:', folderPath);
+        }
+      }
       
       if (storageImages.length === 0 && parsedContent.images.length > 0) {
         console.log('[ContentAutomation] No local images, downloading external images...');
@@ -457,6 +519,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               downloadedImages.push({
                 url: dlResult.publicUrl,
                 title: img.title || parsedContent.title || 'Product Image',
+                filePath: targetPath,
               });
             } else {
               console.warn(`[ContentAutomation] Failed to download image:`, dlError || dlResult?.error);
@@ -491,6 +554,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 url: dlResult.publicUrl,
                 title: dl.title,
                 filename,
+                filePath: targetPath,
               });
             } else {
               console.warn(`[ContentAutomation] Failed to download PDF:`, dlError || dlResult?.error);
@@ -624,6 +688,47 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           },
           position: position - 1,
         });
+        
+        // === CREATE FILE_SEGMENT_MAPPINGS FOR IMAGES ===
+        // Automatically assign images to this segment in Media Management
+        const heroSegmentId = String(segId);
+        for (const img of finalImages.slice(0, 4)) {
+          if (!img.filePath) continue;
+          
+          const existing = existingMappings[img.filePath];
+          
+          if (existing) {
+            // Mapping exists - add this segment ID if not already present
+            if (!existing.segmentIds.includes(heroSegmentId)) {
+              console.log(`[ContentAutomation] Adding segment ${heroSegmentId} to existing mapping for ${img.filePath}`);
+              const updatedIds = [...existing.segmentIds, heroSegmentId];
+              
+              await supabase
+                .from('file_segment_mappings')
+                .update({ 
+                  segment_ids: updatedIds,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('file_path', img.filePath);
+            } else {
+              console.log(`[ContentAutomation] Image ${img.filePath} already assigned to segment ${heroSegmentId}`);
+            }
+          } else {
+            // No mapping exists - create new one
+            console.log(`[ContentAutomation] Creating new mapping for ${img.filePath} → segment ${heroSegmentId}`);
+            
+            await supabase
+              .from('file_segment_mappings')
+              .insert({
+                file_path: img.filePath,
+                bucket_id: 'page-images',
+                segment_ids: [heroSegmentId],
+                alt_text: img.title || null,
+                visibility: 'public',
+              });
+          }
+        }
+        console.log(`[ContentAutomation] File mappings created/updated for ${finalImages.slice(0, 4).length} images`);
       }
 
       // 2. Intro with comprehensive content (description + benefits) - CLEAN HTML
