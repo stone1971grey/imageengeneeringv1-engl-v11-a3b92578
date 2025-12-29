@@ -393,18 +393,18 @@ export const EditableText: React.FC<EditableTextProps> = ({
   if (!isEditing) {
     const StatusIcon = statusStyles.indicator?.icon || Edit3;
     return (
-      <div className={cn("relative", needsApproval && statusStyles.border, needsApproval && statusStyles.bg, "rounded-r")}>
+      <div className={cn("relative inline", needsApproval && statusStyles.border, needsApproval && statusStyles.bg, "rounded-r")}>
         <Component 
           className={cn(
             className,
-            "cursor-text relative group transition-all duration-200",
-            editContext?.canEdit && "hover:outline hover:outline-2 hover:outline-[#f9dc24] hover:outline-offset-2 rounded"
+            "cursor-text relative group",
+            editContext?.canEdit && "hover:bg-[#f9dc24]/20 rounded transition-colors duration-150"
           )}
           onClick={handleClick}
         >
           {value}
           {editContext?.canEdit && (
-            <span className="absolute -top-3 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-2 py-1 rounded font-semibold whitespace-nowrap">
+            <span className="absolute left-1/2 -translate-x-1/2 -top-8 z-[200] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-xs px-3 py-1.5 rounded font-semibold whitespace-nowrap pointer-events-none shadow-lg">
               Click to edit
             </span>
           )}
