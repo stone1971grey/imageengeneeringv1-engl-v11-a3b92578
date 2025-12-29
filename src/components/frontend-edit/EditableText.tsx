@@ -87,37 +87,26 @@ export const EditableText: React.FC<EditableTextProps> = ({
     setIsSaving(true);
 
     try {
-      // Parse sectionKey to extract segment ID and field name
-      // Format: "{type}-{id}-{fieldName}" e.g., "product-hero-gallery-549-title"
-      // We need to find the last numeric part before the field name
-      const parts = sectionKey.split('-');
-      if (parts.length < 2) {
+      // Parse sectionKey to extract segmentKey (without field) and field name
+      // Format: "{segmentKey}-{fieldName}" e.g., "product-hero-gallery-549-title"
+      // The fieldName is the last part, segmentKey is everything before it
+      const lastDashIndex = sectionKey.lastIndexOf('-');
+      if (lastDashIndex === -1) {
         console.error('[EditableText] Invalid sectionKey format:', sectionKey);
         toast.error('Error saving');
         setIsSaving(false);
         return;
       }
       
-      // Field name is the last part
-      const fieldName = parts[parts.length - 1];
+      const fieldName = sectionKey.substring(lastDashIndex + 1);
+      const segmentKey = sectionKey.substring(0, lastDashIndex);
       
-      // Find the segment ID - it's the last numeric part before the field name
-      let segmentId = '';
-      for (let i = parts.length - 2; i >= 0; i--) {
-        if (/^\d+$/.test(parts[i])) {
-          segmentId = parts[i];
-          break;
-        }
-      }
+      // Extract segment ID from segmentKey - it's the last part after the last dash
+      // e.g., "product-hero-gallery-549" -> "549"
+      const segmentKeyParts = segmentKey.split('-');
+      const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      if (!segmentId) {
-        console.error('[EditableText] Could not find segment ID in sectionKey:', sectionKey);
-        toast.error('Error saving');
-        setIsSaving(false);
-        return;
-      }
-      
-      console.log('[EditableText] Saving field:', fieldName, 'for segment ID:', segmentId);
+      console.log('[EditableText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId);
 
       // Load current page_segments JSON
       const { data: pageSegmentsData, error: loadError } = await supabase
@@ -153,20 +142,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
         return;
       }
 
-      // Find the segment by matching id or segmentId
+      // Find the segment by matching id (trying multiple formats)
       const segmentIndex = segments.findIndex((seg: any) => {
-        const segId = String(seg.id || seg.segmentId || seg.segment_id);
-        return segId === segmentId;
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        // Match against segmentId directly, or the full segmentKey contains it
+        return segId === segmentId || segmentKey === `${seg.type}-${segId}`;
       });
 
       if (segmentIndex === -1) {
-        console.error('[EditableText] Segment not found with ID:', segmentId, 'Available IDs:', segments.map(s => s.id || s.segmentId));
+        console.error('[EditableText] Segment not found. segmentId:', segmentId, 'segmentKey:', segmentKey, 'Available segments:', segments.map(s => ({ id: s.id, type: s.type })));
         toast.error('Segment not found');
         setIsSaving(false);
         return;
       }
 
-      console.log('[EditableText] Found segment at index:', segmentIndex, 'Updating field:', fieldName);
+      console.log('[EditableText] Found segment at index:', segmentIndex, 'type:', segments[segmentIndex].type, 'Updating field:', fieldName);
 
       // Update the specific field in the segment data
       if (!segments[segmentIndex].data) {
