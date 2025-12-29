@@ -104,10 +104,10 @@ const SOURCE_URL_MAPPING: Record<string, LanguageUrls> = {
     de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/vega',
   },
   'products/illumination-devices/octa-light-player': {
-    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1388-octa-light-player',
-    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1388-octa-light-player',
+    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1299-octa-light-player',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1299-octa-light-player',
   },
-  'products/illumination-devices/aeon-camera-calibrator': {
+  'products/measurement-devices/aeon-camera-calibrator': {
     default: 'https://www.image-engineering.de/products/equipment/measurement-devices/1295-aeon-camera-calibrator',
     de: 'https://www.image-engineering.de/de/produkte/equipment/measurement-devices/1295-aeon-camera-calibrator',
   },
