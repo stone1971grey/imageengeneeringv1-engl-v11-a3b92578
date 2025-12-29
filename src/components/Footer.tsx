@@ -225,18 +225,10 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
   return (
     <footer 
       id="footer" 
-      className={`bg-[#4B4A4A] relative ${isEditing ? 'border-l-4 border-l-[#f9dc24] pl-4' : ''}`}
+      className="bg-[#4B4A4A] relative"
       data-segment-id={segmentId}
       data-segment-type="footer"
     >
-      {/* Segment ID Badge in edit mode - only show when has a real ID (not fallback 0) */}
-      {isEditing && segmentId && segmentId !== 0 && (
-        <div className="absolute -top-3 left-4 z-20">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm font-medium shadow-lg bg-[#f9dc24] text-black">
-            <span># Footer ID: {segmentId}</span>
-          </div>
-        </div>
-      )}
 
       {/* Vision CTA Section */}
       <div className={`container mx-auto px-6 py-16 text-center ${isEditing && segmentId ? 'pt-20' : ''}`}>

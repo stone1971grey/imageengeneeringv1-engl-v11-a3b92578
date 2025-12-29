@@ -138,10 +138,11 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const numberOfRows = parseInt(rows);
   const itemsPerRow = columnsPerRow;
 
-  // Group items into rows - in edit mode, show ALL items (not limited by numberOfRows)
+  // Group items into rows - show ALL items in both edit and view mode
   const groupedItems: FeatureItem[][] = [];
-  const maxRows = isEditing ? Math.ceil(localItems.length / itemsPerRow) + 1 : numberOfRows;
-  for (let i = 0; i < maxRows; i++) {
+  const totalItemsToShow = localItems.length;
+  const actualRows = Math.ceil(totalItemsToShow / itemsPerRow);
+  for (let i = 0; i < actualRows; i++) {
     const startIndex = i * itemsPerRow;
     const endIndex = startIndex + itemsPerRow;
     const rowItems = localItems.slice(startIndex, endIndex);
