@@ -248,7 +248,7 @@ const Tiles: React.FC<TilesProps> = ({
   }, [hasChanges, localItems, localColumns, pageSlug, language, segmentKey, onContentUpdate]);
 
   return (
-    <section id={id} className="pt-[60px] pb-20 bg-gray-50">
+    <section id={id} className="pt-8 pb-16 bg-gray-50">
       <div className="container mx-auto px-6">
         {/* Header */}
         {(displayTitle || isEditing) && (
