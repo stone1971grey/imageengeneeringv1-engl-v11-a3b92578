@@ -145,9 +145,131 @@ const ProductHeroGallery = ({
     return `https://${link}`;
   };
 
+  const buttonStyles = [
+    { value: 'standard', label: 'Yellow', color: '#f9dc24' },
+    { value: 'technical', label: 'Dark', color: '#1f2937' },
+    { value: 'outline-white', label: 'White', color: '#ffffff' }
+  ];
+
   const renderButton = (text: string, link: string, style: string, size: string = 'lg', buttonId: string = 'cta1') => {
     const buttonStyle = getButtonStyle(style, true, buttonId);
     const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300`;
+
+    // In editing mode, render editable button
+    if (isEditing) {
+      return (
+        <div className="flex flex-col gap-2">
+          {/* Editable Button Text */}
+          <div 
+            className={`${buttonClasses} inline-flex items-center justify-center rounded-md`}
+            style={buttonStyle}
+          >
+            <EditableText
+              value={text}
+              sectionKey={`${segmentKey}-${buttonId}-text`}
+              pageSlug={pageSlug}
+              language={language}
+              className="font-medium"
+              as="span"
+              onUpdate={onContentUpdate}
+            />
+          </div>
+          {/* Style Selector */}
+          <div className="flex gap-1 items-center">
+            <span className="text-xs text-gray-500 mr-1">Style:</span>
+            {buttonStyles.map((s) => (
+              <button
+                key={s.value}
+                onClick={async () => {
+                  // Save the new style to the database
+                  const { supabase } = await import('@/integrations/supabase/client');
+                  const sectionKey = `${segmentKey}-${buttonId}-style`;
+                  
+                  const { data: existing } = await supabase
+                    .from('page_content')
+                    .select('id')
+                    .eq('page_slug', pageSlug)
+                    .eq('section_key', sectionKey)
+                    .eq('language', language)
+                    .maybeSingle();
+                  
+                  if (existing) {
+                    await supabase
+                      .from('page_content')
+                      .update({ content_value: s.value, updated_at: new Date().toISOString() })
+                      .eq('id', existing.id);
+                  } else {
+                    await supabase
+                      .from('page_content')
+                      .insert({
+                        page_slug: pageSlug,
+                        section_key: sectionKey,
+                        language: language,
+                        content_type: 'text',
+                        content_value: s.value,
+                        content_status: 'draft'
+                      });
+                  }
+                  
+                  onContentUpdate?.();
+                }}
+                className={`w-6 h-6 rounded-full border-2 transition-all ${
+                  style === s.value ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
+                }`}
+                style={{ backgroundColor: s.color }}
+                title={s.label}
+              />
+            ))}
+          </div>
+          
+          {/* Link Editor */}
+          <div className="flex gap-1 items-center">
+            <span className="text-xs text-gray-500 mr-1">Link:</span>
+            <input
+              type="text"
+              defaultValue={link}
+              onBlur={async (e) => {
+                const newLink = e.target.value;
+                if (newLink !== link) {
+                  const { supabase } = await import('@/integrations/supabase/client');
+                  const sectionKey = `${segmentKey}-${buttonId}-link`;
+                  
+                  const { data: existing } = await supabase
+                    .from('page_content')
+                    .select('id')
+                    .eq('page_slug', pageSlug)
+                    .eq('section_key', sectionKey)
+                    .eq('language', language)
+                    .maybeSingle();
+                  
+                  if (existing) {
+                    await supabase
+                      .from('page_content')
+                      .update({ content_value: newLink, updated_at: new Date().toISOString() })
+                      .eq('id', existing.id);
+                  } else {
+                    await supabase
+                      .from('page_content')
+                      .insert({
+                        page_slug: pageSlug,
+                        section_key: sectionKey,
+                        language: language,
+                        content_type: 'text',
+                        content_value: newLink,
+                        content_status: 'draft'
+                      });
+                  }
+                  
+                  onContentUpdate?.();
+                }
+              }}
+              className="text-xs px-2 py-1 border border-gray-300 rounded flex-1 max-w-[200px]"
+              placeholder="Link URL"
+            />
+          </div>
+        </div>
+      );
+    }
 
     const buttonElement = (
       <Button 
