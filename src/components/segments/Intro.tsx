@@ -1,3 +1,4 @@
+import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 
@@ -11,15 +12,28 @@ interface IntroProps {
 }
 
 const Intro = ({ 
-  title = "Your Partner for Objective Camera & Sensor Testing",
-  description = "Industry-leading solutions for comprehensive camera and sensor evaluation",
+  title = "",
+  description = "",
   segmentKey = '',
   pageSlug = '',
   language = 'en',
   onContentUpdate
 }: IntroProps) => {
+  const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || false;
+  
+  // Allow editing if segment is being edited OR if we're in general edit mode with canEdit
+  const isEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
+
+  // Always show the segment structure, even with empty content
+  // This allows editors to see where content should be added
+  const displayTitle = title || (isEditing ? '[Click to add title]' : '');
+  const displayDescription = description || (isEditing ? '[Click to add description]' : '');
+
+  // If both title and description are empty and not in edit mode, show nothing
+  if (!title && !description && !isEditing) {
+    return null;
+  }
 
   return (
     <section className="pt-10 pb-2 bg-white">
@@ -28,33 +42,41 @@ const Intro = ({
           {isEditing ? (
             <>
               <EditableText
-                value={title}
+                value={displayTitle}
                 sectionKey={`${segmentKey}-title`}
                 pageSlug={pageSlug}
                 language={language}
                 className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight"
                 as="h1"
                 onUpdate={onContentUpdate}
+                fieldLabel="Intro Title"
               />
-              <EditableText
-                value={description}
-                sectionKey={`${segmentKey}-description`}
-                pageSlug={pageSlug}
-                language={language}
-                className="text-xl text-black max-w-2xl mx-auto font-light"
-                as="p"
-                multiline
-                onUpdate={onContentUpdate}
-              />
+              {(description || isEditing) && (
+                <EditableText
+                  value={displayDescription}
+                  sectionKey={`${segmentKey}-description`}
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-xl text-black max-w-2xl mx-auto font-light"
+                  as="p"
+                  multiline
+                  onUpdate={onContentUpdate}
+                  fieldLabel="Intro Description"
+                />
+              )}
             </>
           ) : (
             <>
-              <h1 className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight">
-                {title}
-              </h1>
-              <p className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line">
-                {description}
-              </p>
+              {title && (
+                <h1 className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight">
+                  {title}
+                </h1>
+              )}
+              {description && (
+                <p className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line">
+                  {description}
+                </p>
+              )}
             </>
           )}
         </div>

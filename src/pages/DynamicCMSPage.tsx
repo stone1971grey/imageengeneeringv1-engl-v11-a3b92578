@@ -182,17 +182,21 @@ const DynamicCMSPage = () => {
   }, []);
 
   // Set up scroll listener for segment tracking
+  // Must depend on loading and pageSegments to ensure refs are registered after content loads
   useEffect(() => {
-    if (currentUser && userRole) {
+    if (currentUser && userRole && !loading && pageSegments.length > 0) {
       window.addEventListener('scroll', updateVisibleSegment, { passive: true });
-      // Initial check
-      updateVisibleSegment();
+      // Initial check after a short delay to ensure refs are registered
+      const timeoutId = setTimeout(() => {
+        updateVisibleSegment();
+      }, 100);
       
       return () => {
         window.removeEventListener('scroll', updateVisibleSegment);
+        clearTimeout(timeoutId);
       };
     }
-  }, [currentUser, userRole, updateVisibleSegment]);
+  }, [currentUser, userRole, updateVisibleSegment, loading, pageSegments.length]);
 
   // Check authentication status on mount
   useEffect(() => {
