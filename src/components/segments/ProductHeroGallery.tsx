@@ -293,11 +293,12 @@ const ProductHeroGallery = ({
             </div>
           </div>
           
-          {/* Editor as portal - renders at document body level to avoid z-index issues */}
+          {/* Editor as portal - uses absolute positioning relative to page to scroll with content */}
           {isThisButtonEditing && createPortal(
             <div 
-              className="fixed bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]"
+              className="absolute bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]"
               style={{ 
+                position: 'absolute',
                 top: editorPosition.top, 
                 left: editorPosition.left,
                 zIndex: 99999

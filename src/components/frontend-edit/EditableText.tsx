@@ -404,7 +404,17 @@ export const EditableText: React.FC<EditableTextProps> = ({
         >
           {value}
           {editContext?.canEdit && (
-            <span className="absolute left-1/2 -translate-x-1/2 -top-10 z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-semibold whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]/30">
+            <span 
+              className="z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-base px-5 py-2.5 rounded-lg font-bold whitespace-nowrap pointer-events-none shadow-xl border-2 border-[#f9dc24]"
+              style={{
+                position: 'absolute',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                top: '-48px',
+                minWidth: '120px',
+                textAlign: 'center'
+              }}
+            >
               Click to edit
             </span>
           )}
