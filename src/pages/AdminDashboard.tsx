@@ -1562,6 +1562,10 @@ const AdminDashboard = () => {
                 loadContent();
                 setIsContentAutomationOpen(false);
               }}
+              onRedirectToFrontend={(url) => {
+                setIsContentAutomationOpen(false);
+                navigate(url);
+              }}
             />
           </div>
         )}
