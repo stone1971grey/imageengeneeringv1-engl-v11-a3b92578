@@ -47,11 +47,18 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const [localItems, setLocalItems] = useState<FeatureItem[]>(items);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Sync local items with props
+  // Sync local items with props - only on initial load or when items reference changes AND we haven't made local changes
   useEffect(() => {
-    setLocalItems(items);
-  }, [items]);
+    if (!isInitialized) {
+      setLocalItems(items);
+      setIsInitialized(true);
+    } else if (!hasChanges && !isEditing) {
+      // Only sync if we don't have local changes and we're not editing
+      setLocalItems(items);
+    }
+  }, [items, hasChanges, isEditing, isInitialized]);
   
   // Enable save button when entering edit mode
   useEffect(() => {
@@ -159,14 +166,16 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   };
 
   const handleAddItem = useCallback(() => {
-    console.log('[FeatureOverview] handleAddItem called, current items:', localItems.length);
-    const newItem: FeatureItem = { title: '', description: '' };
-    const newItems = [...localItems, newItem];
-    console.log('[FeatureOverview] New items count:', newItems.length);
-    setLocalItems(newItems);
+    console.log('[FeatureOverview] handleAddItem called');
+    setLocalItems(prevItems => {
+      const newItem: FeatureItem = { title: '', description: '' };
+      const newItems = [...prevItems, newItem];
+      console.log('[FeatureOverview] Previous items:', prevItems.length, 'New items:', newItems.length);
+      toast.success(`Feature Item hinzugefügt (${newItems.length} Items)`);
+      return newItems;
+    });
     setHasChanges(true);
-    toast.success(`Feature Item hinzugefügt (${newItems.length} Items)`);
-  }, [localItems]);
+  }, []);
 
   const handleDeleteItem = (globalIndex: number) => {
     const updatedItems = localItems.filter((_, i) => i !== globalIndex);
@@ -182,6 +191,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const handleCancel = () => {
     setLocalItems(items);
     setHasChanges(false);
+    // Don't reset isInitialized - we want to keep the initialized state
   };
 
   const handleSave = useCallback(async () => {
