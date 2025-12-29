@@ -1269,6 +1269,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           });
       }
 
+      // SUCCESS - Clear loading state BEFORE redirect to prevent frozen spinner
+      setIsImporting(false);
+      setImportStep('');
+      
       toast.success(`${newSegments.length} segments imported with pending status!`, {
         description: 'Redirecting to frontend for approval...',
       });
@@ -1278,12 +1282,15 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       
       console.log('[ContentAutomation] Redirecting to frontend:', frontendUrl);
       
-      if (onRedirectToFrontend) {
-        onRedirectToFrontend(frontendUrl);
-      } else {
-        // Fallback: direct navigation if no callback provided
-        window.location.href = frontendUrl;
-      }
+      // Small delay to ensure toast is visible and state is cleared
+      setTimeout(() => {
+        if (onRedirectToFrontend) {
+          onRedirectToFrontend(frontendUrl);
+        } else {
+          // Fallback: direct navigation if no callback provided
+          window.location.href = frontendUrl;
+        }
+      }, 300);
 
       onImportComplete?.();
 
@@ -1291,7 +1298,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.error('Error importing content:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to import content';
       toast.error(errorMessage);
-    } finally {
       setIsImporting(false);
       setImportStep('');
     }
