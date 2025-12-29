@@ -758,6 +758,12 @@ const DynamicCMSPage = () => {
     setLoading(false);
   };
 
+  // Refresh page content after frontend editing save
+  const refreshPageContent = async () => {
+    console.log('[DynamicCMSPage] Refreshing page content after edit...');
+    await loadContent();
+  };
+
   // Check if page has Meta Navigation segment
   const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
@@ -925,6 +931,7 @@ const DynamicCMSPage = () => {
             segmentKey={`${segment.type}-${segment.id}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
 
@@ -1021,6 +1028,7 @@ const DynamicCMSPage = () => {
             segmentKey={`${segment.type}-${segment.id}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
       }
@@ -1039,6 +1047,7 @@ const DynamicCMSPage = () => {
             segmentKey={`${segment.type}-${segment.id}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
 
