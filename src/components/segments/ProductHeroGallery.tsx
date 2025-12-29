@@ -9,6 +9,64 @@ import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
+
+// Simple inline editable component for image title/alt text
+const EditableImageTitle: React.FC<{
+  value: string;
+  onSave: (value: string) => void;
+  className?: string;
+}> = ({ value, onSave, className }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setEditValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleSave = () => {
+    if (editValue !== value) {
+      onSave(editValue);
+    }
+    setIsEditing(false);
+  };
+
+  if (!isEditing) {
+    return (
+      <h4 
+        className={`${className} cursor-pointer hover:bg-[#f9dc24]/20 rounded px-2 py-1 transition-colors`}
+        onClick={() => setIsEditing(true)}
+        title="Click to edit image description"
+      >
+        {value || 'Click to add description'}
+      </h4>
+    );
+  }
+
+  return (
+    <input
+      ref={inputRef}
+      type="text"
+      value={editValue}
+      onChange={(e) => setEditValue(e.target.value)}
+      onBlur={handleSave}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') handleSave();
+        if (e.key === 'Escape') { setEditValue(value); setIsEditing(false); }
+      }}
+      className={`${className} bg-white border-2 border-[#f9dc24] rounded px-2 py-1 text-center w-full max-w-md mx-auto`}
+      placeholder="Image description / Alt text"
+    />
+  );
+};
 
 interface ImageMetadata {
   url?: string;
@@ -246,6 +304,88 @@ const ProductHeroGallery = ({
       onContentUpdate?.();
     } catch (error) {
       console.error('[ProductHeroGallery] Error in saveButtonData:', error);
+      toast.error('Error saving');
+    }
+  };
+
+  // Handler to save image alt text and sync to Media Management
+  const saveImageAltText = async (imageIndex: number, newAltText: string) => {
+    try {
+      const segmentIdMatch = segmentKey.match(/-(\d+)$/);
+      if (!segmentIdMatch) {
+        console.error('[ProductHeroGallery] Cannot extract segment ID from segmentKey:', segmentKey);
+        return;
+      }
+      
+      // Fetch current page_segments
+      const { data: pageData, error: fetchError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+      
+      if (fetchError || !pageData) {
+        console.error('[ProductHeroGallery] Error fetching page_segments:', fetchError);
+        toast.error('Error loading page data');
+        return;
+      }
+      
+      // Parse and update the segments
+      const segments = JSON.parse(pageData.content_value);
+      const segmentIndex = segments.findIndex((s: any) => 
+        String(s.id) === segmentIdMatch[1]
+      );
+      
+      if (segmentIndex === -1) {
+        console.error('[ProductHeroGallery] Segment not found in page_segments');
+        toast.error('Segment not found');
+        return;
+      }
+      
+      // Ensure images array exists
+      if (!segments[segmentIndex].data?.images?.[imageIndex]) {
+        console.error('[ProductHeroGallery] Image not found at index:', imageIndex);
+        toast.error('Image not found');
+        return;
+      }
+      
+      // Update the metadata.altText for this image
+      if (!segments[segmentIndex].data.images[imageIndex].metadata) {
+        segments[segmentIndex].data.images[imageIndex].metadata = {};
+      }
+      segments[segmentIndex].data.images[imageIndex].metadata.altText = newAltText;
+      
+      // Also update the title field for backward compatibility
+      segments[segmentIndex].data.images[imageIndex].title = newAltText;
+      
+      // Save back to database
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageData.id);
+      
+      if (updateError) {
+        console.error('[ProductHeroGallery] Error saving image alt text:', updateError);
+        toast.error('Error saving');
+        return;
+      }
+      
+      // Sync alt text to Media Management (file_segment_mappings)
+      const imageUrl = segments[segmentIndex].data.images[imageIndex].imageUrl;
+      if (imageUrl) {
+        await syncAltTextToMediaManagement(imageUrl, newAltText, language, 'page-images', false);
+        console.log('[ProductHeroGallery] Alt text synced to Media Management:', newAltText);
+      }
+      
+      toast.success('Image description saved');
+      onContentUpdate?.();
+    } catch (error) {
+      console.error('[ProductHeroGallery] Error in saveImageAltText:', error);
       toast.error('Error saving');
     }
   };
@@ -553,19 +693,14 @@ const ProductHeroGallery = ({
         )}
       </div>
       
-      {/* Image Title */}
-      {(data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title) && (
+      {/* Image Title / Alt Text - with sync to Media Management */}
+      {(data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || isEditing) && (
         <div className="text-center mt-3">
           {isEditing ? (
-            <EditableText
+            <EditableImageTitle
               value={data.images[currentImageIndex]?.metadata?.altText || data.images[currentImageIndex]?.title || ''}
-              sectionKey={`${segmentKey}-image-title-${currentImageIndex}`}
-              pageSlug={pageSlug}
-              language={language}
+              onSave={(newValue) => saveImageAltText(currentImageIndex, newValue)}
               className="font-medium text-light-foreground text-sm lg:text-base"
-              as="h4"
-              onUpdate={onContentUpdate}
-              fieldLabel="Image Title"
             />
           ) : (
             <h4 className="font-medium text-light-foreground text-sm lg:text-base">
