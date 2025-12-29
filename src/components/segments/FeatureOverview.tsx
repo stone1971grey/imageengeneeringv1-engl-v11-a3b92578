@@ -50,8 +50,8 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   
   // Track if we've entered edit mode at least once - use ref to persist across re-renders
   const hasEnteredEditMode = useRef(false);
-  // Track the last items prop we received to detect external changes
-  const lastItemsProp = useRef<FeatureItem[]>(items);
+  // Track the initial items for comparison (JSON stringified for deep comparison)
+  const initialItemsJson = useRef(JSON.stringify(items));
   
   // Debug: Log current state on every render
   console.log('[FeatureOverview] Render - isEditing:', isEditing, 'localItems:', localItems.length, 'hasChanges:', hasChanges, 'hasEnteredEditMode:', hasEnteredEditMode.current);
@@ -66,24 +66,22 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   }, [isEditing]);
 
   // ONLY sync props to local state if:
-  // 1. We haven't entered edit mode yet, OR
-  // 2. The items prop actually changed AND we don't have unsaved changes
+  // 1. We haven't entered edit mode yet
+  // Once edit mode is entered, we NEVER sync from props until component unmounts
   useEffect(() => {
-    const itemsPropChanged = items !== lastItemsProp.current;
-    lastItemsProp.current = items;
+    const currentItemsJson = JSON.stringify(items);
+    const itemsPropActuallyChanged = currentItemsJson !== initialItemsJson.current;
     
     if (!hasEnteredEditMode.current) {
       // Before first edit - always sync
       console.log('[FeatureOverview] Initial sync from props:', items.length);
       setLocalItems(items);
-    } else if (itemsPropChanged && !hasChanges) {
-      // After save completed (hasChanges is false) - sync new data
-      console.log('[FeatureOverview] Post-save sync from props:', items.length);
-      setLocalItems(items);
+      initialItemsJson.current = currentItemsJson;
     } else {
-      console.log('[FeatureOverview] Skipping sync - in edit session with changes');
+      // NEVER sync after entering edit mode - local state is master
+      console.log('[FeatureOverview] BLOCKING sync - edit mode active, localItems:', localItems.length);
     }
-  }, [items, hasChanges]);
+  }, [items]); // Only trigger on items prop change
 
   // Auto-save when leaving edit mode
   useEffect(() => {
