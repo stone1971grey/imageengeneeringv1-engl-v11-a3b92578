@@ -314,96 +314,40 @@ export const CMSPageOverview = () => {
 
       if (pageError) throw pageError;
 
-      // Step 6: Update 301/302 redirects that target this page → redirect to homepage instead
-      // This preserves SEO link juice from external links
-      // IMPORTANT: Avoid creating duplicate redirects to homepage - consolidate if needed
+      // Step 6: DELETE all 301/302 redirects that target this page
+      // When a page is deleted, associated redirects should be completely removed
+      // This ensures clean state for re-importing content via Content Automation
       const languages = ['en', 'de', 'ja', 'ko', 'zh'];
-      let redirectsUpdated = 0;
       let redirectsDeleted = 0;
       
       for (const lang of languages) {
         const targetUrlWithLang = `/${lang}/${pageToDelete.page_slug}`;
-        const homepageUrl = `/${lang}/`;
         
-        // Find all redirects targeting this page
-        const { data: affectedRedirects } = await supabase
+        // Delete all redirects targeting this page
+        const { data: deletedRedirects } = await supabase
           .from('redirects')
-          .select('id, source_url')
-          .eq('target_url', targetUrlWithLang);
+          .delete()
+          .eq('target_url', targetUrlWithLang)
+          .select('id');
         
-        if (affectedRedirects && affectedRedirects.length > 0) {
-          for (const redirect of affectedRedirects) {
-            // Check if a redirect from this source_url to homepage already exists
-            const { data: existingHomepageRedirect } = await supabase
-              .from('redirects')
-              .select('id')
-              .eq('source_url', redirect.source_url)
-              .eq('target_url', homepageUrl)
-              .neq('id', redirect.id)
-              .maybeSingle();
-            
-            if (existingHomepageRedirect) {
-              // Duplicate would be created - delete this redirect instead
-              await supabase
-                .from('redirects')
-                .delete()
-                .eq('id', redirect.id);
-              redirectsDeleted++;
-            } else {
-              // Update to point to homepage
-              await supabase
-                .from('redirects')
-                .update({ 
-                  target_url: homepageUrl,
-                  notes: `[Auto-updated] Original target "${targetUrlWithLang}" was deleted. Redirecting to homepage.`,
-                  updated_at: new Date().toISOString()
-                })
-                .eq('id', redirect.id);
-              redirectsUpdated++;
-            }
-          }
+        if (deletedRedirects) {
+          redirectsDeleted += deletedRedirects.length;
         }
       }
       
-      // Also handle redirects matching the slug without language prefix
-      const { data: noLangRedirects } = await supabase
+      // Also delete redirects matching the slug without language prefix
+      const { data: deletedNoLangRedirects } = await supabase
         .from('redirects')
-        .select('id, source_url')
-        .or(`target_url.eq./${pageToDelete.page_slug},target_url.eq.${pageToDelete.page_slug}`);
+        .delete()
+        .or(`target_url.eq./${pageToDelete.page_slug},target_url.eq.${pageToDelete.page_slug}`)
+        .select('id');
       
-      if (noLangRedirects && noLangRedirects.length > 0) {
-        for (const redirect of noLangRedirects) {
-          // Check for existing homepage redirect
-          const { data: existingHomepageRedirect } = await supabase
-            .from('redirects')
-            .select('id')
-            .eq('source_url', redirect.source_url)
-            .eq('target_url', '/en/')
-            .neq('id', redirect.id)
-            .maybeSingle();
-          
-          if (existingHomepageRedirect) {
-            await supabase
-              .from('redirects')
-              .delete()
-              .eq('id', redirect.id);
-            redirectsDeleted++;
-          } else {
-            await supabase
-              .from('redirects')
-              .update({ 
-                target_url: '/en/',
-                notes: `[Auto-updated] Original target "/${pageToDelete.page_slug}" was deleted. Redirecting to homepage.`,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', redirect.id);
-            redirectsUpdated++;
-          }
-        }
+      if (deletedNoLangRedirects) {
+        redirectsDeleted += deletedNoLangRedirects.length;
       }
       
-      if (redirectsUpdated > 0 || redirectsDeleted > 0) {
-        console.log(`[CMSPageOverview] Redirects for deleted page "${pageToDelete.page_slug}": ${redirectsUpdated} updated to homepage, ${redirectsDeleted} duplicates removed`);
+      if (redirectsDeleted > 0) {
+        console.log(`[CMSPageOverview] Deleted ${redirectsDeleted} redirects targeting page "${pageToDelete.page_slug}"`);
       }
 
       // Step 7: Update all navigationData.ts files to remove the deleted page
@@ -429,7 +373,7 @@ export const CMSPageOverview = () => {
       }
 
       toast.success(`Page "${pageToDelete.page_title}" (ID ${pageToDelete.page_id}) permanently deleted`, {
-        description: `All segments, content, navigation links, navigationData entries${redirectsUpdated > 0 ? ` removed. ${redirectsUpdated} redirect(s) updated to homepage` : ''}`
+        description: `All segments, content, navigation links, navigationData entries${redirectsDeleted > 0 ? `, and ${redirectsDeleted} redirect(s)` : ''} removed`
       });
 
       setDeleteDialogOpen(false);
