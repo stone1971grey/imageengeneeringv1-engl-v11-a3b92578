@@ -17,6 +17,7 @@ interface EditableTextProps {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
   contentStatus?: 'draft' | 'pending' | 'approved';
   importStage?: number;
+  fieldLabel?: string; // e.g., "Title H1", "Subtitle H1", "Description"
 }
 
 export const EditableText: React.FC<EditableTextProps> = ({
@@ -29,7 +30,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
   onUpdate,
   as: Component = 'div',
   contentStatus = 'approved',
-  importStage = 1
+  importStage = 1,
+  fieldLabel
 }) => {
   const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
@@ -405,17 +407,17 @@ export const EditableText: React.FC<EditableTextProps> = ({
           {value}
           {editContext?.canEdit && (
             <span 
-              className="z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-base px-5 py-2.5 rounded-lg font-bold whitespace-nowrap pointer-events-none shadow-xl border-2 border-[#f9dc24]"
+              className="z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-normal whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]"
               style={{
                 position: 'absolute',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                top: '-48px',
-                minWidth: '120px',
+                top: '-44px',
+                letterSpacing: '0.05em',
                 textAlign: 'center'
               }}
             >
-              Click to edit
+              {fieldLabel ? `Edit: ${fieldLabel}` : 'Click to edit'}
             </span>
           )}
         </Component>

@@ -444,6 +444,7 @@ const ProductHeroGallery = ({
               className="font-light"
               as="span"
               onUpdate={onContentUpdate}
+              fieldLabel="Title (H1)"
             />
           ) : (
             data.title
@@ -458,6 +459,7 @@ const ProductHeroGallery = ({
               className="font-medium text-gray-900"
               as="span"
               onUpdate={onContentUpdate}
+              fieldLabel="Subtitle (H1)"
             />
           ) : (
             <span className="font-medium text-gray-900">{data.subtitle}</span>
@@ -475,6 +477,7 @@ const ProductHeroGallery = ({
             as="div"
             multiline
             onUpdate={onContentUpdate}
+            fieldLabel="Description"
           />
         ) : (
           <div 
@@ -540,6 +543,7 @@ const ProductHeroGallery = ({
               className="font-medium text-light-foreground text-sm lg:text-base"
               as="h4"
               onUpdate={onContentUpdate}
+              fieldLabel="Image Title"
             />
           ) : (
             <h4 className="font-medium text-light-foreground text-sm lg:text-base">
