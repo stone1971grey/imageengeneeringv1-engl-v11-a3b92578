@@ -1050,6 +1050,10 @@ const DynamicCMSPage = () => {
             title={segment.data?.title || ""}
             subtext={segment.data?.subtext}
             items={segment.data?.items || []}
+            segmentKey={String(segmentDbId)}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
 
