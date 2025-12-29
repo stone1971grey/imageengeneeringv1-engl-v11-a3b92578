@@ -1045,6 +1045,7 @@ const DynamicCMSPage = () => {
             title={segment.data?.title || ""}
             subtext={segment.data?.description}
             headers={segment.data?.headers || []}
+            columns={segment.data?.columns || []}
             rows={segment.data?.rows || []}
             segmentKey={String(segment.segment_key || segment.id)}
             pageSlug={pageSlug}
