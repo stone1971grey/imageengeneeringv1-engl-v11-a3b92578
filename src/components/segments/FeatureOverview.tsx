@@ -43,44 +43,47 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
   const canEdit = editContext?.canEdit || false;
 
-  // Local state for items editing - use ref to track if we're in an active editing session
-  const [localItems, setLocalItems] = useState<FeatureItem[]>(items);
+  // Local state for items editing
+  const [localItems, setLocalItems] = useState<FeatureItem[]>(() => items);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Use ref to track editing session - this survives re-renders
-  const isEditingSessionActive = useRef(false);
-  const itemsVersion = useRef(0);
-
-  // Track when editing starts/stops
-  useEffect(() => {
-    if (isEditing && !isEditingSessionActive.current) {
-      // Entering edit mode - mark session as active
-      isEditingSessionActive.current = true;
-      console.log('[FeatureOverview] Edit session started, items:', localItems.length);
-    } else if (!isEditing && isEditingSessionActive.current) {
-      // Leaving edit mode - reset session
-      isEditingSessionActive.current = false;
-      console.log('[FeatureOverview] Edit session ended');
-    }
-  }, [isEditing, localItems.length]);
-
-  // Sync local items with props - ONLY when NOT in an active editing session
-  useEffect(() => {
-    if (!isEditingSessionActive.current && !hasChanges) {
-      console.log('[FeatureOverview] Syncing items from props:', items.length);
-      setLocalItems(items);
-    } else {
-      console.log('[FeatureOverview] Skipping sync - editing session active or has changes');
-    }
-  }, [items]); // Only depend on items prop changes
+  // Track if we've entered edit mode at least once - use ref to persist across re-renders
+  const hasEnteredEditMode = useRef(false);
+  // Track the last items prop we received to detect external changes
+  const lastItemsProp = useRef<FeatureItem[]>(items);
   
-  // Enable save button when entering edit mode
+  // Debug: Log current state on every render
+  console.log('[FeatureOverview] Render - isEditing:', isEditing, 'localItems:', localItems.length, 'hasChanges:', hasChanges, 'hasEnteredEditMode:', hasEnteredEditMode.current);
+
+  // Mark that we've entered edit mode
   useEffect(() => {
     if (isEditing) {
+      hasEnteredEditMode.current = true;
       setHasChanges(true);
+      console.log('[FeatureOverview] Entered edit mode');
     }
   }, [isEditing]);
+
+  // ONLY sync props to local state if:
+  // 1. We haven't entered edit mode yet, OR
+  // 2. The items prop actually changed AND we don't have unsaved changes
+  useEffect(() => {
+    const itemsPropChanged = items !== lastItemsProp.current;
+    lastItemsProp.current = items;
+    
+    if (!hasEnteredEditMode.current) {
+      // Before first edit - always sync
+      console.log('[FeatureOverview] Initial sync from props:', items.length);
+      setLocalItems(items);
+    } else if (itemsPropChanged && !hasChanges) {
+      // After save completed (hasChanges is false) - sync new data
+      console.log('[FeatureOverview] Post-save sync from props:', items.length);
+      setLocalItems(items);
+    } else {
+      console.log('[FeatureOverview] Skipping sync - in edit session with changes');
+    }
+  }, [items, hasChanges]);
 
   // Auto-save when leaving edit mode
   useEffect(() => {
@@ -181,15 +184,14 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   };
 
   const handleAddItem = useCallback(() => {
-    console.log('[FeatureOverview] handleAddItem called, isEditingSessionActive:', isEditingSessionActive.current);
-    // Ensure we're marked as in an active editing session
-    isEditingSessionActive.current = true;
-    itemsVersion.current += 1;
+    console.log('[FeatureOverview] handleAddItem called, hasEnteredEditMode:', hasEnteredEditMode.current);
+    // Mark that we've entered edit mode
+    hasEnteredEditMode.current = true;
     
     setLocalItems(prevItems => {
       const newItem: FeatureItem = { title: '', description: '' };
       const newItems = [...prevItems, newItem];
-      console.log('[FeatureOverview] Added item. Previous:', prevItems.length, 'New:', newItems.length, 'Version:', itemsVersion.current);
+      console.log('[FeatureOverview] Added item. Previous:', prevItems.length, 'New:', newItems.length);
       return newItems;
     });
     setHasChanges(true);
