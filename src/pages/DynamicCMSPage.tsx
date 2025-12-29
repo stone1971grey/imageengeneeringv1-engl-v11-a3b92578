@@ -1859,7 +1859,30 @@ const DynamicCMSPage = () => {
         );
       })()}
       {/* Conditionally render MiniFooter or regular Footer */}
-      {pageSegments.some(seg => seg.type === 'mini-footer') ? <MiniFooter /> : <Footer />}
+      {pageSegments.some(seg => seg.type === 'mini-footer') ? (
+        <MiniFooter />
+      ) : (
+        (() => {
+          // Find footer segment ID for dynamic toolbar display
+          const footerSegment = pageSegments.find(seg => seg.type === 'footer');
+          const footerSegmentId = footerSegment ? (segmentIdMap[`footer-${footerSegment.id}`] || footerSegment.segment_id || footerSegment.id) : undefined;
+          
+          return (
+            <Footer 
+              segmentId={footerSegmentId ? Number(footerSegmentId) : undefined}
+              pageSlug={pageSlug}
+              onRegisterRef={(id, element) => {
+                if (element) {
+                  segmentRefs.current.set(id, { element, type: 'footer' });
+                } else {
+                  segmentRefs.current.delete(id);
+                }
+              }}
+              onContentUpdate={refreshPageContent}
+            />
+          );
+        })()
+      )}
     </div>
     </FrontendEditProvider>
   );
