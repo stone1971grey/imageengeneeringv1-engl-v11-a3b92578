@@ -40,7 +40,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isSegmentEditing = segmentEdit?.isSegmentEditing || false;
+  // Allow editing if segment is being edited OR if we're in general edit mode
+  const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
   const needsApproval = contentStatus === 'draft' || contentStatus === 'pending';
   const isStage2Import = importStage >= 2;
 
