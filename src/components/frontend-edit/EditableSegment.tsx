@@ -49,21 +49,43 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
   const [isSegmentEditing, setIsSegmentEditing] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const segmentRef = useRef<HTMLDivElement>(null);
   
-  // Extract numeric segment ID from segmentKey
-  const segmentId = parseInt(segmentKey.replace(/\D/g, ''), 10) || 0;
+  // Extract numeric segment ID from segmentKey - with safety check
+  const segmentId = (() => {
+    try {
+      if (!segmentKey || typeof segmentKey !== 'string') return 0;
+      const numericPart = segmentKey.replace(/\D/g, '');
+      return parseInt(numericPart, 10) || 0;
+    } catch {
+      return 0;
+    }
+  })();
   
   // Register ref with parent for scroll tracking - ALWAYS register, even without edit context
   // This enables the dynamic segment ID display in the toolbar
   useEffect(() => {
-    if (onRegisterRef && segmentRef.current) {
-      onRegisterRef(segmentId, segmentRef.current);
-      return () => {
-        onRegisterRef(segmentId, null);
-      };
+    try {
+      if (onRegisterRef && segmentRef.current) {
+        onRegisterRef(segmentId, segmentRef.current);
+        return () => {
+          onRegisterRef(segmentId, null);
+        };
+      }
+    } catch (error) {
+      console.error('[EditableSegment] Error registering ref:', error);
     }
   }, [onRegisterRef, segmentId]);
+
+  // Error recovery - if this segment had an error, render children without edit features
+  if (hasError) {
+    return (
+      <div ref={segmentRef} className={className}>
+        {children}
+      </div>
+    );
+  }
 
   // If no edit context, render children wrapped in a div for ref tracking
   if (!editContext) {
@@ -228,7 +250,9 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
 
   const StatusIcon = statusConfig?.icon || Edit3;
 
-  return (
+  // Wrap in try-catch for safety - if anything fails, fall back to simple render
+  try {
+    return (
     <SegmentEditContext.Provider value={{
       isSegmentEditing,
       setSegmentEditing: setIsSegmentEditing,
@@ -340,5 +364,14 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
         </div>
       </div>
     </SegmentEditContext.Provider>
-  );
+    );
+  } catch (error) {
+    console.error('[EditableSegment] Render error:', error);
+    // Fallback: render children without edit features
+    return (
+      <div ref={segmentRef} className={className}>
+        {children}
+      </div>
+    );
+  }
 };
