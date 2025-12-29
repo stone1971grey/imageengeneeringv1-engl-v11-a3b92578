@@ -76,6 +76,9 @@ const ProductHeroGallery = ({
   const [cta2Link, setCta2Link] = useState(data.cta2Link);
   const [cta2Style, setCta2Style] = useState(data.cta2Style);
   
+  // Track which button is being edited
+  const [editingButton, setEditingButton] = useState<'cta1' | 'cta2' | null>(null);
+  
   // Sync local state with props
   useEffect(() => {
     setCta1Text(data.cta1Text);
@@ -255,69 +258,111 @@ const ProductHeroGallery = ({
     const setLocalText = buttonId === 'cta1' ? setCta1Text : setCta2Text;
     const setLocalLink = buttonId === 'cta1' ? setCta1Link : setCta2Link;
     const setLocalStyle = buttonId === 'cta1' ? setCta1Style : setCta2Style;
+    const isThisButtonEditing = editingButton === buttonId;
 
     // In editing mode, render editable button
     if (isEditing) {
-      return (
-        <div className="flex flex-col gap-2 bg-white/90 p-3 rounded-lg border border-gray-200 shadow-sm">
-          {/* Button Text Input */}
-          <div className="flex gap-2 items-center">
-            <span className="text-xs text-gray-500 w-10">Text:</span>
-            <input
-              type="text"
-              value={localText}
-              onChange={(e) => setLocalText(e.target.value)}
-              onBlur={() => saveButtonData(buttonId, 'Text', localText)}
-              className="text-sm px-3 py-2 border border-gray-300 rounded flex-1 font-medium"
-              placeholder="Button text"
-            />
-          </div>
-          
-          {/* Style Selector */}
-          <div className="flex gap-2 items-center">
-            <span className="text-xs text-gray-500 w-10">Style:</span>
-            <div className="flex gap-2">
-              {buttonStyles.map((s) => (
-                <button
-                  key={s.value}
-                  type="button"
-                  onClick={() => {
-                    setLocalStyle(s.value as any);
-                    saveButtonData(buttonId, 'Style', s.value);
-                  }}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    localStyle === s.value ? 'border-blue-500 ring-2 ring-blue-200 scale-110' : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  style={{ backgroundColor: s.color }}
-                  title={s.label}
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* Link Editor */}
-          <div className="flex gap-2 items-center">
-            <span className="text-xs text-gray-500 w-10">Link:</span>
-            <input
-              type="text"
-              value={localLink}
-              onChange={(e) => setLocalLink(e.target.value)}
-              onBlur={() => saveButtonData(buttonId, 'Link', localLink)}
-              className="text-sm px-3 py-2 border border-gray-300 rounded flex-1"
-              placeholder="/page-url or https://..."
-            />
-          </div>
-          
-          {/* Preview */}
-          <div className="mt-2 pt-2 border-t border-gray-200">
-            <span className="text-xs text-gray-400 mb-1 block">Preview:</span>
+      // If this specific button is being edited, show the editor
+      if (isThisButtonEditing) {
+        return (
+          <div className="flex flex-col gap-3 bg-white p-4 rounded-lg border border-gray-300 shadow-md min-w-[280px]">
+            {/* Inline editable button */}
             <div 
-              className={`${buttonClasses} inline-flex items-center justify-center rounded-md`}
+              className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-text`}
               style={getButtonStyle(localStyle, true, buttonId)}
             >
-              {localText || 'Button Text'}
+              <input
+                type="text"
+                value={localText}
+                onChange={(e) => setLocalText(e.target.value)}
+                className="bg-transparent border-none outline-none text-center font-medium w-full"
+                style={{ color: 'inherit' }}
+                placeholder="Button text"
+                autoFocus
+              />
+            </div>
+            
+            {/* Style Selector - quadratisch, aktiv = größer */}
+            <div className="flex gap-2 items-center">
+              <span className="text-xs text-gray-500 w-10">Style:</span>
+              <div className="flex gap-2 items-end">
+                {buttonStyles.map((s) => (
+                  <button
+                    key={s.value}
+                    type="button"
+                    onClick={() => setLocalStyle(s.value as any)}
+                    className={`rounded transition-all border border-gray-400 ${
+                      localStyle === s.value ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
+                    }`}
+                    style={{ backgroundColor: s.color }}
+                    title={s.label}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* Link Editor */}
+            <div className="flex gap-2 items-center">
+              <span className="text-xs text-gray-500 w-10">Link:</span>
+              <input
+                type="text"
+                value={localLink}
+                onChange={(e) => setLocalLink(e.target.value)}
+                className="text-sm px-3 py-2 border border-gray-300 rounded flex-1"
+                placeholder="/page-url or https://..."
+              />
+            </div>
+            
+            {/* Save / Cancel Buttons */}
+            <div className="flex gap-2 mt-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={async () => {
+                  await saveButtonData(buttonId, 'Text', localText);
+                  await saveButtonData(buttonId, 'Style', localStyle);
+                  await saveButtonData(buttonId, 'Link', localLink);
+                  setEditingButton(null);
+                }}
+                className="flex-1 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-medium"
+              >
+                Save
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  // Reset to original values
+                  if (buttonId === 'cta1') {
+                    setCta1Text(data.cta1Text);
+                    setCta1Link(data.cta1Link);
+                    setCta1Style(data.cta1Style);
+                  } else {
+                    setCta2Text(data.cta2Text);
+                    setCta2Link(data.cta2Link);
+                    setCta2Style(data.cta2Style);
+                  }
+                  setEditingButton(null);
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
             </div>
           </div>
+        );
+      }
+      
+      // Not editing this button - show clickable button
+      return (
+        <div 
+          className={`${buttonClasses} inline-flex items-center justify-center rounded-md cursor-pointer hover:opacity-80 ring-2 ring-dashed ring-gray-400`}
+          style={buttonStyle}
+          onClick={() => setEditingButton(buttonId)}
+          title="Click to edit"
+        >
+          {localText || 'Click to edit'}
         </div>
       );
     }
