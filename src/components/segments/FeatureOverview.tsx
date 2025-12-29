@@ -158,18 +158,15 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
     setHasChanges(true);
   };
 
-  const handleAddItem = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('[FeatureOverview] handleAddItem called');
-    setLocalItems(prevItems => {
-      console.log('[FeatureOverview] Previous items:', prevItems.length);
-      const newItems = [...prevItems, { title: '', description: '' }];
-      console.log('[FeatureOverview] New items:', newItems.length);
-      return newItems;
-    });
+  const handleAddItem = useCallback(() => {
+    console.log('[FeatureOverview] handleAddItem called, current items:', localItems.length);
+    const newItem: FeatureItem = { title: '', description: '' };
+    const newItems = [...localItems, newItem];
+    console.log('[FeatureOverview] New items count:', newItems.length);
+    setLocalItems(newItems);
     setHasChanges(true);
-  };
+    toast.success(`Feature Item hinzugefügt (${newItems.length} Items)`);
+  }, [localItems]);
 
   const handleDeleteItem = (globalIndex: number) => {
     const updatedItems = localItems.filter((_, i) => i !== globalIndex);
@@ -375,15 +372,33 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
           ))}
           
           {isEditing && (
-            <div className="flex justify-center mt-8">
-              <button
-                type="button"
-                onClick={handleAddItem}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-black text-white hover:bg-gray-900 border border-black rounded-md z-20"
+            <div className="flex justify-center mt-8" style={{ position: 'relative', zIndex: 9999 }}>
+              <div
+                role="button"
+                tabIndex={0}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[FeatureOverview] Add button mousedown');
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[FeatureOverview] Add button clicked');
+                  handleAddItem();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleAddItem();
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-black text-white hover:bg-gray-900 border border-black rounded-md cursor-pointer select-none"
+                style={{ pointerEvents: 'auto' }}
               >
                 <Plus className="h-4 w-4 mr-2 text-white" />
                 Add Feature Item
-              </button>
+              </div>
             </div>
           )}
         </div>
