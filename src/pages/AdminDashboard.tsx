@@ -52,7 +52,7 @@ import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import NewsListSegmentEditor from '@/components/admin/NewsListSegmentEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { BannerSegmentEditor } from '@/components/admin/BannerSegmentEditor';
-import { BannerPEditor } from '@/components/admin/BannerPEditor';
+
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
 import { ProductHeroEditor } from '@/components/admin/ProductHeroEditor';
 import { SplitScreenSegmentEditor } from '@/components/admin/SplitScreenSegmentEditor';
@@ -1704,7 +1704,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
                       if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
                       if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
-                      if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
+                      
                       if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
                       if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
                       if (segment.type === 'table') label = `Table - L ${displayNumber}`;

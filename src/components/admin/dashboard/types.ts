@@ -45,7 +45,6 @@ export type SegmentType =
   | 'product-hero-gallery'
   | 'tiles'
   | 'banner'
-  | 'banner-p'
   | 'image-text'
   | 'feature-overview'
   | 'table'

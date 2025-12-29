@@ -93,13 +93,6 @@ export const SEGMENT_CONFIG: Record<SegmentType, {
     allowMultiple: true,
     description: 'Banner with images and CTA'
   },
-  'banner-p': {
-    label: 'Banner P',
-    shortCode: 'JP',
-    category: 'content',
-    allowMultiple: true,
-    description: 'Promotional banner variant'
-  },
   'image-text': {
     label: 'Image & Text',
     shortCode: 'I',
