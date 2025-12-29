@@ -922,6 +922,9 @@ const DynamicCMSPage = () => {
               imageMaxWidth: segment.data?.imageMaxWidth || null,
               imageMaxHeight: segment.data?.imageMaxHeight || null,
             }}
+            segmentKey={`${segment.type}-${segment.id}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
           />
         );
 
@@ -1015,6 +1018,9 @@ const DynamicCMSPage = () => {
             kenBurnsEffect={heroData.kenBurnsEffect || "standard"}
             overlayOpacity={heroData.overlayOpacity ?? 15}
             useH1={heroData.useH1 ?? false}
+            segmentKey={`${segment.type}-${segment.id}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
           />
         );
       }
@@ -1030,6 +1036,9 @@ const DynamicCMSPage = () => {
             key={segmentId}
             title={introTitle}
             description={introDescription}
+            segmentKey={`${segment.type}-${segment.id}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
           />
         );
 
