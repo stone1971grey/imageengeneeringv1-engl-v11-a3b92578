@@ -1269,30 +1269,27 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           });
       }
 
-      // SUCCESS - Clear loading state BEFORE redirect to prevent frozen spinner
+      // SUCCESS - Clear ALL loading state BEFORE any redirect
       setIsImporting(false);
       setImportStep('');
+      setParsedContent(null);
+      
+      const frontendUrl = `/${language}/${pageSlug}?edit=true`;
+      console.log('[ContentAutomation] Import complete. Redirecting to:', frontendUrl);
       
       toast.success(`${newSegments.length} segments imported with pending status!`, {
         description: 'Redirecting to frontend for approval...',
       });
 
-      // 8. Redirect to frontend for in-context approval
-      const frontendUrl = `/${language}/${pageSlug}?edit=true`;
-      
-      console.log('[ContentAutomation] Redirecting to frontend:', frontendUrl);
-      
-      // Small delay to ensure toast is visible and state is cleared
-      setTimeout(() => {
-        if (onRedirectToFrontend) {
-          onRedirectToFrontend(frontendUrl);
-        } else {
-          // Fallback: direct navigation if no callback provided
-          window.location.href = frontendUrl;
-        }
-      }, 300);
-
+      // Notify parent BEFORE redirect
       onImportComplete?.();
+
+      // CRITICAL: Use window.location.href for a clean page transition
+      // This avoids React state conflicts and ensures the target page loads fresh
+      // Small delay for toast visibility
+      setTimeout(() => {
+        window.location.href = frontendUrl;
+      }, 500);
 
     } catch (error: unknown) {
       console.error('Error importing content:', error);
