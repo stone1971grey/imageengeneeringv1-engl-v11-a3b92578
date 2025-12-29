@@ -347,6 +347,53 @@ Wenn ein ungültiges oder halluziniertes Segment entdeckt wird:
 
 ---
 
+## 10. Feldnamen-Konventionen & Frontend-Kompatibilität
+
+**KRITISCH:** Diese Feldnamen müssen exakt eingehalten werden, sonst rendert das Frontend die Inhalte nicht korrekt.
+
+### 10.1 Segment-spezifische Feldnamen
+
+| Segment-Typ | Datenbank-Feldname | Frontend erwartet | Fallback |
+|-------------|-------------------|-------------------|----------|
+| **intro** | `headline` | `headline` | `title` |
+| **intro** | `introText` | `introText` | `description` |
+| **tiles** (Items) | `ctaText` | `ctaText` | `buttonText` |
+| **tiles** (Items) | `ctaLink` | `ctaLink` | `buttonLink` |
+| **tiles** (Items) | `ctaStyle` | `ctaStyle` | `buttonStyle` |
+| **tiles** (Items) | `showButton` | `showButton` | `true` |
+
+### 10.2 URL-Typen in Buttons/CTAs
+
+**REGEL:** Alle CTA/Button-Komponenten müssen zwischen internen und externen URLs unterscheiden:
+
+- **Interne URLs** (z.B. `/contact`, `/products`): Verwenden `<Link to={...}>` von react-router-dom
+- **Externe URLs** (z.B. `https://...`, Supabase Storage URLs): Verwenden `<a href={...} target="_blank">`
+
+**Prüflogik:**
+```typescript
+if (url.startsWith('http://') || url.startsWith('https://')) {
+  // Externe URL → <a> Tag mit target="_blank"
+} else {
+  // Interne URL → <Link> Komponente
+}
+```
+
+### 10.3 Bei neuen Segment-Typen
+
+1. **VOR dem Import:** Prüfen welche Feldnamen das Frontend erwartet (in `DynamicCMSPage.tsx` → `renderSegment` Funktion)
+2. **Mapping dokumentieren:** Neue Feldnamen in diese Tabelle eintragen
+3. **Fallbacks implementieren:** Im Frontend beide Varianten unterstützen während der Übergangszeit
+
+### 10.4 Import-Checkliste (VOR jedem Content Automation Import)
+
+- [ ] Zielseite existiert in `page_registry` mit korrektem hierarchischen Slug
+- [ ] Feldnamen für alle zu erstellenden Segment-Typen sind bekannt
+- [ ] Bilder werden in korrekten Ordner importiert (`page-images/{pageSlug}/`)
+- [ ] Alle externen URLs (PDFs, Downloads) verwenden vollständige https:// URLs
+- [ ] Bei Tiles mit Buttons: `ctaText`, `ctaLink`, `ctaStyle`, `showButton: true` verwenden
+
+---
+
 **Erstellt:** 2025-12-26  
-**Letzte Prüfung:** 2025-12-27  
+**Letzte Aktualisierung:** 2025-12-29  
 **Status:** PRODUKTIONSREIF
