@@ -277,9 +277,9 @@ const ProductHeroGallery = ({
             {localText || 'Button Text'}
           </div>
           
-          {/* Editor overlay - positioned below the button */}
+          {/* Editor overlay - positioned below the button with high z-index */}
           {isThisButtonEditing && (
-            <div className="absolute top-full left-0 mt-2 z-50 bg-white p-4 rounded-lg border border-gray-300 shadow-xl min-w-[300px]">
+            <div className="absolute top-full left-0 mt-2 z-[200] bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[300px]">
               {/* Text Input */}
               <div className="flex gap-2 items-center mb-3">
                 <span className="text-xs text-gray-600 w-10 font-medium">Text:</span>
@@ -408,54 +408,54 @@ const ProductHeroGallery = ({
   const textContent = (
     <div className="space-y-8">
       <div>
-        {isEditing ? (
-          <>
-            <div className="mb-6">
-              <EditableText
-                value={data.title}
-                sectionKey={`${segmentKey}-title`}
-                pageSlug={pageSlug}
-                language={language}
-                className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight text-gray-900"
-                as="span"
-                onUpdate={onContentUpdate}
-              />
-              <br />
-              <EditableText
-                value={data.subtitle}
-                sectionKey={`${segmentKey}-subtitle`}
-                pageSlug={pageSlug}
-                language={language}
-                className="text-5xl lg:text-6xl xl:text-7xl font-medium leading-[1.05] tracking-tight text-gray-900"
-                as="span"
-                onUpdate={onContentUpdate}
-              />
-            </div>
-            
+        {/* Title and Subtitle - same structure in both modes for layout stability */}
+        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
+          {isEditing ? (
             <EditableText
-              value={data.description}
-              sectionKey={`${segmentKey}-description`}
+              value={data.title}
+              sectionKey={`${segmentKey}-title`}
               pageSlug={pageSlug}
               language={language}
-              className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl"
-              as="div"
-              multiline
+              className="font-light"
+              as="span"
               onUpdate={onContentUpdate}
             />
-          </>
-        ) : (
-          <>
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
-              {data.title}
-              <br />
-              <span className="font-medium text-gray-900">{data.subtitle}</span>
-            </h1>
-            
-            <div 
-              className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
-              dangerouslySetInnerHTML={{ __html: data.description }}
+          ) : (
+            data.title
+          )}
+          <br />
+          {isEditing ? (
+            <EditableText
+              value={data.subtitle}
+              sectionKey={`${segmentKey}-subtitle`}
+              pageSlug={pageSlug}
+              language={language}
+              className="font-medium text-gray-900"
+              as="span"
+              onUpdate={onContentUpdate}
             />
-          </>
+          ) : (
+            <span className="font-medium text-gray-900">{data.subtitle}</span>
+          )}
+        </h1>
+        
+        {/* Description - same container structure in both modes */}
+        {isEditing ? (
+          <EditableText
+            value={data.description}
+            sectionKey={`${segmentKey}-description`}
+            pageSlug={pageSlug}
+            language={language}
+            className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl"
+            as="div"
+            multiline
+            onUpdate={onContentUpdate}
+          />
+        ) : (
+          <div 
+            className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
+            dangerouslySetInnerHTML={{ __html: data.description }}
+          />
         )}
       </div>
       
