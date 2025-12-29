@@ -1138,8 +1138,9 @@ const DynamicCMSPage = () => {
 
       case "intro":
         // Render Intro even with empty data (shows section structure)
-        const introTitle = segment.data?.title || "";
-        const introDescription = segment.data?.description || "";
+        // Support both legacy field names (title/description) and new names (headline/introText)
+        const introTitle = segment.data?.headline || segment.data?.title || "";
+        const introDescription = segment.data?.introText || segment.data?.description || "";
         
         return (
           <Intro
