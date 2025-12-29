@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -306,86 +306,107 @@ const ProductHeroGallery = ({
             )}
           </div>
           
-          {/* Editor as portal - only Style and Link, no Text field */}
+          {/* Editor as portal with backdrop - only Style and Link, no Text field */}
           {isThisButtonEditing && createPortal(
-            <div 
-              className="absolute bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[280px]"
-              style={{ 
-                position: 'absolute',
-                top: editorPosition.top, 
-                left: editorPosition.left,
-                zIndex: 99999
-              }}
-            >
-              {/* Style Selector - quadratisch, aktiv = größer */}
-              <div className="flex gap-2 items-center mb-3">
-                <span className="text-xs text-gray-600 w-10 font-medium">Style:</span>
-                <div className="flex gap-2 items-end">
-                  {buttonStyles.map((s) => (
-                    <button
-                      key={s.value}
-                      type="button"
-                      onClick={() => setLocalStyle(s.value as any)}
-                      className={`rounded transition-all border border-gray-400 ${
-                        localStyle === s.value ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
-                      }`}
-                      style={{ backgroundColor: s.color }}
-                      title={s.label}
-                    />
-                  ))}
+            <>
+              {/* Invisible backdrop to catch outside clicks */}
+              <div 
+                className="fixed inset-0"
+                style={{ zIndex: 99998 }}
+                onClick={() => {
+                  // Reset to original values on outside click
+                  if (buttonId === 'cta1') {
+                    setCta1Text(data.cta1Text);
+                    setCta1Link(data.cta1Link);
+                    setCta1Style(data.cta1Style);
+                  } else {
+                    setCta2Text(data.cta2Text);
+                    setCta2Link(data.cta2Link);
+                    setCta2Style(data.cta2Style);
+                  }
+                  setEditingButton(null);
+                }}
+              />
+              <div 
+                className="absolute bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[280px]"
+                style={{ 
+                  position: 'absolute',
+                  top: editorPosition.top, 
+                  left: editorPosition.left,
+                  zIndex: 99999
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Style Selector - quadratisch, aktiv = größer */}
+                <div className="flex gap-2 items-center mb-3">
+                  <span className="text-xs text-gray-600 w-10 font-medium">Style:</span>
+                  <div className="flex gap-2 items-end">
+                    {buttonStyles.map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => setLocalStyle(s.value as any)}
+                        className={`rounded transition-all border border-gray-400 ${
+                          localStyle === s.value ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
+                        }`}
+                        style={{ backgroundColor: s.color }}
+                        title={s.label}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Link Editor */}
+                <div className="flex gap-2 items-center mb-3">
+                  <span className="text-xs text-gray-600 w-10 font-medium">Link:</span>
+                  <input
+                    type="text"
+                    value={localLink}
+                    onChange={(e) => setLocalLink(e.target.value)}
+                    className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
+                    placeholder="/page-url or https://..."
+                  />
+                </div>
+                
+                {/* Save / Cancel Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={async () => {
+                      await saveButtonData(buttonId, 'Text', localText);
+                      await saveButtonData(buttonId, 'Style', localStyle);
+                      await saveButtonData(buttonId, 'Link', localLink);
+                      setEditingButton(null);
+                    }}
+                    className="flex-1 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-medium"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      // Reset to original values
+                      if (buttonId === 'cta1') {
+                        setCta1Text(data.cta1Text);
+                        setCta1Link(data.cta1Link);
+                        setCta1Style(data.cta1Style);
+                      } else {
+                        setCta2Text(data.cta2Text);
+                        setCta2Link(data.cta2Link);
+                        setCta2Style(data.cta2Style);
+                      }
+                      setEditingButton(null);
+                    }}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
-              
-              {/* Link Editor */}
-              <div className="flex gap-2 items-center mb-3">
-                <span className="text-xs text-gray-600 w-10 font-medium">Link:</span>
-                <input
-                  type="text"
-                  value={localLink}
-                  onChange={(e) => setLocalLink(e.target.value)}
-                  className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
-                  placeholder="/page-url or https://..."
-                />
-              </div>
-              
-              {/* Save / Cancel Buttons */}
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={async () => {
-                    await saveButtonData(buttonId, 'Text', localText);
-                    await saveButtonData(buttonId, 'Style', localStyle);
-                    await saveButtonData(buttonId, 'Link', localLink);
-                    setEditingButton(null);
-                  }}
-                  className="flex-1 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-medium"
-                >
-                  Save
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    // Reset to original values
-                    if (buttonId === 'cta1') {
-                      setCta1Text(data.cta1Text);
-                      setCta1Link(data.cta1Link);
-                      setCta1Style(data.cta1Style);
-                    } else {
-                      setCta2Text(data.cta2Text);
-                      setCta2Link(data.cta2Link);
-                      setCta2Style(data.cta2Style);
-                    }
-                    setEditingButton(null);
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>,
+            </>,
             document.body
           )}
         </>
