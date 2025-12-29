@@ -1,9 +1,11 @@
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SpecificationRow {
   specification: string;
@@ -37,13 +39,14 @@ const Specification = ({
   
   // Local state for rows editing
   const [localRows, setLocalRows] = useState<SpecificationRow[]>(rows);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Sync local rows with props
+  // Sync local rows with props and reset hasChanges
   useEffect(() => {
     setLocalRows(rows);
+    setHasChanges(false);
   }, [rows]);
-  
-  console.log('Specification render:', { id, title, rowsCount: localRows.length, localRows, description, isEditing });
   
   // Show placeholder in edit mode, hide completely if no content and not editing
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
@@ -56,18 +59,110 @@ const Specification = ({
     const updatedRows = [...localRows];
     updatedRows[index] = { ...updatedRows[index], [field]: newValue };
     setLocalRows(updatedRows);
-    // Note: Actual save would need to update page_segments in database
-    // This would require an update function similar to onContentUpdate
+    setHasChanges(true);
   };
 
   const handleAddRow = () => {
     setLocalRows([...localRows, { specification: '', value: '' }]);
+    setHasChanges(true);
   };
 
   const handleDeleteRow = (index: number) => {
     const updatedRows = localRows.filter((_, i) => i !== index);
     setLocalRows(updatedRows);
+    setHasChanges(true);
   };
+
+  const handleCancel = () => {
+    setLocalRows(rows);
+    setHasChanges(false);
+  };
+
+  const handleSave = useCallback(async () => {
+    if (!hasChanges) return;
+    
+    setIsSaving(true);
+    
+    try {
+      // Load page_segments
+      const { data: pageSegmentsData, error: loadError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+
+      if (loadError) {
+        console.error('[Specification] Error loading page_segments:', loadError);
+        toast.error('Error loading content');
+        setIsSaving(false);
+        return;
+      }
+
+      if (!pageSegmentsData) {
+        console.error('[Specification] page_segments not found');
+        toast.error('Content not found');
+        setIsSaving(false);
+        return;
+      }
+
+      // Parse segments
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        console.error('[Specification] Error parsing page_segments:', e);
+        toast.error('Error parsing content');
+        setIsSaving(false);
+        return;
+      }
+
+      // Find the segment by ID
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        return segId === segmentKey;
+      });
+
+      if (segmentIndex === -1) {
+        console.error('[Specification] Segment not found:', segmentKey);
+        toast.error('Segment not found');
+        setIsSaving(false);
+        return;
+      }
+
+      // Update rows in segment data
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data.rows = localRows;
+
+      // Save
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (updateError) {
+        console.error('[Specification] Error saving:', updateError);
+        toast.error('Error saving');
+        setIsSaving(false);
+        return;
+      }
+
+      toast.success('Specifications saved!');
+      setHasChanges(false);
+      onContentUpdate?.();
+    } catch (error) {
+      console.error('[Specification] Save error:', error);
+      toast.error('Error saving');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [hasChanges, localRows, pageSlug, language, segmentKey, onContentUpdate]);
 
   return (
     <section id={id} className="pt-[20px] pb-20 bg-gray-50">
@@ -150,7 +245,7 @@ const Specification = ({
               </table>
               
               {isEditing && (
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex justify-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -188,6 +283,35 @@ const Specification = ({
                   dangerouslySetInnerHTML={{ __html: description || '' }}
                 />
               )}
+            </div>
+          )}
+
+          {/* Save/Cancel buttons */}
+          {isEditing && hasChanges && (
+            <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+                disabled={isSaving}
+                className="text-gray-600"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleSave}
+                disabled={isSaving}
+                className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                Save
+              </Button>
             </div>
           )}
         </div>
