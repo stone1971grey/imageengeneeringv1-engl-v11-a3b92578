@@ -506,16 +506,31 @@ const Tiles: React.FC<TilesProps> = ({
                     
                     {!isEditing && tile.showButton !== false && tile.ctaText && tile.ctaLink && (
                       <div className="mt-6 flex justify-center">
-                        <Link
-                          to={tile.ctaLink}
-                          className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                            tile.ctaStyle === "technical"
-                              ? "bg-gray-800 text-white hover:bg-gray-900"
-                              : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
-                          }`}
-                        >
-                          {tile.ctaText}
-                        </Link>
+                        {tile.ctaLink.startsWith('http://') || tile.ctaLink.startsWith('https://') ? (
+                          <a
+                            href={tile.ctaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                              tile.ctaStyle === "technical"
+                                ? "bg-gray-800 text-white hover:bg-gray-900"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
+                            }`}
+                          >
+                            {tile.ctaText}
+                          </a>
+                        ) : (
+                          <Link
+                            to={tile.ctaLink}
+                            className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                              tile.ctaStyle === "technical"
+                                ? "bg-gray-800 text-white hover:bg-gray-900"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
+                            }`}
+                          >
+                            {tile.ctaText}
+                          </Link>
+                        )}
                       </div>
                     )}
                   </div>
