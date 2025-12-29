@@ -7,6 +7,7 @@ import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { FrontendRichTextEditor } from '@/components/frontend-edit/FrontendRichTextEditor';
 import { Plus, Trash2, Loader2, FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings, Camera, Clock, Globe, Mail, MapPin, Search, Star, Users, Wrench, Target, Activity, Award, BookOpen, Briefcase, Calendar, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -423,12 +424,12 @@ const Tiles: React.FC<TilesProps> = ({
                             className="text-2xl font-bold text-gray-900 w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
                             placeholder="Tile title..."
                           />
-                          {/* Larger Description Field */}
-                          <textarea
-                            value={tile.description}
-                            onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
-                            className="text-gray-600 leading-relaxed w-full text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-3 hover:bg-[#f9dc24]/10 transition-colors resize-y min-h-[150px]"
+                          {/* Rich Text Description Editor */}
+                          <FrontendRichTextEditor
+                            value={tile.description || ''}
+                            onChange={(newValue) => handleItemChange(idx, 'description', newValue)}
                             placeholder="Tile description..."
+                            minHeight="120px"
                           />
                           
                           {/* Button Editor with Style Selector */}
@@ -499,7 +500,10 @@ const Tiles: React.FC<TilesProps> = ({
                       ) : (
                         <>
                           <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
-                          <p className="text-gray-600 leading-relaxed whitespace-pre-line">{tile.description}</p>
+                          <div 
+                            className="text-gray-600 leading-relaxed [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-2"
+                            dangerouslySetInnerHTML={{ __html: tile.description || '' }}
+                          />
                         </>
                       )}
                     </div>
