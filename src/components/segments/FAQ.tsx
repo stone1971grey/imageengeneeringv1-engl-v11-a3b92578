@@ -323,22 +323,19 @@ const FAQ: React.FC<FAQProps> = ({
               size="sm"
               onClick={handleCancel}
               disabled={isSaving || !hasChanges}
-              className="text-gray-600"
+              className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
             >
-              <X className="h-4 w-4 mr-2" />
               Cancel
             </Button>
             <Button
               size="sm"
               onClick={handleSave}
               disabled={isSaving || !hasChanges}
-              className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+              className="bg-black text-[#f9dc24] hover:bg-gray-900"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4 mr-2" />
-              )}
+              ) : null}
               Save
             </Button>
           </div>

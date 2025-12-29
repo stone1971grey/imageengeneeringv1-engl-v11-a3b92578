@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, Clock } from "lucide-react";
+import { Phone, Clock, Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
+import { useFrontendEditOptional } from "@/contexts/FrontendEditContext";
+import { EditableText } from "@/components/frontend-edit/EditableText";
+import { EditableImage } from "@/components/frontend-edit/EditableImage";
+import { toast } from "sonner";
 import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
 import teamStefan from "@/assets/team-stefan-color.jpg";
@@ -11,12 +15,24 @@ import teamAnna from "@/assets/team-anna-automotive.jpg";
 import teamThomas from "@/assets/team-thomas-lighting.jpg";
 import trainingInstructor from "@/assets/training-instructor.jpg";
 
-const Footer = () => {
+interface FooterProps {
+  segmentId?: number;
+  pageSlug?: string;
+  onRegisterRef?: (segmentId: number, element: HTMLElement | null) => void;
+  onContentUpdate?: () => void;
+}
+
+const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpdate }: FooterProps) => {
   const location = useLocation();
   const { t, language } = useTranslation();
+  const editContext = useFrontendEditOptional();
+  const isEditing = editContext?.isEditMode || false;
+  
   const [footerContent, setFooterContent] = useState<Record<string, string>>({});
   const [hasCMSContent, setHasCMSContent] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const getNormalizedPath = (pathname: string) => {
     const parts = pathname.split('/').filter(Boolean);
@@ -44,24 +60,37 @@ const Footer = () => {
   };
   
   const pageType = getPageType();
+  
+  // Calculate pageSlug from props or URL
+  const extractPageSlug = (pathname: string): string => {
+    const parts = pathname.replace(/^\/+/g, "").split("/").filter(Boolean);
+    const langCodes = ['en', 'de', 'zh', 'ja', 'ko'];
+    if (parts.length > 0 && langCodes.includes(parts[0])) {
+      const remaining = parts.slice(1).join("/");
+      return remaining || "index";
+    }
+    return parts.join("/") || "index";
+  };
+  
+  const pageSlug = propPageSlug || extractPageSlug(location.pathname);
+
+  // Register ref for scroll tracking
+  useEffect(() => {
+    if (onRegisterRef && segmentId) {
+      const footerElement = document.getElementById('footer');
+      onRegisterRef(segmentId, footerElement);
+      return () => {
+        onRegisterRef(segmentId, null);
+      };
+    }
+  }, [onRegisterRef, segmentId]);
 
   useEffect(() => {
     loadFooterContent();
-  }, [location.pathname]);
+  }, [location.pathname, language]);
 
   const loadFooterContent = async () => {
     try {
-      const extractPageSlug = (pathname: string): string => {
-        const parts = pathname.replace(/^\/+/g, "").split("/").filter(Boolean);
-        const langCodes = ['en', 'de', 'zh', 'ja', 'ko'];
-        if (parts.length > 0 && langCodes.includes(parts[0])) {
-          const remaining = parts.slice(1).join("/");
-          return remaining || "index"; // Homepage = "index"
-        }
-        return parts.join("/") || "index"; // Homepage = "index"
-      };
-
-      const pageSlug = extractPageSlug(location.pathname);
       console.log("[Footer] Loading content for pageSlug:", pageSlug, "language:", language);
 
       const sectionKeys = [
@@ -164,53 +193,176 @@ const Footer = () => {
       : "Laura Neumann, Head of Optical Systems";
   };
 
+  const getDefaultTeamImage = () => {
+    return isChartsPage ? teamMarkus 
+      : isSolutionBundlePage ? teamStefan 
+      : isAutomotivePage ? teamAnna 
+      : isArcturusPage ? teamThomas 
+      : isEventsPage ? trainingInstructor 
+      : teamLaura;
+  };
+
+  const handleContentChange = () => {
+    setHasChanges(true);
+  };
+
+  const handleCancel = () => {
+    loadFooterContent();
+    setHasChanges(false);
+  };
+
+  const handleSave = useCallback(async () => {
+    // Save is handled by EditableText components individually
+    // This just refreshes the content
+    setHasChanges(false);
+    onContentUpdate?.();
+    toast.success('Footer saved!');
+  }, [onContentUpdate]);
+
+  // Segment ID badge for toolbar
+  const segmentLabel = segmentId ? `Footer ID: ${segmentId}` : 'Footer';
+
   return (
-    <footer id="footer" className="bg-[#4B4A4A] border-t border-[#4B4A4A]">
+    <footer 
+      id="footer" 
+      className={`bg-[#4B4A4A] border-t border-[#4B4A4A] relative ${isEditing ? 'border-l-4 border-l-[#f9dc24] pl-4' : ''}`}
+      data-segment-id={segmentId}
+      data-segment-type="footer"
+    >
+      {/* Segment ID Badge in edit mode */}
+      {isEditing && segmentId && (
+        <div className="absolute -top-3 left-4 z-20">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md text-sm font-medium shadow-lg bg-[#f9dc24] text-black">
+            <span># Footer ID: {segmentId}</span>
+          </div>
+        </div>
+      )}
+
       {/* Vision CTA Section */}
-      <div className="container mx-auto px-6 py-16 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {hasCMSContent && footerContent.footer_cta_title 
-            ? footerContent.footer_cta_title 
-            : t.footer.cta[pageType]}
-        </h2>
-        {hasCMSContent && footerContent.footer_cta_description ? (
-          <p 
-            className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-            dangerouslySetInnerHTML={{ __html: footerContent.footer_cta_description }}
+      <div className={`container mx-auto px-6 py-16 text-center ${isEditing && segmentId ? 'pt-20' : ''}`}>
+        {isEditing ? (
+          <EditableText
+            value={hasCMSContent && footerContent.footer_cta_title 
+              ? footerContent.footer_cta_title 
+              : t.footer.cta[pageType]}
+            sectionKey="footer_cta_title"
+            pageSlug={pageSlug}
+            language={language}
+            className="text-3xl md:text-4xl font-bold mb-6 text-white"
+            as="h2"
+            onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+            fieldLabel="CTA Title"
           />
         ) : (
-          <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
-            {t.footer.ctaDesc[pageType]}
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            {hasCMSContent && footerContent.footer_cta_title 
+              ? footerContent.footer_cta_title 
+              : t.footer.cta[pageType]}
+          </h2>
+        )}
+        
+        {isEditing ? (
+          <EditableText
+            value={hasCMSContent && footerContent.footer_cta_description 
+              ? footerContent.footer_cta_description 
+              : t.footer.ctaDesc[pageType]}
+            sectionKey="footer_cta_description"
+            pageSlug={pageSlug}
+            language={language}
+            className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+            as="p"
+            multiline
+            onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+            fieldLabel="CTA Description"
+          />
+        ) : (
+          hasCMSContent && footerContent.footer_cta_description ? (
+            <p 
+              className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+              dangerouslySetInnerHTML={{ __html: footerContent.footer_cta_description }}
+            />
+          ) : (
+            <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
+              {t.footer.ctaDesc[pageType]}
+            </p>
+          )
         )}
       </div>
 
       {/* Contact & Team Quote Section */}
-      <div className="border-t border-[#4B4A4A] bg-[#4B4A4A]">
+      <div className="border-t border-[#5B5A5A] bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
           <div className="space-y-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold">
-                {hasCMSContent && footerContent.footer_contact_headline 
-                  ? footerContent.footer_contact_headline 
-                  : t.footer.contactHeadline[pageType]}
-              </h2>
-              <p className="text-lg md:text-xl font-semibold mb-4 mt-2">
-                {hasCMSContent && footerContent.footer_contact_subline 
-                  ? footerContent.footer_contact_subline 
-                  : t.footer.contactSubline[pageType]}
-              </p>
-              {hasCMSContent && footerContent.footer_contact_description ? (
-                <p 
-                  className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-                  dangerouslySetInnerHTML={{ __html: footerContent.footer_contact_description }}
+              {isEditing ? (
+                <EditableText
+                  value={hasCMSContent && footerContent.footer_contact_headline 
+                    ? footerContent.footer_contact_headline 
+                    : t.footer.contactHeadline[pageType]}
+                  sectionKey="footer_contact_headline"
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-2xl md:text-3xl font-bold text-white"
+                  as="h2"
+                  onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                  fieldLabel="Contact Headline"
                 />
               ) : (
-                <p className="text-white leading-relaxed">
-                  {t.footer.contactDesc[pageType]}
+                <h2 className="text-2xl md:text-3xl font-bold">
+                  {hasCMSContent && footerContent.footer_contact_headline 
+                    ? footerContent.footer_contact_headline 
+                    : t.footer.contactHeadline[pageType]}
+                </h2>
+              )}
+              
+              {isEditing ? (
+                <EditableText
+                  value={hasCMSContent && footerContent.footer_contact_subline 
+                    ? footerContent.footer_contact_subline 
+                    : t.footer.contactSubline[pageType]}
+                  sectionKey="footer_contact_subline"
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-lg md:text-xl font-semibold mb-4 mt-2 text-white"
+                  as="p"
+                  onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                  fieldLabel="Contact Subline"
+                />
+              ) : (
+                <p className="text-lg md:text-xl font-semibold mb-4 mt-2">
+                  {hasCMSContent && footerContent.footer_contact_subline 
+                    ? footerContent.footer_contact_subline 
+                    : t.footer.contactSubline[pageType]}
                 </p>
+              )}
+              
+              {isEditing ? (
+                <EditableText
+                  value={hasCMSContent && footerContent.footer_contact_description 
+                    ? footerContent.footer_contact_description 
+                    : t.footer.contactDesc[pageType]}
+                  sectionKey="footer_contact_description"
+                  pageSlug={pageSlug}
+                  language={language}
+                  className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                  as="p"
+                  multiline
+                  onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                  fieldLabel="Contact Description"
+                />
+              ) : (
+                hasCMSContent && footerContent.footer_contact_description ? (
+                  <p 
+                    className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                    dangerouslySetInnerHTML={{ __html: footerContent.footer_contact_description }}
+                  />
+                ) : (
+                  <p className="text-white leading-relaxed">
+                    {t.footer.contactDesc[pageType]}
+                  </p>
+                )
               )}
             </div>
 
@@ -235,7 +387,7 @@ const Footer = () => {
                 <span className="text-foreground">{t.footer.officeHours}</span>
               </div>
 
-              {/* Button - inside the space-y-4 container for consistent spacing */}
+              {/* Button */}
               <div className="pt-1">
                 {hasCMSContent && footerContent.footer_button_text ? (
                   <a href={footerContent.footer_button_url || "/contact"}>
@@ -257,46 +409,103 @@ const Footer = () => {
           </div>
 
           {/* Right Column - Team Quote */}
-          <div className="bg-[#4B4A4A] border border-[#4B4A4A] rounded-lg p-8">
+          <div className="bg-[#3B3A3A] border border-[#5B5A5A] rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0 mx-auto md:mx-0">
-                 <img 
-                   src={
-                     hasCMSContent && footerContent.footer_team_image_url 
-                       ? footerContent.footer_team_image_url
-                       : isChartsPage ? teamMarkus 
-                       : isSolutionBundlePage ? teamStefan 
-                       : isAutomotivePage ? teamAnna 
-                       : isArcturusPage ? teamThomas 
-                       : isEventsPage ? trainingInstructor 
-                       : teamLaura
-                   }
-                   alt={getTeamImageAlt()}
-                   className="w-[150px] h-[150px] rounded-lg object-cover"
-                 />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                {hasCMSContent && footerContent.footer_team_quote ? (
-                  <blockquote 
-                    className="text-lg text-white leading-relaxed mb-4 [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-                    dangerouslySetInnerHTML={{ __html: `"${footerContent.footer_team_quote}"` }}
+                {isEditing ? (
+                  <EditableImage
+                    src={hasCMSContent && footerContent.footer_team_image_url 
+                      ? footerContent.footer_team_image_url
+                      : getDefaultTeamImage()}
+                    alt={getTeamImageAlt()}
+                    sectionKey="footer_team_image_url"
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="w-[150px] h-[150px] rounded-lg object-cover"
+                    onUpdate={() => { handleContentChange(); loadFooterContent(); }}
                   />
                 ) : (
-                  <blockquote className="text-lg text-white leading-relaxed mb-4">
-                    "{t.footer.teamQuote[pageType]}"
-                  </blockquote>
+                  <img 
+                    src={
+                      hasCMSContent && footerContent.footer_team_image_url 
+                        ? footerContent.footer_team_image_url
+                        : getDefaultTeamImage()
+                    }
+                    alt={getTeamImageAlt()}
+                    className="w-[150px] h-[150px] rounded-lg object-cover"
+                  />
                 )}
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                {isEditing ? (
+                  <EditableText
+                    value={hasCMSContent && footerContent.footer_team_quote 
+                      ? footerContent.footer_team_quote 
+                      : t.footer.teamQuote[pageType]}
+                    sectionKey="footer_team_quote"
+                    pageSlug={pageSlug}
+                    language={language}
+                    className="text-lg text-white leading-relaxed mb-4 [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                    as="p"
+                    multiline
+                    onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                    fieldLabel="Team Quote"
+                  />
+                ) : (
+                  hasCMSContent && footerContent.footer_team_quote ? (
+                    <blockquote 
+                      className="text-lg text-white leading-relaxed mb-4 [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                      dangerouslySetInnerHTML={{ __html: `"${footerContent.footer_team_quote}"` }}
+                    />
+                  ) : (
+                    <blockquote className="text-lg text-white leading-relaxed mb-4">
+                      "{t.footer.teamQuote[pageType]}"
+                    </blockquote>
+                  )
+                )}
+                
                 <cite className="text-white not-italic">
-                  <div className="font-semibold text-white">
-                    {hasCMSContent && footerContent.footer_team_name 
-                      ? footerContent.footer_team_name 
-                      : t.footer.teamName[pageType]}
-                  </div>
-                  <div className="text-sm">
-                    {hasCMSContent && footerContent.footer_team_title 
-                      ? footerContent.footer_team_title 
-                      : t.footer.teamTitle[pageType]}
-                  </div>
+                  {isEditing ? (
+                    <>
+                      <EditableText
+                        value={hasCMSContent && footerContent.footer_team_name 
+                          ? footerContent.footer_team_name 
+                          : t.footer.teamName[pageType]}
+                        sectionKey="footer_team_name"
+                        pageSlug={pageSlug}
+                        language={language}
+                        className="font-semibold text-white block"
+                        as="div"
+                        onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                        fieldLabel="Team Name"
+                      />
+                      <EditableText
+                        value={hasCMSContent && footerContent.footer_team_title 
+                          ? footerContent.footer_team_title 
+                          : t.footer.teamTitle[pageType]}
+                        sectionKey="footer_team_title"
+                        pageSlug={pageSlug}
+                        language={language}
+                        className="text-sm text-white block"
+                        as="div"
+                        onUpdate={() => { handleContentChange(); loadFooterContent(); }}
+                        fieldLabel="Team Title"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-semibold text-white">
+                        {hasCMSContent && footerContent.footer_team_name 
+                          ? footerContent.footer_team_name 
+                          : t.footer.teamName[pageType]}
+                      </div>
+                      <div className="text-sm">
+                        {hasCMSContent && footerContent.footer_team_title 
+                          ? footerContent.footer_team_title 
+                          : t.footer.teamTitle[pageType]}
+                      </div>
+                    </>
+                  )}
                 </cite>
               </div>
             </div>
@@ -305,8 +514,34 @@ const Footer = () => {
         </div>
       </div>
 
+      {/* Save/Cancel buttons in edit mode */}
+      {isEditing && (
+        <div className="container mx-auto px-6 pb-8 flex justify-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCancel}
+            disabled={isSaving || !hasChanges}
+            className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
+          >
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving || !hasChanges}
+            className="bg-black text-[#f9dc24] hover:bg-gray-900"
+          >
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : null}
+            Save
+          </Button>
+        </div>
+      )}
+
       {/* Bottom Section - Footer Menu */}
-      <div className="border-t border-[#4B4A4A] bg-[#4B4A4A]">
+      <div className="border-t border-[#5B5A5A] bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-white">
