@@ -10,6 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { FirecrawlIcon } from '@/components/FirecrawlIcon';
+import { SEGMENT_CONFIG } from '@/components/admin/dashboard/config';
+import { SegmentType } from '@/components/admin/dashboard/types';
 
 import { GeminiIcon } from '@/components/GeminiIcon';
 import { 
@@ -25,8 +27,35 @@ import {
   Sparkles,
   ArrowRight,
   Link2,
-  Wand2
+  Wand2,
+  CheckCircle2,
+  Clock
 } from 'lucide-react';
+
+// ============================================
+// CRITICAL RULE: CONTENT AUTOMATION SEGMENT TYPES
+// ============================================
+// Content Automation darf NUR existierende Segment-Typen verwenden!
+// Die erlaubten Typen sind in SEGMENT_CONFIG definiert.
+// Fantasie-Segmente wie 'banner-p' sind STRIKT VERBOTEN.
+// Diese Regel ist BINDEND für alle Content Automation Operationen.
+// ============================================
+
+// Validate that a segment type exists in the system
+const isValidSegmentType = (type: string): type is SegmentType => {
+  return type in SEGMENT_CONFIG;
+};
+
+// Get valid segment types for content automation (subset of all types)
+const CONTENT_AUTOMATION_SEGMENT_TYPES: SegmentType[] = [
+  'product-hero-gallery',
+  'intro',
+  'specification',
+  'feature-overview',
+  'tiles',
+  'faq',
+  'video',
+];
 
 interface ParsedContent {
   title: string;
@@ -38,6 +67,15 @@ interface ParsedContent {
   downloads: { title: string; description: string; url: string; language: string }[];
   videoUrl: string | null;
   images: { url: string; title: string }[];
+}
+
+// Track pending (unapproved) segments
+interface PendingSegment {
+  id: string;
+  type: SegmentType;
+  title: string;
+  approved: boolean;
+  data: any;
 }
 
 interface ContentAutomationProps {
@@ -127,6 +165,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
   });
   const [isImporting, setIsImporting] = useState(false);
   const [isSavingRedirect, setIsSavingRedirect] = useState(false);
+  
+  // NEW: Pending segments for approval workflow
+  const [pendingSegments, setPendingSegments] = useState<PendingSegment[]>([]);
+  const [showApprovalView, setShowApprovalView] = useState(false);
+  const [isSavingApproved, setIsSavingApproved] = useState(false);
 
   // Update sourceUrl when language changes
   useEffect(() => {
@@ -290,10 +333,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
     }
   };
 
-  const handleImportContent = async () => {
+  // Handle preparing segments for approval (not saving yet)
+  const handlePrepareForApproval = async () => {
     if (!parsedContent) return;
 
     setIsImporting(true);
+    setPendingSegments([]);
 
     try {
       // Get the current max segment ID
@@ -857,16 +902,69 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
 
       // NOTE: Banner-P segment removed - does not exist in the system
 
-      if (newRegistryEntries.length === 0) {
+      if (newSegments.length === 0) {
         toast.info('No new segments to import (segments already exist or none selected)');
         setIsImporting(false);
         return;
       }
 
+      // === NEW: Instead of saving directly, create pending segments for approval ===
+      const pending: PendingSegment[] = newSegments.map((seg, idx) => ({
+        id: seg.id,
+        type: seg.type as SegmentType,
+        title: seg.data?.title || seg.data?.headline || `Segment ${idx + 1}`,
+        approved: false,
+        data: seg,
+        registryEntry: newRegistryEntries[idx],
+      }));
+
+      setPendingSegments(pending);
+      setShowApprovalView(true);
+      toast.success(`${pending.length} segments ready for approval`);
+
+    } catch (error: unknown) {
+      console.error('Error preparing content:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to prepare content';
+      toast.error(errorMessage);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  // Toggle approval for a pending segment
+  const toggleSegmentApproval = (segmentId: string) => {
+    setPendingSegments(prev => 
+      prev.map(seg => 
+        seg.id === segmentId ? { ...seg, approved: !seg.approved } : seg
+      )
+    );
+  };
+
+  // Approve all pending segments
+  const approveAllSegments = () => {
+    setPendingSegments(prev => prev.map(seg => ({ ...seg, approved: true })));
+  };
+
+  // Save only approved segments to database
+  const handleSaveApproved = async () => {
+    const approvedSegments = pendingSegments.filter(seg => seg.approved);
+    
+    if (approvedSegments.length === 0) {
+      toast.error('Please approve at least one segment before saving');
+      return;
+    }
+
+    setIsSavingApproved(true);
+
+    try {
+      // Prepare registry entries for approved segments only
+      const registryEntries = approvedSegments.map((seg: any) => seg.registryEntry);
+      const segmentData = approvedSegments.map((seg: any) => seg.data);
+
       // Insert into segment_registry
       const { error: registryError } = await supabase
         .from('segment_registry')
-        .insert(newRegistryEntries);
+        .insert(registryEntries);
 
       if (registryError) throw registryError;
 
@@ -877,7 +975,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
         .eq('language', language)
-        .single();
+        .maybeSingle();
 
       let existingSegments: any[] = [];
       if (existingContent?.content_value) {
@@ -885,7 +983,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
       }
 
       // Merge segments
-      const mergedSegments = [...existingSegments, ...newSegments];
+      const mergedSegments = [...existingSegments, ...segmentData];
 
       // Update tab_order
       const { data: tabOrderData } = await supabase
@@ -894,13 +992,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
         .eq('page_slug', pageSlug)
         .eq('section_key', 'tab_order')
         .eq('language', language)
-        .single();
+        .maybeSingle();
 
       let tabOrder: string[] = [];
       if (tabOrderData?.content_value) {
         tabOrder = JSON.parse(tabOrderData.content_value);
       }
-      const newTabOrder = [...tabOrder, ...newSegments.map(s => s.id)];
+      const newTabOrder = [...tabOrder, ...segmentData.map((s: any) => s.id)];
 
       // Save page_content
       const { error: contentError } = await supabase
@@ -936,19 +1034,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
 
       // Save 301 redirect if checkbox is checked
       if (createRedirect && sourceUrl) {
-        // Build target URL from page slug and language
         const targetUrl = `/${language}/${pageSlug}`;
-        
-        // Extract path from source URL (remove domain)
         let sourceUrlPath = sourceUrl;
         try {
           const urlObj = new URL(sourceUrl);
           sourceUrlPath = urlObj.pathname;
         } catch {
-          // If it's already a path, use as-is
+          // Already a path
         }
 
-        const { error: redirectError } = await supabase
+        await supabase
           .from('redirects')
           .insert({
             source_url: sourceUrlPath,
@@ -957,74 +1052,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
             is_active: true,
             notes: `Content Automation for page "${pageSlug}" [${language.toUpperCase()}] | Source: ${sourceUrl}`,
           });
-
-        if (redirectError) {
-          console.error('Error creating redirect:', redirectError);
-          toast.error('Content imported, but redirect could not be saved');
-        } else {
-          toast.success(`301 redirect created: ${sourceUrlPath} → ${targetUrl}`);
-        }
       }
 
-      // === BATCH CREATE FILE-SEGMENT MAPPINGS ===
-      // Automatically link storage files (images + PDFs) to the created segments
-      const segmentKeysForMapping = newRegistryEntries.map(entry => entry.segment_key);
-      
-      if (segmentKeysForMapping.length > 0 && (storageImages.length > 0 || storagePdfs.length > 0)) {
-        const fileMappings: { file_path: string; bucket_id: string; segment_ids: string[]; alt_text: string; visibility: string }[] = [];
-        
-        // Add image mappings
-        for (const img of storageImages) {
-          // Extract file path from full URL
-          const filePath = `${folderPath}/${img.url.split('/').pop()}`;
-          fileMappings.push({
-            file_path: filePath,
-            bucket_id: 'page-images',
-            segment_ids: segmentKeysForMapping,
-            alt_text: img.title || parsedContent.title || '',
-            visibility: 'public',
-          });
-        }
-        
-        // Add PDF mappings
-        for (const pdf of storagePdfs) {
-          const filePath = `${folderPath}/${pdf.filename}`;
-          fileMappings.push({
-            file_path: filePath,
-            bucket_id: 'page-images',
-            segment_ids: segmentKeysForMapping,
-            alt_text: pdf.title || '',
-            visibility: 'public',
-          });
-        }
-        
-        if (fileMappings.length > 0) {
-          // Use upsert to avoid duplicates
-          const { error: mappingError } = await supabase
-            .from('file_segment_mappings')
-            .upsert(fileMappings, {
-              onConflict: 'file_path',
-              ignoreDuplicates: false,
-            });
-          
-          if (mappingError) {
-            console.error('[ContentAutomation] Error creating file mappings:', mappingError);
-          } else {
-            console.log(`[ContentAutomation] Created ${fileMappings.length} file-segment mappings`);
-            toast.success(`${fileMappings.length} files linked to segments`);
-          }
-        }
-      }
-
-      toast.success(`Successfully imported ${newSegments.length} segments!`);
+      toast.success(`${approvedSegments.length} approved segments saved!`);
+      setPendingSegments([]);
+      setShowApprovalView(false);
       onImportComplete?.();
 
     } catch (error: unknown) {
-      console.error('Error importing content:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to import content';
+      console.error('Error saving approved segments:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save segments';
       toast.error(errorMessage);
     } finally {
-      setIsImporting(false);
+      setIsSavingApproved(false);
     }
   };
 
@@ -1384,24 +1424,132 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete }: Cont
                 </div>
               </ScrollArea>
 
-              {/* Import Button */}
+              {/* Prepare for Approval Button */}
               <Button
-                onClick={handleImportContent}
+                onClick={handlePrepareForApproval}
                 disabled={isImporting}
-                className="w-full bg-green-600 hover:bg-green-700 text-white h-12 text-lg"
+                className="w-full bg-[#f9dc24] hover:bg-[#f5c800] text-black h-12 text-lg font-semibold"
               >
                 {isImporting ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Importing Segments...
+                    Preparing Segments...
                   </>
                 ) : (
                   <>
-                    <ArrowRight className="h-5 w-5 mr-2" />
-                    Import Selected Segments
+                    <Clock className="h-5 w-5 mr-2" />
+                    Prepare for Approval
                   </>
                 )}
               </Button>
+            </div>
+          </>
+        )}
+
+        {/* === APPROVAL VIEW === */}
+        {showApprovalView && pendingSegments.length > 0 && (
+          <>
+            <Separator className="bg-gray-700" />
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-white font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-orange-500" />
+                  Pending Approval ({pendingSegments.filter(s => s.approved).length}/{pendingSegments.length} approved)
+                </h3>
+                <Button
+                  onClick={approveAllSegments}
+                  variant="outline"
+                  size="sm"
+                  className="border-green-500 text-green-400 hover:bg-green-500/20"
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Approve All
+                </Button>
+              </div>
+
+              <ScrollArea className="h-[350px] rounded-lg border-2 border-orange-500/50 bg-orange-500/5 p-4">
+                <div className="space-y-3">
+                  {pendingSegments.map((segment) => (
+                    <div
+                      key={segment.id}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        segment.approved 
+                          ? 'border-green-500 bg-green-500/10' 
+                          : 'border-orange-500/50 bg-orange-500/10'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => toggleSegmentApproval(segment.id)}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                              segment.approved 
+                                ? 'bg-green-500 text-white' 
+                                : 'bg-orange-500/30 text-orange-400 hover:bg-orange-500/50'
+                            }`}
+                          >
+                            {segment.approved ? (
+                              <CheckCircle2 className="h-5 w-5" />
+                            ) : (
+                              <Clock className="h-5 w-5" />
+                            )}
+                          </button>
+                          <div>
+                            <p className="text-white font-medium">{segment.title}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs ${
+                                  segment.approved 
+                                    ? 'border-green-500 text-green-400' 
+                                    : 'border-orange-500 text-orange-400'
+                                }`}
+                              >
+                                {segment.type}
+                              </Badge>
+                              <span className="text-xs text-gray-500">ID: {segment.id}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Badge className={segment.approved ? 'bg-green-500' : 'bg-orange-500'}>
+                          {segment.approved ? 'Approved' : 'Pending'}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowApprovalView(false);
+                    setPendingSegments([]);
+                  }}
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveApproved}
+                  disabled={isSavingApproved || pendingSegments.filter(s => s.approved).length === 0}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white h-12 text-lg"
+                >
+                  {isSavingApproved ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-5 w-5 mr-2" />
+                      Save {pendingSegments.filter(s => s.approved).length} Approved Segments
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </>
         )}

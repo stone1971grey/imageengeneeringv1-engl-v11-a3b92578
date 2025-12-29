@@ -7,6 +7,30 @@
 import { LanguageOption, SegmentType } from './types';
 
 // ============================================
+// CRITICAL RULE: CONTENT AUTOMATION
+// ============================================
+// Bei Content Automation dürfen NUR existierende Segment-Typen
+// verwendet werden. Das Erstellen von "Fantasie-Segmenten" ist
+// STRIKT VERBOTEN. Alle Segmente müssen in SEGMENT_CONFIG
+// definiert sein. Diese Regel ist BINDEND und darf NIEMALS
+// umgangen werden.
+//
+// Erlaubte Segment-Typen für Content Automation:
+// - product-hero-gallery (G)
+// - intro (B)
+// - specification (N)
+// - feature-overview (K)
+// - tiles (H)
+// - faq (O)
+// - video (M)
+//
+// NICHT ERLAUBT:
+// - Erfinden von neuen Segment-Typen (z.B. 'banner-p')
+// - Umgehung der Segment-Validierung
+// - Hardcoding von Segment-Strukturen
+// ============================================
+
+// ============================================
 // LANGUAGE CONFIGURATION
 // ============================================
 
