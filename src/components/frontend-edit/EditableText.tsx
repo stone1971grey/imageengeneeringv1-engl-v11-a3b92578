@@ -106,7 +106,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId);
+      console.log('[EditableText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId, 'pageSlug:', pageSlug, 'language:', language);
 
       // First, try to find page_segments JSON (newer CMS format)
       let { data: pageSegmentsData, error: loadError } = await supabase
