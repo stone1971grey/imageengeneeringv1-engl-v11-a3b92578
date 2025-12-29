@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Component, ErrorInfo, ReactNode } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings, Hash } from "lucide-react";
@@ -30,6 +30,64 @@ import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
 
 import { FrontendEditProvider } from "@/contexts/FrontendEditContext";
 import { EditModeToggle, EditableSegment } from "@/components/frontend-edit";
+
+// Error Boundary to catch React crashes and prevent black screens
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class PageErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('[DynamicCMSPage] Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl">⚠️</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h1>
+            <p className="text-gray-600 mb-4">
+              An error occurred while rendering this page.
+            </p>
+            <p className="text-sm text-red-600 bg-red-50 p-3 rounded mb-6 font-mono">
+              {this.state.error?.message || 'Unknown error'}
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                Refresh Page
+              </button>
+              <Link
+                to="/"
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              >
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -1432,12 +1490,49 @@ const DynamicCMSPage = () => {
     );
   };
 
+  // Timeout protection - if page takes too long to load, show error
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  
+  useEffect(() => {
+    if (loading) {
+      const timeoutId = setTimeout(() => {
+        console.error('[DynamicCMSPage] Loading timeout - page took too long to load');
+        setLoadTimeout(true);
+        setLoading(false);
+      }, 15000); // 15 second timeout
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">Loading page...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (loadTimeout) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">⏳</span>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Load Timeout</h1>
+          <p className="text-gray-600 mb-6">
+            The page took too long to load. Please try refreshing.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+          >
+            Refresh Page
+          </button>
         </div>
       </div>
     );
@@ -1518,6 +1613,7 @@ const DynamicCMSPage = () => {
   }
 
   return (
+    <PageErrorBoundary>
     <FrontendEditProvider pageSlug={pageSlug} language={currentUrlLanguage}>
     <div className="min-h-screen bg-gray-50">
       <SEOHead
@@ -1833,6 +1929,7 @@ const DynamicCMSPage = () => {
       )}
     </div>
     </FrontendEditProvider>
+    </PageErrorBoundary>
   );
 };
 
