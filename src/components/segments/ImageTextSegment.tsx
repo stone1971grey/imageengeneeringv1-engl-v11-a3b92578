@@ -389,70 +389,63 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 
                 {/* Image Section */}
                 {isEditing ? (
-                  imageSrc ? (
-                    <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
-                      <EditableImage
-                        src={imageSrc}
-                        alt={imageAlt || 'Item image'}
-                        sectionKey={`${segmentKey}-item-${idx}-image`}
-                        pageSlug={pageSlug}
-                        language={language}
-                        className="w-full h-full object-cover"
-                        onUpdate={() => {
-                          setHasChanges(true);
-                          onContentUpdate?.();
-                        }}
+                  <div className={`w-full ${getImageHeightClass()} bg-gray-100 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-gray-300 relative overflow-hidden`}>
+                    {/* Show existing image as background if available */}
+                    {imageSrc && (
+                      <img 
+                        src={imageSrc} 
+                        alt={imageAlt || 'Item image'} 
+                        className="absolute inset-0 w-full h-full object-cover opacity-40"
                       />
-                    </div>
-                  ) : (
-                    // Empty image placeholder with upload options
-                    <div className={`w-full ${getImageHeightClass()} bg-gray-100 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-gray-300`}>
-                      {isUploading === idx ? (
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Loader2 className="h-6 w-6 animate-spin" />
-                          <span>Uploading...</span>
+                    )}
+                    
+                    {isUploading === idx ? (
+                      <div className="flex items-center gap-2 text-gray-600 z-10">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>Uploading...</span>
+                      </div>
+                    ) : (
+                      <div className="z-10 flex flex-col items-center gap-3">
+                        <ImageIcon className="h-10 w-10 text-gray-500" />
+                        <p className="text-sm text-gray-600 font-medium">
+                          {imageSrc ? 'Replace Image' : 'Add Image'}
+                        </p>
+                        <div className="flex gap-2">
+                          {/* Upload from Computer */}
+                          <input
+                            ref={(el) => { fileInputRefs.current[idx] = el; }}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleFileUpload(idx, file);
+                            }}
+                            className="hidden"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRefs.current[idx]?.click()}
+                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors shadow-sm"
+                          >
+                            <Upload className="h-4 w-4" />
+                            Upload
+                          </button>
+                          {/* Select from Media */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveItemIndex(idx);
+                              setShowMediaDialog(true);
+                            }}
+                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors shadow-sm"
+                          >
+                            <FolderOpen className="h-4 w-4" />
+                            Media
+                          </button>
                         </div>
-                      ) : (
-                        <>
-                          <ImageIcon className="h-12 w-12 text-gray-400" />
-                          <p className="text-sm text-gray-500 font-medium">Add Image</p>
-                          <div className="flex gap-2">
-                            {/* Upload from Computer */}
-                            <input
-                              ref={(el) => { fileInputRefs.current[idx] = el; }}
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handleFileUpload(idx, file);
-                              }}
-                              className="hidden"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => fileInputRefs.current[idx]?.click()}
-                              className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
-                            >
-                              <Upload className="h-4 w-4" />
-                              Upload
-                            </button>
-                            {/* Select from Media */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActiveItemIndex(idx);
-                                setShowMediaDialog(true);
-                              }}
-                              className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
-                            >
-                              <FolderOpen className="h-4 w-4" />
-                              Media
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   imageSrc && (
                     <div className={`w-full ${getImageHeightClass()} overflow-hidden`}>
