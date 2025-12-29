@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -61,15 +61,30 @@ export const FrontendEditProvider: React.FC<{
   const [pendingChanges, setPendingChanges] = useState<Map<string, PendingChange>>(new Map());
   
   // Auto-enable edit mode from URL parameter after permissions are loaded
+  // Use a ref to track if we've already processed the URL param to prevent loops
+  const hasProcessedEditParam = useRef(false);
+  
   useEffect(() => {
+    // Only process once per page load
+    if (hasProcessedEditParam.current) return;
+    
     if (!isLoading && editFromUrl && canEdit && !isEditMode) {
+      hasProcessedEditParam.current = true;
       setIsEditMode(true);
-      // Remove the edit parameter from URL after activating
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete('edit');
-      setSearchParams(newParams, { replace: true });
+      
+      // Remove the edit parameter from URL after activating - use setTimeout to avoid state conflicts
+      setTimeout(() => {
+        try {
+          const newParams = new URLSearchParams(window.location.search);
+          newParams.delete('edit');
+          const newUrl = window.location.pathname + (newParams.toString() ? '?' + newParams.toString() : '');
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {
+          console.error('[FrontendEdit] Error removing edit param:', error);
+        }
+      }, 100);
     }
-  }, [isLoading, editFromUrl, canEdit, isEditMode, searchParams, setSearchParams]);
+  }, [isLoading, editFromUrl, canEdit, isEditMode]);
 
   // Check user permissions
   useEffect(() => {
