@@ -313,14 +313,14 @@ const FAQ: React.FC<FAQProps> = ({
           </div>
         )}
 
-        {/* Save/Cancel buttons */}
-        {isEditing && hasChanges && (
+        {/* Save/Cancel buttons - always visible in edit mode */}
+        {isEditing && (
           <div className="mt-8 flex justify-center gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={handleCancel}
-              disabled={isSaving}
+              disabled={isSaving || !hasChanges}
               className="text-gray-600"
             >
               <X className="h-4 w-4 mr-2" />
@@ -329,7 +329,7 @@ const FAQ: React.FC<FAQProps> = ({
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={isSaving}
+              disabled={isSaving || !hasChanges}
               className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
             >
               {isSaving ? (
