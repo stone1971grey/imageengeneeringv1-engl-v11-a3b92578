@@ -382,16 +382,27 @@ const Tiles: React.FC<TilesProps> = ({
                           <div className="pt-4 space-y-3 border-t border-gray-200 mt-4">
                             <p className="text-xs text-gray-500 font-medium">Button Settings</p>
                             
-                            {/* Button Text - With Label */}
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-500 w-10">Text:</span>
-                              <input
-                                type="text"
-                                value={tile.ctaText || ''}
-                                onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
-                                className="flex-1 text-center bg-white border border-gray-300 rounded px-3 py-2 focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none hover:bg-[#f9dc24]/10 transition-colors font-medium"
-                                placeholder="Button text..."
-                              />
+                            {/* Button Preview - Click to edit text inline */}
+                            <div className="flex justify-center">
+                              <div
+                                className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                                  tile.ctaStyle === 'technical'
+                                    ? 'bg-gray-800 text-white'
+                                    : 'bg-[#f9dc24] text-gray-900'
+                                }`}
+                              >
+                                <input
+                                  type="text"
+                                  value={tile.ctaText || ''}
+                                  onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
+                                  className={`bg-transparent border-none outline-none text-center font-semibold w-full min-w-[80px] placeholder:opacity-60 ${
+                                    tile.ctaStyle === 'technical'
+                                      ? 'text-white placeholder:text-white/60'
+                                      : 'text-gray-900 placeholder:text-gray-900/60'
+                                  }`}
+                                  placeholder="Button text..."
+                                />
+                              </div>
                             </div>
                             
                             {/* Button Link */}
