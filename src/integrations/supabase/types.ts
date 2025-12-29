@@ -703,6 +703,24 @@ export type Database = {
         }
         Relationships: []
       }
+      page_id_sequence: {
+        Row: {
+          id: number
+          last_used_page_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          id?: number
+          last_used_page_id?: number
+          updated_at?: string | null
+        }
+        Update: {
+          id?: number
+          last_used_page_id?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       page_registry: {
         Row: {
           created_at: string | null
@@ -984,6 +1002,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_next_page_id: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

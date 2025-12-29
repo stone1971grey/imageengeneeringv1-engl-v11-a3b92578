@@ -15,14 +15,21 @@ import { LanguageOption, SegmentType } from './types';
 // definiert sein. Diese Regel ist BINDEND und darf NIEMALS
 // umgangen werden.
 //
-// Erlaubte Segment-Typen für Content Automation:
-// - product-hero-gallery (G)
-// - intro (B)
-// - specification (N)
-// - feature-overview (K)
-// - tiles (H)
-// - faq (O)
-// - video (M)
+// Erlaubte Segment-Typen für Content Automation (ALLE Content-Segmente):
+// HERO-Segmente:
+// - hero (F) - Produkt Hero
+// - product-hero-gallery (G) - Product Gallery mit Bildern
+//
+// CONTENT-Segmente:
+// - intro (B) - Einleitungstext
+// - image-text (I) - Bild mit Text
+// - tiles (H) - Kacheln/Cards
+// - banner (J) - Banner mit CTA
+// - feature-overview (K) - Feature-Liste
+// - table (L) - Datentabelle
+// - video (M) - Video-Einbettung
+// - specification (N) - Technische Spezifikationen
+// - faq (O) - FAQ Accordion
 //
 // NICHT ERLAUBT:
 // - Erfinden von neuen Segment-Typen (z.B. 'banner-p')
