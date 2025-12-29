@@ -171,6 +171,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     video: true,
   });
   const [isImporting, setIsImporting] = useState(false);
+  const [importStep, setImportStep] = useState<string>('');
   const [isSavingRedirect, setIsSavingRedirect] = useState(false);
   
   // Note: Old approval state removed - approval now happens in frontend
@@ -514,11 +515,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       
       if (storageImages.length === 0 && parsedContent.images.length > 0) {
-        console.log('[ContentAutomation] No local images, downloading external images...');
-        for (let i = 0; i < Math.min(parsedContent.images.length, 6); i++) {
-          const img = parsedContent.images[i];
+        console.log('[ContentAutomation] No local images, downloading external images in parallel...');
+        setImportStep('Downloading images...');
+        
+        // Download images in parallel for speed
+        const imageDownloadPromises = parsedContent.images.slice(0, 6).map(async (img, i) => {
           try {
-            // Generate filename from URL or index
             const urlParts = img.url.split('/');
             let filename = urlParts[urlParts.length - 1].split('?')[0];
             if (!filename.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
@@ -534,53 +536,67 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             
             if (!dlError && dlResult?.success) {
               console.log(`[ContentAutomation] Downloaded image: ${filename}`);
-              downloadedImages.push({
+              return {
                 url: dlResult.publicUrl,
                 title: img.title || parsedContent.title || 'Product Image',
                 filePath: targetPath,
-              });
+              };
             } else {
               console.warn(`[ContentAutomation] Failed to download image:`, dlError || dlResult?.error);
+              return null;
             }
           } catch (err) {
             console.warn(`[ContentAutomation] Error downloading image ${i}:`, err);
+            return null;
           }
-        }
+        });
+        
+        const imageResults = await Promise.all(imageDownloadPromises);
+        downloadedImages.push(...imageResults.filter((r): r is NonNullable<typeof r> => r !== null));
       }
       
-      // Download external PDFs to storage
+      // Download external PDFs to storage in parallel
       if (storagePdfs.length === 0 && parsedContent.downloads.length > 0) {
-        console.log('[ContentAutomation] No local PDFs, downloading external PDFs...');
-        for (const dl of parsedContent.downloads.filter(d => d.url.toLowerCase().includes('.pdf'))) {
-          try {
-            const urlParts = dl.url.split('/');
-            let filename = urlParts[urlParts.length - 1].split('?')[0];
-            if (!filename.toLowerCase().endsWith('.pdf')) {
-              filename = `${dl.title.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`;
-            }
-            filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
-            
-            const targetPath = `${folderPath}/${filename}`;
-            
-            const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
-              body: { fileUrl: dl.url, targetPath, bucketId: 'page-images' }
-            });
-            
-            if (!dlError && dlResult?.success) {
-              console.log(`[ContentAutomation] Downloaded PDF: ${filename}`);
-              downloadedPdfs.push({
-                url: dlResult.publicUrl,
-                title: dl.title,
-                filename,
-                filePath: targetPath,
+        console.log('[ContentAutomation] No local PDFs, downloading external PDFs in parallel...');
+        setImportStep('Downloading PDFs...');
+        
+        const pdfDownloadPromises = parsedContent.downloads
+          .filter(d => d.url.toLowerCase().includes('.pdf'))
+          .map(async (dl) => {
+            try {
+              const urlParts = dl.url.split('/');
+              let filename = urlParts[urlParts.length - 1].split('?')[0];
+              if (!filename.toLowerCase().endsWith('.pdf')) {
+                filename = `${dl.title.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`;
+              }
+              filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
+              
+              const targetPath = `${folderPath}/${filename}`;
+              
+              const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
+                body: { fileUrl: dl.url, targetPath, bucketId: 'page-images' }
               });
-            } else {
-              console.warn(`[ContentAutomation] Failed to download PDF:`, dlError || dlResult?.error);
+              
+              if (!dlError && dlResult?.success) {
+                console.log(`[ContentAutomation] Downloaded PDF: ${filename}`);
+                return {
+                  url: dlResult.publicUrl,
+                  title: dl.title,
+                  filename,
+                  filePath: targetPath,
+                };
+              } else {
+                console.warn(`[ContentAutomation] Failed to download PDF:`, dlError || dlResult?.error);
+                return null;
+              }
+            } catch (err) {
+              console.warn(`[ContentAutomation] Error downloading PDF:`, err);
+              return null;
             }
-          } catch (err) {
-            console.warn(`[ContentAutomation] Error downloading PDF:`, err);
-          }
-        }
+          });
+        
+        const pdfResults = await Promise.all(pdfDownloadPromises);
+        downloadedPdfs.push(...pdfResults.filter((r): r is NonNullable<typeof r> => r !== null));
       }
       
       // Merge: use local files first, then downloaded files
@@ -707,11 +723,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           position: position - 1,
         });
         
-        // === CREATE FILE_SEGMENT_MAPPINGS FOR IMAGES ===
+        // === CREATE FILE_SEGMENT_MAPPINGS FOR IMAGES (PARALLEL) ===
         // Automatically assign images to this segment in Media Management
         const heroSegmentId = String(segId);
-        for (const img of finalImages.slice(0, 4)) {
-          if (!img.filePath) continue;
+        setImportStep('Mapping images to segment...');
+        
+        const mappingPromises = finalImages.slice(0, 4).map(async (img) => {
+          if (!img.filePath) return;
           
           const existing = existingMappings[img.filePath];
           
@@ -721,7 +739,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               console.log(`[ContentAutomation] Adding segment ${heroSegmentId} to existing mapping for ${img.filePath}`);
               const updatedIds = [...existing.segmentIds, heroSegmentId];
               
-              await supabase
+              return supabase
                 .from('file_segment_mappings')
                 .update({ 
                   segment_ids: updatedIds,
@@ -730,12 +748,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 .eq('file_path', img.filePath);
             } else {
               console.log(`[ContentAutomation] Image ${img.filePath} already assigned to segment ${heroSegmentId}`);
+              return Promise.resolve();
             }
           } else {
             // No mapping exists - create new one
             console.log(`[ContentAutomation] Creating new mapping for ${img.filePath} → segment ${heroSegmentId}`);
             
-            await supabase
+            return supabase
               .from('file_segment_mappings')
               .insert({
                 file_path: img.filePath,
@@ -745,7 +764,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 visibility: 'public',
               });
           }
-        }
+        });
+        
+        await Promise.all(mappingPromises);
         console.log(`[ContentAutomation] File mappings created/updated for ${finalImages.slice(0, 4).length} images`);
       }
 
@@ -1106,6 +1127,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       // === FRONTEND APPROVAL WORKFLOW ===
       // Save segments directly to database with 'pending' status
       // Then redirect to frontend for in-context approval
+      
+      setImportStep('Creating segment registry...');
 
       // 1. Insert segment registry entries
       const { error: registryError } = await supabase
@@ -1113,6 +1136,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .insert(newRegistryEntries);
 
       if (registryError) throw registryError;
+      
+      setImportStep('Merging page content...');
 
       // 2. Load existing page_content for merging
       const { data: existingContent } = await supabase
@@ -1179,10 +1204,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (tabError) throw tabError;
 
-      // 6. Save individual segment content with 'pending' status for each new segment
-      for (const seg of newSegments) {
+      // 6. Save individual segment content with 'pending' status (PARALLEL for speed)
+      setImportStep('Saving segments...');
+      const segmentSavePromises = newSegments.map((seg: any) => {
         const segmentKey = `segment-${seg.id}`;
-        await supabase
+        return supabase
           .from('page_content')
           .upsert({
             page_slug: pageSlug,
@@ -1195,7 +1221,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           }, {
             onConflict: 'page_slug,section_key,language',
           });
-      }
+      });
+      await Promise.all(segmentSavePromises);
 
       // 7. Save 301 redirect if checkbox is checked
       if (createRedirect && sourceUrl) {
@@ -1243,6 +1270,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       toast.error(errorMessage);
     } finally {
       setIsImporting(false);
+      setImportStep('');
     }
   };
 
@@ -1642,6 +1670,21 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 </div>
               </ScrollArea>
 
+              {/* Import Progress Indicator */}
+              {isImporting && importStep && (
+                <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-8 h-8 border-4 border-gray-600 border-t-[#f9dc24] rounded-full animate-spin"></div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">{importStep}</p>
+                      <p className="text-gray-400 text-sm">Please wait, this may take a moment...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Import & Open Frontend Button */}
               <Button
                 onClick={handlePrepareForApproval}
@@ -1649,10 +1692,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 className="w-full bg-[#f9dc24] hover:bg-[#f5c800] text-black h-12 text-lg font-semibold"
               >
                 {isImporting ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Importing Segments...
-                  </>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>{importStep || 'Importing...'}</span>
+                  </div>
                 ) : (
                   <>
                     <ArrowRight className="h-5 w-5 mr-2" />
