@@ -1493,6 +1493,7 @@ const DynamicCMSPage = () => {
   };
 
   // Timeout protection - if page takes too long to load, show error
+  // Using a shorter initial timeout (8s) for better UX
   const [loadTimeout, setLoadTimeout] = useState(false);
   
   useEffect(() => {
@@ -1501,97 +1502,107 @@ const DynamicCMSPage = () => {
         console.error('[DynamicCMSPage] Loading timeout - page took too long to load');
         setLoadTimeout(true);
         setLoading(false);
-      }, 15000); // 15 second timeout
+      }, 8000); // 8 second timeout (reduced from 15s)
       
       return () => clearTimeout(timeoutId);
     }
   }, [loading]);
 
+  // CRITICAL: All render paths are now wrapped in PageErrorBoundary
+  // Loading state - rendered inside boundary to catch any errors
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading page...</p>
+      <PageErrorBoundary>
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
+            <p className="text-gray-600 text-lg">Loading page...</p>
+          </div>
         </div>
-      </div>
+      </PageErrorBoundary>
     );
   }
   
   if (loadTimeout) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center max-w-md mx-auto px-6">
-          <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-4xl">⏳</span>
+      <PageErrorBoundary>
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl">⏳</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Load Timeout</h1>
+            <p className="text-gray-600 mb-6">
+              The page took too long to load. Please try refreshing.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+            >
+              Refresh Page
+            </button>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Load Timeout</h1>
-          <p className="text-gray-600 mb-6">
-            The page took too long to load. Please try refreshing.
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-          >
-            Refresh Page
-          </button>
         </div>
-      </div>
+      </PageErrorBoundary>
     );
   }
 
   if (pageNotFound) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Navigation />
-        <div className="text-center">
-          <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
-          <p className="text-xl text-gray-600 mb-8">Page not found</p>
-          <Link
-            to="/"
-            className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-          >
-            Back to Home
-          </Link>
+      <PageErrorBoundary>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <Navigation />
+          <div className="text-center">
+            <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
+            <p className="text-xl text-gray-600 mb-8">Page not found</p>
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+            >
+              Back to Home
+            </Link>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
+      </PageErrorBoundary>
     );
   }
 
   // Access denied for draft pages (not logged in or no admin/editor role)
   if (accessDenied) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center max-w-md mx-auto px-6">
-            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Eye className="h-10 w-10 text-amber-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Draft Page</h1>
-            <p className="text-lg text-gray-600 mb-6">
-              This page is currently in draft mode and not yet published. 
-              Only logged-in administrators and editors can preview draft pages.
-            </p>
-            <div className="flex flex-col gap-3">
-              <Link
-                to="/auth"
-                className="inline-flex items-center justify-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-              >
-                Sign In to Preview
-              </Link>
-              <Link
-                to="/"
-                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-              >
-                Back to Home
-              </Link>
+      <PageErrorBoundary>
+        <div className="min-h-screen bg-gray-50">
+          <Navigation />
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center max-w-md mx-auto px-6">
+              <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Eye className="h-10 w-10 text-amber-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Draft Page</h1>
+              <p className="text-lg text-gray-600 mb-6">
+                This page is currently in draft mode and not yet published. 
+                Only logged-in administrators and editors can preview draft pages.
+              </p>
+              <div className="flex flex-col gap-3">
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+                >
+                  Sign In to Preview
+                </Link>
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                >
+                  Back to Home
+                </Link>
+              </div>
             </div>
           </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
+      </PageErrorBoundary>
     );
   }
 
