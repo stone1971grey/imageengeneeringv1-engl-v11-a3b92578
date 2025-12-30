@@ -1148,19 +1148,39 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
 
       // === FRONTEND APPROVAL WORKFLOW ===
-      // Save segments directly to database with 'pending' status
-      // Then redirect to frontend for in-context approval
+      // SEQUENTIAL processing to prevent crashes from parallel DB operations
+      // Each step is processed one at a time with progress feedback
       
-      setImportStep('Creating segment registry...');
-
-      // 1. Insert segment registry entries
-      const { error: registryError } = await supabase
-        .from('segment_registry')
-        .insert(newRegistryEntries);
-
-      if (registryError) throw registryError;
+      const totalSteps = newRegistryEntries.length + newSegments.length + 4; // +4 for meta operations
+      let currentStep = 0;
       
-      setImportStep('Merging page content...');
+      const updateProgress = (stepName: string) => {
+        currentStep++;
+        const percent = Math.round((currentStep / totalSteps) * 100);
+        setImportStep(`${stepName} (${percent}%)`);
+        console.log(`[ContentAutomation] Step ${currentStep}/${totalSteps}: ${stepName}`);
+      };
+
+      // 1. Insert segment registry entries ONE BY ONE (sequential)
+      updateProgress('Creating segment registry...');
+      for (let i = 0; i < newRegistryEntries.length; i++) {
+        const entry = newRegistryEntries[i];
+        updateProgress(`Registry entry ${i + 1}/${newRegistryEntries.length}...`);
+        
+        const { error: registryError } = await supabase
+          .from('segment_registry')
+          .insert(entry);
+
+        if (registryError) {
+          console.error('[ContentAutomation] Registry insert failed:', registryError);
+          throw registryError;
+        }
+        
+        // Small delay between operations to prevent DB overload
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      updateProgress('Loading existing content...');
 
       // 2. Load existing page_content for merging
       const { data: existingContent } = await supabase
@@ -1179,6 +1199,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       // Merge new segments
       const mergedSegments = [...existingSegments, ...newSegments];
 
+      updateProgress('Updating tab order...');
+
       // 3. Update tab_order
       const { data: tabOrderData } = await supabase
         .from('page_content')
@@ -1193,6 +1215,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         tabOrder = JSON.parse(tabOrderData.content_value);
       }
       const newTabOrder = [...tabOrder, ...newSegments.map((s: any) => s.id)];
+
+      updateProgress('Saving page segments...');
 
       // 4. Save page_segments with 'pending' content_status
       const { error: contentError } = await supabase
@@ -1211,6 +1235,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (contentError) throw contentError;
 
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // 5. Save tab_order
       const { error: tabError } = await supabase
         .from('page_content')
@@ -1227,11 +1253,15 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (tabError) throw tabError;
 
-      // 6. Save individual segment content with 'pending' status (PARALLEL for speed)
-      setImportStep('Saving segments...');
-      const segmentSavePromises = newSegments.map((seg: any) => {
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 6. Save individual segment content SEQUENTIALLY (not parallel!)
+      for (let i = 0; i < newSegments.length; i++) {
+        const seg = newSegments[i] as any;
+        updateProgress(`Saving segment ${i + 1}/${newSegments.length}: ${seg.type}...`);
+        
         const segmentKey = `segment-${seg.id}`;
-        return supabase
+        const { error: segError } = await supabase
           .from('page_content')
           .upsert({
             page_slug: pageSlug,
@@ -1244,11 +1274,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           }, {
             onConflict: 'page_slug,section_key,language',
           });
-      });
-      await Promise.all(segmentSavePromises);
+
+        if (segError) {
+          console.error(`[ContentAutomation] Failed to save segment ${seg.id}:`, segError);
+          throw segError;
+        }
+        
+        // Small delay between segment saves
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
 
       // 7. Save 301 redirect if checkbox is checked
       if (createRedirect && sourceUrl) {
+        updateProgress('Creating redirect...');
         const targetUrl = `/${language}/${pageSlug}`;
         let sourceUrlPath = sourceUrl;
         try {
@@ -1269,6 +1307,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           });
       }
 
+      updateProgress('Complete!');
+      console.log('[ContentAutomation] All segments saved successfully');
+
       // SUCCESS - Clear ALL loading state BEFORE any redirect
       setIsImporting(false);
       setImportStep('');
@@ -1277,7 +1318,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const frontendUrl = `/${language}/${pageSlug}?edit=true`;
       console.log('[ContentAutomation] Import complete. Redirecting to:', frontendUrl);
       
-      toast.success(`${newSegments.length} segments imported with pending status!`, {
+      toast.success(`${newSegments.length} segments imported successfully!`, {
         description: 'Redirecting to frontend for approval...',
       });
 
@@ -1286,13 +1327,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // CRITICAL: Use window.location.href for a clean page transition
       // This avoids React state conflicts and ensures the target page loads fresh
-      // Small delay for toast visibility
+      // Longer delay to ensure all state is cleared
       setTimeout(() => {
         window.location.href = frontendUrl;
-      }, 500);
+      }, 800);
 
     } catch (error: unknown) {
-      console.error('Error importing content:', error);
+      console.error('[ContentAutomation] Error importing content:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to import content';
       toast.error(errorMessage);
       setIsImporting(false);
