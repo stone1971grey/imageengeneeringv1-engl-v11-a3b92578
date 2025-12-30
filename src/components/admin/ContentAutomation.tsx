@@ -375,7 +375,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       downloads: parsedContent.downloads?.length,
     });
 
+    // CRITICAL: Set importing state FIRST, before any async operations
+    console.log('[ContentAutomation] Setting isImporting=true and initial importStep');
     setIsImporting(true);
+    setImportStep('Initializing import...');
+
+    // Force a re-render to show the progress UI
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     try {
       // Get the current max segment ID
@@ -1333,11 +1339,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }, 800);
 
     } catch (error: unknown) {
-      console.error('[ContentAutomation] Error importing content:', error);
+      console.error('[ContentAutomation] ❌ IMPORT FAILED:', error);
+      console.error('[ContentAutomation] Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+      });
       const errorMessage = error instanceof Error ? error.message : 'Failed to import content';
-      toast.error(errorMessage);
-      setIsImporting(false);
-      setImportStep('');
+      toast.error(`Import failed: ${errorMessage}`, {
+        description: 'Check console for details',
+        duration: 10000,
+      });
+      setImportStep(`Error: ${errorMessage}`);
+      // Keep error visible for 3 seconds before clearing
+      setTimeout(() => {
+        setIsImporting(false);
+        setImportStep('');
+      }, 3000);
     }
   };
 
@@ -1366,6 +1384,27 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             </CardDescription>
           </div>
         </div>
+        
+        {/* GLOBAL IMPORT PROGRESS - ALWAYS visible when importing, regardless of parsedContent state */}
+        {isImporting && (
+          <div className="mt-4 bg-gradient-to-r from-[#f9dc24]/20 to-[#f5c800]/20 border border-[#f9dc24]/40 rounded-lg p-4">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="w-12 h-12 border-4 border-gray-600 border-t-[#f9dc24] rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Wand2 className="h-5 w-5 text-[#f9dc24]" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-[#f9dc24] font-bold text-lg">Import in Progress</p>
+                <p className="text-white font-medium">{importStep || 'Processing...'}</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Sequential processing to prevent database overload. Please wait...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Language-specific URL indicator */}
