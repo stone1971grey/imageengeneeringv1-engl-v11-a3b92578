@@ -452,7 +452,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(3);
       await wait(150);
 
-      const galleryImages: { url: string; alt: string }[] = [];
+      // ProductImage interface expects: imageUrl, title, description, metadata
+      const galleryImages: { imageUrl: string; title: string; description: string; metadata?: { altText?: string } }[] = [];
       const productHeroSegmentId = nextId; // This will be the Product Hero segment ID
       
       // First, check if assets already exist in Media Management for this page
@@ -481,9 +482,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             .from('page-images')
             .getPublicUrl(asset.file_path);
           
+          const altText = asset.alt_text || title;
           galleryImages.push({
-            url: urlData.publicUrl,
-            alt: asset.alt_text || title,
+            imageUrl: urlData.publicUrl,
+            title: altText,
+            description: altText,
+            metadata: { altText },
           });
           
           // Update segment_ids to include new segment ID
@@ -532,8 +536,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                   .from('page-images')
                   .getPublicUrl(filePath);
                 
-                const altText = img.title || `${title} - Image ${i + 1}`;
-                galleryImages.push({ url: urlData.publicUrl, alt: altText });
+                const imgAltText = img.title || `${title} - Image ${i + 1}`;
+                galleryImages.push({
+                  imageUrl: urlData.publicUrl,
+                  title: imgAltText,
+                  description: imgAltText,
+                  metadata: { altText: imgAltText },
+                });
                 
                 // Create file_segment_mapping entry
                 await supabase
@@ -542,7 +551,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                     file_path: filePath,
                     bucket_id: 'page-images',
                     segment_ids: [String(productHeroSegmentId)],
-                    alt_text: altText,
+                    alt_text: imgAltText,
                     visibility: 'public',
                   }, { onConflict: 'file_path' });
                 
@@ -674,7 +683,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       await wait(150);
 
       // Use first gallery image as fallback if no detail image
-      const fallbackImageUrl = galleryImages[0]?.url || '';
+      const fallbackImageUrl = galleryImages[0]?.imageUrl || '';
 
       const imageTextSegment = {
         id: String(nextId),
