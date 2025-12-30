@@ -172,6 +172,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
   });
   const [isImporting, setIsImporting] = useState(false);
   const [importStep, setImportStep] = useState<string>('');
+  const [importProgress, setImportProgress] = useState<number>(0);
+  const [importTotal, setImportTotal] = useState<number>(0);
   const [isSavingRedirect, setIsSavingRedirect] = useState(false);
   
   // Note: Old approval state removed - approval now happens in frontend
@@ -376,14 +378,20 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     });
 
     // CRITICAL: Set importing state FIRST, before any async operations
-    console.log('[ContentAutomation] Setting isImporting=true and initial importStep');
+    console.log('[ContentAutomation] ═══════════════════════════════════════');
+    console.log('[ContentAutomation] 🚀 IMPORT STARTED');
+    console.log('[ContentAutomation] ═══════════════════════════════════════');
     setIsImporting(true);
     setImportStep('Initializing import...');
+    setImportProgress(0);
+    setImportTotal(0);
 
     // Force a re-render to show the progress UI
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 100));
+    console.log('[ContentAutomation] ✓ UI state initialized, starting import...');
 
     try {
+      console.log('[ContentAutomation] → Fetching max segment ID...');
       // Get the current max segment ID
       const { data: maxIdData } = await supabase
         .from('segment_registry')
@@ -391,6 +399,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .order('segment_id', { ascending: false })
         .limit(1)
         .single();
+      console.log('[ContentAutomation] ✓ Max segment ID:', maxIdData?.segment_id || 0);
 
       let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
 
@@ -1160,16 +1169,20 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const totalSteps = newRegistryEntries.length + newSegments.length + 6; // +6 for meta operations
       let currentStep = 0;
       
+      // Set total for progress bar
+      setImportTotal(totalSteps);
+      setImportProgress(0);
+      
       // Generous delay function - yields to UI and prevents DB overload
       const safeDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       
       const updateProgress = async (stepName: string) => {
         currentStep++;
-        const percent = Math.round((currentStep / totalSteps) * 100);
-        setImportStep(`${stepName} (${percent}%)`);
-        console.log(`[ContentAutomation] Step ${currentStep}/${totalSteps}: ${stepName}`);
-        // Yield to UI thread
-        await safeDelay(10);
+        setImportProgress(currentStep);
+        setImportStep(stepName);
+        console.log(`[ContentAutomation] ▶ Step ${currentStep}/${totalSteps}: ${stepName}`);
+        // Yield to UI thread - important for progress bar to update
+        await safeDelay(50);
       };
 
       // 1. Insert segment registry entries ONE BY ONE with LONG delays
@@ -1342,16 +1355,21 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         await safeDelay(200);
       }
 
-      await updateProgress('Complete!');
-      console.log('[ContentAutomation] All segments saved successfully');
+      await updateProgress('✅ Complete!');
+      console.log('[ContentAutomation] ═══════════════════════════════════════');
+      console.log('[ContentAutomation] ✅ ALL SEGMENTS SAVED SUCCESSFULLY');
+      console.log('[ContentAutomation] ═══════════════════════════════════════');
 
       // SUCCESS - Clear ALL loading state BEFORE any redirect
+      console.log('[ContentAutomation] → Clearing state before redirect...');
       setIsImporting(false);
       setImportStep('');
+      setImportProgress(0);
+      setImportTotal(0);
       setParsedContent(null);
       
       const frontendUrl = `/${language}/${pageSlug}?edit=true`;
-      console.log('[ContentAutomation] Import complete. Redirecting to:', frontendUrl);
+      console.log('[ContentAutomation] → Redirect URL:', frontendUrl);
       
       toast.success(`${newSegments.length} segments imported successfully!`, {
         description: 'Redirecting to frontend for approval...',
@@ -1361,14 +1379,17 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       onImportComplete?.();
 
       // CRITICAL: Use window.location.href for a clean page transition
-      // This avoids React state conflicts and ensures the target page loads fresh
-      // Longer delay to ensure all state is cleared
+      console.log('[ContentAutomation] → Initiating redirect in 800ms...');
       setTimeout(() => {
+        console.log('[ContentAutomation] → REDIRECT NOW!');
         window.location.href = frontendUrl;
       }, 800);
 
     } catch (error: unknown) {
-      console.error('[ContentAutomation] ❌ IMPORT FAILED:', error);
+      console.error('[ContentAutomation] ═══════════════════════════════════════');
+      console.error('[ContentAutomation] ❌ IMPORT FAILED');
+      console.error('[ContentAutomation] ═══════════════════════════════════════');
+      console.error('[ContentAutomation] Error:', error);
       console.error('[ContentAutomation] Error details:', {
         name: error instanceof Error ? error.name : 'Unknown',
         message: error instanceof Error ? error.message : String(error),
@@ -1379,12 +1400,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         description: 'Check console for details',
         duration: 10000,
       });
-      setImportStep(`Error: ${errorMessage}`);
-      // Keep error visible for 3 seconds before clearing
+      setImportStep(`❌ Error: ${errorMessage}`);
+      // Keep error visible for 5 seconds before clearing
       setTimeout(() => {
         setIsImporting(false);
         setImportStep('');
-      }, 3000);
+        setImportProgress(0);
+        setImportTotal(0);
+      }, 5000);
     }
   };
 
@@ -1414,24 +1437,49 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           </div>
         </div>
         
-        {/* GLOBAL IMPORT PROGRESS - ALWAYS visible when importing, regardless of parsedContent state */}
+        {/* GLOBAL IMPORT PROGRESS BAR - ALWAYS visible when importing */}
         {isImporting && (
-          <div className="mt-4 bg-gradient-to-r from-[#f9dc24]/20 to-[#f5c800]/20 border border-[#f9dc24]/40 rounded-lg p-4">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-12 h-12 border-4 border-gray-600 border-t-[#f9dc24] rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Wand2 className="h-5 w-5 text-[#f9dc24]" />
-                </div>
+          <div className="mt-4 bg-gradient-to-r from-gray-800 to-gray-900 border border-[#f9dc24]/40 rounded-lg p-5 shadow-lg">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <Wand2 className="h-5 w-5 text-[#f9dc24] animate-pulse" />
+                <span className="text-[#f9dc24] font-bold text-lg">Import in Progress</span>
               </div>
-              <div className="flex-1">
-                <p className="text-[#f9dc24] font-bold text-lg">Import in Progress</p>
-                <p className="text-white font-medium">{importStep || 'Processing...'}</p>
-                <p className="text-gray-400 text-sm mt-1">
-                  Sequential processing to prevent database overload. Please wait...
-                </p>
-              </div>
+              <span className="text-white font-mono text-sm bg-gray-700 px-3 py-1 rounded">
+                {importProgress}/{importTotal}
+              </span>
             </div>
+            
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-700 rounded-full h-4 mb-3 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-[#f9dc24] to-[#f5c800] h-4 rounded-full transition-all duration-300 ease-out"
+                style={{ width: importTotal > 0 ? `${(importProgress / importTotal) * 100}%` : '0%' }}
+              />
+            </div>
+            
+            {/* Percentage */}
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-gray-400 text-xs">Progress</span>
+              <span className="text-white font-bold text-lg">
+                {importTotal > 0 ? Math.round((importProgress / importTotal) * 100) : 0}%
+              </span>
+            </div>
+            
+            {/* Current Step Details */}
+            <div className="bg-gray-800/80 rounded-lg p-3 border border-gray-700">
+              <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Current Step:</p>
+              <p className="text-white font-medium text-sm break-all">
+                {importStep || 'Initializing...'}
+              </p>
+            </div>
+            
+            {/* Warning */}
+            <p className="text-gray-500 text-xs mt-3 flex items-center gap-2">
+              <Clock className="h-3 w-3" />
+              Sequential processing to prevent database overload. Please wait...
+            </p>
           </div>
         )}
       </CardHeader>
