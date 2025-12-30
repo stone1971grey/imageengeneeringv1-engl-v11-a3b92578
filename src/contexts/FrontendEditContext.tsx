@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 interface FrontendEditContextType {
@@ -46,10 +45,6 @@ export const FrontendEditProvider: React.FC<{
   language: string;
 }> = ({ children, pageSlug, language }) => {
   console.log('[FrontendEditProvider] Mounting for pageSlug:', pageSlug, 'language:', language);
-  const [searchParams, setSearchParams] = useSearchParams();
-  
-  // Check URL parameter for initial edit mode
-  const editFromUrl = searchParams.get('edit') === 'true';
   
   const [isEditMode, setIsEditMode] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
@@ -60,13 +55,27 @@ export const FrontendEditProvider: React.FC<{
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingChanges, setPendingChanges] = useState<Map<string, PendingChange>>(new Map());
+  const [initError, setInitError] = useState<Error | null>(null);
   
   // Auto-enable edit mode from URL parameter after permissions are loaded
   // Use a ref to track if we've already processed the URL param to prevent loops
   const hasProcessedEditParam = useRef(false);
   
+  // Safe URL parameter reading - done once on mount, not reactively
+  const editFromUrl = useRef<boolean>(false);
   useEffect(() => {
-    console.log('[FrontendEdit] URL param effect - isLoading:', isLoading, 'editFromUrl:', editFromUrl, 'canEdit:', canEdit, 'isEditMode:', isEditMode, 'hasProcessed:', hasProcessedEditParam.current);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      editFromUrl.current = params.get('edit') === 'true';
+      console.log('[FrontendEdit] Initial URL edit param:', editFromUrl.current);
+    } catch (e) {
+      console.error('[FrontendEdit] Error reading URL params:', e);
+    }
+  }, []);
+  
+  // URL param processing effect - only runs when loading completes
+  useEffect(() => {
+    console.log('[FrontendEdit] URL param effect - isLoading:', isLoading, 'editFromUrl:', editFromUrl.current, 'canEdit:', canEdit, 'isEditMode:', isEditMode, 'hasProcessed:', hasProcessedEditParam.current);
     
     // Only process once per page load
     if (hasProcessedEditParam.current) {
@@ -74,12 +83,12 @@ export const FrontendEditProvider: React.FC<{
       return;
     }
     
-    if (!isLoading && editFromUrl && canEdit && !isEditMode) {
+    if (!isLoading && editFromUrl.current && canEdit && !isEditMode) {
       console.log('[FrontendEdit] Activating edit mode from URL');
       hasProcessedEditParam.current = true;
       setIsEditMode(true);
       
-      // Remove the edit parameter from URL after activating - use setTimeout to avoid state conflicts
+      // Remove the edit parameter from URL after activating
       setTimeout(() => {
         try {
           const newParams = new URLSearchParams(window.location.search);
@@ -91,20 +100,30 @@ export const FrontendEditProvider: React.FC<{
           console.error('[FrontendEdit] Error removing edit param:', error);
         }
       }, 100);
-    } else if (!isLoading && editFromUrl && !canEdit) {
+    } else if (!isLoading && editFromUrl.current && !canEdit) {
       console.warn('[FrontendEdit] User has no edit permission but edit=true in URL');
+      hasProcessedEditParam.current = true; // Mark as processed to prevent repeated warnings
     }
-  }, [isLoading, editFromUrl, canEdit, isEditMode]);
+  }, [isLoading, canEdit, isEditMode]);
 
-  // Check user permissions
+  // Check user permissions with robust error handling
   useEffect(() => {
+    let isMounted = true;
+    
     const checkPermissions = async () => {
-      setIsLoading(true);
+      console.log('[FrontendEdit] Starting permission check...');
       
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.warn('[FrontendEdit] Auth error (non-critical):', userError);
+        }
+        
+        if (!isMounted) return;
         
         if (!user) {
+          console.log('[FrontendEdit] No user found, setting defaults');
           setCanEdit(false);
           setCanApprove(false);
           setIsAdmin(false);
@@ -117,23 +136,35 @@ export const FrontendEditProvider: React.FC<{
         setUserId(user.id);
         
         // Check if user is admin
-        const { data: adminRole } = await supabase
+        const { data: adminRole, error: adminError } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
           .eq('role', 'admin')
           .maybeSingle();
         
+        if (adminError) {
+          console.warn('[FrontendEdit] Admin role check error (non-critical):', adminError);
+        }
+        
+        if (!isMounted) return;
+        
         const userIsAdmin = !!adminRole;
         setIsAdmin(userIsAdmin);
         
         // Check if user is editor
-        const { data: editorRole } = await supabase
+        const { data: editorRole, error: editorError } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
           .eq('role', 'editor')
           .maybeSingle();
+        
+        if (editorError) {
+          console.warn('[FrontendEdit] Editor role check error (non-critical):', editorError);
+        }
+        
+        if (!isMounted) return;
         
         const userIsEditor = !!editorRole;
         setIsEditor(userIsEditor);
@@ -141,7 +172,7 @@ export const FrontendEditProvider: React.FC<{
         // Check if frontend editing is enabled for this editor
         let hasFrontendEditing = false;
         if (userIsEditor) {
-          const { data: pageAccess } = await supabase
+          const { data: pageAccess, error: accessError } = await supabase
             .from('editor_page_access')
             .select('frontend_editing_enabled')
             .eq('user_id', user.id)
@@ -149,8 +180,14 @@ export const FrontendEditProvider: React.FC<{
             .eq('frontend_editing_enabled', true)
             .maybeSingle();
           
+          if (accessError) {
+            console.warn('[FrontendEdit] Page access check error (non-critical):', accessError);
+          }
+          
           hasFrontendEditing = !!pageAccess?.frontend_editing_enabled;
         }
+        
+        if (!isMounted) return;
         
         setFrontendEditingEnabled(hasFrontendEditing);
         
@@ -159,21 +196,42 @@ export const FrontendEditProvider: React.FC<{
         setCanEdit(userIsAdmin || (userIsEditor && hasFrontendEditing));
         setCanApprove(userIsAdmin);
         
+        console.log('[FrontendEdit] Permission check complete:', { userIsAdmin, userIsEditor, hasFrontendEditing });
+        
       } catch (error) {
-        console.error('[FrontendEdit] Permission check failed:', error);
+        console.error('[FrontendEdit] Permission check failed with exception:', error);
+        if (isMounted) {
+          setInitError(error instanceof Error ? error : new Error(String(error)));
+          // Still allow children to render with no permissions
+          setCanEdit(false);
+          setCanApprove(false);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
     
     checkPermissions();
     
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkPermissions();
-    });
+    // Listen for auth changes with error handling
+    let subscription: { unsubscribe: () => void } | null = null;
+    try {
+      const { data } = supabase.auth.onAuthStateChange(() => {
+        if (isMounted) {
+          checkPermissions();
+        }
+      });
+      subscription = data.subscription;
+    } catch (e) {
+      console.error('[FrontendEdit] Failed to setup auth listener:', e);
+    }
     
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
   }, [pageSlug]);
 
   const setEditMode = useCallback((enabled: boolean) => {
@@ -283,8 +341,10 @@ export const FrontendEditProvider: React.FC<{
     }
   }, [canApprove, userId, pageSlug, language, removePendingChange]);
 
-  console.log('[FrontendEditProvider] Rendering children, isLoading:', isLoading, 'canEdit:', canEdit, 'isEditMode:', isEditMode);
+  console.log('[FrontendEditProvider] Rendering children, isLoading:', isLoading, 'canEdit:', canEdit, 'isEditMode:', isEditMode, 'hasError:', !!initError);
 
+  // CRITICAL: Always render children - never block on loading
+  // The context values will update when permissions are loaded
   return (
     <FrontendEditContext.Provider value={{
       isEditMode,
