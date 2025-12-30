@@ -124,6 +124,10 @@ const SOURCE_URL_MAPPING: Record<string, LanguageUrls> = {
     default: 'https://www.image-engineering.de/products/software/iq-analyzer-x',
     de: 'https://www.image-engineering.de/de/produkte/software/iq-analyzer-x',
   },
+  'products/illumination-devices/versatile-light-system': {
+    default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1258-versatile-light-system',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1258-versatile-light-system',
+  },
 };
 
 // Helper to get URL for current language
