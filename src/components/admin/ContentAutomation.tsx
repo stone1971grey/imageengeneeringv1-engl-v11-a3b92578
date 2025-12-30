@@ -73,6 +73,7 @@ interface ParsedContent {
   downloads: { title: string; description: string; url: string; language: string }[];
   videoUrl: string | null;
   images: { url: string; title: string }[];
+  rawMarkdown?: string;
 }
 
 // Note: PendingSegment interface removed - approval now happens in frontend via EditableSegment
@@ -385,23 +386,51 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
   const runMinimalImport = async () => {
     const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+    // Helper: Extract sections from markdown content
+    const extractSectionsFromMarkdown = (markdown: string): { title: string; description: string }[] => {
+      const sections: { title: string; description: string }[] = [];
+      
+      // Split by ##### headers (subsections)
+      const sectionRegex = /#{4,5}\s+(.+?)(?=\n)([\s\S]*?)(?=#{4,5}\s|$)/g;
+      let match;
+      
+      while ((match = sectionRegex.exec(markdown)) !== null) {
+        const title = match[1].trim();
+        let desc = match[2].trim();
+        
+        // Clean up description - remove links but keep text
+        desc = desc.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        // Remove bullet points formatting but keep content
+        desc = desc.replace(/^-\s+/gm, '• ');
+        // Limit length
+        desc = desc.substring(0, 300);
+        
+        if (title && desc && !title.includes('Main Menu')) {
+          sections.push({ title, description: desc });
+        }
+      }
+      
+      return sections.slice(0, 6); // Max 6 tiles
+    };
+
     try {
       // STEP 1: Setup
       console.log('=== STEP 1: Setup ===');
-      setImportStep('Step 1/15: Setup...');
+      setImportStep('Step 1/18: Setup...');
       setImportProgress(1);
-      setImportTotal(15);
-      await wait(200);
+      setImportTotal(18);
+      await wait(150);
 
       const title = parsedContent?.title || 'Import';
       const description = parsedContent?.description || '';
+      const rawMarkdown = parsedContent?.rawMarkdown || '';
       console.log('=== Title:', title);
 
       // STEP 2: Get max segment ID
       console.log('=== STEP 2: Get max ID ===');
-      setImportStep('Step 2/15: Get ID...');
+      setImportStep('Step 2/18: Get ID...');
       setImportProgress(2);
-      await wait(200);
+      await wait(150);
 
       const { data: maxData } = await supabase
         .from('segment_registry')
@@ -413,27 +442,99 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       let nextId = (maxData?.segment_id || 0) + 1;
       console.log('=== Next ID:', nextId);
 
-      // STEP 3: Create Intro segment
-      console.log('=== STEP 3: Create Intro segment ===');
-      setImportStep('Step 3/15: Intro segment...');
+      // STEP 3: Get main product image
+      console.log('=== STEP 3: Get product image ===');
+      setImportStep('Step 3/18: Product image...');
       setImportProgress(3);
-      await wait(200);
+      await wait(150);
+
+      let heroImageUrl = '';
+      const mainImage = parsedContent?.images?.[0];
+      if (mainImage?.url) {
+        try {
+          const imgResponse = await fetch(mainImage.url);
+          if (imgResponse.ok) {
+            const blob = await imgResponse.blob();
+            const ext = mainImage.url.split('.').pop()?.split('?')[0] || 'png';
+            const fileName = `hero-${Date.now()}.${ext}`;
+            const filePath = `${pageSlug}/product-hero/${fileName}`;
+            
+            const { error: uploadErr } = await supabase.storage
+              .from('page-images')
+              .upload(filePath, blob, { contentType: blob.type });
+            
+            if (!uploadErr) {
+              const { data: urlData } = supabase.storage
+                .from('page-images')
+                .getPublicUrl(filePath);
+              heroImageUrl = urlData.publicUrl;
+              console.log('=== Hero image uploaded');
+            }
+          }
+        } catch (imgErr) {
+          console.warn('=== Hero image failed:', imgErr);
+        }
+      }
+
+      // STEP 4: Create Product Hero Gallery segment
+      console.log('=== STEP 4: Create Product Hero Gallery ===');
+      setImportStep('Step 4/18: Product Hero Gallery...');
+      setImportProgress(4);
+      await wait(150);
+
+      const productHeroSegment = {
+        id: String(nextId),
+        type: 'product-hero-gallery',
+        data: {
+          title: title.split('|')[0].trim(),
+          subtitle: 'Illumination Device',
+          category: 'Equipment',
+          description: description.substring(0, 200),
+          images: heroImageUrl ? [{ url: heroImageUrl, alt: title }] : [],
+          badges: [],
+        },
+      };
+
+      // STEP 5: Insert Product Hero to registry
+      console.log('=== STEP 5: Insert Product Hero registry ===');
+      setImportStep('Step 5/18: Save Product Hero registry...');
+      setImportProgress(5);
+      await wait(150);
+
+      const { error: regErr0 } = await supabase
+        .from('segment_registry')
+        .insert({
+          page_slug: pageSlug,
+          segment_id: nextId,
+          segment_key: `import-product-hero-${nextId}`,
+          segment_type: 'product-hero-gallery',
+          position: 0,
+        });
+
+      if (regErr0) throw new Error('Product Hero Registry: ' + regErr0.message);
+      const productHeroId = nextId;
+      nextId++;
+
+      // STEP 6: Create Intro segment
+      console.log('=== STEP 6: Create Intro segment ===');
+      setImportStep('Step 6/18: Intro segment...');
+      setImportProgress(6);
+      await wait(150);
 
       const introSegment = {
         id: String(nextId),
         type: 'intro',
         data: {
-          headline: title.substring(0, 100),
+          headline: title.split('|')[0].trim(),
           introText: description.substring(0, 300),
         },
       };
-      console.log('=== Intro segment created');
 
-      // STEP 4: Insert Intro to registry
-      console.log('=== STEP 4: Insert Intro registry ===');
-      setImportStep('Step 4/15: Save Intro registry...');
-      setImportProgress(4);
-      await wait(200);
+      // STEP 7: Insert Intro to registry
+      console.log('=== STEP 7: Insert Intro registry ===');
+      setImportStep('Step 7/18: Save Intro registry...');
+      setImportProgress(7);
+      await wait(150);
 
       const { error: regErr1 } = await supabase
         .from('segment_registry')
@@ -442,33 +543,28 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           segment_id: nextId,
           segment_key: `import-intro-${nextId}`,
           segment_type: 'intro',
-          position: 0,
+          position: 1,
         });
 
       if (regErr1) throw new Error('Intro Registry: ' + regErr1.message);
-      console.log('=== Intro Registry OK');
-
       const introId = nextId;
       nextId++;
 
-      // STEP 5: Download image from source
-      console.log('=== STEP 5: Download image ===');
-      setImportStep('Step 5/15: Download image...');
-      setImportProgress(5);
-      await wait(200);
+      // STEP 8: Download image for Image-Text
+      console.log('=== STEP 8: Download detail image ===');
+      setImportStep('Step 8/18: Detail image...');
+      setImportProgress(8);
+      await wait(150);
 
-      let imageUrl = '';
-      const firstImageObj = parsedContent?.images?.[0];
-      const firstImageUrl = firstImageObj?.url || '';
-      
-      if (firstImageUrl) {
-        console.log('=== Found image:', firstImageUrl.substring(0, 50));
+      let detailImageUrl = '';
+      const detailImage = parsedContent?.images?.[1] || parsedContent?.images?.[0];
+      if (detailImage?.url && detailImage.url !== mainImage?.url) {
         try {
-          const imgResponse = await fetch(firstImageUrl);
+          const imgResponse = await fetch(detailImage.url);
           if (imgResponse.ok) {
             const blob = await imgResponse.blob();
-            const ext = firstImageUrl.split('.').pop()?.split('?')[0] || 'jpg';
-            const fileName = `import-${Date.now()}.${ext}`;
+            const ext = detailImage.url.split('.').pop()?.split('?')[0] || 'jpg';
+            const fileName = `detail-${Date.now()}.${ext}`;
             const filePath = `${pageSlug}/image-text/${fileName}`;
             
             const { error: uploadErr } = await supabase.storage
@@ -479,24 +575,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               const { data: urlData } = supabase.storage
                 .from('page-images')
                 .getPublicUrl(filePath);
-              imageUrl = urlData.publicUrl;
-              console.log('=== Image uploaded:', imageUrl.substring(0, 50));
-            } else {
-              console.warn('=== Upload failed:', uploadErr.message);
+              detailImageUrl = urlData.publicUrl;
             }
           }
         } catch (imgErr) {
-          console.warn('=== Image download failed:', imgErr);
+          console.warn('=== Detail image failed');
         }
-      } else {
-        console.log('=== No images found in content');
       }
 
-      // STEP 6: Create Image-Text segment
-      console.log('=== STEP 6: Create Image-Text segment ===');
-      setImportStep('Step 6/15: Image-Text segment...');
-      setImportProgress(6);
-      await wait(200);
+      // STEP 9: Create Image-Text segment
+      console.log('=== STEP 9: Create Image-Text segment ===');
+      setImportStep('Step 9/18: Image-Text segment...');
+      setImportProgress(9);
+      await wait(150);
 
       const imageTextSegment = {
         id: String(nextId),
@@ -507,19 +598,18 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             {
               title: 'Overview',
               description: description.substring(0, 500) || 'Content imported from source.',
-              imageUrl: imageUrl,
+              imageUrl: detailImageUrl || heroImageUrl,
               metadata: { altText: title },
             }
           ],
         },
       };
-      console.log('=== Image-Text segment created, hasImage:', !!imageUrl);
 
-      // STEP 7: Insert Image-Text to registry
-      console.log('=== STEP 7: Insert Image-Text registry ===');
-      setImportStep('Step 7/15: Save Image-Text registry...');
-      setImportProgress(7);
-      await wait(200);
+      // STEP 10: Insert Image-Text to registry
+      console.log('=== STEP 10: Insert Image-Text registry ===');
+      setImportStep('Step 10/18: Save Image-Text registry...');
+      setImportProgress(10);
+      await wait(150);
 
       const { error: regErr2 } = await supabase
         .from('segment_registry')
@@ -528,44 +618,57 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           segment_id: nextId,
           segment_key: `import-imagetext-${nextId}`,
           segment_type: 'image-text',
-          position: 1,
+          position: 2,
         });
 
       if (regErr2) throw new Error('Image-Text Registry: ' + regErr2.message);
-      console.log('=== Image-Text Registry OK');
-
       const imageTextId = nextId;
       nextId++;
 
-      // STEP 8: Create Tiles segment
-      console.log('=== STEP 8: Create Tiles segment ===');
-      setImportStep('Step 8/15: Tiles segment...');
-      setImportProgress(8);
-      await wait(200);
+      // STEP 11: Extract real tiles from markdown sections
+      console.log('=== STEP 11: Extract tiles from markdown ===');
+      setImportStep('Step 11/18: Extract tiles...');
+      setImportProgress(11);
+      await wait(150);
 
-      // Generate tiles from parsed sections or use defaults
-      const defaultTiles = [
-        { id: '1', icon: 'Zap', title: 'Feature 1', description: 'Key feature from the content.' },
-        { id: '2', icon: 'Target', title: 'Feature 2', description: 'Another important aspect.' },
-        { id: '3', icon: 'Shield', title: 'Feature 3', description: 'Additional capability.' },
-      ];
+      const extractedSections = extractSectionsFromMarkdown(rawMarkdown);
+      console.log('=== Found sections:', extractedSections.length);
+
+      // Map sections to tiles with icons
+      const iconMapping = ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'];
+      const realTiles = extractedSections.length > 0 
+        ? extractedSections.map((sec, idx) => ({
+            title: sec.title,
+            description: sec.description,
+            icon: iconMapping[idx % iconMapping.length],
+          }))
+        : [
+            { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
+            { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
+            { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
+          ];
+
+      // STEP 12: Create Tiles segment
+      console.log('=== STEP 12: Create Tiles segment ===');
+      setImportStep('Step 12/18: Tiles segment...');
+      setImportProgress(12);
+      await wait(150);
 
       const tilesSegment = {
         id: String(nextId),
         type: 'tiles',
         data: {
           title: 'Key Features',
-          columns: '3',
-          items: defaultTiles,
+          columns: String(Math.min(realTiles.length, 3)),
+          items: realTiles,
         },
       };
-      console.log('=== Tiles segment created with', defaultTiles.length, 'tiles');
 
-      // STEP 9: Insert Tiles to registry
-      console.log('=== STEP 9: Insert Tiles registry ===');
-      setImportStep('Step 9/15: Save Tiles registry...');
-      setImportProgress(9);
-      await wait(200);
+      // STEP 13: Insert Tiles to registry
+      console.log('=== STEP 13: Insert Tiles registry ===');
+      setImportStep('Step 13/18: Save Tiles registry...');
+      setImportProgress(13);
+      await wait(150);
 
       const { error: regErr3 } = await supabase
         .from('segment_registry')
@@ -574,21 +677,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           segment_id: nextId,
           segment_key: `import-tiles-${nextId}`,
           segment_type: 'tiles',
-          position: 2,
+          position: 3,
         });
 
       if (regErr3) throw new Error('Tiles Registry: ' + regErr3.message);
-      console.log('=== Tiles Registry OK');
-
       const tilesId = nextId;
 
-      // STEP 10: Save page_segments
-      console.log('=== STEP 10: Save page_segments ===');
-      setImportStep('Step 10/15: Save segments...');
-      setImportProgress(10);
-      await wait(200);
+      // STEP 14: Save page_segments
+      console.log('=== STEP 14: Save page_segments ===');
+      setImportStep('Step 14/18: Save segments...');
+      setImportProgress(14);
+      await wait(150);
 
-      const allSegments = [introSegment, imageTextSegment, tilesSegment];
+      const allSegments = [productHeroSegment, introSegment, imageTextSegment, tilesSegment];
       
       const { error: segErr } = await supabase
         .from('page_content')
@@ -603,13 +704,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         }, { onConflict: 'page_slug,section_key,language' });
 
       if (segErr) throw new Error('Segments: ' + segErr.message);
-      console.log('=== Segments saved');
 
-      // STEP 11: Save tab_order
-      console.log('=== STEP 11: Save tab_order ===');
-      setImportStep('Step 11/15: Tab order...');
-      setImportProgress(11);
-      await wait(200);
+      // STEP 15: Save tab_order
+      console.log('=== STEP 15: Save tab_order ===');
+      setImportStep('Step 15/18: Tab order...');
+      setImportProgress(15);
+      await wait(150);
 
       await supabase
         .from('page_content')
@@ -618,17 +718,28 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           section_key: 'tab_order',
           language,
           content_type: 'json',
-          content_value: JSON.stringify([String(introId), String(imageTextId), String(tilesId)]),
+          content_value: JSON.stringify([String(productHeroId), String(introId), String(imageTextId), String(tilesId)]),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      console.log('=== Tab order saved');
+      // STEP 16: Save segment content entries
+      console.log('=== STEP 16: Save segment content ===');
+      setImportStep('Step 16/18: Segment content...');
+      setImportProgress(16);
+      await wait(150);
 
-      // STEP 12: Save segment content entries
-      console.log('=== STEP 12: Save segment content ===');
-      setImportStep('Step 12/15: Segment content...');
-      setImportProgress(12);
-      await wait(200);
+      // Product Hero content
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: `segment-${productHeroId}`,
+          language,
+          content_type: 'json',
+          content_value: JSON.stringify(productHeroSegment.data),
+          content_status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'page_slug,section_key,language' });
 
       // Intro content
       await supabase
@@ -671,28 +782,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       console.log('=== Segment content saved');
 
-      // STEP 13: Complete
-      console.log('=== STEP 13: Complete ===');
-      setImportStep('Step 13/15: ✅ Done!');
-      setImportProgress(13);
-      await wait(500);
+      // STEP 17: Complete
+      console.log('=== STEP 17: Complete ===');
+      setImportStep('Step 17/18: ✅ Done!');
+      setImportProgress(17);
+      await wait(400);
 
-      const imgStatus = imageUrl ? 'with image' : 'no image';
-      toast.success(`Import done! 3 segments created (${imgStatus})`);
+      const segmentCount = allSegments.length;
+      const tileCount = realTiles.length;
+      toast.success(`Import done! ${segmentCount} segments, ${tileCount} tiles created`);
 
-      // STEP 14: Cleanup
-      console.log('=== STEP 14: Cleanup ===');
-      setImportStep('Step 14/15: Cleanup...');
-      setImportProgress(14);
-      await wait(200);
+      // STEP 18: Cleanup & Redirect
+      console.log('=== STEP 18: Redirect ===');
+      setImportStep('Step 18/18: Redirect...');
+      setImportProgress(18);
 
       setIsImporting(false);
       setParsedContent(null);
-
-      // STEP 15: Redirect
-      console.log('=== STEP 15: Redirect ===');
-      setImportStep('Step 15/15: Redirect...');
-      setImportProgress(15);
 
       const url = `/${language}/${pageSlug}?edit=true`;
       console.log('=== URL:', url);
