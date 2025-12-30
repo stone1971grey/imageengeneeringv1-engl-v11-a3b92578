@@ -502,13 +502,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         id: String(nextId),
         type: 'image-text',
         data: {
-          headline: 'Details',
-          columns: [
+          title: 'Details',
+          items: [
             {
-              id: '1',
+              title: 'Overview',
               description: description.substring(0, 500) || 'Content imported from source.',
               imageUrl: imageUrl,
-              imageAlt: title,
+              metadata: { altText: title },
             }
           ],
         },
@@ -554,9 +554,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         id: String(nextId),
         type: 'tiles',
         data: {
-          headline: 'Key Features',
-          columns: 3,
-          tiles: defaultTiles,
+          title: 'Key Features',
+          columns: '3',
+          items: defaultTiles,
         },
       };
       console.log('=== Tiles segment created with', defaultTiles.length, 'tiles');
