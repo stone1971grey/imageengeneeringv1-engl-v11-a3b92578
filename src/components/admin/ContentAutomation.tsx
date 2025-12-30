@@ -1154,24 +1154,31 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
 
       // === FRONTEND APPROVAL WORKFLOW ===
-      // SEQUENTIAL processing to prevent crashes from parallel DB operations
-      // Each step is processed one at a time with progress feedback
+      // ULTRA-SAFE SEQUENTIAL processing with long delays to prevent DB overload
+      // Each operation is processed one at a time with generous pauses
       
-      const totalSteps = newRegistryEntries.length + newSegments.length + 4; // +4 for meta operations
+      const totalSteps = newRegistryEntries.length + newSegments.length + 6; // +6 for meta operations
       let currentStep = 0;
       
-      const updateProgress = (stepName: string) => {
+      // Generous delay function - yields to UI and prevents DB overload
+      const safeDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      
+      const updateProgress = async (stepName: string) => {
         currentStep++;
         const percent = Math.round((currentStep / totalSteps) * 100);
         setImportStep(`${stepName} (${percent}%)`);
         console.log(`[ContentAutomation] Step ${currentStep}/${totalSteps}: ${stepName}`);
+        // Yield to UI thread
+        await safeDelay(10);
       };
 
-      // 1. Insert segment registry entries ONE BY ONE (sequential)
-      updateProgress('Creating segment registry...');
+      // 1. Insert segment registry entries ONE BY ONE with LONG delays
+      await updateProgress('Creating segment registry...');
+      await safeDelay(200); // Initial pause before starting
+      
       for (let i = 0; i < newRegistryEntries.length; i++) {
         const entry = newRegistryEntries[i];
-        updateProgress(`Registry entry ${i + 1}/${newRegistryEntries.length}...`);
+        await updateProgress(`Registry entry ${i + 1}/${newRegistryEntries.length}...`);
         
         const { error: registryError } = await supabase
           .from('segment_registry')
@@ -1182,11 +1189,18 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           throw registryError;
         }
         
-        // Small delay between operations to prevent DB overload
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // LONGER delay between operations (200ms instead of 50ms)
+        await safeDelay(200);
+        
+        // Extra pause every 3 operations to let system breathe
+        if ((i + 1) % 3 === 0) {
+          console.log('[ContentAutomation] Micro-batch pause after 3 registry entries...');
+          await safeDelay(500);
+        }
       }
       
-      updateProgress('Loading existing content...');
+      await updateProgress('Loading existing content...');
+      await safeDelay(200);
 
       // 2. Load existing page_content for merging
       const { data: existingContent } = await supabase
@@ -1205,7 +1219,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       // Merge new segments
       const mergedSegments = [...existingSegments, ...newSegments];
 
-      updateProgress('Updating tab order...');
+      await safeDelay(300); // Pause after read before writes
+      await updateProgress('Updating tab order...');
 
       // 3. Update tab_order
       const { data: tabOrderData } = await supabase
@@ -1222,7 +1237,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       const newTabOrder = [...tabOrder, ...newSegments.map((s: any) => s.id)];
 
-      updateProgress('Saving page segments...');
+      await safeDelay(300);
+      await updateProgress('Saving page segments...');
 
       // 4. Save page_segments with 'pending' content_status
       const { error: contentError } = await supabase
@@ -1241,9 +1257,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (contentError) throw contentError;
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await safeDelay(400); // Longer pause after large write
 
       // 5. Save tab_order
+      await updateProgress('Saving tab order...');
       const { error: tabError } = await supabase
         .from('page_content')
         .upsert({
@@ -1259,12 +1276,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (tabError) throw tabError;
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await safeDelay(400);
 
-      // 6. Save individual segment content SEQUENTIALLY (not parallel!)
+      // 6. Save individual segment content SEQUENTIALLY with LONG delays
+      console.log(`[ContentAutomation] Starting segment saves: ${newSegments.length} segments`);
+      
       for (let i = 0; i < newSegments.length; i++) {
         const seg = newSegments[i] as any;
-        updateProgress(`Saving segment ${i + 1}/${newSegments.length}: ${seg.type}...`);
+        await updateProgress(`Saving segment ${i + 1}/${newSegments.length}: ${seg.type}...`);
         
         const segmentKey = `segment-${seg.id}`;
         const { error: segError } = await supabase
@@ -1286,13 +1305,21 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           throw segError;
         }
         
-        // Small delay between segment saves
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // LONGER delay between segment saves (250ms instead of 50ms)
+        await safeDelay(250);
+        
+        // Extra pause every 2 segments to let system breathe
+        if ((i + 1) % 2 === 0) {
+          console.log(`[ContentAutomation] Micro-batch pause after ${i + 1} segments...`);
+          await safeDelay(500);
+        }
       }
+
+      await safeDelay(300);
 
       // 7. Save 301 redirect if checkbox is checked
       if (createRedirect && sourceUrl) {
-        updateProgress('Creating redirect...');
+        await updateProgress('Creating redirect...');
         const targetUrl = `/${language}/${pageSlug}`;
         let sourceUrlPath = sourceUrl;
         try {
@@ -1311,9 +1338,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             is_active: true,
             notes: `Content Automation for page "${pageSlug}" [${language.toUpperCase()}] | Source: ${sourceUrl}`,
           });
+          
+        await safeDelay(200);
       }
 
-      updateProgress('Complete!');
+      await updateProgress('Complete!');
       console.log('[ContentAutomation] All segments saved successfully');
 
       // SUCCESS - Clear ALL loading state BEFORE any redirect
