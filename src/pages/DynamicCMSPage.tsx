@@ -258,180 +258,135 @@ const DynamicCMSPage = () => {
     }
   }, [currentUser, userRole, updateVisibleSegment, loading, pageSegments.length]);
 
-  // Check authentication status on mount with timeout fallback
+  // SIMPLIFIED: Load auth state WITHOUT blocking content loading
+  // Auth is only needed for draft access and edit mode
   useEffect(() => {
     let isMounted = true;
-    let authTimeoutId: NodeJS.Timeout;
     
     const checkAuth = async () => {
-      console.log('[DynamicCMSPage] Starting auth check...');
+      console.log('[DynamicCMSPage] Checking auth (non-blocking)...');
       
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.warn('[DynamicCMSPage] Session error (non-critical):', sessionError);
-        }
-        
+        const { data: { session } } = await supabase.auth.getSession();
         if (!isMounted) return;
         
         setCurrentUser(session?.user ?? null);
         
         if (session?.user) {
-          console.log('[DynamicCMSPage] User found, checking roles...');
-          
-          // Check user role with timeout protection
-          try {
-            const { data: adminData } = await supabase
+          // Check roles in parallel
+          const [adminResult, editorResult] = await Promise.all([
+            supabase
               .from("user_roles")
               .select("role")
               .eq("user_id", session.user.id)
               .eq("role", "admin")
-              .maybeSingle();
-            
-            if (!isMounted) return;
-            
-            if (adminData) {
-              setUserRole('admin');
-              console.log('[DynamicCMSPage] User is admin');
-            } else {
-              const { data: editorData } = await supabase
-                .from("user_roles")
-                .select("role")
-                .eq("user_id", session.user.id)
-                .eq("role", "editor")
-                .maybeSingle();
-              
-              if (!isMounted) return;
-              
-              if (editorData) {
-                setUserRole('editor');
-                console.log('[DynamicCMSPage] User is editor');
-              } else {
-                console.log('[DynamicCMSPage] User has no admin/editor role');
-              }
-            }
-          } catch (roleError) {
-            console.warn('[DynamicCMSPage] Role check failed (non-critical):', roleError);
+              .maybeSingle(),
+            supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", session.user.id)
+              .eq("role", "editor")
+              .maybeSingle()
+          ]);
+          
+          if (!isMounted) return;
+          
+          if (adminResult.data) {
+            setUserRole('admin');
+          } else if (editorResult.data) {
+            setUserRole('editor');
           }
-        } else {
-          console.log('[DynamicCMSPage] No user session');
         }
-      } catch (authError) {
-        console.error('[DynamicCMSPage] Auth check failed:', authError);
+      } catch (error) {
+        console.warn('[DynamicCMSPage] Auth check failed (non-critical):', error);
       } finally {
         if (isMounted) {
-          clearTimeout(authTimeoutId);
-          console.log('[DynamicCMSPage] Auth check complete, setting authChecked=true');
           setAuthChecked(true);
         }
       }
     };
     
-    // Timeout fallback: If auth check takes too long, proceed anyway
-    authTimeoutId = setTimeout(() => {
-      if (isMounted && !authChecked) {
-        console.warn('[DynamicCMSPage] Auth check timeout - proceeding without auth');
-        setAuthChecked(true);
-      }
-    }, 3000); // 3 second timeout for auth
-    
     checkAuth();
     
-    // Listen for auth changes
-    let subscription: { unsubscribe: () => void } | null = null;
-    try {
-      const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        if (isMounted) {
-          setCurrentUser(session?.user ?? null);
-          if (!session?.user) {
-            setUserRole(null);
-          }
+    // Auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      if (isMounted) {
+        setCurrentUser(session?.user ?? null);
+        if (!session?.user) {
+          setUserRole(null);
         }
-      });
-      subscription = data.subscription;
-    } catch (e) {
-      console.error('[DynamicCMSPage] Failed to setup auth listener:', e);
-    }
+      }
+    });
     
     return () => {
       isMounted = false;
-      clearTimeout(authTimeoutId);
       subscription?.unsubscribe();
     };
   }, []);
 
+  // CRITICAL FIX: Load content IMMEDIATELY without waiting for auth
+  // Draft access is checked AFTER content is loaded
   useEffect(() => {
-    if (pageSlug && authChecked) {
+    if (pageSlug) {
       loadContent();
     }
-  }, [pageSlug, currentUrlLanguage, authChecked]);
+  }, [pageSlug, currentUrlLanguage]);
 
   const loadContent = async () => {
     console.log('[DynamicCMSPage] loadContent started for:', pageSlug, 'language:', currentUrlLanguage);
+    
+    // CRITICAL: Use try-finally to ALWAYS set loading to false
     try {
       if (!pageSlug) {
         console.log('[DynamicCMSPage] No pageSlug, setting pageNotFound');
         setPageNotFound(true);
-        setLoading(false);
         return;
       }
 
-    // Extract language from URL
-    const pathParts = location.pathname.replace(/^\/+/, "").split('/');
-    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-    const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+      // Extract language from URL
+      const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+      const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+      const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
-    // Check if page exists in page_registry and if it's a shortcut
-    // Also check page status for draft visibility
-    const { data: pageData } = await supabase
-      .from("page_registry")
-      .select("page_slug, target_page_slug, status")
-      .eq("page_slug", pageSlug)
-      .maybeSingle();
+      // Check if page exists in page_registry and if it's a shortcut
+      const { data: pageData, error: pageError } = await supabase
+        .from("page_registry")
+        .select("page_slug, target_page_slug, status")
+        .eq("page_slug", pageSlug)
+        .maybeSingle();
 
-    if (!pageData) {
-      console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
-      setLoading(false);
-      return;
-    }
-
-    // Check if page is a draft and user has access
-    // IMPORTANT: For draft pages, we need user AND role to be set
-    // If authChecked is true but role check is still pending, we wait
-    if (pageData.status === 'draft') {
-      setIsDraftPage(true);
-      
-      // Draft pages are only visible to logged-in admins and editors
-      // If user is logged in but role not yet determined, allow access (will recheck on next render)
-      if (!currentUser) {
-        console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access denied (not logged in)`);
-        setAccessDenied(true);
-        setLoading(false);
+      if (pageError) {
+        console.error('[DynamicCMSPage] Error fetching page_registry:', pageError);
         return;
       }
-      
-      // If user is logged in, allow access even if role is still loading
-      // The toolbar visibility will handle role-based features
-      console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access granted for user ${currentUser.id}, role: ${userRole || 'pending'}`);
-    } else {
-      setIsDraftPage(false);
-      setAccessDenied(false);
-    }
 
-    // If this page is a shortcut, redirect to the target page
-    if (pageData.target_page_slug) {
-      console.log(`[DynamicCMSPage] Page ${pageSlug} is a shortcut, redirecting to ${pageData.target_page_slug}`);
-      navigate(`/${urlLanguage}/${pageData.target_page_slug}`, { replace: true });
-      return;
-    }
+      if (!pageData) {
+        console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
+        return;
+      }
 
-    // Try to load content in requested language first
-    let { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("language", urlLanguage);
+      // CRITICAL FIX: For draft pages, DON'T block content loading
+      if (pageData.status === 'draft') {
+        setIsDraftPage(true);
+        console.log(`[DynamicCMSPage] Draft page ${pageSlug} detected - will check access after auth`);
+      } else {
+        setIsDraftPage(false);
+        setAccessDenied(false);
+      }
+
+      // If this page is a shortcut, redirect to the target page
+      if (pageData.target_page_slug) {
+        console.log(`[DynamicCMSPage] Page ${pageSlug} is a shortcut, redirecting to ${pageData.target_page_slug}`);
+        navigate(`/${urlLanguage}/${pageData.target_page_slug}`, { replace: true });
+        return; // Loading will be set to false in finally block
+      }
+
+      // Try to load content in requested language first
+      let { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("language", urlLanguage);
 
     // Fallback to English if no content found in requested language
     if (!data || data.length === 0) {
@@ -954,10 +909,11 @@ const DynamicCMSPage = () => {
         });
       }
     }
-
-      setLoading(false);
     } catch (error) {
       console.error('[DynamicCMSPage] Error loading content:', error);
+    } finally {
+      // CRITICAL: ALWAYS set loading to false, regardless of success or failure
+      console.log('[DynamicCMSPage] loadContent finished, setting loading=false');
       setLoading(false);
     }
   };
@@ -1629,8 +1585,11 @@ const DynamicCMSPage = () => {
     );
   }
 
-  // Access denied for draft pages (not logged in or no admin/editor role)
-  if (accessDenied) {
+  // CRITICAL FIX: Dynamic access check for draft pages
+  // Only deny access once auth check is complete AND user is not authorized
+  const shouldDenyDraftAccess = isDraftPage && authChecked && !currentUser;
+  
+  if (shouldDenyDraftAccess) {
     return (
       <PageErrorBoundary>
         <div className="min-h-screen bg-gray-50">
