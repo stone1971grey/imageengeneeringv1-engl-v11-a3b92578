@@ -442,57 +442,110 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       let nextId = (maxData?.segment_id || 0) + 1;
       console.log('=== Next ID:', nextId);
 
-      // STEP 3: Download ALL gallery images (up to 5)
-      console.log('=== STEP 3: Download gallery images ===');
-      setImportStep('Step 3/21: Gallery images...');
+      // STEP 3: Check Media Management for existing assets OR download new ones
+      console.log('=== STEP 3: Check Media Management for existing assets ===');
+      setImportStep('Step 3/21: Checking Media Management...');
       setImportProgress(3);
       await wait(150);
 
       const galleryImages: { url: string; alt: string }[] = [];
-      const sourceImages = parsedContent?.images || [];
-      const maxImages = Math.min(sourceImages.length, 5);
+      const productHeroSegmentId = nextId; // This will be the Product Hero segment ID
       
-      console.log(`=== Found ${sourceImages.length} images, downloading up to ${maxImages}`);
+      // First, check if assets already exist in Media Management for this page
+      const { data: existingAssets } = await supabase
+        .from('file_segment_mappings')
+        .select('id, file_path, alt_text, segment_ids')
+        .ilike('file_path', `${pageSlug}/%`);
       
-      for (let i = 0; i < maxImages; i++) {
-        const img = sourceImages[i];
-        if (!img?.url) continue;
+      console.log(`=== Found ${existingAssets?.length || 0} existing assets in Media Management`);
+      
+      if (existingAssets && existingAssets.length > 0) {
+        // USE EXISTING ASSETS - no download needed
+        console.log('=== Using existing Media Management assets');
         
-        try {
-          console.log(`=== Downloading image ${i + 1}/${maxImages}: ${img.url.substring(0, 80)}...`);
-          const imgResponse = await fetch(img.url);
-          if (imgResponse.ok) {
-            const blob = await imgResponse.blob();
-            const ext = img.url.split('.').pop()?.split('?')[0] || 'png';
-            const fileName = `gallery-${i}-${Date.now()}.${ext}`;
-            const filePath = `${pageSlug}/product-hero/${fileName}`;
-            
-            const { error: uploadErr } = await supabase.storage
-              .from('page-images')
-              .upload(filePath, blob, { contentType: blob.type });
-            
-            if (!uploadErr) {
-              const { data: urlData } = supabase.storage
-                .from('page-images')
-                .getPublicUrl(filePath);
-              galleryImages.push({ 
-                url: urlData.publicUrl, 
-                alt: img.title || `${title} - Image ${i + 1}` 
-              });
-              console.log(`=== Image ${i + 1} uploaded successfully`);
-            } else {
-              console.warn(`=== Image ${i + 1} upload failed:`, uploadErr.message);
-            }
+        for (const asset of existingAssets.slice(0, 5)) {
+          // Build public URL from file_path
+          const { data: urlData } = supabase.storage
+            .from('page-images')
+            .getPublicUrl(asset.file_path);
+          
+          galleryImages.push({
+            url: urlData.publicUrl,
+            alt: asset.alt_text || title,
+          });
+          
+          // Update segment_ids to include new segment ID
+          const currentIds = asset.segment_ids || [];
+          const newSegmentIdStr = String(productHeroSegmentId);
+          if (!currentIds.includes(newSegmentIdStr)) {
+            const updatedIds = [...currentIds.filter((id: string) => id !== '578'), newSegmentIdStr]; // Remove old ID, add new
+            await supabase
+              .from('file_segment_mappings')
+              .update({ segment_ids: updatedIds })
+              .eq('id', asset.id);
+            console.log(`=== Updated segment_ids for ${asset.file_path}: ${updatedIds.join(', ')}`);
           }
-        } catch (imgErr) {
-          console.warn(`=== Image ${i + 1} download failed:`, imgErr);
         }
         
-        // Small delay between downloads to avoid rate limiting
-        await wait(100);
+        console.log(`=== Loaded ${galleryImages.length} images from Media Management`);
+      } else {
+        // NO EXISTING ASSETS - download from source and create mappings
+        console.log('=== No existing assets, downloading from source...');
+        setImportStep('Step 3/21: Downloading images...');
+        
+        const sourceImages = parsedContent?.images || [];
+        const maxImages = Math.min(sourceImages.length, 5);
+        
+        for (let i = 0; i < maxImages; i++) {
+          const img = sourceImages[i];
+          if (!img?.url) continue;
+          
+          try {
+            console.log(`=== Downloading image ${i + 1}/${maxImages}: ${img.url.substring(0, 80)}...`);
+            const imgResponse = await fetch(img.url);
+            if (imgResponse.ok) {
+              const blob = await imgResponse.blob();
+              const ext = img.url.split('.').pop()?.split('?')[0] || 'png';
+              // Use descriptive filename from source URL if possible
+              const sourceFileName = img.url.split('/').pop()?.split('?')[0] || `gallery-${i}`;
+              const fileName = sourceFileName.includes('.') ? sourceFileName : `${sourceFileName}.${ext}`;
+              const filePath = `${pageSlug}/${fileName}`;
+              
+              const { error: uploadErr } = await supabase.storage
+                .from('page-images')
+                .upload(filePath, blob, { contentType: blob.type, upsert: true });
+              
+              if (!uploadErr) {
+                const { data: urlData } = supabase.storage
+                  .from('page-images')
+                  .getPublicUrl(filePath);
+                
+                const altText = img.title || `${title} - Image ${i + 1}`;
+                galleryImages.push({ url: urlData.publicUrl, alt: altText });
+                
+                // Create file_segment_mapping entry
+                await supabase
+                  .from('file_segment_mappings')
+                  .upsert({
+                    file_path: filePath,
+                    bucket_id: 'page-images',
+                    segment_ids: [String(productHeroSegmentId)],
+                    alt_text: altText,
+                    visibility: 'public',
+                  }, { onConflict: 'file_path' });
+                
+                console.log(`=== Image ${i + 1} uploaded and mapped: ${filePath}`);
+              }
+            }
+          } catch (imgErr) {
+            console.warn(`=== Image ${i + 1} download failed:`, imgErr);
+          }
+          
+          await wait(100);
+        }
       }
       
-      console.log(`=== Gallery images uploaded: ${galleryImages.length}`);
+      console.log(`=== Gallery images ready: ${galleryImages.length}`);
 
       // STEP 4: Create Product Hero Gallery segment
       console.log('=== STEP 4: Create Product Hero Gallery ===');
