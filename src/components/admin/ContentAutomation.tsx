@@ -979,8 +979,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         setImportProgress(currentStep);
         setImportStep(stepName);
         console.log(`[ContentAutomation] ▶ Step ${currentStep}/${totalSteps}: ${stepName}`);
-        // Yield to UI thread - important for progress bar to update
-        await safeDelay(50);
+        // Yield to UI thread - LONGER delay ensures React re-renders
+        await safeDelay(100);
       };
 
       // 1. Insert segment registry entries ONE BY ONE with LONG delays
