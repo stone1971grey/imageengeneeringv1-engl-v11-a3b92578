@@ -386,18 +386,20 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
     try {
-      // STEP 1
+      // STEP 1: Setup
       console.log('=== STEP 1: Setup ===');
-      setImportStep('Step 1/10: Setup...');
+      setImportStep('Step 1/12: Setup...');
       setImportProgress(1);
+      setImportTotal(12);
       await wait(200);
 
       const title = parsedContent?.title || 'Import';
+      const description = parsedContent?.description || '';
       console.log('=== Title:', title);
 
-      // STEP 2
+      // STEP 2: Get max segment ID
       console.log('=== STEP 2: Get max ID ===');
-      setImportStep('Step 2/10: Get ID...');
+      setImportStep('Step 2/12: Get ID...');
       setImportProgress(2);
       await wait(200);
 
@@ -408,73 +410,142 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .limit(1)
         .maybeSingle();
 
-      const nextId = (maxData?.segment_id || 0) + 1;
+      let nextId = (maxData?.segment_id || 0) + 1;
       console.log('=== Next ID:', nextId);
 
-      // STEP 3
-      console.log('=== STEP 3: Create segment ===');
-      setImportStep('Step 3/10: Create segment...');
+      // STEP 3: Create Intro segment
+      console.log('=== STEP 3: Create Intro segment ===');
+      setImportStep('Step 3/12: Intro segment...');
       setImportProgress(3);
       await wait(200);
 
-      const segment = {
+      const introSegment = {
         id: String(nextId),
         type: 'intro',
         data: {
           headline: title.substring(0, 100),
-          introText: (parsedContent?.description || 'Content').substring(0, 300),
+          introText: description.substring(0, 300),
         },
       };
-      console.log('=== Segment:', segment.type);
+      console.log('=== Intro segment created');
 
-      // STEP 4
-      console.log('=== STEP 4: Insert registry ===');
-      setImportStep('Step 4/10: Save registry...');
+      // STEP 4: Insert Intro to registry
+      console.log('=== STEP 4: Insert Intro registry ===');
+      setImportStep('Step 4/12: Save Intro registry...');
       setImportProgress(4);
       await wait(200);
 
-      const { error: regErr } = await supabase
+      const { error: regErr1 } = await supabase
         .from('segment_registry')
         .insert({
           page_slug: pageSlug,
           segment_id: nextId,
-          segment_key: `import-${nextId}`,
+          segment_key: `import-intro-${nextId}`,
           segment_type: 'intro',
           position: 0,
         });
 
-      if (regErr) {
-        throw new Error('Registry: ' + regErr.message);
-      }
-      console.log('=== Registry OK ===');
+      if (regErr1) throw new Error('Intro Registry: ' + regErr1.message);
+      console.log('=== Intro Registry OK');
 
-      // STEP 5
-      console.log('=== STEP 5: Load existing ===');
-      setImportStep('Step 5/10: Load existing...');
+      const introId = nextId;
+      nextId++;
+
+      // STEP 5: Download image from source
+      console.log('=== STEP 5: Download image ===');
+      setImportStep('Step 5/12: Download image...');
       setImportProgress(5);
       await wait(200);
 
-      const { data: existing } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'page_segments')
-        .eq('language', language)
-        .maybeSingle();
+      let imageUrl = '';
+      const firstImageObj = parsedContent?.images?.[0];
+      const firstImageUrl = firstImageObj?.url || '';
+      
+      if (firstImageUrl) {
+        console.log('=== Found image:', firstImageUrl.substring(0, 50));
+        try {
+          // Fetch image
+          const imgResponse = await fetch(firstImageUrl);
+          if (imgResponse.ok) {
+            const blob = await imgResponse.blob();
+            const ext = firstImageUrl.split('.').pop()?.split('?')[0] || 'jpg';
+            const fileName = `import-${Date.now()}.${ext}`;
+            const filePath = `${pageSlug}/image-text/${fileName}`;
+            
+            // Upload to Supabase Storage
+            const { error: uploadErr } = await supabase.storage
+              .from('page-images')
+              .upload(filePath, blob, { contentType: blob.type });
+            
+            if (!uploadErr) {
+              const { data: urlData } = supabase.storage
+                .from('page-images')
+                .getPublicUrl(filePath);
+              imageUrl = urlData.publicUrl;
+              console.log('=== Image uploaded:', imageUrl.substring(0, 50));
+            } else {
+              console.warn('=== Upload failed:', uploadErr.message);
+            }
+          }
+        } catch (imgErr) {
+          console.warn('=== Image download failed:', imgErr);
+        }
+      } else {
+        console.log('=== No images found in content');
+      }
 
-      let segments: any[] = [];
-      try {
-        segments = existing?.content_value ? JSON.parse(existing.content_value) : [];
-      } catch { segments = []; }
-      console.log('=== Existing segments:', segments.length);
-
-      // STEP 6
-      console.log('=== STEP 6: Save segments ===');
-      setImportStep('Step 6/10: Save segments...');
+      // STEP 6: Create Image-Text segment
+      console.log('=== STEP 6: Create Image-Text segment ===');
+      setImportStep('Step 6/12: Image-Text segment...');
       setImportProgress(6);
       await wait(200);
 
-      const merged = [...segments, segment];
+      const imageTextSegment = {
+        id: String(nextId),
+        type: 'image-text',
+        data: {
+          headline: 'Details',
+          columns: [
+            {
+              id: '1',
+              description: description.substring(0, 500) || 'Content imported from source.',
+              imageUrl: imageUrl,
+              imageAlt: title,
+            }
+          ],
+        },
+      };
+      console.log('=== Image-Text segment created, hasImage:', !!imageUrl);
+
+      // STEP 7: Insert Image-Text to registry
+      console.log('=== STEP 7: Insert Image-Text registry ===');
+      setImportStep('Step 7/12: Save Image-Text registry...');
+      setImportProgress(7);
+      await wait(200);
+
+      const { error: regErr2 } = await supabase
+        .from('segment_registry')
+        .insert({
+          page_slug: pageSlug,
+          segment_id: nextId,
+          segment_key: `import-imagetext-${nextId}`,
+          segment_type: 'image-text',
+          position: 1,
+        });
+
+      if (regErr2) throw new Error('Image-Text Registry: ' + regErr2.message);
+      console.log('=== Image-Text Registry OK');
+
+      const imageTextId = nextId;
+
+      // STEP 8: Save page_segments
+      console.log('=== STEP 8: Save page_segments ===');
+      setImportStep('Step 8/12: Save segments...');
+      setImportProgress(8);
+      await wait(200);
+
+      const allSegments = [introSegment, imageTextSegment];
+      
       const { error: segErr } = await supabase
         .from('page_content')
         .upsert({
@@ -482,34 +553,19 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           section_key: 'page_segments',
           language,
           content_type: 'json',
-          content_value: JSON.stringify(merged),
+          content_value: JSON.stringify(allSegments),
           content_status: 'pending',
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      if (segErr) {
-        throw new Error('Segments: ' + segErr.message);
-      }
-      console.log('=== Segments OK ===');
+      if (segErr) throw new Error('Segments: ' + segErr.message);
+      console.log('=== Segments saved');
 
-      // STEP 7
-      console.log('=== STEP 7: Tab order ===');
-      setImportStep('Step 7/10: Tab order...');
-      setImportProgress(7);
+      // STEP 9: Save tab_order
+      console.log('=== STEP 9: Save tab_order ===');
+      setImportStep('Step 9/12: Tab order...');
+      setImportProgress(9);
       await wait(200);
-
-      const { data: tabData } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'tab_order')
-        .eq('language', language)
-        .maybeSingle();
-
-      let tabs: string[] = [];
-      try {
-        tabs = tabData?.content_value ? JSON.parse(tabData.content_value) : [];
-      } catch { tabs = []; }
 
       await supabase
         .from('page_content')
@@ -518,44 +574,59 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           section_key: 'tab_order',
           language,
           content_type: 'json',
-          content_value: JSON.stringify([...tabs, String(nextId)]),
+          content_value: JSON.stringify([String(introId), String(imageTextId)]),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      console.log('=== Tab order OK ===');
+      console.log('=== Tab order saved');
 
-      // STEP 8
-      console.log('=== STEP 8: Segment content ===');
-      setImportStep('Step 8/10: Content...');
-      setImportProgress(8);
+      // STEP 10: Save segment content entries
+      console.log('=== STEP 10: Save segment content ===');
+      setImportStep('Step 10/12: Segment content...');
+      setImportProgress(10);
       await wait(200);
 
+      // Intro content
       await supabase
         .from('page_content')
         .upsert({
           page_slug: pageSlug,
-          section_key: `segment-${nextId}`,
+          section_key: `segment-${introId}`,
           language,
           content_type: 'json',
-          content_value: JSON.stringify(segment.data),
+          content_value: JSON.stringify(introSegment.data),
           content_status: 'pending',
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      console.log('=== Content OK ===');
+      // Image-Text content
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: `segment-${imageTextId}`,
+          language,
+          content_type: 'json',
+          content_value: JSON.stringify(imageTextSegment.data),
+          content_status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'page_slug,section_key,language' });
 
-      // STEP 9
-      console.log('=== STEP 9: Complete ===');
-      setImportStep('Step 9/10: ✅ Done!');
-      setImportProgress(9);
+      console.log('=== Segment content saved');
+
+      // STEP 11: Complete
+      console.log('=== STEP 11: Complete ===');
+      setImportStep('Step 11/12: ✅ Done!');
+      setImportProgress(11);
       await wait(500);
 
-      toast.success('Import done! 1 segment created.');
+      const imgStatus = imageUrl ? 'with image' : 'no image';
+      toast.success(`Import done! 2 segments created (${imgStatus})`);
 
-      // STEP 10
-      console.log('=== STEP 10: Redirect ===');
-      setImportStep('Step 10/10: Redirect...');
-      setImportProgress(10);
+      // STEP 12: Redirect
+      console.log('=== STEP 12: Redirect ===');
+      setImportStep('Step 12/12: Redirect...');
+      setImportProgress(12);
 
       setIsImporting(false);
       setParsedContent(null);
