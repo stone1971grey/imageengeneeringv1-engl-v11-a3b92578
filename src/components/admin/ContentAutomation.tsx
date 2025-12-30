@@ -1651,18 +1651,44 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 </div>
               </ScrollArea>
 
-              {/* Import Progress Indicator */}
-              {isImporting && importStep && (
-                <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 mb-3">
+              {/* Import Progress Indicator - DETAILED with step counter and progress bar */}
+              {isImporting && (
+                <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 mb-3 space-y-3">
+                  {/* Header with animated icon */}
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <div className="w-8 h-8 border-4 border-gray-600 border-t-[#f9dc24] rounded-full animate-spin"></div>
                     </div>
                     <div className="flex-1">
-                      <p className="text-white font-medium">{importStep}</p>
-                      <p className="text-gray-400 text-sm">Please wait, this may take a moment...</p>
+                      <p className="text-white font-medium">Import in Progress</p>
+                      <p className="text-gray-400 text-sm">
+                        {importProgress > 0 && importTotal > 0 
+                          ? `Step ${importProgress} of ${importTotal}` 
+                          : 'Initializing...'}
+                      </p>
                     </div>
+                    {/* Percentage badge */}
+                    {importTotal > 0 && (
+                      <div className="bg-[#f9dc24] text-black font-bold px-3 py-1 rounded-full text-sm">
+                        {Math.round((importProgress / importTotal) * 100)}%
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* Visual Progress Bar */}
+                  <div className="w-full bg-gray-600 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className="bg-[#f9dc24] h-full transition-all duration-200 ease-out"
+                      style={{ width: importTotal > 0 ? `${(importProgress / importTotal) * 100}%` : '0%' }}
+                    />
+                  </div>
+                  
+                  {/* Current step description */}
+                  {importStep && (
+                    <p className="text-gray-300 text-sm truncate">
+                      {importStep}
+                    </p>
+                  )}
                 </div>
               )}
 
