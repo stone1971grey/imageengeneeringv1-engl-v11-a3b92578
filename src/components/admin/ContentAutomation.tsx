@@ -1157,31 +1157,57 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.log('[ContentAutomation] ═══════════════════════════════════════');
       console.log('[ContentAutomation] ✅ ALL SEGMENTS SAVED SUCCESSFULLY');
       console.log('[ContentAutomation] ═══════════════════════════════════════');
+      console.log('[ContentAutomation] Total segments imported:', newSegments.length);
 
-      // SUCCESS - Clear ALL loading state BEFORE any redirect
-      console.log('[ContentAutomation] → Clearing state before redirect...');
-      setIsImporting(false);
-      setImportStep('');
-      setImportProgress(0);
-      setImportTotal(0);
-      setParsedContent(null);
+      // SUCCESS - Show completion state
+      setImportStep('✅ Import complete! Preparing redirect...');
       
       const frontendUrl = `/${language}/${pageSlug}?edit=true`;
       console.log('[ContentAutomation] → Redirect URL:', frontendUrl);
-      
-      toast.success(`${newSegments.length} segments imported successfully!`, {
-        description: 'Redirecting to frontend for approval...',
-      });
 
-      // Notify parent BEFORE redirect
-      onImportComplete?.();
+      // Wait a moment to show success
+      await safeDelay(500);
 
-      // CRITICAL: Use window.location.href for a clean page transition
-      console.log('[ContentAutomation] → Initiating redirect in 800ms...');
-      setTimeout(() => {
-        console.log('[ContentAutomation] → REDIRECT NOW!');
+      // CRITICAL: Clear state and redirect in one atomic operation
+      // Use try-finally to GUARANTEE state is cleared even if redirect fails
+      try {
+        toast.success(`${newSegments.length} segments imported successfully!`, {
+          description: 'Opening frontend for approval...',
+        });
+
+        // Notify parent
+        onImportComplete?.();
+
+        // Short delay then redirect - use location.replace for cleaner history
+        console.log('[ContentAutomation] → Redirecting NOW...');
+        
+        // ULTRA-SAFE REDIRECT: Set a fallback timeout in case window.location fails
+        const redirectTimeout = setTimeout(() => {
+          console.error('[ContentAutomation] Redirect failed! Reload page manually.');
+          toast.error('Redirect failed - please navigate manually to: ' + frontendUrl);
+        }, 3000);
+        
+        // Clear state BEFORE redirect attempt
+        setIsImporting(false);
+        setImportStep('');
+        setImportProgress(0);
+        setImportTotal(0);
+        setParsedContent(null);
+        
+        // Force DOM update before navigation
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        
+        // Execute redirect
         window.location.href = frontendUrl;
-      }, 800);
+        clearTimeout(redirectTimeout);
+        
+      } catch (redirectError) {
+        console.error('[ContentAutomation] Redirect error:', redirectError);
+        // Ensure state is cleared even on error
+        setIsImporting(false);
+        setImportStep('');
+        toast.info(`Import complete! Navigate to: ${frontendUrl}`);
+      }
 
     } catch (error: unknown) {
       console.error('[ContentAutomation] ═══════════════════════════════════════');
@@ -1273,11 +1299,29 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               </p>
             </div>
             
-            {/* Warning */}
-            <p className="text-gray-500 text-xs mt-3 flex items-center gap-2">
-              <Clock className="h-3 w-3" />
-              Sequential processing to prevent database overload. Please wait...
-            </p>
+            {/* Emergency Cancel Button */}
+            <div className="flex items-center justify-between mt-3">
+              <p className="text-gray-500 text-xs flex items-center gap-2">
+                <Clock className="h-3 w-3" />
+                Sequential processing...
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                onClick={() => {
+                  console.log('[ContentAutomation] ⚠️ EMERGENCY CANCEL triggered by user');
+                  setIsImporting(false);
+                  setImportStep('');
+                  setImportProgress(0);
+                  setImportTotal(0);
+                  toast.warning('Import cancelled', { description: 'Partial data may have been saved.' });
+                }}
+              >
+                <AlertCircle className="h-4 w-4 mr-1" />
+                Cancel
+              </Button>
+            </div>
           </div>
         )}
       </CardHeader>
