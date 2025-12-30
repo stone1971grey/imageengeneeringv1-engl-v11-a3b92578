@@ -392,13 +392,18 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
     try {
       console.log('[ContentAutomation] → Fetching max segment ID...');
-      // Get the current max segment ID
-      const { data: maxIdData } = await supabase
+      // Get the current max segment ID - use maybeSingle() to avoid error when no rows exist
+      const { data: maxIdData, error: maxIdError } = await supabase
         .from('segment_registry')
         .select('segment_id')
         .order('segment_id', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
+      
+      if (maxIdError) {
+        console.error('[ContentAutomation] Error fetching max segment ID:', maxIdError);
+        // Don't throw - just start from 1
+      }
       console.log('[ContentAutomation] ✓ Max segment ID:', maxIdData?.segment_id || 0);
 
       let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
