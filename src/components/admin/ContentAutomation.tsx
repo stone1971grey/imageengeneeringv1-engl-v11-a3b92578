@@ -650,7 +650,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 12: Create Tiles segment
       console.log('=== STEP 12: Create Tiles segment ===');
-      setImportStep('Step 12/18: Tiles segment...');
+      setImportStep('Step 12/21: Tiles segment...');
       setImportProgress(12);
       await wait(150);
 
@@ -666,7 +666,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 13: Insert Tiles to registry
       console.log('=== STEP 13: Insert Tiles registry ===');
-      setImportStep('Step 13/18: Save Tiles registry...');
+      setImportStep('Step 13/21: Save Tiles registry...');
       setImportProgress(13);
       await wait(150);
 
@@ -682,14 +682,77 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (regErr3) throw new Error('Tiles Registry: ' + regErr3.message);
       const tilesId = nextId;
+      nextId++;
 
-      // STEP 14: Save page_segments
-      console.log('=== STEP 14: Save page_segments ===');
-      setImportStep('Step 14/18: Save segments...');
+      // STEP 14: Create Video segment (if video found)
+      console.log('=== STEP 14: Create Video segment ===');
+      setImportStep('Step 14/21: Video segment...');
       setImportProgress(14);
       await wait(150);
 
+      let videoSegment = null;
+      let videoId = null;
+      const videoUrl = parsedContent?.videoUrl;
+      
+      if (videoUrl) {
+        console.log('=== Video URL found:', videoUrl);
+        
+        // Extract YouTube ID if present
+        let youtubeId = '';
+        const ytPatterns = [
+          /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+          /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+          /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+        ];
+        for (const pattern of ytPatterns) {
+          const match = videoUrl.match(pattern);
+          if (match) {
+            youtubeId = match[1];
+            break;
+          }
+        }
+
+        videoSegment = {
+          id: String(nextId),
+          type: 'video',
+          data: {
+            title: 'Product Video',
+            videoUrl: youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : videoUrl,
+            youtubeId: youtubeId || '',
+            description: `Watch the ${title.split('|')[0].trim()} in action.`,
+          },
+        };
+
+        // Insert Video to registry
+        console.log('=== STEP 14b: Insert Video registry ===');
+        const { error: regErr4 } = await supabase
+          .from('segment_registry')
+          .insert({
+            page_slug: pageSlug,
+            segment_id: nextId,
+            segment_key: `import-video-${nextId}`,
+            segment_type: 'video',
+            position: 4,
+          });
+
+        if (regErr4) throw new Error('Video Registry: ' + regErr4.message);
+        videoId = nextId;
+        nextId++;
+        console.log('=== Video segment created with ID:', videoId);
+      } else {
+        console.log('=== No video URL found, skipping video segment');
+      }
+
+      // STEP 15: Save page_segments
+      console.log('=== STEP 15: Save page_segments ===');
+      setImportStep('Step 15/21: Save segments...');
+      setImportProgress(15);
+      await wait(150);
+
       const allSegments = [productHeroSegment, introSegment, imageTextSegment, tilesSegment];
+      if (videoSegment) {
+        allSegments.push(videoSegment);
+      }
       
       const { error: segErr } = await supabase
         .from('page_content')
@@ -705,11 +768,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       if (segErr) throw new Error('Segments: ' + segErr.message);
 
-      // STEP 15: Save tab_order
-      console.log('=== STEP 15: Save tab_order ===');
-      setImportStep('Step 15/18: Tab order...');
-      setImportProgress(15);
+      // STEP 16: Save tab_order
+      console.log('=== STEP 16: Save tab_order ===');
+      setImportStep('Step 16/21: Tab order...');
+      setImportProgress(16);
       await wait(150);
+
+      const tabOrder = [String(productHeroId), String(introId), String(imageTextId), String(tilesId)];
+      if (videoId) {
+        tabOrder.push(String(videoId));
+      }
 
       await supabase
         .from('page_content')
@@ -718,14 +786,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           section_key: 'tab_order',
           language,
           content_type: 'json',
-          content_value: JSON.stringify([String(productHeroId), String(introId), String(imageTextId), String(tilesId)]),
+          content_value: JSON.stringify(tabOrder),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      // STEP 16: Save segment content entries
-      console.log('=== STEP 16: Save segment content ===');
-      setImportStep('Step 16/18: Segment content...');
-      setImportProgress(16);
+      // STEP 17: Save segment content entries
+      console.log('=== STEP 17: Save segment content ===');
+      setImportStep('Step 17/21: Segment content...');
+      setImportProgress(17);
       await wait(150);
 
       // Product Hero content
@@ -780,22 +848,39 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
+      // Video content (if exists)
+      if (videoSegment && videoId) {
+        console.log('=== STEP 17b: Save Video content ===');
+        await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: pageSlug,
+            section_key: `segment-${videoId}`,
+            language,
+            content_type: 'json',
+            content_value: JSON.stringify(videoSegment.data),
+            content_status: 'pending',
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'page_slug,section_key,language' });
+      }
+
       console.log('=== Segment content saved');
 
-      // STEP 17: Complete
-      console.log('=== STEP 17: Complete ===');
-      setImportStep('Step 17/18: ✅ Done!');
-      setImportProgress(17);
+      // STEP 18: Complete
+      console.log('=== STEP 18: Complete ===');
+      setImportStep('Step 18/21: ✅ Done!');
+      setImportProgress(18);
       await wait(400);
 
       const segmentCount = allSegments.length;
       const tileCount = realTiles.length;
-      toast.success(`Import done! ${segmentCount} segments, ${tileCount} tiles created`);
+      const videoStatus = videoSegment ? ', 1 video' : '';
+      toast.success(`Import done! ${segmentCount} segments, ${tileCount} tiles${videoStatus} created`);
 
-      // STEP 18: Cleanup & Redirect
-      console.log('=== STEP 18: Redirect ===');
-      setImportStep('Step 18/18: Redirect...');
-      setImportProgress(18);
+      // STEP 19: Cleanup & Redirect
+      console.log('=== STEP 19: Redirect ===');
+      setImportStep('Step 19/21: Redirect...');
+      setImportProgress(19);
 
       setIsImporting(false);
       setParsedContent(null);

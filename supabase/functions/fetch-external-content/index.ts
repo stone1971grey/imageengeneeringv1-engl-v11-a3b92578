@@ -476,13 +476,46 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Extracted downloads:', result.downloads.length);
 
   // === VIDEO ===
-  // Check for video links
+  // Check for video links in links array
   for (const link of links) {
-    if (link.includes('youtube.com') || link.includes('vimeo.com') || link.endsWith('.mp4')) {
+    if (link.includes('youtube.com') || link.includes('youtu.be') || link.includes('vimeo.com') || link.endsWith('.mp4')) {
       result.videoUrl = link;
+      console.log('[Firecrawl] Found video URL in links:', link);
       break;
     }
   }
+  
+  // Also search markdown for YouTube embeds (often blocked by GDPR)
+  if (!result.videoUrl) {
+    // Look for YouTube video IDs in various formats
+    const youtubePatterns = [
+      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+    ];
+    
+    for (const pattern of youtubePatterns) {
+      const match = markdown.match(pattern) || html.match(pattern);
+      if (match) {
+        result.videoUrl = `https://www.youtube.com/embed/${match[1]}`;
+        console.log('[Firecrawl] Extracted YouTube ID from content:', match[1]);
+        break;
+      }
+    }
+  }
+  
+  // Check for MP4 download links in markdown
+  if (!result.videoUrl) {
+    const mp4Match = markdown.match(/\[.*?\]\((https?:\/\/[^\s)]+\.mp4)\)/i) 
+                  || html.match(/href="(https?:\/\/[^\s"]+\.mp4)"/i);
+    if (mp4Match) {
+      result.videoUrl = mp4Match[1];
+      console.log('[Firecrawl] Found MP4 download link:', mp4Match[1]);
+    }
+  }
+  
+  console.log('[Firecrawl] Final video URL:', result.videoUrl);
 
   // === IMAGES ===
   // Extract image URLs from HTML
