@@ -456,10 +456,18 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const productHeroSegmentId = nextId; // This will be the Product Hero segment ID
       
       // First, check if assets already exist in Media Management for this page
-      const { data: existingAssets } = await supabase
+      // Use LIKE with explicit pattern: pageSlug/% to match folder structure
+      const searchPattern = `${pageSlug}/%`;
+      console.log('=== Searching for existing assets with pattern:', searchPattern);
+      
+      const { data: existingAssets, error: assetError } = await supabase
         .from('file_segment_mappings')
         .select('id, file_path, alt_text, segment_ids')
-        .ilike('file_path', `${pageSlug}/%`);
+        .like('file_path', searchPattern);
+      
+      if (assetError) {
+        console.error('=== Asset query error:', assetError);
+      }
       
       console.log(`=== Found ${existingAssets?.length || 0} existing assets in Media Management`);
       
