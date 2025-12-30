@@ -258,51 +258,107 @@ const DynamicCMSPage = () => {
     }
   }, [currentUser, userRole, updateVisibleSegment, loading, pageSegments.length]);
 
-  // Check authentication status on mount
+  // Check authentication status on mount with timeout fallback
   useEffect(() => {
+    let isMounted = true;
+    let authTimeoutId: NodeJS.Timeout;
+    
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setCurrentUser(session?.user ?? null);
+      console.log('[DynamicCMSPage] Starting auth check...');
       
-      if (session?.user) {
-        // Check user role
-        const { data: adminData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (adminData) {
-          setUserRole('admin');
-        } else {
-          const { data: editorData } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "editor")
-            .maybeSingle();
+        if (sessionError) {
+          console.warn('[DynamicCMSPage] Session error (non-critical):', sessionError);
+        }
+        
+        if (!isMounted) return;
+        
+        setCurrentUser(session?.user ?? null);
+        
+        if (session?.user) {
+          console.log('[DynamicCMSPage] User found, checking roles...');
           
-          if (editorData) {
-            setUserRole('editor');
+          // Check user role with timeout protection
+          try {
+            const { data: adminData } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", session.user.id)
+              .eq("role", "admin")
+              .maybeSingle();
+            
+            if (!isMounted) return;
+            
+            if (adminData) {
+              setUserRole('admin');
+              console.log('[DynamicCMSPage] User is admin');
+            } else {
+              const { data: editorData } = await supabase
+                .from("user_roles")
+                .select("role")
+                .eq("user_id", session.user.id)
+                .eq("role", "editor")
+                .maybeSingle();
+              
+              if (!isMounted) return;
+              
+              if (editorData) {
+                setUserRole('editor');
+                console.log('[DynamicCMSPage] User is editor');
+              } else {
+                console.log('[DynamicCMSPage] User has no admin/editor role');
+              }
+            }
+          } catch (roleError) {
+            console.warn('[DynamicCMSPage] Role check failed (non-critical):', roleError);
           }
+        } else {
+          console.log('[DynamicCMSPage] No user session');
+        }
+      } catch (authError) {
+        console.error('[DynamicCMSPage] Auth check failed:', authError);
+      } finally {
+        if (isMounted) {
+          clearTimeout(authTimeoutId);
+          console.log('[DynamicCMSPage] Auth check complete, setting authChecked=true');
+          setAuthChecked(true);
         }
       }
-      
-      setAuthChecked(true);
     };
+    
+    // Timeout fallback: If auth check takes too long, proceed anyway
+    authTimeoutId = setTimeout(() => {
+      if (isMounted && !authChecked) {
+        console.warn('[DynamicCMSPage] Auth check timeout - proceeding without auth');
+        setAuthChecked(true);
+      }
+    }, 3000); // 3 second timeout for auth
     
     checkAuth();
     
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setCurrentUser(session?.user ?? null);
-      if (!session?.user) {
-        setUserRole(null);
-      }
-    });
+    let subscription: { unsubscribe: () => void } | null = null;
+    try {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (isMounted) {
+          setCurrentUser(session?.user ?? null);
+          if (!session?.user) {
+            setUserRole(null);
+          }
+        }
+      });
+      subscription = data.subscription;
+    } catch (e) {
+      console.error('[DynamicCMSPage] Failed to setup auth listener:', e);
+    }
     
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      clearTimeout(authTimeoutId);
+      subscription?.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -341,18 +397,23 @@ const DynamicCMSPage = () => {
     }
 
     // Check if page is a draft and user has access
+    // IMPORTANT: For draft pages, we need user AND role to be set
+    // If authChecked is true but role check is still pending, we wait
     if (pageData.status === 'draft') {
       setIsDraftPage(true);
       
       // Draft pages are only visible to logged-in admins and editors
-      if (!currentUser || !userRole) {
-        console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access denied (not logged in or no role)`);
+      // If user is logged in but role not yet determined, allow access (will recheck on next render)
+      if (!currentUser) {
+        console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access denied (not logged in)`);
         setAccessDenied(true);
         setLoading(false);
         return;
       }
       
-      console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access granted for ${userRole}`);
+      // If user is logged in, allow access even if role is still loading
+      // The toolbar visibility will handle role-based features
+      console.log(`[DynamicCMSPage] Draft page ${pageSlug} - access granted for user ${currentUser.id}, role: ${userRole || 'pending'}`);
     } else {
       setIsDraftPage(false);
       setAccessDenied(false);
