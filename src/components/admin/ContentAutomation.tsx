@@ -359,54 +359,53 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
   // Handle preparing segments for approval (not saving yet)
   const handlePrepareForApproval = async () => {
+    // IMMEDIATE state change - no awaits before this
+    setIsImporting(true);
+    setImportStep('Starting...');
+    setImportProgress(0);
+    setImportTotal(1); // Set to 1 to show 0% initially
+    
     console.log('[ContentAutomation] handlePrepareForApproval called');
     
-    if (!parsedContent) {
-      console.error('[ContentAutomation] No parsedContent available!');
-      toast.error('No content to import. Please fetch content first.');
-      return;
-    }
+    // Use setTimeout to ensure React renders the loading state
+    setTimeout(async () => {
+      try {
+        if (!parsedContent) {
+          console.error('[ContentAutomation] No parsedContent available!');
+          toast.error('No content to import. Please fetch content first.');
+          setIsImporting(false);
+          setImportStep('');
+          return;
+        }
 
-    console.log('[ContentAutomation] Starting import with parsedContent:', {
-      title: parsedContent.title,
-      description: parsedContent.description?.length,
-      specifications: parsedContent.specifications?.length,
-      useCases: parsedContent.useCases?.length,
-      benefits: parsedContent.benefits?.length,
-      images: parsedContent.images?.length,
-      downloads: parsedContent.downloads?.length,
-    });
+        console.log('[ContentAutomation] Starting import with parsedContent:', {
+          title: parsedContent.title,
+          specifications: parsedContent.specifications?.length,
+          useCases: parsedContent.useCases?.length,
+        });
 
-    // CRITICAL: Set importing state FIRST, before any async operations
-    console.log('[ContentAutomation] ═══════════════════════════════════════');
-    console.log('[ContentAutomation] 🚀 IMPORT STARTED');
-    console.log('[ContentAutomation] ═══════════════════════════════════════');
-    setIsImporting(true);
-    setImportStep('Initializing import...');
-    setImportProgress(0);
-    setImportTotal(0);
+        console.log('[ContentAutomation] ═══════════════════════════════════════');
+        console.log('[ContentAutomation] 🚀 IMPORT STARTED');
+        console.log('[ContentAutomation] ═══════════════════════════════════════');
+        
+        setImportStep('Initializing import...');
 
-    // Force a re-render to show the progress UI
-    await new Promise(resolve => setTimeout(resolve, 100));
-    console.log('[ContentAutomation] ✓ UI state initialized, starting import...');
+        console.log('[ContentAutomation] → Fetching max segment ID...');
+        // Get the current max segment ID - use maybeSingle() to avoid error when no rows exist
+        const { data: maxIdData, error: maxIdError } = await supabase
+          .from('segment_registry')
+          .select('segment_id')
+          .order('segment_id', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (maxIdError) {
+          console.error('[ContentAutomation] Error fetching max segment ID:', maxIdError);
+          // Don't throw - just start from 1
+        }
+        console.log('[ContentAutomation] ✓ Max segment ID:', maxIdData?.segment_id || 0);
 
-    try {
-      console.log('[ContentAutomation] → Fetching max segment ID...');
-      // Get the current max segment ID - use maybeSingle() to avoid error when no rows exist
-      const { data: maxIdData, error: maxIdError } = await supabase
-        .from('segment_registry')
-        .select('segment_id')
-        .order('segment_id', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      
-      if (maxIdError) {
-        console.error('[ContentAutomation] Error fetching max segment ID:', maxIdError);
-        // Don't throw - just start from 1
-      }
-      console.log('[ContentAutomation] ✓ Max segment ID:', maxIdData?.segment_id || 0);
-
-      let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
+        let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
 
       // Get existing segments for this page
       const { data: existingRegistry, error: registryFetchError } = await supabase
@@ -1238,6 +1237,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         setImportTotal(0);
       }, 5000);
     }
+    }, 0); // End of setTimeout
   };
 
   const toggleSegment = (key: keyof typeof selectedSegments) => {
