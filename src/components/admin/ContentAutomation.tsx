@@ -423,226 +423,65 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const newSegments: any[] = [];
       let position = existingRegistry?.length || 0;
 
-      // === LOAD MEDIA FROM STORAGE FOLDER ===
+      // === LOAD MEDIA FROM STORAGE FOLDER (with timeout protection) ===
+      console.log('[ContentAutomation] → Checking storage folder...');
       const storageBaseUrl = 'https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images';
       const folderPath = pageSlug;
-      
-      // Check if media folder exists in media_folders table
-      const { data: mediaFolder } = await supabase
-        .from('media_folders')
-        .select('id, storage_path')
-        .eq('storage_path', folderPath)
-        .maybeSingle();
-      
-      console.log('[ContentAutomation] Media folder exists:', !!mediaFolder, mediaFolder?.storage_path);
-      
-      // Fetch files from the product's media folder
-      const { data: storageFiles } = await supabase
-        .storage
-        .from('page-images')
-        .list(folderPath, { limit: 50, sortBy: { column: 'name', order: 'asc' } });
       
       // Separate images and PDFs from storage
       const storageImages: { url: string; title: string; filePath: string }[] = [];
       const storagePdfs: { url: string; title: string; filename: string; filePath: string }[] = [];
       
-      if (storageFiles && storageFiles.length > 0) {
-        console.log('[ContentAutomation] Found files in storage folder:', storageFiles.length);
-        for (const file of storageFiles) {
-          // Skip folders
-          if (file.id === null) continue;
-          
-          if (file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
-            // Image file
-            const imageUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
-            const filePath = `${folderPath}/${file.name}`;
-            const title = file.name
-              .replace(/\.(png|jpg|jpeg|webp|gif)$/i, '')
-              .replace(/[-_]/g, ' ')
-              .replace(/dummy/gi, parsedContent.title || 'Product Image');
-            storageImages.push({ url: imageUrl, title, filePath });
-          } else if (file.name.match(/\.pdf$/i)) {
-            // PDF file
-            const pdfUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
-            const filePath = `${folderPath}/${file.name}`;
-            const title = file.name
-              .replace(/\.pdf$/i, '')
-              .replace(/[-_]/g, ' ')
-              .replace(/([a-z])([A-Z])/g, '$1 $2');
-            storagePdfs.push({ url: pdfUrl, title, filename: file.name, filePath });
-          }
-        }
-      }
-      
-      console.log('[ContentAutomation] Found storage images:', storageImages.length);
-      console.log('[ContentAutomation] Found storage PDFs:', storagePdfs.length);
-
-      // Check existing file_segment_mappings for these files
-      const existingMappings: Record<string, { segmentIds: string[]; altText: string | null }> = {};
-      if (storageImages.length > 0 || storagePdfs.length > 0) {
-        const allFilePaths = [
-          ...storageImages.map(img => img.filePath),
-          ...storagePdfs.map(pdf => pdf.filePath),
-        ];
+      try {
+        // Quick check with 5s timeout - don't let storage queries hang the import
+        const storagePromise = supabase
+          .storage
+          .from('page-images')
+          .list(folderPath, { limit: 20, sortBy: { column: 'name', order: 'asc' } });
         
-        const { data: mappings } = await supabase
-          .from('file_segment_mappings')
-          .select('file_path, segment_ids, alt_text')
-          .in('file_path', allFilePaths);
+        const timeoutPromise = new Promise<null>((_, reject) => 
+          setTimeout(() => reject(new Error('Storage timeout')), 5000)
+        );
         
-        if (mappings) {
-          for (const m of mappings) {
-            existingMappings[m.file_path] = {
-              segmentIds: m.segment_ids || [],
-              altText: m.alt_text,
-            };
-          }
-        }
-        console.log('[ContentAutomation] Existing mappings found:', Object.keys(existingMappings).length);
-      }
-
-      // === DOWNLOAD EXTERNAL FILES TO STORAGE ===
-      // If no local images exist, download scraped images to storage
-      const downloadedImages: { url: string; title: string; filePath: string }[] = [];
-      const downloadedPdfs: { url: string; title: string; filename: string; filePath: string }[] = [];
-      
-      // Create folder if it doesn't exist and we need to download files
-      if (!mediaFolder && (storageImages.length === 0 && parsedContent.images.length > 0)) {
-        console.log('[ContentAutomation] Creating media folder for page:', folderPath);
-        
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        // Create folder in media_folders table
-        const { error: folderError } = await supabase
-          .from('media_folders')
-          .insert({
-            name: pageSlug.split('/').pop() || pageSlug,
-            storage_path: folderPath,
-            created_by: user?.id || null,
+        const storageFiles = await Promise.race([storagePromise, timeoutPromise])
+          .then(result => (result as any)?.data || [])
+          .catch(err => {
+            console.warn('[ContentAutomation] Storage check skipped:', err.message);
+            return [];
           });
         
-        if (folderError) {
-          console.warn('[ContentAutomation] Could not create media folder:', folderError);
-        } else {
-          console.log('[ContentAutomation] Media folder created:', folderPath);
-        }
-      }
-      
-      // OPTIMIZATION: Skip downloads entirely and use external URLs directly
-      // This prevents the import from hanging on slow external servers
-      // Downloads can be done manually via Media Management later
-      const SKIP_EXTERNAL_DOWNLOADS = true;
-      
-      if (!SKIP_EXTERNAL_DOWNLOADS && storageImages.length === 0 && parsedContent.images.length > 0) {
-        console.log('[ContentAutomation] No local images, downloading external images in parallel...');
-        setImportStep('Downloading images...');
-        
-        // Download images in parallel with timeout
-        const downloadWithTimeout = async (img: { url: string; title?: string }, i: number): Promise<{ url: string; title: string; filePath: string } | null> => {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per image
-          
-          try {
-            const urlParts = img.url.split('/');
-            let filename = urlParts[urlParts.length - 1].split('?')[0];
-            if (!filename.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
-              filename = `product-image-${i + 1}.jpg`;
+        if (storageFiles && storageFiles.length > 0) {
+          console.log('[ContentAutomation] ✓ Found files in storage:', storageFiles.length);
+          for (const file of storageFiles) {
+            if (file.id === null) continue;
+            
+            if (file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+              const imageUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+              const filePath = `${folderPath}/${file.name}`;
+              const title = file.name
+                .replace(/\.(png|jpg|jpeg|webp|gif)$/i, '')
+                .replace(/[-_]/g, ' ');
+              storageImages.push({ url: imageUrl, title, filePath });
+            } else if (file.name.match(/\.pdf$/i)) {
+              const pdfUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
+              const filePath = `${folderPath}/${file.name}`;
+              const title = file.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
+              storagePdfs.push({ url: pdfUrl, title, filename: file.name, filePath });
             }
-            filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
-            
-            const targetPath = `${folderPath}/${filename}`;
-            
-            const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
-              body: { fileUrl: img.url, targetPath, bucketId: 'page-images' }
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!dlError && dlResult?.success) {
-              console.log(`[ContentAutomation] Downloaded image: ${filename}`);
-              return {
-                url: dlResult.publicUrl,
-                title: img.title || parsedContent.title || 'Product Image',
-                filePath: targetPath,
-              };
-            } else {
-              console.warn(`[ContentAutomation] Failed to download image:`, dlError || dlResult?.error);
-              return null;
-            }
-          } catch (err) {
-            clearTimeout(timeoutId);
-            console.warn(`[ContentAutomation] Error/timeout downloading image ${i}:`, err);
-            return null;
           }
-        };
-        
-        const imageDownloadPromises = parsedContent.images.slice(0, 4).map((img, i) => downloadWithTimeout(img, i));
-        const imageResults = await Promise.all(imageDownloadPromises);
-        downloadedImages.push(...imageResults.filter((r): r is NonNullable<typeof r> => r !== null));
-      } else if (storageImages.length === 0) {
-        console.log('[ContentAutomation] Skipping downloads - will use external URLs directly');
+        }
+      } catch (err) {
+        console.warn('[ContentAutomation] Storage check failed, continuing without local files:', err);
       }
       
-      // OPTIMIZATION: Skip PDF downloads too - use external URLs directly
-      if (!SKIP_EXTERNAL_DOWNLOADS && storagePdfs.length === 0 && parsedContent.downloads.length > 0) {
-        console.log('[ContentAutomation] No local PDFs, downloading external PDFs in parallel...');
-        setImportStep('Downloading PDFs...');
-        
-        const pdfDownloadPromises = parsedContent.downloads
-          .filter(d => d.url.toLowerCase().includes('.pdf'))
-          .slice(0, 4) // Limit to 4 PDFs max
-          .map(async (dl) => {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout for PDFs
-            
-            try {
-              const urlParts = dl.url.split('/');
-              let filename = urlParts[urlParts.length - 1].split('?')[0];
-              if (!filename.toLowerCase().endsWith('.pdf')) {
-                filename = `${dl.title.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`;
-              }
-              filename = filename.replace(/[^a-zA-Z0-9.-]/g, '-');
-              
-              const targetPath = `${folderPath}/${filename}`;
-              
-              const { data: dlResult, error: dlError } = await supabase.functions.invoke('download-external-file', {
-                body: { fileUrl: dl.url, targetPath, bucketId: 'page-images' }
-              });
-              
-              clearTimeout(timeoutId);
-              
-              if (!dlError && dlResult?.success) {
-                console.log(`[ContentAutomation] Downloaded PDF: ${filename}`);
-                return {
-                  url: dlResult.publicUrl,
-                  title: dl.title,
-                  filename,
-                  filePath: targetPath,
-                };
-              } else {
-                console.warn(`[ContentAutomation] Failed to download PDF:`, dlError || dlResult?.error);
-                return null;
-              }
-            } catch (err) {
-              clearTimeout(timeoutId);
-              console.warn(`[ContentAutomation] Error/timeout downloading PDF:`, err);
-              return null;
-            }
-          });
-        
-        const pdfResults = await Promise.all(pdfDownloadPromises);
-        downloadedPdfs.push(...pdfResults.filter((r): r is NonNullable<typeof r> => r !== null));
-      } else if (storagePdfs.length === 0) {
-        console.log('[ContentAutomation] Skipping PDF downloads - will use external URLs directly');
-      }
+      console.log('[ContentAutomation] ✓ Storage images:', storageImages.length, '| PDFs:', storagePdfs.length);
+
+      // === SIMPLIFIED: Use scraped images directly (no downloads) ===
+      // External downloads are skipped for stability - can be done manually later
+      const finalImages = storageImages;
+      const finalPdfs = storagePdfs;
       
-      // Merge: use local files first, then downloaded files
-      const finalImages = storageImages.length > 0 ? storageImages : downloadedImages;
-      const finalPdfs = storagePdfs.length > 0 ? storagePdfs : downloadedPdfs;
-      
-      console.log('[ContentAutomation] Final images count:', finalImages.length);
-      console.log('[ContentAutomation] Final PDFs count:', finalPdfs.length);
+      console.log('[ContentAutomation] ✓ Final images:', finalImages.length, '| Final PDFs:', finalPdfs.length);
 
       // Filter downloads by language (include 'en' as fallback if current language has none)
       // Merge with storage/downloaded PDFs
@@ -761,51 +600,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           position: position - 1,
         });
         
-        // === CREATE FILE_SEGMENT_MAPPINGS FOR IMAGES (PARALLEL) ===
-        // Automatically assign images to this segment in Media Management
-        const heroSegmentId = String(segId);
-        setImportStep('Mapping images to segment...');
-        
-        const mappingPromises = finalImages.slice(0, 4).map(async (img) => {
-          if (!img.filePath) return;
-          
-          const existing = existingMappings[img.filePath];
-          
-          if (existing) {
-            // Mapping exists - add this segment ID if not already present
-            if (!existing.segmentIds.includes(heroSegmentId)) {
-              console.log(`[ContentAutomation] Adding segment ${heroSegmentId} to existing mapping for ${img.filePath}`);
-              const updatedIds = [...existing.segmentIds, heroSegmentId];
-              
-              return supabase
-                .from('file_segment_mappings')
-                .update({ 
-                  segment_ids: updatedIds,
-                  updated_at: new Date().toISOString(),
-                })
-                .eq('file_path', img.filePath);
-            } else {
-              console.log(`[ContentAutomation] Image ${img.filePath} already assigned to segment ${heroSegmentId}`);
-              return Promise.resolve();
-            }
-          } else {
-            // No mapping exists - create new one
-            console.log(`[ContentAutomation] Creating new mapping for ${img.filePath} → segment ${heroSegmentId}`);
-            
-            return supabase
-              .from('file_segment_mappings')
-              .insert({
-                file_path: img.filePath,
-                bucket_id: 'page-images',
-                segment_ids: [heroSegmentId],
-                alt_text: img.title || null,
-                visibility: 'public',
-              });
-          }
-        });
-        
-        await Promise.all(mappingPromises);
-        console.log(`[ContentAutomation] File mappings created/updated for ${finalImages.slice(0, 4).length} images`);
+        // === FILE_SEGMENT_MAPPINGS SKIPPED FOR STABILITY ===
+        // Image mappings can be done manually later via Media Management
+        // This prevents potential hangs during import
+        console.log('[ContentAutomation] Skipping file_segment_mappings for stability - can be done manually later');
       }
 
       // 2. Intro with comprehensive content (description + benefits) - CLEAN HTML
