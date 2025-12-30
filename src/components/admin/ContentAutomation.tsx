@@ -442,21 +442,29 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       let nextId = (maxData?.segment_id || 0) + 1;
       console.log('=== Next ID:', nextId);
 
-      // STEP 3: Get main product image
-      console.log('=== STEP 3: Get product image ===');
-      setImportStep('Step 3/18: Product image...');
+      // STEP 3: Download ALL gallery images (up to 5)
+      console.log('=== STEP 3: Download gallery images ===');
+      setImportStep('Step 3/21: Gallery images...');
       setImportProgress(3);
       await wait(150);
 
-      let heroImageUrl = '';
-      const mainImage = parsedContent?.images?.[0];
-      if (mainImage?.url) {
+      const galleryImages: { url: string; alt: string }[] = [];
+      const sourceImages = parsedContent?.images || [];
+      const maxImages = Math.min(sourceImages.length, 5);
+      
+      console.log(`=== Found ${sourceImages.length} images, downloading up to ${maxImages}`);
+      
+      for (let i = 0; i < maxImages; i++) {
+        const img = sourceImages[i];
+        if (!img?.url) continue;
+        
         try {
-          const imgResponse = await fetch(mainImage.url);
+          console.log(`=== Downloading image ${i + 1}/${maxImages}: ${img.url.substring(0, 80)}...`);
+          const imgResponse = await fetch(img.url);
           if (imgResponse.ok) {
             const blob = await imgResponse.blob();
-            const ext = mainImage.url.split('.').pop()?.split('?')[0] || 'png';
-            const fileName = `hero-${Date.now()}.${ext}`;
+            const ext = img.url.split('.').pop()?.split('?')[0] || 'png';
+            const fileName = `gallery-${i}-${Date.now()}.${ext}`;
             const filePath = `${pageSlug}/product-hero/${fileName}`;
             
             const { error: uploadErr } = await supabase.storage
@@ -467,18 +475,28 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               const { data: urlData } = supabase.storage
                 .from('page-images')
                 .getPublicUrl(filePath);
-              heroImageUrl = urlData.publicUrl;
-              console.log('=== Hero image uploaded');
+              galleryImages.push({ 
+                url: urlData.publicUrl, 
+                alt: img.title || `${title} - Image ${i + 1}` 
+              });
+              console.log(`=== Image ${i + 1} uploaded successfully`);
+            } else {
+              console.warn(`=== Image ${i + 1} upload failed:`, uploadErr.message);
             }
           }
         } catch (imgErr) {
-          console.warn('=== Hero image failed:', imgErr);
+          console.warn(`=== Image ${i + 1} download failed:`, imgErr);
         }
+        
+        // Small delay between downloads to avoid rate limiting
+        await wait(100);
       }
+      
+      console.log(`=== Gallery images uploaded: ${galleryImages.length}`);
 
       // STEP 4: Create Product Hero Gallery segment
       console.log('=== STEP 4: Create Product Hero Gallery ===');
-      setImportStep('Step 4/18: Product Hero Gallery...');
+      setImportStep('Step 4/21: Product Hero Gallery...');
       setImportProgress(4);
       await wait(150);
 
@@ -490,7 +508,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           subtitle: 'Illumination Device',
           category: 'Equipment',
           description: description.substring(0, 200),
-          images: heroImageUrl ? [{ url: heroImageUrl, alt: title }] : [],
+          images: galleryImages,
           badges: [],
         },
       };
@@ -552,13 +570,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 8: Download image for Image-Text
       console.log('=== STEP 8: Download detail image ===');
-      setImportStep('Step 8/18: Detail image...');
+      setImportStep('Step 8/21: Detail image...');
       setImportProgress(8);
       await wait(150);
 
       let detailImageUrl = '';
-      const detailImage = parsedContent?.images?.[1] || parsedContent?.images?.[0];
-      if (detailImage?.url && detailImage.url !== mainImage?.url) {
+      // Use an image not already in gallery (try index 5+, fallback to first gallery image)
+      const detailImage = parsedContent?.images?.[5] || parsedContent?.images?.[0];
+      if (detailImage?.url) {
         try {
           const imgResponse = await fetch(detailImage.url);
           if (imgResponse.ok) {
@@ -585,9 +604,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 9: Create Image-Text segment
       console.log('=== STEP 9: Create Image-Text segment ===');
-      setImportStep('Step 9/18: Image-Text segment...');
+      setImportStep('Step 9/21: Image-Text segment...');
       setImportProgress(9);
       await wait(150);
+
+      // Use first gallery image as fallback if no detail image
+      const fallbackImageUrl = galleryImages[0]?.url || '';
 
       const imageTextSegment = {
         id: String(nextId),
@@ -598,7 +620,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             {
               title: 'Overview',
               description: description.substring(0, 500) || 'Content imported from source.',
-              imageUrl: detailImageUrl || heroImageUrl,
+              imageUrl: detailImageUrl || fallbackImageUrl,
               metadata: { altText: title },
             }
           ],
