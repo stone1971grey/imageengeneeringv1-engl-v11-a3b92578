@@ -357,688 +357,148 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     }
   };
 
-  // Handle preparing segments for approval (not saving yet)
+  // ============================================
+  // MINIMAL DEBUG IMPORT - Step by step
+  // ============================================
   const handlePrepareForApproval = async () => {
-    // IMMEDIATE state change - no awaits before this
+    // STEP 0: Immediate UI update
+    console.log('=== STEP 0: Button clicked ===');
     setIsImporting(true);
     setImportStep('Starting...');
     setImportProgress(0);
-    setImportTotal(1); // Set to 1 to show 0% initially
+    setImportTotal(10);
+
+    // Check content exists
+    if (!parsedContent) {
+      console.error('=== No parsedContent! ===');
+      toast.error('No content. Fetch first.');
+      setIsImporting(false);
+      return;
+    }
+
+    console.log('=== Content found:', parsedContent.title);
     
-    console.log('[ContentAutomation] handlePrepareForApproval called');
-    
-    // Use setTimeout to ensure React renders the loading state
-    setTimeout(async () => {
-      try {
-        if (!parsedContent) {
-          console.error('[ContentAutomation] No parsedContent available!');
-          toast.error('No content to import. Please fetch content first.');
-          setIsImporting(false);
-          setImportStep('');
-          return;
-        }
+    // Run import with delay to allow UI to render
+    setTimeout(() => runMinimalImport(), 100);
+  };
 
-        console.log('[ContentAutomation] Starting import with parsedContent:', {
-          title: parsedContent.title,
-          specifications: parsedContent.specifications?.length,
-          useCases: parsedContent.useCases?.length,
-        });
+  const runMinimalImport = async () => {
+    const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-        console.log('[ContentAutomation] ═══════════════════════════════════════');
-        console.log('[ContentAutomation] 🚀 IMPORT STARTED');
-        console.log('[ContentAutomation] ═══════════════════════════════════════');
-        
-        setImportStep('Initializing import...');
+    try {
+      // STEP 1
+      console.log('=== STEP 1: Setup ===');
+      setImportStep('Step 1/10: Setup...');
+      setImportProgress(1);
+      await wait(200);
 
-        console.log('[ContentAutomation] → Fetching max segment ID...');
-        // Get the current max segment ID - use maybeSingle() to avoid error when no rows exist
-        const { data: maxIdData, error: maxIdError } = await supabase
-          .from('segment_registry')
-          .select('segment_id')
-          .order('segment_id', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        
-        if (maxIdError) {
-          console.error('[ContentAutomation] Error fetching max segment ID:', maxIdError);
-          // Don't throw - just start from 1
-        }
-        console.log('[ContentAutomation] ✓ Max segment ID:', maxIdData?.segment_id || 0);
+      const title = parsedContent?.title || 'Import';
+      console.log('=== Title:', title);
 
-        let nextSegmentId = (maxIdData?.segment_id || 0) + 1;
+      // STEP 2
+      console.log('=== STEP 2: Get max ID ===');
+      setImportStep('Step 2/10: Get ID...');
+      setImportProgress(2);
+      await wait(200);
 
-      // Get existing segments for this page
-      const { data: existingRegistry, error: registryFetchError } = await supabase
+      const { data: maxData } = await supabase
         .from('segment_registry')
-        .select('*')
-        .eq('page_slug', pageSlug)
-        .eq('deleted', false);
+        .select('segment_id')
+        .order('segment_id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (registryFetchError) {
-        console.error('[ContentAutomation] Error fetching existing registry:', registryFetchError);
-      }
+      const nextId = (maxData?.segment_id || 0) + 1;
+      console.log('=== Next ID:', nextId);
 
-      const existingSegmentTypes = new Set(existingRegistry?.map(s => s.segment_type) || []);
-      console.log('[ContentAutomation] Existing segment types on page:', Array.from(existingSegmentTypes));
-      console.log('[ContentAutomation] Selected segments:', selectedSegments);
+      // STEP 3
+      console.log('=== STEP 3: Create segment ===');
+      setImportStep('Step 3/10: Create segment...');
+      setImportProgress(3);
+      await wait(200);
 
-      // Prepare new segments to add
-      const newRegistryEntries: any[] = [];
-      const newSegments: any[] = [];
-      let position = existingRegistry?.length || 0;
-
-      // === LOAD MEDIA FROM STORAGE FOLDER (with timeout protection) ===
-      console.log('[ContentAutomation] → Checking storage folder...');
-      const storageBaseUrl = 'https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images';
-      const folderPath = pageSlug;
-      
-      // Separate images and PDFs from storage
-      const storageImages: { url: string; title: string; filePath: string }[] = [];
-      const storagePdfs: { url: string; title: string; filename: string; filePath: string }[] = [];
-      
-      try {
-        // Quick check with 5s timeout - don't let storage queries hang the import
-        const storagePromise = supabase
-          .storage
-          .from('page-images')
-          .list(folderPath, { limit: 20, sortBy: { column: 'name', order: 'asc' } });
-        
-        const timeoutPromise = new Promise<null>((_, reject) => 
-          setTimeout(() => reject(new Error('Storage timeout')), 5000)
-        );
-        
-        const storageFiles = await Promise.race([storagePromise, timeoutPromise])
-          .then(result => (result as any)?.data || [])
-          .catch(err => {
-            console.warn('[ContentAutomation] Storage check skipped:', err.message);
-            return [];
-          });
-        
-        if (storageFiles && storageFiles.length > 0) {
-          console.log('[ContentAutomation] ✓ Found files in storage:', storageFiles.length);
-          for (const file of storageFiles) {
-            if (file.id === null) continue;
-            
-            if (file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
-              const imageUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
-              const filePath = `${folderPath}/${file.name}`;
-              const title = file.name
-                .replace(/\.(png|jpg|jpeg|webp|gif)$/i, '')
-                .replace(/[-_]/g, ' ');
-              storageImages.push({ url: imageUrl, title, filePath });
-            } else if (file.name.match(/\.pdf$/i)) {
-              const pdfUrl = `${storageBaseUrl}/${folderPath}/${file.name}`;
-              const filePath = `${folderPath}/${file.name}`;
-              const title = file.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
-              storagePdfs.push({ url: pdfUrl, title, filename: file.name, filePath });
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('[ContentAutomation] Storage check failed, continuing without local files:', err);
-      }
-      
-      console.log('[ContentAutomation] ✓ Storage images:', storageImages.length, '| PDFs:', storagePdfs.length);
-
-      // === SIMPLIFIED: Use scraped images directly (no downloads) ===
-      // External downloads are skipped for stability - can be done manually later
-      const finalImages = storageImages;
-      const finalPdfs = storagePdfs;
-      
-      console.log('[ContentAutomation] ✓ Final images:', finalImages.length, '| Final PDFs:', finalPdfs.length);
-
-      // Filter downloads by language (include 'en' as fallback if current language has none)
-      // Merge with storage/downloaded PDFs
-      let filteredDownloads = parsedContent.downloads.filter(d => d.language === language);
-      if (filteredDownloads.length === 0) {
-        filteredDownloads = parsedContent.downloads.filter(d => d.language === 'en');
-      }
-      
-      // Add local/downloaded PDFs to downloads (they take priority)
-      const localDownloads: { title: string; description: string; url: string; language: typeof language }[] = finalPdfs.map(pdf => ({
-        title: pdf.title,
-        description: getDownloadDescriptionFromTitle(pdf.title, language),
-        url: pdf.url,
-        language: language,
-      }));
-      
-      // Combine: local PDFs first, then scraped downloads (avoiding duplicates)
-      const allDownloads: { title: string; description: string; url: string; language: typeof language }[] = [...localDownloads];
-      for (const dl of filteredDownloads) {
-        if (!allDownloads.some(d => d.url === dl.url)) {
-          allDownloads.push({ ...dl, language: dl.language as typeof language });
-        }
-      }
-
-      // Build concise, clean description (max 2-3 sentences, no markdown artifacts)
-      const buildCleanDescription = () => {
-        // Get first meaningful paragraph from description
-        const cleanDesc = parsedContent.description
-          .replace(/\n+/g, ' ')  // Replace newlines with spaces
-          .replace(/\s+/g, ' ')  // Normalize whitespace
-          .replace(/[#*_`]/g, '') // Remove markdown formatting
-          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting
-          .trim();
-        
-        // Split into sentences and take first 2-3
-        const sentences = cleanDesc.match(/[^.!?]+[.!?]+/g) || [cleanDesc];
-        const result = sentences.slice(0, 2).join(' ').trim();
-        
-        // Ensure max ~200 chars for hero
-        if (result.length > 250) {
-          return result.substring(0, 247) + '...';
-        }
-        return result || (language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.');
+      const segment = {
+        id: String(nextId),
+        type: 'intro',
+        data: {
+          headline: title.substring(0, 100),
+          introText: (parsedContent?.description || 'Content').substring(0, 300),
+        },
       };
+      console.log('=== Segment:', segment.type);
 
-      // 1. Product Hero Gallery (with concise description and proper image format)
-      // PRIORITY: Use storage images first, then fall back to scraped images
-      if (selectedSegments.productHero && !existingSegmentTypes.has('product-hero-gallery')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-hero-${segId}`,
-          segment_type: 'product-hero-gallery',
-          position: position++,
-        });
-        
-        // Use finalImages (local or downloaded from external source)
-        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
-        let heroImages: { imageUrl: string; title: string; description: string; maxWidth: number | null; maxHeight: number | null }[] = [];
-        
-        if (finalImages.length > 0) {
-          // Use images from storage (local or downloaded)
-          heroImages = finalImages.slice(0, 4).map((img, idx) => ({
-            imageUrl: img.url,
-            title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
-            description: '',
-            maxWidth: null,
-            maxHeight: null,
-          }));
-          console.log('[ContentAutomation] Using final images for hero:', heroImages.length);
-        } else {
-          // Fall back to scraped images (external URLs - not downloaded)
-          heroImages = parsedContent.images.slice(0, 4).map((img, idx) => ({
-            imageUrl: img.url,
-            title: img.title || (idx === 0 ? cleanTitle : `${cleanTitle} - View ${idx + 1}`),
-            description: '',
-            maxWidth: null,
-            maxHeight: null,
-          }));
-          console.log('[ContentAutomation] Using external scraped images for hero:', heroImages.length);
-        }
-        
-        // If still no images, add placeholder
-        if (heroImages.length === 0) {
-          heroImages.push({
-            imageUrl: '/placeholder.svg',
-            title: cleanTitle,
-            description: '',
-            maxWidth: null,
-            maxHeight: null,
-          });
-        }
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'product-hero-gallery',
-          data: {
-            title: parsedContent.title.replace(/[*#_`]/g, '').trim(),
-            subtitle: (parsedContent.subtitle || (language === 'de' ? 'Professionelle Lösung' : 'Professional Solution')).replace(/[*#_`]/g, '').trim(),
-            description: buildCleanDescription(),
-            imagePosition: 'right',
-            layoutRatio: '2-5',
-            topSpacing: 'small',
-            cta1Text: language === 'de' ? 'Kontakt aufnehmen' : 'Contact Sales',
-            cta1Link: '/contact',
-            cta1Style: 'standard',
-            cta2Text: language === 'de' ? 'Spezifikationen' : 'View Specifications',
-            cta2Link: '#specifications',
-            cta2Style: 'outline-white',
-            images: heroImages,
-            imageMaxWidth: null,
-            imageMaxHeight: null,
-          },
-          position: position - 1,
-        });
-        
-        // === FILE_SEGMENT_MAPPINGS SKIPPED FOR STABILITY ===
-        // Image mappings can be done manually later via Media Management
-        // This prevents potential hangs during import
-        console.log('[ContentAutomation] Skipping file_segment_mappings for stability - can be done manually later');
-      }
+      // STEP 4
+      console.log('=== STEP 4: Insert registry ===');
+      setImportStep('Step 4/10: Save registry...');
+      setImportProgress(4);
+      await wait(200);
 
-      // 2. Intro with comprehensive content (description + benefits) - CLEAN HTML
-      if (selectedSegments.intro && !existingSegmentTypes.has('intro')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
+      const { error: regErr } = await supabase
+        .from('segment_registry')
+        .insert({
           page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-intro-${segId}`,
+          segment_id: nextId,
+          segment_key: `import-${nextId}`,
           segment_type: 'intro',
-          position: position++,
+          position: 0,
         });
-        
-        // Helper to clean text from markdown artifacts
-        const cleanText = (text: string): string => {
-          return text
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Remove link formatting
-            .replace(/\*\*([^*]+)\*\*/g, '$1')        // Remove bold
-            .replace(/\*([^*]+)\*/g, '$1')            // Remove italic
-            .replace(/`([^`]+)`/g, '$1')              // Remove code
-            .replace(/[#*_`]/g, '')                   // Remove remaining markdown chars
-            .replace(/\n{3,}/g, '\n\n')               // Max 2 newlines
-            .trim();
-        };
-        
-        // Build COMPLETE intro HTML - include ALL paragraphs from description
-        const allParagraphs = cleanText(parsedContent.description)
-          .split(/\n\n+/)
-          .filter(p => p.trim().length > 20)
-          .map(p => `<p>${p.trim()}</p>`)
-          .join('');
-        
-        // Add ALL benefits as a clean list (no limit)
-        let benefitsHtml = '';
-        if (parsedContent.benefits.length > 0) {
-          const cleanBenefits = parsedContent.benefits
-            .map(b => cleanText(b))
-            .filter(b => b.length > 10 && b.length < 300);
-          
-          if (cleanBenefits.length > 0) {
-            benefitsHtml = '<h3>' + (language === 'de' ? 'Hauptvorteile' : 'Key Benefits') + '</h3>';
-            benefitsHtml += '<ul>' + cleanBenefits.map(b => `<li>${b}</li>`).join('') + '</ul>';
-          }
-        }
-        
-        const cleanTitle = cleanText(parsedContent.title);
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'intro',
-          data: {
-            headline: cleanTitle,
-            headingLevel: 'h2',  // h2 since Hero already has h1
-            introText: allParagraphs + benefitsHtml || `<p>${language === 'de' ? 'Professionelle Lösung für Ihre Anforderungen.' : 'Professional solution for your requirements.'}</p>`,
-            alignment: 'left',
-            showDivider: true,
-          },
-          position: position - 1,
-        });
+
+      if (regErr) {
+        throw new Error('Registry: ' + regErr.message);
       }
+      console.log('=== Registry OK ===');
 
-      // 3. Specifications Table - clean values
-      if (selectedSegments.specification && parsedContent.specifications.length > 0 && !existingSegmentTypes.has('specification')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-specs-${segId}`,
-          segment_type: 'specification',
-          position: position++,
-        });
-        
-        // Clean specification values from markdown artifacts - NO LIMIT
-        const cleanSpecs = parsedContent.specifications
-          .map(s => ({
-            specification: s.name.replace(/[*#_`\[\]]/g, '').trim(),
-            value: s.value.replace(/[*#_`\[\]]/g, '').replace(/\([^)]*\)/g, '').trim(),
-          }))
-          .filter(s => s.specification.length > 1 && s.value.length > 0);
-        
-        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'specification',
-          data: {
-            title: language === 'de' ? 'Technische Spezifikationen' : 'Technical Specifications',
-            rows: cleanSpecs,
-            description: language === 'de' 
-              ? `Detaillierte technische Daten für ${cleanTitle}.`
-              : `Detailed technical specifications for ${cleanTitle}.`,
-          },
-          position: position - 1,
-        });
-      }
+      // STEP 5
+      console.log('=== STEP 5: Load existing ===');
+      setImportStep('Step 5/10: Load existing...');
+      setImportProgress(5);
+      await wait(200);
 
-      // 3b. Table Segment - structured table format from specifications
-      if (selectedSegments.table && parsedContent.specifications.length >= 3 && !existingSegmentTypes.has('table')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-table-${segId}`,
-          segment_type: 'table',
-          position: position++,
-        });
-        
-        // Convert specs to table format with headers
-        const cleanSpecs = parsedContent.specifications
-          .map(s => ({
-            name: s.name.replace(/[*#_`\[\]]/g, '').trim(),
-            value: s.value.replace(/[*#_`\[\]]/g, '').trim(),
-          }))
-          .filter(s => s.name.length > 1 && s.value.length > 0);
-        
-        // Build table data: 2 columns (Parameter, Value)
-        const headers = [
-          language === 'de' ? 'Parameter' : 'Parameter',
-          language === 'de' ? 'Wert' : 'Value'
-        ];
-        const rows = cleanSpecs.map(s => [s.name, s.value]);
-        
-        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'table',
-          data: {
-            title: language === 'de' ? 'Spezifikationen' : 'Specifications',
-            subtext: language === 'de' 
-              ? `Technische Daten für ${cleanTitle}`
-              : `Technical data for ${cleanTitle}`,
-            headers,
-            rows,
-          },
-          position: position - 1,
-        });
-      }
-
-      // 4. Feature Overview (Use Cases / Applications) - cleaned
-      if (selectedSegments.featureOverview && parsedContent.useCases.length > 0 && !existingSegmentTypes.has('feature-overview')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-features-${segId}`,
-          segment_type: 'feature-overview',
-          position: position++,
-        });
-        
-        // Clean and prepare feature items
-        const cleanFeatureText = (text: string): string => {
-          return text
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            .replace(/[*#_`\[\]]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        };
-        
-        let featureItems = parsedContent.useCases.slice(0, 6).map(uc => ({
-          title: cleanFeatureText(uc.title).substring(0, 80),
-          description: cleanFeatureText(uc.description).substring(0, 250),
-        }));
-        
-        // If we have fewer than 3, add from benefits
-        while (featureItems.length < 3 && parsedContent.benefits.length > featureItems.length) {
-          const benefit = cleanFeatureText(parsedContent.benefits[featureItems.length]);
-          if (benefit.length > 20) {
-            const words = benefit.split(' ');
-            featureItems.push({
-              title: words.slice(0, 4).join(' '),
-              description: benefit,
-            });
-          }
-        }
-        
-        const cleanTitle = parsedContent.title.replace(/[*#_`]/g, '').trim();
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'feature-overview',
-          data: {
-            title: language === 'de' ? 'Anwendungen & Features' : 'Applications & Features',
-            subtext: language === 'de' 
-              ? `Entdecken Sie die vielfältigen Einsatzmöglichkeiten von ${cleanTitle}.`
-              : `Discover the versatile applications of ${cleanTitle}.`,
-            layout: String(Math.min(featureItems.length, 3)),
-            rows: String(Math.ceil(featureItems.length / 3)),
-            items: featureItems,
-          },
-          position: position - 1,
-        });
-      }
-
-      // 5. Downloads (Tiles) - USE allDownloads (storage PDFs + scraped)
-      if (selectedSegments.downloads && allDownloads.length > 0 && !existingSegmentTypes.has('tiles')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-downloads-${segId}`,
-          segment_type: 'tiles',
-          position: position++,
-        });
-        
-        const cleanedDownloads = allDownloads.slice(0, 6).map(d => ({
-          title: d.title.replace(/[*#_`\[\]]/g, '').replace(/[-_]/g, ' ').trim().substring(0, 60),
-          description: (d.description || (language === 'de' ? 'Produktdokumentation' : 'Product documentation')).substring(0, 120),
-          icon: 'FileText',
-          ctaText: language === 'de' ? 'PDF herunterladen' : 'Download PDF',
-          ctaLink: d.url,
-          showButton: true,
-        }));
-        
-        console.log('[ContentAutomation] Downloads tiles using:', cleanedDownloads.length, 'items');
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'tiles',
-          data: {
-            title: language === 'de' ? 'Dokumentation & Downloads' : 'Documentation & Downloads',
-            columns: String(Math.min(cleanedDownloads.length, 3)),
-            items: cleanedDownloads,
-          },
-          position: position - 1,
-        });
-      }
-
-      // 6. FAQ Segment (generated from benefits and use cases) - cleaned
-      if (!existingSegmentTypes.has('faq') && (parsedContent.benefits.length >= 2 || parsedContent.useCases.length >= 2)) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-faq-${segId}`,
-          segment_type: 'faq',
-          position: position++,
-        });
-        
-        // Helper to clean FAQ text
-        const cleanFaqText = (text: string): string => {
-          return text
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            .replace(/[*#_`\[\]]/g, '')
-            .replace(/\n+/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-        };
-        
-        const cleanTitle = cleanFaqText(parsedContent.title);
-        const cleanDescription = cleanFaqText(parsedContent.description);
-        
-        // Generate FAQs from content
-        const faqItems: { question: string; answer: string }[] = [];
-        
-        // Q1: What is this product?
-        faqItems.push({
-          question: language === 'de' 
-            ? `Was ist ${cleanTitle}?` 
-            : `What is ${cleanTitle}?`,
-          answer: cleanDescription.substring(0, 400) || (language === 'de' 
-            ? `${cleanTitle} ist ein professionelles Produkt von Image Engineering.`
-            : `${cleanTitle} is a professional product from Image Engineering.`),
-        });
-        
-        // Q2: What are the main benefits?
-        if (parsedContent.benefits.length > 0) {
-          const cleanBenefits = parsedContent.benefits.slice(0, 3).map(b => cleanFaqText(b));
-          faqItems.push({
-            question: language === 'de' 
-              ? `Welche Vorteile bietet ${cleanTitle}?`
-              : `What are the benefits of ${cleanTitle}?`,
-            answer: cleanBenefits.join('. ') + '.',
-          });
-        }
-        
-        // Q3: From use cases
-        if (parsedContent.useCases.length > 0) {
-          const cleanUseCases = parsedContent.useCases.slice(0, 2).map(uc => 
-            `${cleanFaqText(uc.title)}: ${cleanFaqText(uc.description).substring(0, 100)}`
-          );
-          faqItems.push({
-            question: language === 'de'
-              ? `Welche Anwendungsbereiche gibt es?`
-              : `What are the typical applications?`,
-            answer: cleanUseCases.join(' '),
-          });
-        }
-        
-        // Q4: Standards/compatibility
-        faqItems.push({
-          question: language === 'de'
-            ? 'Welche Standards werden unterstützt?'
-            : 'What standards are supported?',
-          answer: language === 'de'
-            ? 'Image Engineering Produkte unterstützen internationale Standards wie ISO, IEEE und EMVA 1288.'
-            : 'Image Engineering products support international standards including ISO, IEEE, and EMVA 1288.',
-        });
-        
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'faq',
-          data: {
-            headline: language === 'de' 
-              ? `Häufige Fragen zu ${cleanTitle}`
-              : `Frequently Asked Questions about ${cleanTitle}`,
-            items: faqItems,
-          },
-          position: position - 1,
-        });
-      }
-
-      // 7. Video Segment
-      if (selectedSegments.video && parsedContent.videoUrl && !existingSegmentTypes.has('video')) {
-        const segId = nextSegmentId++;
-        newRegistryEntries.push({
-          page_slug: pageSlug,
-          segment_id: segId,
-          segment_key: `content-auto-video-${segId}`,
-          segment_type: 'video',
-          position: position++,
-        });
-        newSegments.push({
-          id: String(segId),
-          segmentId: String(segId),
-          type: 'video',
-          data: {
-            title: 'Product Video',
-            videoUrl: parsedContent.videoUrl,
-            aspectRatio: '16:9',
-            autoplay: false,
-            muted: true,
-            loop: false,
-          },
-          position: position - 1,
-        });
-      }
-
-      // NOTE: Banner-P segment removed - does not exist in the system
-
-      console.log('[ContentAutomation] New segments prepared:', newSegments.length);
-      console.log('[ContentAutomation] New registry entries:', newRegistryEntries.length);
-
-      if (newSegments.length === 0) {
-        console.warn('[ContentAutomation] No new segments to import!');
-        toast.info('No new segments to import (segments already exist or none selected)');
-        setIsImporting(false);
-        return;
-      }
-
-      // === FRONTEND APPROVAL WORKFLOW ===
-      // ULTRA-SAFE SEQUENTIAL processing with long delays to prevent DB overload
-      // Each operation is processed one at a time with generous pauses
-      
-      const totalSteps = newRegistryEntries.length + newSegments.length + 6; // +6 for meta operations
-      let currentStep = 0;
-      
-      // Set total for progress bar
-      setImportTotal(totalSteps);
-      setImportProgress(0);
-      
-      // Generous delay function - yields to UI and prevents DB overload
-      const safeDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-      
-      const updateProgress = async (stepName: string) => {
-        currentStep++;
-        setImportProgress(currentStep);
-        setImportStep(stepName);
-        console.log(`[ContentAutomation] ▶ Step ${currentStep}/${totalSteps}: ${stepName}`);
-        // Yield to UI thread - LONGER delay ensures React re-renders
-        await safeDelay(100);
-      };
-
-      // 1. Insert segment registry entries ONE BY ONE with LONG delays
-      await updateProgress('Creating segment registry...');
-      await safeDelay(200); // Initial pause before starting
-      
-      for (let i = 0; i < newRegistryEntries.length; i++) {
-        const entry = newRegistryEntries[i];
-        await updateProgress(`Registry entry ${i + 1}/${newRegistryEntries.length}...`);
-        
-        const { error: registryError } = await supabase
-          .from('segment_registry')
-          .insert(entry);
-
-        if (registryError) {
-          console.error('[ContentAutomation] Registry insert failed:', registryError);
-          throw registryError;
-        }
-        
-        // LONGER delay between operations (200ms instead of 50ms)
-        await safeDelay(200);
-        
-        // Extra pause every 3 operations to let system breathe
-        if ((i + 1) % 3 === 0) {
-          console.log('[ContentAutomation] Micro-batch pause after 3 registry entries...');
-          await safeDelay(500);
-        }
-      }
-      
-      await updateProgress('Loading existing content...');
-      await safeDelay(200);
-
-      // 2. Load existing page_content for merging
-      const { data: existingContent } = await supabase
+      const { data: existing } = await supabase
         .from('page_content')
-        .select('*')
+        .select('content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
         .eq('language', language)
         .maybeSingle();
 
-      let existingSegments: any[] = [];
-      if (existingContent?.content_value) {
-        existingSegments = JSON.parse(existingContent.content_value);
+      let segments: any[] = [];
+      try {
+        segments = existing?.content_value ? JSON.parse(existing.content_value) : [];
+      } catch { segments = []; }
+      console.log('=== Existing segments:', segments.length);
+
+      // STEP 6
+      console.log('=== STEP 6: Save segments ===');
+      setImportStep('Step 6/10: Save segments...');
+      setImportProgress(6);
+      await wait(200);
+
+      const merged = [...segments, segment];
+      const { error: segErr } = await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: 'page_segments',
+          language,
+          content_type: 'json',
+          content_value: JSON.stringify(merged),
+          content_status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'page_slug,section_key,language' });
+
+      if (segErr) {
+        throw new Error('Segments: ' + segErr.message);
       }
+      console.log('=== Segments OK ===');
 
-      // Merge new segments
-      const mergedSegments = [...existingSegments, ...newSegments];
+      // STEP 7
+      console.log('=== STEP 7: Tab order ===');
+      setImportStep('Step 7/10: Tab order...');
+      setImportProgress(7);
+      await wait(200);
 
-      await safeDelay(300); // Pause after read before writes
-      await updateProgress('Updating tab order...');
-
-      // 3. Update tab_order
-      const { data: tabOrderData } = await supabase
+      const { data: tabData } = await supabase
         .from('page_content')
         .select('content_value')
         .eq('page_slug', pageSlug)
@@ -1046,198 +506,74 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .eq('language', language)
         .maybeSingle();
 
-      let tabOrder: string[] = [];
-      if (tabOrderData?.content_value) {
-        tabOrder = JSON.parse(tabOrderData.content_value);
-      }
-      const newTabOrder = [...tabOrder, ...newSegments.map((s: any) => s.id)];
+      let tabs: string[] = [];
+      try {
+        tabs = tabData?.content_value ? JSON.parse(tabData.content_value) : [];
+      } catch { tabs = []; }
 
-      await safeDelay(300);
-      await updateProgress('Saving page segments...');
-
-      // 4. Save page_segments with 'pending' content_status
-      const { error: contentError } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: 'page_segments',
-          language,
-          content_type: 'json',
-          content_value: JSON.stringify(mergedSegments),
-          content_status: 'pending',
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'page_slug,section_key,language',
-        });
-
-      if (contentError) throw contentError;
-
-      await safeDelay(400); // Longer pause after large write
-
-      // 5. Save tab_order
-      await updateProgress('Saving tab order...');
-      const { error: tabError } = await supabase
+      await supabase
         .from('page_content')
         .upsert({
           page_slug: pageSlug,
           section_key: 'tab_order',
           language,
           content_type: 'json',
-          content_value: JSON.stringify(newTabOrder),
+          content_value: JSON.stringify([...tabs, String(nextId)]),
           updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'page_slug,section_key,language',
-        });
+        }, { onConflict: 'page_slug,section_key,language' });
 
-      if (tabError) throw tabError;
+      console.log('=== Tab order OK ===');
 
-      await safeDelay(400);
+      // STEP 8
+      console.log('=== STEP 8: Segment content ===');
+      setImportStep('Step 8/10: Content...');
+      setImportProgress(8);
+      await wait(200);
 
-      // 6. Save individual segment content SEQUENTIALLY with LONG delays
-      console.log(`[ContentAutomation] Starting segment saves: ${newSegments.length} segments`);
-      
-      for (let i = 0; i < newSegments.length; i++) {
-        const seg = newSegments[i] as any;
-        await updateProgress(`Saving segment ${i + 1}/${newSegments.length}: ${seg.type}...`);
-        
-        const segmentKey = `segment-${seg.id}`;
-        const { error: segError } = await supabase
-          .from('page_content')
-          .upsert({
-            page_slug: pageSlug,
-            section_key: segmentKey,
-            language,
-            content_type: 'json',
-            content_value: JSON.stringify(seg.data),
-            content_status: 'pending',
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'page_slug,section_key,language',
-          });
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: `segment-${nextId}`,
+          language,
+          content_type: 'json',
+          content_value: JSON.stringify(segment.data),
+          content_status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'page_slug,section_key,language' });
 
-        if (segError) {
-          console.error(`[ContentAutomation] Failed to save segment ${seg.id}:`, segError);
-          throw segError;
-        }
-        
-        // LONGER delay between segment saves (250ms instead of 50ms)
-        await safeDelay(250);
-        
-        // Extra pause every 2 segments to let system breathe
-        if ((i + 1) % 2 === 0) {
-          console.log(`[ContentAutomation] Micro-batch pause after ${i + 1} segments...`);
-          await safeDelay(500);
-        }
-      }
+      console.log('=== Content OK ===');
 
-      await safeDelay(300);
+      // STEP 9
+      console.log('=== STEP 9: Complete ===');
+      setImportStep('Step 9/10: ✅ Done!');
+      setImportProgress(9);
+      await wait(500);
 
-      // 7. Save 301 redirect if checkbox is checked
-      if (createRedirect && sourceUrl) {
-        await updateProgress('Creating redirect...');
-        const targetUrl = `/${language}/${pageSlug}`;
-        let sourceUrlPath = sourceUrl;
-        try {
-          const urlObj = new URL(sourceUrl);
-          sourceUrlPath = urlObj.pathname;
-        } catch {
-          // Already a path
-        }
+      toast.success('Import done! 1 segment created.');
 
-        await supabase
-          .from('redirects')
-          .insert({
-            source_url: sourceUrlPath,
-            target_url: targetUrl,
-            redirect_type: 301,
-            is_active: true,
-            notes: `Content Automation for page "${pageSlug}" [${language.toUpperCase()}] | Source: ${sourceUrl}`,
-          });
-          
-        await safeDelay(200);
-      }
+      // STEP 10
+      console.log('=== STEP 10: Redirect ===');
+      setImportStep('Step 10/10: Redirect...');
+      setImportProgress(10);
 
-      await updateProgress('✅ Complete!');
-      console.log('[ContentAutomation] ═══════════════════════════════════════');
-      console.log('[ContentAutomation] ✅ ALL SEGMENTS SAVED SUCCESSFULLY');
-      console.log('[ContentAutomation] ═══════════════════════════════════════');
-      console.log('[ContentAutomation] Total segments imported:', newSegments.length);
+      setIsImporting(false);
+      setParsedContent(null);
 
-      // SUCCESS - Show completion state
-      setImportStep('✅ Import complete! Preparing redirect...');
-      
-      const frontendUrl = `/${language}/${pageSlug}?edit=true`;
-      console.log('[ContentAutomation] → Redirect URL:', frontendUrl);
+      const url = `/${language}/${pageSlug}?edit=true`;
+      console.log('=== URL:', url);
+      window.location.href = url;
 
-      // Wait a moment to show success
-      await safeDelay(500);
-
-      // CRITICAL: Clear state and redirect in one atomic operation
-      // Use try-finally to GUARANTEE state is cleared even if redirect fails
-      try {
-        toast.success(`${newSegments.length} segments imported successfully!`, {
-          description: 'Opening frontend for approval...',
-        });
-
-        // Notify parent
-        onImportComplete?.();
-
-        // Short delay then redirect - use location.replace for cleaner history
-        console.log('[ContentAutomation] → Redirecting NOW...');
-        
-        // ULTRA-SAFE REDIRECT: Set a fallback timeout in case window.location fails
-        const redirectTimeout = setTimeout(() => {
-          console.error('[ContentAutomation] Redirect failed! Reload page manually.');
-          toast.error('Redirect failed - please navigate manually to: ' + frontendUrl);
-        }, 3000);
-        
-        // Clear state BEFORE redirect attempt
-        setIsImporting(false);
-        setImportStep('');
-        setImportProgress(0);
-        setImportTotal(0);
-        setParsedContent(null);
-        
-        // Force DOM update before navigation
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        
-        // Execute redirect
-        window.location.href = frontendUrl;
-        clearTimeout(redirectTimeout);
-        
-      } catch (redirectError) {
-        console.error('[ContentAutomation] Redirect error:', redirectError);
-        // Ensure state is cleared even on error
-        setIsImporting(false);
-        setImportStep('');
-        toast.info(`Import complete! Navigate to: ${frontendUrl}`);
-      }
-
-    } catch (error: unknown) {
-      console.error('[ContentAutomation] ═══════════════════════════════════════');
-      console.error('[ContentAutomation] ❌ IMPORT FAILED');
-      console.error('[ContentAutomation] ═══════════════════════════════════════');
-      console.error('[ContentAutomation] Error:', error);
-      console.error('[ContentAutomation] Error details:', {
-        name: error instanceof Error ? error.name : 'Unknown',
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : 'No stack trace',
-      });
-      const errorMessage = error instanceof Error ? error.message : 'Failed to import content';
-      toast.error(`Import failed: ${errorMessage}`, {
-        description: 'Check console for details',
-        duration: 10000,
-      });
-      setImportStep(`❌ Error: ${errorMessage}`);
-      // Keep error visible for 5 seconds before clearing
+    } catch (err) {
+      console.error('=== IMPORT ERROR ===', err);
+      const msg = err instanceof Error ? err.message : 'Error';
+      toast.error(msg);
+      setImportStep('❌ ' + msg);
       setTimeout(() => {
         setIsImporting(false);
         setImportStep('');
-        setImportProgress(0);
-        setImportTotal(0);
       }, 5000);
     }
-    }, 0); // End of setTimeout
   };
 
   const toggleSegment = (key: keyof typeof selectedSegments) => {
