@@ -388,9 +388,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     try {
       // STEP 1: Setup
       console.log('=== STEP 1: Setup ===');
-      setImportStep('Step 1/12: Setup...');
+      setImportStep('Step 1/15: Setup...');
       setImportProgress(1);
-      setImportTotal(12);
+      setImportTotal(15);
       await wait(200);
 
       const title = parsedContent?.title || 'Import';
@@ -399,7 +399,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 2: Get max segment ID
       console.log('=== STEP 2: Get max ID ===');
-      setImportStep('Step 2/12: Get ID...');
+      setImportStep('Step 2/15: Get ID...');
       setImportProgress(2);
       await wait(200);
 
@@ -415,7 +415,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 3: Create Intro segment
       console.log('=== STEP 3: Create Intro segment ===');
-      setImportStep('Step 3/12: Intro segment...');
+      setImportStep('Step 3/15: Intro segment...');
       setImportProgress(3);
       await wait(200);
 
@@ -431,7 +431,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 4: Insert Intro to registry
       console.log('=== STEP 4: Insert Intro registry ===');
-      setImportStep('Step 4/12: Save Intro registry...');
+      setImportStep('Step 4/15: Save Intro registry...');
       setImportProgress(4);
       await wait(200);
 
@@ -453,7 +453,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 5: Download image from source
       console.log('=== STEP 5: Download image ===');
-      setImportStep('Step 5/12: Download image...');
+      setImportStep('Step 5/15: Download image...');
       setImportProgress(5);
       await wait(200);
 
@@ -464,7 +464,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       if (firstImageUrl) {
         console.log('=== Found image:', firstImageUrl.substring(0, 50));
         try {
-          // Fetch image
           const imgResponse = await fetch(firstImageUrl);
           if (imgResponse.ok) {
             const blob = await imgResponse.blob();
@@ -472,7 +471,6 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             const fileName = `import-${Date.now()}.${ext}`;
             const filePath = `${pageSlug}/image-text/${fileName}`;
             
-            // Upload to Supabase Storage
             const { error: uploadErr } = await supabase.storage
               .from('page-images')
               .upload(filePath, blob, { contentType: blob.type });
@@ -496,7 +494,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 6: Create Image-Text segment
       console.log('=== STEP 6: Create Image-Text segment ===');
-      setImportStep('Step 6/12: Image-Text segment...');
+      setImportStep('Step 6/15: Image-Text segment...');
       setImportProgress(6);
       await wait(200);
 
@@ -519,7 +517,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       // STEP 7: Insert Image-Text to registry
       console.log('=== STEP 7: Insert Image-Text registry ===');
-      setImportStep('Step 7/12: Save Image-Text registry...');
+      setImportStep('Step 7/15: Save Image-Text registry...');
       setImportProgress(7);
       await wait(200);
 
@@ -537,14 +535,60 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.log('=== Image-Text Registry OK');
 
       const imageTextId = nextId;
+      nextId++;
 
-      // STEP 8: Save page_segments
-      console.log('=== STEP 8: Save page_segments ===');
-      setImportStep('Step 8/12: Save segments...');
+      // STEP 8: Create Tiles segment
+      console.log('=== STEP 8: Create Tiles segment ===');
+      setImportStep('Step 8/15: Tiles segment...');
       setImportProgress(8);
       await wait(200);
 
-      const allSegments = [introSegment, imageTextSegment];
+      // Generate tiles from parsed sections or use defaults
+      const defaultTiles = [
+        { id: '1', icon: 'Zap', title: 'Feature 1', description: 'Key feature from the content.' },
+        { id: '2', icon: 'Target', title: 'Feature 2', description: 'Another important aspect.' },
+        { id: '3', icon: 'Shield', title: 'Feature 3', description: 'Additional capability.' },
+      ];
+
+      const tilesSegment = {
+        id: String(nextId),
+        type: 'tiles',
+        data: {
+          headline: 'Key Features',
+          columns: 3,
+          tiles: defaultTiles,
+        },
+      };
+      console.log('=== Tiles segment created with', defaultTiles.length, 'tiles');
+
+      // STEP 9: Insert Tiles to registry
+      console.log('=== STEP 9: Insert Tiles registry ===');
+      setImportStep('Step 9/15: Save Tiles registry...');
+      setImportProgress(9);
+      await wait(200);
+
+      const { error: regErr3 } = await supabase
+        .from('segment_registry')
+        .insert({
+          page_slug: pageSlug,
+          segment_id: nextId,
+          segment_key: `import-tiles-${nextId}`,
+          segment_type: 'tiles',
+          position: 2,
+        });
+
+      if (regErr3) throw new Error('Tiles Registry: ' + regErr3.message);
+      console.log('=== Tiles Registry OK');
+
+      const tilesId = nextId;
+
+      // STEP 10: Save page_segments
+      console.log('=== STEP 10: Save page_segments ===');
+      setImportStep('Step 10/15: Save segments...');
+      setImportProgress(10);
+      await wait(200);
+
+      const allSegments = [introSegment, imageTextSegment, tilesSegment];
       
       const { error: segErr } = await supabase
         .from('page_content')
@@ -561,10 +605,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       if (segErr) throw new Error('Segments: ' + segErr.message);
       console.log('=== Segments saved');
 
-      // STEP 9: Save tab_order
-      console.log('=== STEP 9: Save tab_order ===');
-      setImportStep('Step 9/12: Tab order...');
-      setImportProgress(9);
+      // STEP 11: Save tab_order
+      console.log('=== STEP 11: Save tab_order ===');
+      setImportStep('Step 11/15: Tab order...');
+      setImportProgress(11);
       await wait(200);
 
       await supabase
@@ -574,16 +618,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           section_key: 'tab_order',
           language,
           content_type: 'json',
-          content_value: JSON.stringify([String(introId), String(imageTextId)]),
+          content_value: JSON.stringify([String(introId), String(imageTextId), String(tilesId)]),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
       console.log('=== Tab order saved');
 
-      // STEP 10: Save segment content entries
-      console.log('=== STEP 10: Save segment content ===');
-      setImportStep('Step 10/12: Segment content...');
-      setImportProgress(10);
+      // STEP 12: Save segment content entries
+      console.log('=== STEP 12: Save segment content ===');
+      setImportStep('Step 12/15: Segment content...');
+      setImportProgress(12);
       await wait(200);
 
       // Intro content
@@ -612,24 +656,43 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
+      // Tiles content
+      await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: `segment-${tilesId}`,
+          language,
+          content_type: 'json',
+          content_value: JSON.stringify(tilesSegment.data),
+          content_status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'page_slug,section_key,language' });
+
       console.log('=== Segment content saved');
 
-      // STEP 11: Complete
-      console.log('=== STEP 11: Complete ===');
-      setImportStep('Step 11/12: ✅ Done!');
-      setImportProgress(11);
+      // STEP 13: Complete
+      console.log('=== STEP 13: Complete ===');
+      setImportStep('Step 13/15: ✅ Done!');
+      setImportProgress(13);
       await wait(500);
 
       const imgStatus = imageUrl ? 'with image' : 'no image';
-      toast.success(`Import done! 2 segments created (${imgStatus})`);
+      toast.success(`Import done! 3 segments created (${imgStatus})`);
 
-      // STEP 12: Redirect
-      console.log('=== STEP 12: Redirect ===');
-      setImportStep('Step 12/12: Redirect...');
-      setImportProgress(12);
+      // STEP 14: Cleanup
+      console.log('=== STEP 14: Cleanup ===');
+      setImportStep('Step 14/15: Cleanup...');
+      setImportProgress(14);
+      await wait(200);
 
       setIsImporting(false);
       setParsedContent(null);
+
+      // STEP 15: Redirect
+      console.log('=== STEP 15: Redirect ===');
+      setImportStep('Step 15/15: Redirect...');
+      setImportProgress(15);
 
       const url = `/${language}/${pageSlug}?edit=true`;
       console.log('=== URL:', url);
