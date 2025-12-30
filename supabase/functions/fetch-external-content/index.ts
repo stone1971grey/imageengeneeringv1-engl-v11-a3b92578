@@ -15,6 +15,7 @@ interface ParsedContent {
   downloads: { title: string; description: string; url: string; language: string }[];
   videoUrl: string | null;
   images: { url: string; title: string }[];
+  rawMarkdown?: string;
 }
 
 serve(async (req) => {
@@ -134,6 +135,7 @@ function parseFirecrawlContent(
     downloads: [],
     videoUrl: null,
     images: [],
+    rawMarkdown: markdown, // Store raw markdown for section extraction
   };
 
   // === TITLE ===
