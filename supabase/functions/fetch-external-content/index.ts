@@ -440,40 +440,93 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Extracted useCases:', result.useCases.length);
 
   // === DOWNLOADS ===
-  // Extract PDF links from the links array
+  // Extract PDF links from multiple sources: links array, HTML, and markdown
+  const foundPdfUrls = new Set<string>();
+  const downloadEntries: { title: string; url: string; language: string }[] = [];
+  
+  // 1. Extract from links array
   for (const link of links) {
     if (link.toLowerCase().includes('.pdf')) {
-      let pdfUrl = link;
-      
-      // Make URL absolute if needed
-      if (!pdfUrl.startsWith('http')) {
-        const urlObj = new URL(baseUrl);
-        pdfUrl = pdfUrl.startsWith('/') 
-          ? `${urlObj.origin}${pdfUrl}`
-          : `${urlObj.origin}/${pdfUrl}`;
-      }
-      
-      // Extract filename for title
-      const filename = pdfUrl.split('/').pop()?.split('?')[0] || 'Document';
-      const title = filename
-        .replace('.pdf', '')
-        .replace(/[-_]/g, ' ')
-        .replace(/([a-z])([A-Z])/g, '$1 $2');
-      
-      // Detect language
-      const isGerman = pdfUrl.toLowerCase().includes('_de') || filename.toLowerCase().includes('_de');
-      const isEnglish = pdfUrl.toLowerCase().includes('_en') || filename.toLowerCase().includes('_en');
-      const detectedLang = isGerman ? 'de' : (isEnglish ? 'en' : language);
-      
-      result.downloads.push({
-        title: title.trim(),
-        description: getDownloadDescription(title),
-        url: pdfUrl,
-        language: detectedLang,
-      });
+      foundPdfUrls.add(link);
     }
   }
-  console.log('[Firecrawl] Extracted downloads:', result.downloads.length);
+  console.log('[Firecrawl] PDF links from links array:', foundPdfUrls.size);
+  
+  // 2. Extract PDF links from HTML (with their link text for better titles)
+  const htmlPdfMatches = html.matchAll(/<a[^>]*href="([^"]*\.pdf[^"]*)"[^>]*>([^<]*)<\/a>/gi);
+  const pdfTitleMap = new Map<string, string>();
+  
+  for (const match of htmlPdfMatches) {
+    let pdfUrl = match[1];
+    const linkText = match[2].trim();
+    
+    // Make URL absolute
+    if (!pdfUrl.startsWith('http')) {
+      const urlObj = new URL(baseUrl);
+      pdfUrl = pdfUrl.startsWith('/') 
+        ? `${urlObj.origin}${pdfUrl}`
+        : `${urlObj.origin}/${pdfUrl}`;
+    }
+    
+    foundPdfUrls.add(pdfUrl);
+    
+    // Store the link text as title (often better than filename)
+    if (linkText && linkText.length > 2 && !pdfTitleMap.has(pdfUrl)) {
+      pdfTitleMap.set(pdfUrl, linkText);
+    }
+  }
+  console.log('[Firecrawl] PDF links from HTML:', foundPdfUrls.size);
+  
+  // 3. Extract from markdown [text](url.pdf)
+  const mdPdfMatches = markdown.matchAll(/\[([^\]]+)\]\(([^)]*\.pdf[^)]*)\)/gi);
+  for (const match of mdPdfMatches) {
+    const linkText = match[1].trim();
+    let pdfUrl = match[2];
+    
+    // Make URL absolute
+    if (!pdfUrl.startsWith('http')) {
+      const urlObj = new URL(baseUrl);
+      pdfUrl = pdfUrl.startsWith('/') 
+        ? `${urlObj.origin}${pdfUrl}`
+        : `${urlObj.origin}/${pdfUrl}`;
+    }
+    
+    foundPdfUrls.add(pdfUrl);
+    
+    if (linkText && linkText.length > 2 && !pdfTitleMap.has(pdfUrl)) {
+      pdfTitleMap.set(pdfUrl, linkText);
+    }
+  }
+  console.log('[Firecrawl] Total unique PDF URLs found:', foundPdfUrls.size);
+  
+  // Process all found PDFs
+  for (const pdfUrl of foundPdfUrls) {
+    // Get title from link text map, or generate from filename
+    const filename = pdfUrl.split('/').pop()?.split('?')[0] || 'Document';
+    let title = pdfTitleMap.get(pdfUrl) || filename
+      .replace('.pdf', '')
+      .replace(/[-_]/g, ' ')
+      .replace(/([a-z])([A-Z])/g, '$1 $2');
+    
+    // Clean up title
+    title = title.trim();
+    
+    // Detect language from URL or filename
+    const urlLower = pdfUrl.toLowerCase();
+    const isGerman = urlLower.includes('_de') || urlLower.includes('-de.') || title.toLowerCase().includes('betriebsanleitung');
+    const isEnglish = urlLower.includes('_en') || urlLower.includes('-en.') || title.toLowerCase().includes('user manual');
+    const detectedLang = isGerman ? 'de' : (isEnglish ? 'en' : language);
+    
+    result.downloads.push({
+      title: title,
+      description: getDownloadDescription(title),
+      url: pdfUrl,
+      language: detectedLang,
+    });
+    
+    console.log('[Firecrawl] Added download:', title, '→', pdfUrl);
+  }
+  console.log('[Firecrawl] Total downloads extracted:', result.downloads.length);
 
   // === VIDEO ===
   // Check for video links in links array
