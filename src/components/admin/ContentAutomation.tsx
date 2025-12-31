@@ -926,56 +926,78 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       console.log('=== Total PDF tiles for Downloads segment:', pdfTiles.length);
 
-      // Create Feature Tiles from extracted sections (always)
-      const featureTiles = extractedSections.length > 0 
-        ? extractedSections.slice(0, 6).map((sec, idx) => ({
-            title: sec.title,
-            description: sec.description,
-            icon: ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'][idx % 6],
-          }))
+      // ============================================
+      // NEW RULE: Long text sections → Image-Text segments (not Tiles!)
+      // Tiles are ONLY for short lists or downloads.
+      // Image-Text segments allow better text flow and formatting.
+      // ============================================
+      
+      // Create Feature Image-Text segments from extracted sections
+      const featureSections = extractedSections.length > 0 
+        ? extractedSections.slice(0, 6)
         : [
-            { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
-            { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
-            { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
+            { title: 'Overview', description: 'Key features and capabilities of this product.' },
           ];
 
-      console.log('=== Feature tiles:', featureTiles.length);
+      console.log('=== Feature sections for Image-Text:', featureSections.length);
 
-      // STEP 12: Create Key Features Tiles segment
-      console.log('=== STEP 12: Create Key Features Tiles segment ===');
-      setImportStep('Step 12/26: Key Features tiles...');
+      // STEP 12: Create multiple Image-Text segments for features
+      console.log('=== STEP 12: Create Feature Image-Text segments ===');
+      setImportStep('Step 12/26: Feature sections...');
       setImportProgress(12);
       await wait(150);
 
-      const featuresTilesSegment = {
-        id: String(nextId),
-        type: 'tiles',
-        data: {
-          title: 'Key Features',
-          columns: String(Math.min(featureTiles.length, 3)),
-          items: featureTiles,
-        },
-      };
+      const featureImageTextSegments: any[] = [];
+      const featureSegmentIds: number[] = [];
+      
+      // Create one Image-Text segment per feature section
+      for (let i = 0; i < featureSections.length; i++) {
+        const section = featureSections[i];
+        const segmentId = nextId;
+        
+        // Use gallery images in rotation for variety
+        const imageIndex = (i + 1) % galleryImages.length; // Start from index 1 for variety
+        const sectionImage = galleryImages[imageIndex]?.imageUrl || galleryImages[0]?.imageUrl || '';
+        
+        const featureSegment = {
+          id: String(segmentId),
+          type: 'image-text',
+          data: {
+            title: section.title,
+            items: [
+              {
+                title: section.title,
+                description: section.description, // Full text without truncation!
+                imageUrl: sectionImage,
+                metadata: { altText: section.title },
+              }
+            ],
+          },
+        };
+        
+        featureImageTextSegments.push(featureSegment);
+        featureSegmentIds.push(segmentId);
+        
+        // Insert to registry
+        console.log(`=== STEP 12.${i + 1}: Insert Feature Image-Text ${segmentId} registry ===`);
+        const { error: regErrFeature } = await supabase
+          .from('segment_registry')
+          .insert({
+            page_slug: pageSlug,
+            segment_id: segmentId,
+            segment_key: `import-feature-${segmentId}`,
+            segment_type: 'image-text',
+            position: 3 + i, // Position after Image-Text (2), starting at 3
+          });
 
-      // STEP 13: Insert Key Features Tiles to registry
-      console.log('=== STEP 13: Insert Key Features Tiles registry ===');
-      setImportStep('Step 13/26: Save Key Features registry...');
-      setImportProgress(13);
-      await wait(150);
-
-      const { error: regErr3 } = await supabase
-        .from('segment_registry')
-        .insert({
-          page_slug: pageSlug,
-          segment_id: nextId,
-          segment_key: `import-features-${nextId}`,
-          segment_type: 'tiles',
-          position: 3,
-        });
-
-      if (regErr3) throw new Error('Features Tiles Registry: ' + regErr3.message);
-      const featuresId = nextId;
-      nextId++;
+        if (regErrFeature) throw new Error(`Feature Image-Text Registry ${i}: ` + regErrFeature.message);
+        
+        console.log(`=== Feature Image-Text ${i + 1} created: "${section.title}" (ID: ${segmentId})`);
+        nextId++;
+        await wait(50);
+      }
+      
+      console.log(`=== Total Feature Image-Text segments created: ${featureImageTextSegments.length}`);
 
       // STEP 14: Create Video segment FIRST (position 4, before Downloads)
       console.log('=== STEP 14: Create Video segment ===');
@@ -1082,12 +1104,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(15);
       await wait(150);
 
-      const allSegments = [productHeroSegment, introSegment, imageTextSegment, featuresTilesSegment];
-      // Video comes BEFORE Downloads (position 4)
+      // Build allSegments: Product Hero, Intro, Image-Text, Feature Image-Text segments, Video, Downloads
+      const allSegments = [productHeroSegment, introSegment, imageTextSegment, ...featureImageTextSegments];
+      // Video comes BEFORE Downloads
       if (videoSegment) {
         allSegments.push(videoSegment);
       }
-      // Downloads come AFTER Video (position 5)
+      // Downloads come AFTER Video
       if (downloadsTilesSegment) {
         allSegments.push(downloadsTilesSegment);
       }
@@ -1112,8 +1135,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(16);
       await wait(150);
 
-      // Order: Product Hero, Intro, Image-Text, Features, Video, Downloads
-      const tabOrder = [String(productHeroId), String(introId), String(imageTextId), String(featuresId)];
+      // Order: Product Hero, Intro, Image-Text, Feature Image-Text segments, Video, Downloads
+      const tabOrder = [String(productHeroId), String(introId), String(imageTextId), ...featureSegmentIds.map(id => String(id))];
       if (videoId) {
         tabOrder.push(String(videoId));
       }
@@ -1177,18 +1200,23 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      // Features Tiles content
-      await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: `segment-${featuresId}`,
-          language,
-          content_type: 'json',
-          content_value: JSON.stringify(featuresTilesSegment.data),
-          content_status: 'pending',
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'page_slug,section_key,language' });
+      // Feature Image-Text segments content
+      for (let i = 0; i < featureImageTextSegments.length; i++) {
+        const seg = featureImageTextSegments[i];
+        const segId = featureSegmentIds[i];
+        console.log(`=== STEP 17.${i + 3}: Save Feature Image-Text ${segId} content ===`);
+        await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: pageSlug,
+            section_key: `segment-${segId}`,
+            language,
+            content_type: 'json',
+            content_value: JSON.stringify(seg.data),
+            content_status: 'pending',
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'page_slug,section_key,language' });
+      }
 
       // Downloads Tiles content (if exists)
       if (downloadsTilesSegment && downloadsId) {
@@ -1231,10 +1259,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       await wait(400);
 
       const segmentCount = allSegments.length;
-      const featureCount = featureTiles.length;
+      const featureCount = featureImageTextSegments.length;
       const downloadCount = pdfTiles.length;
       const videoStatus = videoSegment ? ', 1 video' : '';
-      toast.success(`Import done! ${segmentCount} segments, ${featureCount} features, ${downloadCount} downloads${videoStatus} created`);
+      toast.success(`Import done! ${segmentCount} segments, ${featureCount} feature sections, ${downloadCount} downloads${videoStatus} created`);
 
       // STEP 19: Cleanup & Redirect
       console.log('=== STEP 19: Redirect ===');
