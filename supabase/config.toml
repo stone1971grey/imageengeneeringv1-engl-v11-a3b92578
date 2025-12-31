@@ -59,3 +59,6 @@ verify_jwt = true
 
 [functions.fetch-external-content]
 verify_jwt = true
+
+[functions.download-external-file]
+verify_jwt = false
