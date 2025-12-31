@@ -549,9 +549,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         
         console.log(`=== Loaded ${galleryImages.length} images from Media Management`);
       } else {
-        // NO EXISTING ASSETS - download from source and create mappings
-        console.log('=== No existing assets, downloading from source...');
-        setImportStep('Step 3/21: Downloading images...');
+        // NO EXISTING ASSETS - download from source via Edge Function (bypasses CORS)
+        console.log('=== No existing assets, downloading via Edge Function...');
+        setImportStep('Step 3/21: Downloading images via server...');
         
         const sourceImages = parsedContent?.images || [];
         const maxImages = Math.min(sourceImages.length, 5);
@@ -561,78 +561,104 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           if (!img?.url) continue;
           
           try {
-            console.log(`=== Downloading image ${i + 1}/${maxImages}: ${img.url.substring(0, 80)}...`);
-            const imgResponse = await fetch(img.url);
-            if (imgResponse.ok) {
-              const blob = await imgResponse.blob();
-              const ext = img.url.split('.').pop()?.split('?')[0] || 'png';
-              // Use descriptive filename from source URL if possible
-              const sourceFileName = img.url.split('/').pop()?.split('?')[0] || `gallery-${i}`;
-              const fileName = sourceFileName.includes('.') ? sourceFileName : `${sourceFileName}.${ext}`;
-              const filePath = `${pageSlug}/${fileName}`;
+            console.log(`=== Downloading image ${i + 1}/${maxImages} via Edge Function: ${img.url.substring(0, 80)}...`);
+            setImportStep(`Downloading image ${i + 1}/${maxImages}...`);
+            
+            // Use Edge Function to bypass CORS
+            const ext = img.url.split('.').pop()?.split('?')[0] || 'png';
+            const sourceFileName = img.url.split('/').pop()?.split('?')[0] || `gallery-${i}`;
+            const fileName = sourceFileName.includes('.') ? sourceFileName : `${sourceFileName}.${ext}`;
+            const filePath = `${pageSlug}/${fileName}`;
+            
+            const { data: downloadResult, error: downloadError } = await supabase.functions.invoke('download-external-file', {
+              body: {
+                fileUrl: img.url,
+                targetPath: filePath,
+                bucketId: 'page-images',
+              },
+            });
+            
+            if (downloadError) {
+              console.warn(`=== Image ${i + 1} Edge Function error:`, downloadError.message);
+              continue;
+            }
+            
+            if (downloadResult?.success && downloadResult?.publicUrl) {
+              const imgAltText = img.title || `${title} - Image ${i + 1}`;
+              galleryImages.push({
+                imageUrl: downloadResult.publicUrl,
+                title: imgAltText,
+                description: imgAltText,
+                metadata: { altText: imgAltText },
+              });
               
-              const { error: uploadErr } = await supabase.storage
-                .from('page-images')
-                .upload(filePath, blob, { contentType: blob.type, upsert: true });
+              // Create file_segment_mapping entry
+              await supabase
+                .from('file_segment_mappings')
+                .upsert({
+                  file_path: filePath,
+                  bucket_id: 'page-images',
+                  segment_ids: [String(productHeroSegmentId)],
+                  alt_text: imgAltText,
+                  visibility: 'public',
+                }, { onConflict: 'file_path' });
               
-              if (!uploadErr) {
-                const { data: urlData } = supabase.storage
-                  .from('page-images')
-                  .getPublicUrl(filePath);
-                
-                const imgAltText = img.title || `${title} - Image ${i + 1}`;
-                galleryImages.push({
-                  imageUrl: urlData.publicUrl,
-                  title: imgAltText,
-                  description: imgAltText,
-                  metadata: { altText: imgAltText },
-                });
-                
-                // Create file_segment_mapping entry
-                await supabase
-                  .from('file_segment_mappings')
-                  .upsert({
-                    file_path: filePath,
-                    bucket_id: 'page-images',
-                    segment_ids: [String(productHeroSegmentId)],
-                    alt_text: imgAltText,
-                    visibility: 'public',
-                  }, { onConflict: 'file_path' });
-                
-                console.log(`=== Image ${i + 1} uploaded and mapped: ${filePath}`);
-              }
+              console.log(`=== Image ${i + 1} downloaded and mapped via Edge Function: ${filePath}`);
+            } else {
+              console.warn(`=== Image ${i + 1} download failed:`, downloadResult?.error || 'Unknown error');
             }
           } catch (imgErr) {
-            console.warn(`=== Image ${i + 1} download failed:`, imgErr);
+            console.warn(`=== Image ${i + 1} download exception:`, imgErr);
           }
           
-          await wait(100);
+          await wait(200); // Slightly longer wait for Edge Function calls
         }
       }
       
       console.log(`=== Gallery images ready: ${galleryImages.length}`);
 
-      // STEP 4: Create Product Hero Gallery segment
-      console.log('=== STEP 4: Create Product Hero Gallery ===');
-      setImportStep('Step 4/21: Product Hero Gallery...');
+      // STEP 4: Create Product Hero OR Product Hero Gallery based on image count
+      // RULE: 0-1 images → Product Hero, 2+ images → Product Hero Gallery
+      const useProductHero = galleryImages.length <= 1;
+      console.log(`=== STEP 4: Create ${useProductHero ? 'Product Hero' : 'Product Hero Gallery'} (${galleryImages.length} images) ===`);
+      setImportStep(`Step 4/21: ${useProductHero ? 'Product Hero' : 'Product Hero Gallery'}...`);
       setImportProgress(4);
       await wait(150);
 
-      const productHeroSegment = {
-        id: String(nextId),
-        type: 'product-hero-gallery',
-        data: {
-          title: title.split('|')[0].trim(),
-          subtitle: 'Illumination Device',
-          category: 'Equipment',
-          description: description.substring(0, 200),
-          images: galleryImages,
-          badges: [],
-        },
-      };
+      let productHeroSegment: any;
+      
+      if (useProductHero) {
+        // Single image or no image → Product Hero (simpler layout)
+        productHeroSegment = {
+          id: String(nextId),
+          type: 'product-hero',
+          data: {
+            title: title.split('|')[0].trim(),
+            subtitle: 'Illumination Device',
+            description: description.substring(0, 300),
+            imageUrl: galleryImages[0]?.imageUrl || '',
+            metadata: { altText: galleryImages[0]?.title || title },
+          },
+        };
+      } else {
+        // Multiple images → Product Hero Gallery
+        productHeroSegment = {
+          id: String(nextId),
+          type: 'product-hero-gallery',
+          data: {
+            title: title.split('|')[0].trim(),
+            subtitle: 'Illumination Device',
+            category: 'Equipment',
+            description: description.substring(0, 200),
+            images: galleryImages,
+            badges: [],
+          },
+        };
+      }
 
       // STEP 5: Insert Product Hero to registry
-      console.log('=== STEP 5: Insert Product Hero registry ===');
+      const segmentType = useProductHero ? 'product-hero' : 'product-hero-gallery';
+      console.log(`=== STEP 5: Insert ${segmentType} registry ===`);
       setImportStep('Step 5/18: Save Product Hero registry...');
       setImportProgress(5);
       await wait(150);
@@ -643,7 +669,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           page_slug: pageSlug,
           segment_id: nextId,
           segment_key: `import-product-hero-${nextId}`,
-          segment_type: 'product-hero-gallery',
+          segment_type: segmentType,
           position: 0,
         });
 
@@ -853,65 +879,72 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           }
           console.log(`=== MATCHED existing: "${dl.title}" → ${matchingPdf.url}`);
         } else {
-          // PDF NOT in Media Management - DOWNLOAD IT!
-          console.log(`=== PDF not found, downloading: "${dl.title}" from ${dl.url}`);
+          // PDF NOT in Media Management - DOWNLOAD via Edge Function (bypasses CORS)!
+          console.log(`=== PDF not found, downloading via Edge Function: "${dl.title}" from ${dl.url}`);
           setImportStep(`Downloading PDF: ${urlFileName}...`);
           
           try {
-            const pdfResponse = await fetch(dl.url);
-            if (pdfResponse.ok) {
-              const blob = await pdfResponse.blob();
-              const sanitizedFileName = urlFileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-              const filePath = `${pageSlug}/${sanitizedFileName}`;
+            const sanitizedFileName = urlFileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const filePath = `${pageSlug}/${sanitizedFileName}`;
+            
+            const { data: downloadResult, error: downloadError } = await supabase.functions.invoke('download-external-file', {
+              body: {
+                fileUrl: dl.url,
+                targetPath: filePath,
+                bucketId: 'page-images',
+              },
+            });
+            
+            if (downloadError) {
+              console.warn(`=== PDF Edge Function error:`, downloadError.message);
+              // Fallback to external URL
+              console.log(`=== Adding external PDF link as fallback: ${dl.title}`);
+              availablePdfs.push({
+                name: urlFileName || 'document.pdf',
+                url: dl.url,
+                title: dl.title || urlFileName.replace('.pdf', '').replace(/_/g, ' '),
+              });
+            } else if (downloadResult?.success && downloadResult?.publicUrl) {
+              // Add to available PDFs with local URL
+              availablePdfs.push({
+                name: sanitizedFileName,
+                url: downloadResult.publicUrl,
+                title: dl.title || sanitizedFileName.replace('.pdf', '').replace(/_/g, ' '),
+              });
               
-              console.log(`=== Uploading PDF to: ${filePath}`);
-              const { error: uploadErr } = await supabase.storage
-                .from('page-images')
-                .upload(filePath, blob, { contentType: 'application/pdf', upsert: true });
+              // Create file_segment_mapping entry
+              await supabase
+                .from('file_segment_mappings')
+                .upsert({
+                  file_path: filePath,
+                  bucket_id: 'page-images',
+                  segment_ids: [String(nextId)],
+                  alt_text: dl.title || sanitizedFileName,
+                  visibility: 'public',
+                }, { onConflict: 'file_path' });
               
-              if (!uploadErr) {
-                const { data: urlData } = supabase.storage
-                  .from('page-images')
-                  .getPublicUrl(filePath);
-                
-                // Add to available PDFs
-                availablePdfs.push({
-                  name: sanitizedFileName,
-                  url: urlData.publicUrl,
-                  title: dl.title || sanitizedFileName.replace('.pdf', '').replace(/_/g, ' '),
-                });
-                
-                // Create file_segment_mapping entry
-                await supabase
-                  .from('file_segment_mappings')
-                  .upsert({
-                    file_path: filePath,
-                    bucket_id: 'page-images',
-                    segment_ids: [String(nextId)], // Use current segment ID
-                    alt_text: dl.title || sanitizedFileName,
-                    visibility: 'public',
-                  }, { onConflict: 'file_path' });
-                
-                console.log(`=== PDF uploaded and mapped: ${filePath}`);
-              } else {
-                console.error(`=== PDF upload error:`, uploadErr.message);
-              }
+              console.log(`=== PDF downloaded and mapped via Edge Function: ${filePath}`);
             } else {
-              console.warn(`=== PDF download failed (${pdfResponse.status}): ${dl.url}`);
+              // Fallback to external URL
+              console.log(`=== PDF download failed, adding external link: ${dl.title}`);
+              availablePdfs.push({
+                name: urlFileName || 'document.pdf',
+                url: dl.url,
+                title: dl.title || urlFileName.replace('.pdf', '').replace(/_/g, ' '),
+              });
             }
           } catch (pdfErr) {
-            console.warn(`=== PDF download error (CORS/network):`, pdfErr);
-            // CORS blocked - add with EXTERNAL URL as fallback so Downloads are still shown!
-            // This ensures Downloads segment is created even if we can't download the file
+            console.warn(`=== PDF download exception:`, pdfErr);
+            // Fallback to external URL
             console.log(`=== Adding external PDF link as fallback: ${dl.title}`);
             availablePdfs.push({
               name: urlFileName || 'document.pdf',
-              url: dl.url, // Use external URL
+              url: dl.url,
               title: dl.title || urlFileName.replace('.pdf', '').replace(/_/g, ' '),
             });
           }
           
-          await wait(300); // Rate limiting between PDF downloads
+          await wait(400); // Slightly longer wait for Edge Function calls
         }
       }
       
