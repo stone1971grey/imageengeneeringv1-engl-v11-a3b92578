@@ -342,7 +342,7 @@ const Tiles: React.FC<TilesProps> = ({
             const hasImage = tile.imageUrl;
 
             return (
-              <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden relative group">
+              <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden relative group h-full flex flex-col">
                 {isEditing && (
                   <Button
                     variant="ghost"
@@ -354,11 +354,11 @@ const Tiles: React.FC<TilesProps> = ({
                   </Button>
                 )}
                 
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex flex-col h-full">
                   {isEditing ? (
                     // Edit mode: Editable image or icon with selector
                     hasImage ? (
-                      <div className="w-full max-h-[200px] overflow-hidden">
+                      <div className="w-full max-h-[200px] overflow-hidden flex-shrink-0">
                         <EditableImage
                           src={tile.imageUrl || ''}
                           alt={tile.metadata?.altText || tile.title}
@@ -373,7 +373,7 @@ const Tiles: React.FC<TilesProps> = ({
                         />
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center pt-8 gap-2">
+                      <div className="flex flex-col items-center pt-8 gap-2 flex-shrink-0">
                         <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20">
                           <Icon className="h-8 w-8 text-gray-900" />
                         </div>
@@ -397,7 +397,7 @@ const Tiles: React.FC<TilesProps> = ({
                   ) : (
                     // View mode
                     hasImage ? (
-                      <div className="w-full max-h-[200px] overflow-hidden">
+                      <div className="w-full max-h-[200px] overflow-hidden flex-shrink-0">
                         <img 
                           src={tile.imageUrl} 
                           alt={tile.metadata?.altText || tile.title}
@@ -405,7 +405,7 @@ const Tiles: React.FC<TilesProps> = ({
                         />
                       </div>
                     ) : (
-                      <div className="flex justify-center pt-8">
+                      <div className="flex justify-center pt-8 flex-shrink-0">
                         <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
                           <Icon className="h-8 w-8 text-gray-900" />
                         </div>
@@ -413,8 +413,9 @@ const Tiles: React.FC<TilesProps> = ({
                     )
                   )}
                   
-                  <div className="p-8">
-                    <div className="space-y-3 flex-1 text-center">
+                  {/* Content area - flex-grow to push button down */}
+                  <div className="p-8 flex flex-col flex-grow">
+                    <div className="space-y-3 text-center flex-grow">
                       {isEditing ? (
                         <>
                           <input
@@ -508,8 +509,9 @@ const Tiles: React.FC<TilesProps> = ({
                       )}
                     </div>
                     
+                    {/* Button area - always at bottom due to flex-grow above */}
                     {!isEditing && tile.showButton !== false && tile.ctaText && tile.ctaLink && (
-                      <div className="mt-6 flex justify-center">
+                      <div className="mt-6 flex justify-center flex-shrink-0">
                         {tile.ctaLink.startsWith('http://') || tile.ctaLink.startsWith('https://') ? (
                           <a
                             href={tile.ctaLink}
