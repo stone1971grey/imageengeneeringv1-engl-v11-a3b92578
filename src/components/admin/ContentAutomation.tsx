@@ -977,49 +977,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const featuresId = nextId;
       nextId++;
 
-      // STEP 14: Create Downloads Tiles segment (if PDFs available)
-      let downloadsTilesSegment = null;
-      let downloadsId = null;
-      
-      if (pdfTiles.length > 0) {
-        console.log('=== STEP 14: Create Downloads Tiles segment ===');
-        setImportStep('Step 14/26: Downloads tiles...');
-        setImportProgress(14);
-        await wait(150);
-
-        downloadsTilesSegment = {
-          id: String(nextId),
-          type: 'tiles',
-          data: {
-            title: 'Downloads',
-            columns: String(Math.min(pdfTiles.length, 3)),
-            items: pdfTiles,
-          },
-        };
-
-        // Insert Downloads Tiles to registry
-        console.log('=== STEP 14b: Insert Downloads Tiles registry ===');
-        const { error: regErr4 } = await supabase
-          .from('segment_registry')
-          .insert({
-            page_slug: pageSlug,
-            segment_id: nextId,
-            segment_key: `import-downloads-${nextId}`,
-            segment_type: 'tiles',
-            position: 4,
-          });
-
-        if (regErr4) throw new Error('Downloads Tiles Registry: ' + regErr4.message);
-        downloadsId = nextId;
-        nextId++;
-        console.log('=== Downloads Tiles segment created with ID:', downloadsId);
-      } else {
-        console.log('=== No PDFs found, skipping Downloads segment');
-      }
-
-      // STEP 14: Create Video segment (if video found)
+      // STEP 14: Create Video segment FIRST (position 4, before Downloads)
       console.log('=== STEP 14: Create Video segment ===');
-      setImportStep('Step 14/21: Video segment...');
+      setImportStep('Step 14/26: Video segment...');
       setImportProgress(14);
       await wait(150);
 
@@ -1056,9 +1016,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           },
         };
 
-        // Insert Video to registry
-        console.log('=== STEP 14b: Insert Video registry ===');
-        const { error: regErr4 } = await supabase
+        // Insert Video to registry at position 4
+        console.log('=== STEP 14b: Insert Video registry (position 4) ===');
+        const { error: regErrVideo } = await supabase
           .from('segment_registry')
           .insert({
             page_slug: pageSlug,
@@ -1068,12 +1028,52 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             position: 4,
           });
 
-        if (regErr4) throw new Error('Video Registry: ' + regErr4.message);
+        if (regErrVideo) throw new Error('Video Registry: ' + regErrVideo.message);
         videoId = nextId;
         nextId++;
         console.log('=== Video segment created with ID:', videoId);
       } else {
         console.log('=== No video URL found, skipping video segment');
+      }
+
+      // STEP 15: Create Downloads Tiles segment AFTER Video (position 5)
+      let downloadsTilesSegment = null;
+      let downloadsId = null;
+      
+      if (pdfTiles.length > 0) {
+        console.log('=== STEP 15: Create Downloads Tiles segment (position 5, after video) ===');
+        setImportStep('Step 15/26: Downloads tiles...');
+        setImportProgress(15);
+        await wait(150);
+
+        downloadsTilesSegment = {
+          id: String(nextId),
+          type: 'tiles',
+          data: {
+            title: 'Downloads',
+            columns: '4', // Always 4 columns for downloads (side by side)
+            items: pdfTiles,
+          },
+        };
+
+        // Insert Downloads Tiles to registry at position 5 (after video)
+        console.log('=== STEP 15b: Insert Downloads Tiles registry (position 5) ===');
+        const { error: regErrDl } = await supabase
+          .from('segment_registry')
+          .insert({
+            page_slug: pageSlug,
+            segment_id: nextId,
+            segment_key: `import-downloads-${nextId}`,
+            segment_type: 'tiles',
+            position: 5,
+          });
+
+        if (regErrDl) throw new Error('Downloads Tiles Registry: ' + regErrDl.message);
+        downloadsId = nextId;
+        nextId++;
+        console.log('=== Downloads Tiles segment created with ID:', downloadsId);
+      } else {
+        console.log('=== No PDFs found, skipping Downloads segment');
       }
 
       // STEP 15: Save page_segments
@@ -1083,11 +1083,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       await wait(150);
 
       const allSegments = [productHeroSegment, introSegment, imageTextSegment, featuresTilesSegment];
-      if (downloadsTilesSegment) {
-        allSegments.push(downloadsTilesSegment);
-      }
+      // Video comes BEFORE Downloads (position 4)
       if (videoSegment) {
         allSegments.push(videoSegment);
+      }
+      // Downloads come AFTER Video (position 5)
+      if (downloadsTilesSegment) {
+        allSegments.push(downloadsTilesSegment);
       }
       
       const { error: segErr } = await supabase
@@ -1110,12 +1112,13 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(16);
       await wait(150);
 
+      // Order: Product Hero, Intro, Image-Text, Features, Video, Downloads
       const tabOrder = [String(productHeroId), String(introId), String(imageTextId), String(featuresId)];
-      if (downloadsId) {
-        tabOrder.push(String(downloadsId));
-      }
       if (videoId) {
         tabOrder.push(String(videoId));
+      }
+      if (downloadsId) {
+        tabOrder.push(String(downloadsId));
       }
 
       await supabase
