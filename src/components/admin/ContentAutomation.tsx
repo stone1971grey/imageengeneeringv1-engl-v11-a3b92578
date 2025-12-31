@@ -764,76 +764,60 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       console.log('=== Existing PDFs found:', availablePdfs.length);
 
-      // STEP 11c: Use downloads already extracted by Edge Function
-      // The parsedContent.downloads array already contains all PDFs found on the source page
-      console.log('=== STEP 11c: Use pre-extracted PDFs from Firecrawl ===');
-      setImportStep('Step 11c/26: Processing extracted PDF links...');
+      // STEP 11c: Match Firecrawl PDFs with Media Management PDFs
+      // PROTOCOL: PDFs MUST be linked from Media Management, NOT from original source URLs!
+      console.log('=== STEP 11c: Match extracted PDFs with Media Management ===');
+      setImportStep('Step 11c/26: Matching PDFs with Media Management...');
       await wait(200);
 
       // Get downloads from parsedContent (already extracted by Edge Function)
       const preExtractedDownloads = parsedContent?.downloads || [];
       console.log('=== Pre-extracted downloads from Firecrawl:', preExtractedDownloads.length);
       
-      // Convert to our format
-      const extractedPdfUrls: { name: string; url: string; title: string }[] = [];
+      // Helper to normalize filename for matching
+      const normalizeFileName = (name: string): string => {
+        return name
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '') // Remove all non-alphanumeric
+          .replace(/pdf$/, '');       // Remove .pdf extension
+      };
       
+      // For each Firecrawl PDF, try to find matching PDF in Media Management
       for (const dl of preExtractedDownloads) {
-        if (dl.url && dl.url.toLowerCase().includes('.pdf')) {
-          // Generate clean filename from title or URL
-          const fileName = dl.title 
-            ? dl.title.replace(/[^a-zA-Z0-9-_äöüÄÖÜß\s]/g, '').replace(/\s+/g, '_').substring(0, 50) + '.pdf'
-            : dl.url.split('/').pop()?.split('?')[0] || 'document.pdf';
-          
-          if (!extractedPdfUrls.find(p => p.url === dl.url)) {
-            extractedPdfUrls.push({ 
-              name: fileName, 
-              url: dl.url,
-              title: dl.title || fileName.replace('.pdf', '').replace(/_/g, ' '),
-            });
-            console.log('=== Added PDF from Firecrawl:', dl.title, '→', dl.url);
-          }
-        }
-      }
-
-      console.log('=== Total PDF links from Firecrawl:', extractedPdfUrls.length);
-
-      // STEP 11d: Add PDFs to available list
-      // Note: Direct browser download from external domains often fails due to CORS
-      // So we use the original URLs directly for the download tiles
-      if (extractedPdfUrls.length > 0) {
-        console.log('=== STEP 11d: Processing PDFs for download tiles ===');
-        const pdfsToProcess = extractedPdfUrls.slice(0, 6); // Max 6 PDFs
+        if (!dl.url || !dl.url.toLowerCase().includes('.pdf')) continue;
         
-        for (let i = 0; i < pdfsToProcess.length; i++) {
-          const pdf = pdfsToProcess[i];
-          setImportStep(`Step 11d/26: Processing PDF ${i + 1}/${pdfsToProcess.length}...`);
-          setImportProgress(11 + (i * 0.3));
-          await wait(150);
-          
-          // Check if this PDF already exists in our list
-          const existingPdf = availablePdfs.find(p => 
-            p.url === pdf.url || p.name === pdf.name
-          );
-          
-          if (existingPdf) {
-            console.log(`=== PDF ${i + 1}: ${pdf.name} already in list, skipping`);
-            continue;
-          }
-          
-          // Add PDF with original URL (no download needed - links directly to source)
-          availablePdfs.push({
-            name: pdf.name,
-            url: pdf.url, // Use original URL from source page
-            title: pdf.title || pdf.name.replace('.pdf', '').replace(/_/g, ' '),
-          });
-          
-          console.log(`=== Added PDF ${i + 1}: ${pdf.title} → ${pdf.url}`);
-        }
+        // Extract filename from URL
+        const urlFileName = dl.url.split('/').pop()?.split('?')[0] || '';
+        const normalizedUrlName = normalizeFileName(urlFileName);
+        const normalizedTitle = normalizeFileName(dl.title || '');
         
-        console.log('=== PDF processing complete. Total available:', availablePdfs.length);
+        console.log(`=== Matching PDF: "${dl.title}" (file: ${urlFileName})`);
+        
+        // Search for matching PDF in availablePdfs (from Media Management)
+        const matchingPdf = availablePdfs.find(existing => {
+          const existingNormalized = normalizeFileName(existing.name);
+          // Match by normalized filename OR by normalized title
+          return existingNormalized === normalizedUrlName || 
+                 existingNormalized === normalizedTitle ||
+                 existing.name.toLowerCase().includes(normalizedUrlName) ||
+                 normalizedUrlName.includes(existingNormalized);
+        });
+        
+        if (matchingPdf) {
+          // Update title from Firecrawl if available (often more descriptive)
+          if (dl.title && dl.title.length > 3) {
+            matchingPdf.title = dl.title;
+          }
+          console.log(`=== MATCHED: "${dl.title}" → Media Management: ${matchingPdf.url}`);
+        } else {
+          console.warn(`=== NO MATCH in Media Management for: "${dl.title}" (${urlFileName})`);
+          console.warn(`=== Available PDFs in Media Management:`, availablePdfs.map(p => p.name));
+          // DO NOT add original URL - only use Media Management PDFs!
+          // User must upload missing PDFs to Media Management first
+        }
       }
       
-      await wait(150); // Final delay before tiles processing
+      console.log('=== PDF matching complete. Available from Media Management:', availablePdfs.length);
 
       // Create Download Tiles from available PDFs
       // Each PDF becomes its own tile with a download button
