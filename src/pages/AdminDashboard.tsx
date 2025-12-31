@@ -178,11 +178,19 @@ const AdminDashboard = () => {
   // STATIC_SEGMENT_IDS and INDUSTRY_PARENT_CATEGORY_BY_SLUG are imported from AdminConstants
   
   // Get selected page from URL parameter
-  // Keep full hierarchical slug if provided, otherwise use the raw value
-  const searchParams = new URLSearchParams(location.search);
-  const rawSelectedPage = searchParams.get('page') || '';
-  // Use the full slug if it contains slashes, otherwise keep the raw value
-  // This allows both hierarchical (your-solution/automotive) and simple (automotive) slugs
+  // Use window.location.search for initial mount to ensure we capture the URL parameter
+  // when opening in a new tab (useLocation may have stale state on first render)
+  const getPageFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('page') || '';
+  };
+  
+  // Also check location.search for React Router navigation updates
+  const routerSearchParams = new URLSearchParams(location.search);
+  const routerPage = routerSearchParams.get('page') || '';
+  
+  // Use whichever has a value - prioritize window.location for initial mount
+  const rawSelectedPage = routerPage || getPageFromUrl();
   // IMPORTANT: Empty string means no page selected (show Welcome screen)
   // If explicitly ?page=index, show index page editor
   const selectedPage = rawSelectedPage;
