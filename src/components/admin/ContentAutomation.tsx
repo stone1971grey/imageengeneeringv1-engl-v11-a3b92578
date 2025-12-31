@@ -731,15 +731,16 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.log('=== Found sections:', extractedSections.length);
 
       // STEP 11b: Find PDFs in Media Management for this page
-      console.log('=== STEP 11b: Search for PDFs in storage ===');
-      setImportStep('Step 11b/21: Search for PDFs...');
+      console.log('=== STEP 11b: Search for existing PDFs in storage ===');
+      setImportStep('Step 11b/24: Search for existing PDFs...');
+      await wait(150);
       
       const { data: pdfFiles } = await supabase
         .storage
         .from('page-images')
         .list(pageSlug, { search: '.pdf' });
       
-      // Get full PDF URLs
+      // Get full PDF URLs from existing files
       const availablePdfs: { name: string; url: string }[] = [];
       if (pdfFiles && pdfFiles.length > 0) {
         for (const pdf of pdfFiles) {
@@ -751,11 +752,124 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               name: pdf.name,
               url: urlData.publicUrl,
             });
-            console.log('=== Found PDF:', pdf.name);
+            console.log('=== Found existing PDF:', pdf.name);
           }
         }
       }
-      console.log('=== Total PDFs found:', availablePdfs.length);
+      console.log('=== Existing PDFs found:', availablePdfs.length);
+
+      // STEP 11c: If no PDFs exist, extract and download from source
+      if (availablePdfs.length === 0) {
+        console.log('=== STEP 11c: No PDFs found, extracting from markdown ===');
+        setImportStep('Step 11c/24: Extract PDF links from source...');
+        await wait(200);
+
+        // Extract PDF links from markdown
+        const pdfLinkPattern = /\[([^\]]*)\]\(([^)]+\.pdf[^)]*)\)/gi;
+        const pdfMatches = [...rawMarkdown.matchAll(pdfLinkPattern)];
+        
+        // Also check for direct PDF URLs
+        const directPdfPattern = /https?:\/\/[^\s"'<>]+\.pdf/gi;
+        const directPdfMatches = [...rawMarkdown.matchAll(directPdfPattern)];
+        
+        const extractedPdfUrls: { name: string; url: string }[] = [];
+        
+        // Process markdown links
+        for (const match of pdfMatches) {
+          const linkText = match[1] || 'document';
+          let pdfUrl = match[2];
+          
+          // Clean up URL
+          if (pdfUrl.startsWith('/')) {
+            // Relative URL - construct full URL from source
+            const sourceBase = sourceUrl.replace(/\/[^/]*$/, '');
+            pdfUrl = `${sourceBase}${pdfUrl}`;
+          }
+          
+          // Generate filename from link text or URL
+          const fileName = linkText.replace(/[^a-zA-Z0-9-_]/g, '-').substring(0, 50) + '.pdf';
+          
+          if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
+            extractedPdfUrls.push({ name: fileName, url: pdfUrl });
+            console.log('=== Extracted PDF link:', fileName, pdfUrl);
+          }
+        }
+        
+        // Process direct URLs (avoid duplicates)
+        for (const match of directPdfMatches) {
+          const pdfUrl = match[0];
+          if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
+            const urlParts = pdfUrl.split('/');
+            const fileName = urlParts[urlParts.length - 1].split('?')[0] || 'document.pdf';
+            extractedPdfUrls.push({ name: fileName, url: pdfUrl });
+            console.log('=== Extracted direct PDF:', fileName);
+          }
+        }
+
+        console.log('=== Total PDF links extracted:', extractedPdfUrls.length);
+
+        // STEP 11d: Download PDFs sequentially (max 3 to avoid overload)
+        if (extractedPdfUrls.length > 0) {
+          console.log('=== STEP 11d: Downloading PDFs sequentially ===');
+          const pdfsToDownload = extractedPdfUrls.slice(0, 3); // Max 3 PDFs
+          
+          for (let i = 0; i < pdfsToDownload.length; i++) {
+            const pdf = pdfsToDownload[i];
+            setImportStep(`Step 11d/24: Download PDF ${i + 1}/${pdfsToDownload.length}...`);
+            setImportProgress(11 + (i * 0.3));
+            await wait(300); // Delay between downloads
+            
+            try {
+              console.log(`=== Downloading PDF ${i + 1}: ${pdf.name} from ${pdf.url}`);
+              
+              const pdfResponse = await fetch(pdf.url);
+              if (!pdfResponse.ok) {
+                console.log(`=== PDF download failed: ${pdfResponse.status}`);
+                continue;
+              }
+              
+              const pdfBlob = await pdfResponse.blob();
+              const filePath = `${pageSlug}/${pdf.name}`;
+              
+              console.log(`=== Uploading PDF to: ${filePath}`);
+              await wait(150);
+              
+              const { error: uploadError } = await supabase.storage
+                .from('page-images')
+                .upload(filePath, pdfBlob, {
+                  contentType: 'application/pdf',
+                  upsert: true,
+                });
+              
+              if (uploadError) {
+                console.log(`=== PDF upload error: ${uploadError.message}`);
+                continue;
+              }
+              
+              // Get public URL
+              const { data: urlData } = supabase.storage
+                .from('page-images')
+                .getPublicUrl(filePath);
+              
+              availablePdfs.push({
+                name: pdf.name,
+                url: urlData.publicUrl,
+              });
+              
+              console.log(`=== PDF ${i + 1} uploaded successfully: ${pdf.name}`);
+              await wait(200); // Delay after upload
+              
+            } catch (pdfError) {
+              console.log(`=== Error downloading PDF ${pdf.name}:`, pdfError);
+              // Continue with next PDF, don't break the import
+            }
+          }
+          
+          console.log('=== PDF download complete. Total available:', availablePdfs.length);
+        }
+      }
+      
+      await wait(150); // Final delay before tiles processing
 
       // Map sections to tiles with icons and PDF buttons
       const iconMapping = ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'];
