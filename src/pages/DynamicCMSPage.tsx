@@ -1670,9 +1670,9 @@ const DynamicCMSPage = () => {
             {/* Edit Mode Toggle - always first */}
             <EditModeToggle />
             
-            {/* Admin Dashboard - second */}
+            {/* Admin Dashboard - second, links directly to current page */}
             <a
-              href={`/${currentUrlLanguage}/admin-dashboard`}
+              href={`/${currentUrlLanguage}/admin-dashboard?page=${encodeURIComponent(pageSlug)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="h-9 px-4 inline-flex items-center gap-2 rounded font-semibold transition-colors bg-white text-black hover:bg-gray-100"
