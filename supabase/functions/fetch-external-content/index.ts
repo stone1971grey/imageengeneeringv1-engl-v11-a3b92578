@@ -501,21 +501,21 @@ function parseFirecrawlContent(
   }
   console.log('[Firecrawl] PDF links after HTML:', seenUrls.size);
   
-  // 3. Extract from markdown [text](url.pdf)
-  const mdPdfMatches = markdown.matchAll(/\[([^\]]+)\]\(([^)]*\.pdf[^)]*)\)/gi);
+  // 3. Extract from markdown [text](url.pdf) - be more strict to avoid duplicates
+  // The markdown often contains the same links as HTML, so dedup is critical
+  const mdPdfMatches = markdown.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)\s]+\.pdf)\)/gi);
   for (const match of mdPdfMatches) {
     const linkText = match[1].trim();
-    let pdfUrl = match[2];
+    const pdfUrl = match[2].trim(); // URL is already absolute in this pattern
     
-    // Make URL absolute
-    if (!pdfUrl.startsWith('http')) {
-      const urlObj = new URL(baseUrl);
-      pdfUrl = pdfUrl.startsWith('/') 
-        ? `${urlObj.origin}${pdfUrl}`
-        : `${urlObj.origin}/${pdfUrl}`;
+    const normalized = normalizeUrl(pdfUrl);
+    if (seenUrls.has(normalized)) {
+      console.log('[Firecrawl] Skipping duplicate from markdown:', pdfUrl);
+      continue;
     }
     
     addPdfUrl(pdfUrl, linkText);
+    console.log('[Firecrawl] Added from markdown:', linkText, '→', pdfUrl);
   }
   console.log('[Firecrawl] Total unique PDF URLs found:', uniquePdfUrls.length);
   
