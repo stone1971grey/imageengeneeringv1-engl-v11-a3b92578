@@ -758,115 +758,124 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       console.log('=== Existing PDFs found:', availablePdfs.length);
 
-      // STEP 11c: If no PDFs exist, extract and download from source
-      if (availablePdfs.length === 0) {
-        console.log('=== STEP 11c: No PDFs found, extracting from markdown ===');
-        setImportStep('Step 11c/24: Extract PDF links from source...');
-        await wait(200);
+      // STEP 11c: ALWAYS extract and download PDFs from source page
+      // This ensures we get ALL PDFs including language versions not yet in Media Management
+      console.log('=== STEP 11c: Extract PDF links from source markdown ===');
+      setImportStep('Step 11c/26: Extract PDF links from source...');
+      await wait(200);
 
-        // Extract PDF links from markdown
-        const pdfLinkPattern = /\[([^\]]*)\]\(([^)]+\.pdf[^)]*)\)/gi;
-        const pdfMatches = [...rawMarkdown.matchAll(pdfLinkPattern)];
+      // Extract PDF links from markdown
+      const pdfLinkPattern = /\[([^\]]*)\]\(([^)]+\.pdf[^)]*)\)/gi;
+      const pdfMatches = [...rawMarkdown.matchAll(pdfLinkPattern)];
+      
+      // Also check for direct PDF URLs
+      const directPdfPattern = /https?:\/\/[^\s"'<>]+\.pdf/gi;
+      const directPdfMatches = [...rawMarkdown.matchAll(directPdfPattern)];
+      
+      const extractedPdfUrls: { name: string; url: string }[] = [];
+      
+      // Process markdown links
+      for (const match of pdfMatches) {
+        const linkText = match[1] || 'document';
+        let pdfUrl = match[2];
         
-        // Also check for direct PDF URLs
-        const directPdfPattern = /https?:\/\/[^\s"'<>]+\.pdf/gi;
-        const directPdfMatches = [...rawMarkdown.matchAll(directPdfPattern)];
-        
-        const extractedPdfUrls: { name: string; url: string }[] = [];
-        
-        // Process markdown links
-        for (const match of pdfMatches) {
-          const linkText = match[1] || 'document';
-          let pdfUrl = match[2];
-          
-          // Clean up URL
-          if (pdfUrl.startsWith('/')) {
-            // Relative URL - construct full URL from source
-            const sourceBase = sourceUrl.replace(/\/[^/]*$/, '');
-            pdfUrl = `${sourceBase}${pdfUrl}`;
-          }
-          
-          // Generate filename from link text or URL
-          const fileName = linkText.replace(/[^a-zA-Z0-9-_]/g, '-').substring(0, 50) + '.pdf';
-          
-          if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
-            extractedPdfUrls.push({ name: fileName, url: pdfUrl });
-            console.log('=== Extracted PDF link:', fileName, pdfUrl);
-          }
+        // Clean up URL
+        if (pdfUrl.startsWith('/')) {
+          // Relative URL - construct full URL from source
+          const sourceBase = sourceUrl.replace(/\/[^/]*$/, '');
+          pdfUrl = `${sourceBase}${pdfUrl}`;
         }
         
-        // Process direct URLs (avoid duplicates)
-        for (const match of directPdfMatches) {
-          const pdfUrl = match[0];
-          if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
-            const urlParts = pdfUrl.split('/');
-            const fileName = urlParts[urlParts.length - 1].split('?')[0] || 'document.pdf';
-            extractedPdfUrls.push({ name: fileName, url: pdfUrl });
-            console.log('=== Extracted direct PDF:', fileName);
-          }
+        // Generate filename from link text or URL
+        const fileName = linkText.replace(/[^a-zA-Z0-9-_]/g, '-').substring(0, 50) + '.pdf';
+        
+        if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
+          extractedPdfUrls.push({ name: fileName, url: pdfUrl });
+          console.log('=== Extracted PDF link:', fileName, pdfUrl);
         }
+      }
+      
+      // Process direct URLs (avoid duplicates)
+      for (const match of directPdfMatches) {
+        const pdfUrl = match[0];
+        if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
+          const urlParts = pdfUrl.split('/');
+          const fileName = urlParts[urlParts.length - 1].split('?')[0] || 'document.pdf';
+          extractedPdfUrls.push({ name: fileName, url: pdfUrl });
+          console.log('=== Extracted direct PDF:', fileName);
+        }
+      }
 
-        console.log('=== Total PDF links extracted:', extractedPdfUrls.length);
+      console.log('=== Total PDF links extracted:', extractedPdfUrls.length);
 
-        // STEP 11d: Download PDFs sequentially (max 3 to avoid overload)
-        if (extractedPdfUrls.length > 0) {
-          console.log('=== STEP 11d: Downloading PDFs sequentially ===');
-          const pdfsToDownload = extractedPdfUrls.slice(0, 3); // Max 3 PDFs
+      // STEP 11d: Download PDFs sequentially (max 6 to capture all language versions)
+      if (extractedPdfUrls.length > 0) {
+        console.log('=== STEP 11d: Downloading PDFs sequentially ===');
+        const pdfsToDownload = extractedPdfUrls.slice(0, 6); // Max 6 PDFs (EN/DE versions of flyer, manual, etc.)
+        
+        for (let i = 0; i < pdfsToDownload.length; i++) {
+          const pdf = pdfsToDownload[i];
+          setImportStep(`Step 11d/26: Download PDF ${i + 1}/${pdfsToDownload.length}...`);
+          setImportProgress(11 + (i * 0.3));
+          await wait(300); // Delay between downloads
           
-          for (let i = 0; i < pdfsToDownload.length; i++) {
-            const pdf = pdfsToDownload[i];
-            setImportStep(`Step 11d/24: Download PDF ${i + 1}/${pdfsToDownload.length}...`);
-            setImportProgress(11 + (i * 0.3));
-            await wait(300); // Delay between downloads
+          try {
+            // Check if this PDF already exists in our list (from Media Management)
+            const existingPdf = availablePdfs.find(p => 
+              p.url.includes(pdf.name) || p.name === pdf.name
+            );
             
-            try {
-              console.log(`=== Downloading PDF ${i + 1}: ${pdf.name} from ${pdf.url}`);
-              
-              const pdfResponse = await fetch(pdf.url);
-              if (!pdfResponse.ok) {
-                console.log(`=== PDF download failed: ${pdfResponse.status}`);
-                continue;
-              }
-              
-              const pdfBlob = await pdfResponse.blob();
-              const filePath = `${pageSlug}/${pdf.name}`;
-              
-              console.log(`=== Uploading PDF to: ${filePath}`);
-              await wait(150);
-              
-              const { error: uploadError } = await supabase.storage
-                .from('page-images')
-                .upload(filePath, pdfBlob, {
-                  contentType: 'application/pdf',
-                  upsert: true,
-                });
-              
-              if (uploadError) {
-                console.log(`=== PDF upload error: ${uploadError.message}`);
-                continue;
-              }
-              
-              // Get public URL
-              const { data: urlData } = supabase.storage
-                .from('page-images')
-                .getPublicUrl(filePath);
-              
-              availablePdfs.push({
-                name: pdf.name,
-                url: urlData.publicUrl,
-              });
-              
-              console.log(`=== PDF ${i + 1} uploaded successfully: ${pdf.name}`);
-              await wait(200); // Delay after upload
-              
-            } catch (pdfError) {
-              console.log(`=== Error downloading PDF ${pdf.name}:`, pdfError);
-              // Continue with next PDF, don't break the import
+            if (existingPdf) {
+              console.log(`=== PDF ${i + 1}: ${pdf.name} already exists, skipping download`);
+              continue;
             }
+            
+            console.log(`=== Downloading PDF ${i + 1}: ${pdf.name} from ${pdf.url}`);
+            
+            const pdfResponse = await fetch(pdf.url);
+            if (!pdfResponse.ok) {
+              console.log(`=== PDF download failed: ${pdfResponse.status}`);
+              continue;
+            }
+            
+            const pdfBlob = await pdfResponse.blob();
+            const filePath = `${pageSlug}/${pdf.name}`;
+            
+            console.log(`=== Uploading PDF to: ${filePath}`);
+            await wait(150);
+            
+            const { error: uploadError } = await supabase.storage
+              .from('page-images')
+              .upload(filePath, pdfBlob, {
+                contentType: 'application/pdf',
+                upsert: true,
+              });
+            
+            if (uploadError) {
+              console.log(`=== PDF upload error: ${uploadError.message}`);
+              continue;
+            }
+            
+            // Get public URL
+            const { data: urlData } = supabase.storage
+              .from('page-images')
+              .getPublicUrl(filePath);
+            
+            availablePdfs.push({
+              name: pdf.name,
+              url: urlData.publicUrl,
+            });
+            
+            console.log(`=== PDF ${i + 1} uploaded successfully: ${pdf.name}`);
+            await wait(200); // Delay after upload
+            
+          } catch (pdfError) {
+            console.log(`=== Error downloading PDF ${pdf.name}:`, pdfError);
+            // Continue with next PDF, don't break the import
           }
-          
-          console.log('=== PDF download complete. Total available:', availablePdfs.length);
         }
+        
+        console.log('=== PDF download complete. Total available:', availablePdfs.length);
       }
       
       await wait(150); // Final delay before tiles processing
@@ -932,22 +941,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         console.log('=== Created PDF tile:', tileTitle, '→', pdf.url);
       }
 
-      // Use PDF tiles if available, otherwise fall back to feature extraction
-      const realTiles = pdfTiles.length > 0 
-        ? pdfTiles
-        : (extractedSections.length > 0 
-            ? extractedSections.slice(0, 6).map((sec, idx) => ({
-                title: sec.title,
-                description: sec.description,
-                icon: ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'][idx % 6],
-              }))
-            : [
-                { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
-                { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
-                { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
-              ]);
-
-      console.log('=== Total PDF tiles:', pdfTiles.length);
+      console.log('=== Total PDF tiles for Downloads segment:', pdfTiles.length);
 
       // Create Feature Tiles from extracted sections (always)
       const featureTiles = extractedSections.length > 0 
@@ -1251,9 +1245,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       await wait(400);
 
       const segmentCount = allSegments.length;
-      const tileCount = realTiles.length;
+      const featureCount = featureTiles.length;
+      const downloadCount = pdfTiles.length;
       const videoStatus = videoSegment ? ', 1 video' : '';
-      toast.success(`Import done! ${segmentCount} segments, ${tileCount} tiles${videoStatus} created`);
+      toast.success(`Import done! ${segmentCount} segments, ${featureCount} features, ${downloadCount} downloads${videoStatus} created`);
 
       // STEP 19: Cleanup & Redirect
       console.log('=== STEP 19: Redirect ===');
