@@ -84,7 +84,8 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
         // Always generate formatted label based on segment type
         let label = '';
         const segType = segment.type || 'unknown';
-        if (segType === 'hero') label = `Produkt Hero - F-${displayNumber}`;
+        // Support both 'hero' and 'product-hero' (Content Automation) types
+        if (segType === 'hero' || segType === 'product-hero') label = `Produkt Hero - F-${displayNumber}`;
         else if (segType === 'meta-navigation') label = `Meta Navigation - E-${displayNumber}`;
         else if (segType === 'product-hero-gallery') label = `Product Gallery - G-${displayNumber}`;
         else if (segType === 'tiles') label = `Tiles - H-${displayNumber}`;
@@ -234,7 +235,8 @@ export const DynamicSegmentRenderer: React.FC<DynamicSegmentRendererProps> = ({
                 </div>
               </CardHeader>
               <CardContent>
-                {segment.type === 'hero' && (
+                {/* Support both 'hero' and 'product-hero' (Content Automation) types */}
+                {(segment.type === 'hero' || segment.type === 'product-hero') && (
                   <SplitScreenSegmentEditor
                     segmentTitle="Product Hero"
                     segmentType="hero"

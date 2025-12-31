@@ -542,9 +542,52 @@ case "new-segment-type":
 | Assets nicht in Media Management | file_segment_mappings fehlt | Upload-Logik mit Mapping prüfen |
 | 404 bei Seitenaufruf | Falscher page_slug | Hierarchischen Slug in page_registry prüfen |
 | Segment existiert, wird nicht gerendert | Kein Handler für Segment-Typ | Switch-Case in renderSegment ergänzen |
+| Product Hero nicht im Backend sichtbar | segment.type 'product-hero' nicht erkannt | DynamicSegmentRenderer.tsx beide Typen ('hero' + 'product-hero') unterstützen |
+| Product Hero Felder leer | Feld-Naming-Konflikt | ProductHeroEditor.tsx beide Feld-Varianten (hero_* + simple) lesen/schreiben |
+
+---
+
+## 15. Product Hero Segment: Feld-Normalisierung
+
+### 15.1 Zwei Feld-Varianten
+
+Content Automation und ProductHeroEditor verwenden unterschiedliche Feldnamen:
+
+| Content Automation | Legacy (ProductHeroEditor) |
+|--------------------|---------------------------|
+| `title` | `hero_title` |
+| `subtitle` | `hero_subtitle` |
+| `description` | `hero_description` |
+| `imageUrl` | `hero_image_url` |
+| `metadata` | `hero_image_metadata` |
+| `ctaText` | `hero_cta_text` |
+| `ctaLink` | `hero_cta_link` |
+
+### 15.2 Normalisierungs-Regel
+
+**BEIM LESEN:** Immer beide Varianten akzeptieren mit Fallback:
+```typescript
+const title = data.hero_title || data.title || '';
+```
+
+**BEIM SPEICHERN:** Immer BEIDE Varianten schreiben:
+```typescript
+const updatedData = {
+  hero_title: title,
+  title: title,
+  // ... weitere Felder
+};
+```
+
+### 15.3 Segment-Typ Unterstützung
+
+Sowohl `'hero'` (Legacy) als auch `'product-hero'` (Content Automation) müssen unterstützt werden:
+- `DynamicSegmentRenderer.tsx`: `segment.type === 'hero' || segment.type === 'product-hero'`
+- `ProductHeroEditor.tsx`: Beide Typen beim Laden suchen
+- `SEOEditor.tsx`: Beide Typen für H1-Erkennung prüfen
 
 ---
 
 **Erstellt:** 2025-12-26  
 **Letzte Aktualisierung:** 2025-12-31  
-**Status:** PRODUKTIONSREIF v2.0
+**Status:** PRODUKTIONSREIF v2.1
