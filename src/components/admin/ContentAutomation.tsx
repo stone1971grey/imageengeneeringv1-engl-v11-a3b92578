@@ -730,19 +730,96 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const extractedSections = extractSectionsFromMarkdown(rawMarkdown);
       console.log('=== Found sections:', extractedSections.length);
 
-      // Map sections to tiles with icons
+      // STEP 11b: Find PDFs in Media Management for this page
+      console.log('=== STEP 11b: Search for PDFs in storage ===');
+      setImportStep('Step 11b/21: Search for PDFs...');
+      
+      const { data: pdfFiles } = await supabase
+        .storage
+        .from('page-images')
+        .list(pageSlug, { search: '.pdf' });
+      
+      // Get full PDF URLs
+      const availablePdfs: { name: string; url: string }[] = [];
+      if (pdfFiles && pdfFiles.length > 0) {
+        for (const pdf of pdfFiles) {
+          if (pdf.name.endsWith('.pdf')) {
+            const { data: urlData } = supabase.storage
+              .from('page-images')
+              .getPublicUrl(`${pageSlug}/${pdf.name}`);
+            availablePdfs.push({
+              name: pdf.name,
+              url: urlData.publicUrl,
+            });
+            console.log('=== Found PDF:', pdf.name);
+          }
+        }
+      }
+      console.log('=== Total PDFs found:', availablePdfs.length);
+
+      // Map sections to tiles with icons and PDF buttons
       const iconMapping = ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'];
+      
+      // Define PDF mapping for tiles (based on common naming patterns)
+      const pdfMappings: { [key: string]: string[] } = {
+        'flyer': ['flyer', 'product-flyer', 'VLS-product-flyer'],
+        'manual': ['manual', 'user-manual', 'User-Manual', 'anleitung', 'Betriebsanleitung'],
+        'datasheet': ['datasheet', 'data-sheet', 'spec', 'specification'],
+      };
+
+      const findPdfForTile = (tileIndex: number, tileTitle: string): { url: string; text: string } | null => {
+        // Try to match based on tile title keywords
+        const titleLower = tileTitle.toLowerCase();
+        
+        // For first 3 tiles, try to assign different PDF types
+        if (tileIndex === 0) {
+          // First tile: Product Flyer
+          const flyer = availablePdfs.find(p => 
+            p.name.toLowerCase().includes('flyer') || 
+            p.name.toLowerCase().includes('product')
+          );
+          if (flyer) return { url: flyer.url, text: 'Product Flyer' };
+        } else if (tileIndex === 1) {
+          // Second tile: User Manual (English)
+          const manual = availablePdfs.find(p => 
+            (p.name.toLowerCase().includes('manual') || p.name.toLowerCase().includes('user')) &&
+            p.name.toLowerCase().includes('en')
+          );
+          if (manual) return { url: manual.url, text: 'User Manual (EN)' };
+        } else if (tileIndex === 2) {
+          // Third tile: Betriebsanleitung (German)
+          const germanManual = availablePdfs.find(p => 
+            p.name.toLowerCase().includes('betriebsanleitung') || 
+            (p.name.toLowerCase().includes('de') && p.name.toLowerCase().includes('anleitung'))
+          );
+          if (germanManual) return { url: germanManual.url, text: 'Betriebsanleitung (DE)' };
+        }
+        
+        return null;
+      };
+
       const realTiles = extractedSections.length > 0 
-        ? extractedSections.map((sec, idx) => ({
-            title: sec.title,
-            description: sec.description,
-            icon: iconMapping[idx % iconMapping.length],
-          }))
+        ? extractedSections.map((sec, idx) => {
+            const pdfInfo = findPdfForTile(idx, sec.title);
+            return {
+              title: sec.title,
+              description: sec.description,
+              icon: iconMapping[idx % iconMapping.length],
+              ...(pdfInfo && {
+                showButton: true,
+                buttonText: pdfInfo.text,
+                buttonLink: pdfInfo.url,
+                buttonStyle: 'primary',
+              }),
+            };
+          })
         : [
             { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
             { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
             { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
           ];
+
+      console.log('=== Tiles with PDFs:', realTiles.filter(t => (t as any).showButton).length);
 
       // STEP 12: Create Tiles segment
       console.log('=== STEP 12: Create Tiles segment ===');
@@ -754,7 +831,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         id: String(nextId),
         type: 'tiles',
         data: {
-          title: 'Key Features',
+          title: 'Downloads',
           columns: String(Math.min(realTiles.length, 3)),
           items: realTiles,
         },
