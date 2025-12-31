@@ -525,30 +525,41 @@ export const SEOEditor = ({
     
     // 1. Check Intro segment first (highest priority) - ONLY if headingLevel is 'h1'
     // IMPORTANT: Intro segments are stored INSIDE page_segments JSON array, NOT as separate section_keys
-    if (introRegistry && !introRegistry.deleted) {
+    // CRITICAL: Search ALL intro segments in registry and find matching one in page_segments with h1
+    const allIntroRegistries = segmentRegistry.filter(seg => seg.segment_type === 'intro' && !seg.deleted);
+    
+    if (allIntroRegistries.length > 0) {
       const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
       if (pageSegmentsEntry) {
         try {
           const segments = JSON.parse(pageSegmentsEntry.content_value);
-          const introSegment = segments.find((seg: any) => 
-            seg.type === 'intro' && String(seg.id) === String(introRegistry.segment_id)
-          );
-          // Support both field variants: title (standard) and headline (Content Automation)
-          const introTitle = introSegment?.data?.title || introSegment?.data?.headline || '';
-          const introHeadingLevel = introSegment?.data?.headingLevel || 'h2';
           
-          // ONLY use Intro as H1 source if it has headingLevel: 'h1'
-          if (introTitle && introHeadingLevel === 'h1') {
-            autoH1 = introTitle;
-            h1Source = {
-              type: 'intro',
-              key: introRegistry.segment_key,
-              id: introRegistry.segment_id,
-              label: 'Intro'
-            };
-            console.log('[SEO Editor] H1 from Intro title (headingLevel=h1):', autoH1);
-          } else {
-            console.log('[SEO Editor] Intro found but headingLevel is:', introHeadingLevel, '- skipping for H1');
+          // Search for ANY intro in page_segments that matches ANY registry entry AND has headingLevel 'h1'
+          for (const registryEntry of allIntroRegistries) {
+            const introSegment = segments.find((seg: any) => 
+              seg.type === 'intro' && String(seg.id) === String(registryEntry.segment_id)
+            );
+            
+            if (introSegment?.data) {
+              // Support both field variants: title (standard) and headline (Content Automation)
+              const introTitle = introSegment.data.title || introSegment.data.headline || '';
+              const introHeadingLevel = introSegment.data.headingLevel || 'h2';
+              
+              // ONLY use Intro as H1 source if it has headingLevel: 'h1'
+              if (introTitle && introHeadingLevel === 'h1') {
+                autoH1 = introTitle;
+                h1Source = {
+                  type: 'intro',
+                  key: registryEntry.segment_key,
+                  id: registryEntry.segment_id,
+                  label: 'Intro'
+                };
+                console.log('[SEO Editor] H1 from Intro title (headingLevel=h1):', autoH1, '(segment_id:', registryEntry.segment_id, ')');
+                break; // Found a valid H1, stop searching
+              } else {
+                console.log('[SEO Editor] Intro segment', registryEntry.segment_id, 'has headingLevel:', introHeadingLevel, '- skipping for H1');
+              }
+            }
           }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse page_segments for intro H1:', e);
@@ -585,30 +596,37 @@ export const SEOEditor = ({
     
     // 3. Check Product Hero Gallery segment
     // IMPORTANT: Product Hero Gallery stores data INSIDE page_segments JSON array
+    // CRITICAL: Search ALL product-hero-gallery segments in registry and find matching one in page_segments
     if (!autoH1) {
-      const productHeroGalleryRegistry = segmentRegistry.find(seg => seg.segment_type === 'product-hero-gallery' && !seg.deleted);
-      if (productHeroGalleryRegistry) {
+      const allPhgRegistries = segmentRegistry.filter(seg => seg.segment_type === 'product-hero-gallery' && !seg.deleted);
+      
+      if (allPhgRegistries.length > 0) {
         // First try page_segments array (where Content Automation stores data)
         const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
         if (pageSegmentsEntry) {
           try {
             const segments = JSON.parse(pageSegmentsEntry.content_value);
-            const phgSegment = segments.find((seg: any) => 
-              seg.type === 'product-hero-gallery' && String(seg.id) === String(productHeroGalleryRegistry.segment_id)
-            );
-            if (phgSegment?.data) {
-              const title = phgSegment.data.title || '';
-              const subtitle = phgSegment.data.subtitle || '';
-              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
-              if (combinedTitle) {
-                autoH1 = combinedTitle;
-                h1Source = {
-                  type: 'product-hero-gallery',
-                  key: productHeroGalleryRegistry.segment_key,
-                  id: productHeroGalleryRegistry.segment_id,
-                  label: 'Product Hero Gallery'
-                };
-                console.log('[SEO Editor] H1 from Product Hero Gallery (page_segments):', autoH1);
+            
+            // Search for ANY PHG in page_segments that matches ANY registry entry
+            for (const registryEntry of allPhgRegistries) {
+              const phgSegment = segments.find((seg: any) => 
+                seg.type === 'product-hero-gallery' && String(seg.id) === String(registryEntry.segment_id)
+              );
+              if (phgSegment?.data) {
+                const title = phgSegment.data.title || '';
+                const subtitle = phgSegment.data.subtitle || '';
+                const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+                if (combinedTitle) {
+                  autoH1 = combinedTitle;
+                  h1Source = {
+                    type: 'product-hero-gallery',
+                    key: registryEntry.segment_key,
+                    id: registryEntry.segment_id,
+                    label: 'Product Hero Gallery'
+                  };
+                  console.log('[SEO Editor] H1 from Product Hero Gallery (page_segments):', autoH1, '(segment_id:', registryEntry.segment_id, ')');
+                  break;
+                }
               }
             }
           } catch (e) {
@@ -618,25 +636,28 @@ export const SEOEditor = ({
         
         // Fallback: check individual section_key (legacy storage)
         if (!autoH1) {
-          const phgContent = pageContent.find(item => item.section_key === productHeroGalleryRegistry.segment_key);
-          if (phgContent) {
-            try {
-              const phgData = JSON.parse(phgContent.content_value);
-              const title = phgData.title || '';
-              const subtitle = phgData.subtitle || '';
-              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
-              if (combinedTitle) {
-                autoH1 = combinedTitle;
-                h1Source = {
-                  type: 'product-hero-gallery',
-                  key: productHeroGalleryRegistry.segment_key,
-                  id: productHeroGalleryRegistry.segment_id,
-                  label: 'Product Hero Gallery'
-                };
-                console.log('[SEO Editor] H1 from Product Hero Gallery (legacy section_key):', autoH1);
+          for (const registryEntry of allPhgRegistries) {
+            const phgContent = pageContent.find(item => item.section_key === registryEntry.segment_key);
+            if (phgContent) {
+              try {
+                const phgData = JSON.parse(phgContent.content_value);
+                const title = phgData.title || '';
+                const subtitle = phgData.subtitle || '';
+                const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+                if (combinedTitle) {
+                  autoH1 = combinedTitle;
+                  h1Source = {
+                    type: 'product-hero-gallery',
+                    key: registryEntry.segment_key,
+                    id: registryEntry.segment_id,
+                    label: 'Product Hero Gallery'
+                  };
+                  console.log('[SEO Editor] H1 from Product Hero Gallery (legacy section_key):', autoH1);
+                  break;
+                }
+              } catch (e) {
+                console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
               }
-            } catch (e) {
-              console.error('[SEO Editor] Failed to parse product hero gallery for H1:', e);
             }
           }
         }
@@ -645,38 +666,47 @@ export const SEOEditor = ({
     
     // 4. Check Product Hero segment (supports both 'hero' and 'product-hero' segment types)
     // Content Automation uses 'product-hero', legacy uses 'hero'
+    // CRITICAL: Search ALL product-hero segments in registry and find matching one in page_segments
     if (!autoH1) {
-      // Find product hero with either type
-      const productHeroRegistry = segmentRegistry.find(seg => 
+      // Get ALL product hero entries from registry (there might be multiple from different imports)
+      const allProductHeroRegistries = segmentRegistry.filter(seg => 
         (seg.segment_type === 'hero' || seg.segment_type === 'product-hero') && !seg.deleted
       );
-      if (productHeroRegistry) {
+      
+      console.log('[SEO Editor] Looking for Product Hero, found registry entries:', allProductHeroRegistries.length);
+      
+      if (allProductHeroRegistries.length > 0) {
         // Product Hero stores data in page_segments JSON, not in individual section_keys
         const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
         if (pageSegmentsEntry) {
           try {
             const segments = JSON.parse(pageSegmentsEntry.content_value);
-            // Search for both 'hero' and 'product-hero' types in the JSON
-            const heroSegment = segments.find((seg: any) => 
-              (seg.type === 'hero' || seg.type === 'product-hero') && 
-              String(seg.id) === String(productHeroRegistry.segment_id)
-            );
-            if (heroSegment?.data) {
-              // Support both field naming conventions:
-              // - Content Automation uses: title, subtitle
-              // - Legacy uses: hero_title, hero_subtitle
-              const title = heroSegment.data.title || heroSegment.data.hero_title || '';
-              const subtitle = heroSegment.data.subtitle || heroSegment.data.hero_subtitle || '';
-              const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
-              if (combinedTitle) {
-                autoH1 = combinedTitle;
-                h1Source = {
-                  type: productHeroRegistry.segment_type,
-                  key: productHeroRegistry.segment_key,
-                  id: productHeroRegistry.segment_id,
-                  label: 'Product Hero'
-                };
-                console.log('[SEO Editor] H1 from Product Hero:', autoH1, '(segment_type:', productHeroRegistry.segment_type, ')');
+            
+            // Search for ANY product hero in page_segments that matches ANY registry entry
+            for (const registryEntry of allProductHeroRegistries) {
+              const heroSegment = segments.find((seg: any) => 
+                (seg.type === 'hero' || seg.type === 'product-hero') && 
+                String(seg.id) === String(registryEntry.segment_id)
+              );
+              
+              if (heroSegment?.data) {
+                // Support both field naming conventions:
+                // - Content Automation uses: title, subtitle
+                // - Legacy uses: hero_title, hero_subtitle
+                const title = heroSegment.data.title || heroSegment.data.hero_title || '';
+                const subtitle = heroSegment.data.subtitle || heroSegment.data.hero_subtitle || '';
+                const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
+                if (combinedTitle) {
+                  autoH1 = combinedTitle;
+                  h1Source = {
+                    type: registryEntry.segment_type,
+                    key: registryEntry.segment_key,
+                    id: registryEntry.segment_id,
+                    label: 'Product Hero'
+                  };
+                  console.log('[SEO Editor] H1 from Product Hero:', autoH1, '(segment_type:', registryEntry.segment_type, ', segment_id:', registryEntry.segment_id, ')');
+                  break; // Found a valid H1, stop searching
+                }
               }
             }
           } catch (e) {
