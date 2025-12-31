@@ -394,6 +394,157 @@ if (url.startsWith('http://') || url.startsWith('https://')) {
 
 ---
 
+## 11. Asset-Download & Media Management Integration
+
+### 11.1 Edge Function: download-external-file
+
+**KRITISCH:** Diese Edge Function ist für den Download externer Assets (Bilder, PDFs) verantwortlich.
+
+**Deployment-Anforderungen:**
+```toml
+# supabase/config.toml - MUSS enthalten:
+[functions.download-external-file]
+verify_jwt = false
+```
+
+**Funktionsweise:**
+1. Empfängt externe URL als Parameter
+2. Lädt Datei server-seitig herunter (umgeht CORS)
+3. Speichert in Supabase Storage unter `page-images/{pageSlug}/{segmentType}/`
+4. Erstellt `file_segment_mappings` Eintrag für Media Management
+
+### 11.2 SOURCE_URL_MAPPING (KRITISCH!)
+
+**REGEL:** Jede zu importierende Seite MUSS einen Eintrag in `SOURCE_URL_MAPPING` haben!
+
+```typescript
+// src/components/admin/ContentAutomation.tsx
+const SOURCE_URL_MAPPING: Record<string, { default: string; de?: string; ja?: string }> = {
+  'products/illumination-devices/kork': {
+    default: 'https://www.image-engineering.de/products/equipment/measurement-devices/1245-kork',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/measurement-devices/1245-kork',
+  },
+  // ... weitere Seiten
+};
+```
+
+**FEHLER ohne Mapping:**
+- Firecrawl erhält falsche/keine URL
+- 404-Seite wird gescraped → leerer Content
+- Import erscheint erfolgreich, aber keine Daten
+
+### 11.3 Asset-Speicherstruktur
+
+```
+page-images/
+└── {pageSlug}/
+    ├── product-hero-gallery/
+    │   └── hero-image.jpg
+    ├── tiles/
+    │   └── download-icon.png
+    └── image-text/
+        └── feature-image.jpg
+```
+
+### 11.4 file_segment_mappings Pflicht
+
+Jedes heruntergeladene Asset MUSS registriert werden:
+
+```typescript
+await supabase.from('file_segment_mappings').upsert({
+  file_path: `page-images/${pageSlug}/${segmentType}/${filename}`,
+  segment_ids: [segmentId],
+  bucket_id: 'page-images',
+  visibility: 'public',
+  alt_text: extractedAltText || title,
+});
+```
+
+---
+
+## 12. Segment-Handler in DynamicCMSPage.tsx
+
+### 12.1 Handler-Vollständigkeit
+
+**KRITISCH:** Für jeden Segment-Typ MUSS ein `case` in der `renderSegment` Switch-Anweisung existieren!
+
+**Aktuelle Handler:**
+| Segment-Typ | Handler vorhanden | Komponente |
+|-------------|-------------------|------------|
+| `product-hero-gallery` | ✅ | `ProductHeroGallery` |
+| `product-hero` | ✅ | `ProductHeroGallery` (single image) |
+| `action-hero` | ✅ | `ActionHero` |
+| `full-hero` | ✅ | `FullHero` |
+| `intro` | ✅ | `IntroSection` |
+| `specification` | ✅ | `Specification` |
+| `feature-overview` | ✅ | `FeatureOverview` |
+| `faq` | ✅ | `FAQ` |
+| `table` | ✅ | `DynamicTable` |
+| `video` | ✅ | `Video` |
+| `banner-p` | ✅ | `BannerP` |
+| `tiles` | ✅ | `Tiles` |
+| `image-text` | ✅ | `ImageText` |
+| `events-segment` | ✅ | `EventsSegment` |
+| ... | ... | ... |
+
+**Bei fehlendem Handler:** Segment wird NICHT gerendert, obwohl Daten vorhanden sind!
+
+### 12.2 Handler-Template für neue Segment-Typen
+
+```typescript
+case "new-segment-type":
+  return (
+    <NewSegmentComponent
+      key={`${segmentId}-${refreshCounter}`}
+      id={segmentDbId?.toString()}
+      data={{
+        // Pflichtfelder aus segment.data extrahieren
+        title: segment.data?.title || "",
+        description: segment.data?.description || "",
+        // ...
+      }}
+      segmentKey={`${segment.type}-${segment.id}`}
+      pageSlug={pageSlug}
+      language={currentUrlLanguage}
+      onContentUpdate={refreshPageContent}
+    />
+  );
+```
+
+---
+
+## 13. Pre-Import Checkliste (ERWEITERT)
+
+### 13.1 VOR dem Content Automation Import
+
+- [ ] **SOURCE_URL_MAPPING:** Korrekte URL für Zielseite eingetragen?
+- [ ] **Edge Functions deployed:** `download-external-file` aktiv und `verify_jwt = false`?
+- [ ] **page_registry:** Hierarchischer Slug existiert (z.B. `products/illumination-devices/kork`)?
+- [ ] **Segment-Handler:** Alle benötigten Segment-Typen haben Handler in `DynamicCMSPage.tsx`?
+- [ ] **Alte Daten bereinigt:** Vorherige fehlgeschlagene Importe gelöscht?
+
+### 13.2 NACH dem Import
+
+- [ ] **Frontend-Check:** Seite aufrufen, alle Segmente sichtbar?
+- [ ] **Bilder laden:** Assets aus Supabase Storage, nicht von Originalseite?
+- [ ] **Media Management:** Assets in korrektem Ordner mit Segment-Zuordnung?
+- [ ] **PDFs:** Download-Links zeigen auf Supabase Storage (nicht original URL)?
+
+---
+
+## 14. Fehlerdiagnose-Matrix
+
+| Symptom | Ursache | Lösung |
+|---------|---------|--------|
+| Leerer Content importiert | Falsche/fehlende SOURCE_URL | Mapping in ContentAutomation.tsx prüfen/ergänzen |
+| Bilder nicht angezeigt | Segment-Handler fehlt | `case` in DynamicCMSPage.tsx hinzufügen |
+| PDFs laden von externer URL | download-external-file nicht deployed | Edge Function deployen, config.toml prüfen |
+| Assets nicht in Media Management | file_segment_mappings fehlt | Upload-Logik mit Mapping prüfen |
+| 404 bei Seitenaufruf | Falscher page_slug | Hierarchischen Slug in page_registry prüfen |
+| Segment existiert, wird nicht gerendert | Kein Handler für Segment-Typ | Switch-Case in renderSegment ergänzen |
+
+---
+
 **Erstellt:** 2025-12-26  
-**Letzte Aktualisierung:** 2025-12-29  
-**Status:** PRODUKTIONSREIF
+**Letzte Aktualisierung:** 2025-12-31  
+**Status:** PRODUKTIONSREIF v2.0
