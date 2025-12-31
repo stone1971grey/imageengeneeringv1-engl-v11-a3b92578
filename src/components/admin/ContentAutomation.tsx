@@ -741,7 +741,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .list(pageSlug, { search: '.pdf' });
       
       // Get full PDF URLs from existing files
-      const availablePdfs: { name: string; url: string }[] = [];
+      const availablePdfs: { name: string; url: string; title?: string }[] = [];
       if (pdfFiles && pdfFiles.length > 0) {
         for (const pdf of pdfFiles) {
           if (pdf.name.endsWith('.pdf')) {
@@ -751,6 +751,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             availablePdfs.push({
               name: pdf.name,
               url: urlData.publicUrl,
+              title: pdf.name.replace('.pdf', '').replace(/_/g, ' '),
             });
             console.log('=== Found existing PDF:', pdf.name);
           }
@@ -758,55 +759,38 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       console.log('=== Existing PDFs found:', availablePdfs.length);
 
-      // STEP 11c: ALWAYS extract and download PDFs from source page
-      // This ensures we get ALL PDFs including language versions not yet in Media Management
-      console.log('=== STEP 11c: Extract PDF links from source markdown ===');
-      setImportStep('Step 11c/26: Extract PDF links from source...');
+      // STEP 11c: Use downloads already extracted by Edge Function
+      // The parsedContent.downloads array already contains all PDFs found on the source page
+      console.log('=== STEP 11c: Use pre-extracted PDFs from Firecrawl ===');
+      setImportStep('Step 11c/26: Processing extracted PDF links...');
       await wait(200);
 
-      // Extract PDF links from markdown
-      const pdfLinkPattern = /\[([^\]]*)\]\(([^)]+\.pdf[^)]*)\)/gi;
-      const pdfMatches = [...rawMarkdown.matchAll(pdfLinkPattern)];
+      // Get downloads from parsedContent (already extracted by Edge Function)
+      const preExtractedDownloads = parsedContent?.downloads || [];
+      console.log('=== Pre-extracted downloads from Firecrawl:', preExtractedDownloads.length);
       
-      // Also check for direct PDF URLs
-      const directPdfPattern = /https?:\/\/[^\s"'<>]+\.pdf/gi;
-      const directPdfMatches = [...rawMarkdown.matchAll(directPdfPattern)];
+      // Convert to our format
+      const extractedPdfUrls: { name: string; url: string; title: string }[] = [];
       
-      const extractedPdfUrls: { name: string; url: string }[] = [];
-      
-      // Process markdown links
-      for (const match of pdfMatches) {
-        const linkText = match[1] || 'document';
-        let pdfUrl = match[2];
-        
-        // Clean up URL
-        if (pdfUrl.startsWith('/')) {
-          // Relative URL - construct full URL from source
-          const sourceBase = sourceUrl.replace(/\/[^/]*$/, '');
-          pdfUrl = `${sourceBase}${pdfUrl}`;
-        }
-        
-        // Generate filename from link text or URL
-        const fileName = linkText.replace(/[^a-zA-Z0-9-_]/g, '-').substring(0, 50) + '.pdf';
-        
-        if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
-          extractedPdfUrls.push({ name: fileName, url: pdfUrl });
-          console.log('=== Extracted PDF link:', fileName, pdfUrl);
-        }
-      }
-      
-      // Process direct URLs (avoid duplicates)
-      for (const match of directPdfMatches) {
-        const pdfUrl = match[0];
-        if (!extractedPdfUrls.find(p => p.url === pdfUrl)) {
-          const urlParts = pdfUrl.split('/');
-          const fileName = urlParts[urlParts.length - 1].split('?')[0] || 'document.pdf';
-          extractedPdfUrls.push({ name: fileName, url: pdfUrl });
-          console.log('=== Extracted direct PDF:', fileName);
+      for (const dl of preExtractedDownloads) {
+        if (dl.url && dl.url.toLowerCase().includes('.pdf')) {
+          // Generate clean filename from title or URL
+          const fileName = dl.title 
+            ? dl.title.replace(/[^a-zA-Z0-9-_äöüÄÖÜß\s]/g, '').replace(/\s+/g, '_').substring(0, 50) + '.pdf'
+            : dl.url.split('/').pop()?.split('?')[0] || 'document.pdf';
+          
+          if (!extractedPdfUrls.find(p => p.url === dl.url)) {
+            extractedPdfUrls.push({ 
+              name: fileName, 
+              url: dl.url,
+              title: dl.title || fileName.replace('.pdf', '').replace(/_/g, ' '),
+            });
+            console.log('=== Added PDF from Firecrawl:', dl.title, '→', dl.url);
+          }
         }
       }
 
-      console.log('=== Total PDF links extracted:', extractedPdfUrls.length);
+      console.log('=== Total PDF links from Firecrawl:', extractedPdfUrls.length);
 
       // STEP 11d: Download PDFs sequentially (max 6 to capture all language versions)
       if (extractedPdfUrls.length > 0) {
@@ -864,6 +848,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             availablePdfs.push({
               name: pdf.name,
               url: urlData.publicUrl,
+              title: pdf.title || pdf.name.replace('.pdf', '').replace(/_/g, ' '),
             });
             
             console.log(`=== PDF ${i + 1} uploaded successfully: ${pdf.name}`);
@@ -892,39 +877,37 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         ctaStyle: 'standard' | 'technical';
       }> = [];
 
-      // Map PDFs to tiles with appropriate titles and icons
+      // Map PDFs to tiles - use original title from Firecrawl when available
       for (const pdf of availablePdfs) {
+        const titleLower = (pdf.title || pdf.name).toLowerCase();
         const nameLower = pdf.name.toLowerCase();
-        let tileTitle = '';
+        
+        // Use original title from Firecrawl, or generate from filename
+        let tileTitle = pdf.title || pdf.name.replace('.pdf', '').replace(/_/g, ' ').replace(/-/g, ' ');
         let tileDescription = '';
         let icon = 'FileText';
         let ctaText = 'Download';
 
-        if (nameLower.includes('flyer') || nameLower.includes('product')) {
-          tileTitle = 'Product Flyer';
+        // Detect type and set appropriate icon/description
+        if (titleLower.includes('flyer') || nameLower.includes('flyer') || titleLower.includes('product flyer')) {
           tileDescription = 'Download the product flyer with key specifications and features.';
           icon = 'FileText';
           ctaText = 'Download Flyer';
-        } else if (nameLower.includes('user-manual') || (nameLower.includes('manual') && nameLower.includes('en'))) {
-          tileTitle = 'User Manual (EN)';
+        } else if (titleLower.includes('user manual') || titleLower.includes('manual (en') || nameLower.includes('manual_en')) {
           tileDescription = 'Complete user manual with installation, operation, and troubleshooting guides.';
           icon = 'BookOpen';
           ctaText = 'Download Manual';
-        } else if (nameLower.includes('betriebsanleitung') || (nameLower.includes('de') && nameLower.includes('anleitung'))) {
-          tileTitle = 'Betriebsanleitung (DE)';
+        } else if (titleLower.includes('betriebsanleitung') || titleLower.includes('anleitung') || nameLower.includes('_de')) {
           tileDescription = 'Vollständige Betriebsanleitung mit Installation, Bedienung und Fehlerbehebung.';
           icon = 'BookOpen';
           ctaText = 'Download Anleitung';
-        } else if (nameLower.includes('datasheet') || nameLower.includes('spec')) {
-          tileTitle = 'Technical Datasheet';
+        } else if (titleLower.includes('datasheet') || titleLower.includes('data sheet') || titleLower.includes('spec')) {
           tileDescription = 'Detailed technical specifications and performance data.';
           icon = 'BarChart3';
           ctaText = 'Download Datasheet';
         } else {
-          // Generic PDF
-          const cleanName = pdf.name.replace('.pdf', '').replace(/-/g, ' ').replace(/_/g, ' ');
-          tileTitle = cleanName;
-          tileDescription = `Download ${cleanName}`;
+          // Generic PDF - use title for description
+          tileDescription = `Download: ${tileTitle}`;
           ctaText = 'Download';
         }
 
