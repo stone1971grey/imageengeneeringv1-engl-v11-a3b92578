@@ -372,7 +372,7 @@ export const AUTOSAVE_KEY_PREFIX = 'cms_autosave_';
 /**
  * CMS Version (displayed in welcome screen)
  */
-export const CMS_VERSION = '0.9.4';
+export const CMS_VERSION = '1.0.0';
 
 /**
  * Default number of columns for tiles segment
