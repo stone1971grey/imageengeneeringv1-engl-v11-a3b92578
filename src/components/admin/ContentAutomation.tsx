@@ -947,27 +947,42 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
                 { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
               ]);
 
-      console.log('=== Total tiles created:', realTiles.length, '(PDFs:', pdfTiles.length, ')');
+      console.log('=== Total PDF tiles:', pdfTiles.length);
 
-      // STEP 12: Create Tiles segment
-      console.log('=== STEP 12: Create Tiles segment ===');
-      setImportStep('Step 12/24: Tiles segment...');
+      // Create Feature Tiles from extracted sections (always)
+      const featureTiles = extractedSections.length > 0 
+        ? extractedSections.slice(0, 6).map((sec, idx) => ({
+            title: sec.title,
+            description: sec.description,
+            icon: ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'][idx % 6],
+          }))
+        : [
+            { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
+            { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
+            { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
+          ];
+
+      console.log('=== Feature tiles:', featureTiles.length);
+
+      // STEP 12: Create Key Features Tiles segment
+      console.log('=== STEP 12: Create Key Features Tiles segment ===');
+      setImportStep('Step 12/26: Key Features tiles...');
       setImportProgress(12);
       await wait(150);
 
-      const tilesSegment = {
+      const featuresTilesSegment = {
         id: String(nextId),
         type: 'tiles',
         data: {
-          title: pdfTiles.length > 0 ? 'Downloads' : 'Key Features',
-          columns: String(Math.min(realTiles.length, 3)),
-          items: realTiles,
+          title: 'Key Features',
+          columns: String(Math.min(featureTiles.length, 3)),
+          items: featureTiles,
         },
       };
 
-      // STEP 13: Insert Tiles to registry
-      console.log('=== STEP 13: Insert Tiles registry ===');
-      setImportStep('Step 13/21: Save Tiles registry...');
+      // STEP 13: Insert Key Features Tiles to registry
+      console.log('=== STEP 13: Insert Key Features Tiles registry ===');
+      setImportStep('Step 13/26: Save Key Features registry...');
       setImportProgress(13);
       await wait(150);
 
@@ -976,14 +991,54 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         .insert({
           page_slug: pageSlug,
           segment_id: nextId,
-          segment_key: `import-tiles-${nextId}`,
+          segment_key: `import-features-${nextId}`,
           segment_type: 'tiles',
           position: 3,
         });
 
-      if (regErr3) throw new Error('Tiles Registry: ' + regErr3.message);
-      const tilesId = nextId;
+      if (regErr3) throw new Error('Features Tiles Registry: ' + regErr3.message);
+      const featuresId = nextId;
       nextId++;
+
+      // STEP 14: Create Downloads Tiles segment (if PDFs available)
+      let downloadsTilesSegment = null;
+      let downloadsId = null;
+      
+      if (pdfTiles.length > 0) {
+        console.log('=== STEP 14: Create Downloads Tiles segment ===');
+        setImportStep('Step 14/26: Downloads tiles...');
+        setImportProgress(14);
+        await wait(150);
+
+        downloadsTilesSegment = {
+          id: String(nextId),
+          type: 'tiles',
+          data: {
+            title: 'Downloads',
+            columns: String(Math.min(pdfTiles.length, 3)),
+            items: pdfTiles,
+          },
+        };
+
+        // Insert Downloads Tiles to registry
+        console.log('=== STEP 14b: Insert Downloads Tiles registry ===');
+        const { error: regErr4 } = await supabase
+          .from('segment_registry')
+          .insert({
+            page_slug: pageSlug,
+            segment_id: nextId,
+            segment_key: `import-downloads-${nextId}`,
+            segment_type: 'tiles',
+            position: 4,
+          });
+
+        if (regErr4) throw new Error('Downloads Tiles Registry: ' + regErr4.message);
+        downloadsId = nextId;
+        nextId++;
+        console.log('=== Downloads Tiles segment created with ID:', downloadsId);
+      } else {
+        console.log('=== No PDFs found, skipping Downloads segment');
+      }
 
       // STEP 14: Create Video segment (if video found)
       console.log('=== STEP 14: Create Video segment ===');
@@ -1050,7 +1105,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(15);
       await wait(150);
 
-      const allSegments = [productHeroSegment, introSegment, imageTextSegment, tilesSegment];
+      const allSegments = [productHeroSegment, introSegment, imageTextSegment, featuresTilesSegment];
+      if (downloadsTilesSegment) {
+        allSegments.push(downloadsTilesSegment);
+      }
       if (videoSegment) {
         allSegments.push(videoSegment);
       }
@@ -1075,7 +1133,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportProgress(16);
       await wait(150);
 
-      const tabOrder = [String(productHeroId), String(introId), String(imageTextId), String(tilesId)];
+      const tabOrder = [String(productHeroId), String(introId), String(imageTextId), String(featuresId)];
+      if (downloadsId) {
+        tabOrder.push(String(downloadsId));
+      }
       if (videoId) {
         tabOrder.push(String(videoId));
       }
@@ -1136,18 +1197,34 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
 
-      // Tiles content
+      // Features Tiles content
       await supabase
         .from('page_content')
         .upsert({
           page_slug: pageSlug,
-          section_key: `segment-${tilesId}`,
+          section_key: `segment-${featuresId}`,
           language,
           content_type: 'json',
-          content_value: JSON.stringify(tilesSegment.data),
+          content_value: JSON.stringify(featuresTilesSegment.data),
           content_status: 'pending',
           updated_at: new Date().toISOString(),
         }, { onConflict: 'page_slug,section_key,language' });
+
+      // Downloads Tiles content (if exists)
+      if (downloadsTilesSegment && downloadsId) {
+        console.log('=== STEP 17c: Save Downloads Tiles content ===');
+        await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: pageSlug,
+            section_key: `segment-${downloadsId}`,
+            language,
+            content_type: 'json',
+            content_value: JSON.stringify(downloadsTilesSegment.data),
+            content_status: 'pending',
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'page_slug,section_key,language' });
+      }
 
       // Video content (if exists)
       if (videoSegment && videoId) {
