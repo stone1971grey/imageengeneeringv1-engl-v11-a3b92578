@@ -1264,7 +1264,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     setSelectedSegments(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const filteredDownloads = parsedContent?.downloads.filter(d => d.language === language) || [];
+  // Show all downloads in preview (no language filter) - user can see all found PDFs
+  const filteredDownloads = parsedContent?.downloads || [];
 
   return (
     <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border-gray-600 shadow-2xl">
