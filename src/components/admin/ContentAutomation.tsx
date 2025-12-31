@@ -792,75 +792,40 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
 
       console.log('=== Total PDF links from Firecrawl:', extractedPdfUrls.length);
 
-      // STEP 11d: Download PDFs sequentially (max 6 to capture all language versions)
+      // STEP 11d: Add PDFs to available list
+      // Note: Direct browser download from external domains often fails due to CORS
+      // So we use the original URLs directly for the download tiles
       if (extractedPdfUrls.length > 0) {
-        console.log('=== STEP 11d: Downloading PDFs sequentially ===');
-        const pdfsToDownload = extractedPdfUrls.slice(0, 6); // Max 6 PDFs (EN/DE versions of flyer, manual, etc.)
+        console.log('=== STEP 11d: Processing PDFs for download tiles ===');
+        const pdfsToProcess = extractedPdfUrls.slice(0, 6); // Max 6 PDFs
         
-        for (let i = 0; i < pdfsToDownload.length; i++) {
-          const pdf = pdfsToDownload[i];
-          setImportStep(`Step 11d/26: Download PDF ${i + 1}/${pdfsToDownload.length}...`);
+        for (let i = 0; i < pdfsToProcess.length; i++) {
+          const pdf = pdfsToProcess[i];
+          setImportStep(`Step 11d/26: Processing PDF ${i + 1}/${pdfsToProcess.length}...`);
           setImportProgress(11 + (i * 0.3));
-          await wait(300); // Delay between downloads
+          await wait(150);
           
-          try {
-            // Check if this PDF already exists in our list (from Media Management)
-            const existingPdf = availablePdfs.find(p => 
-              p.url.includes(pdf.name) || p.name === pdf.name
-            );
-            
-            if (existingPdf) {
-              console.log(`=== PDF ${i + 1}: ${pdf.name} already exists, skipping download`);
-              continue;
-            }
-            
-            console.log(`=== Downloading PDF ${i + 1}: ${pdf.name} from ${pdf.url}`);
-            
-            const pdfResponse = await fetch(pdf.url);
-            if (!pdfResponse.ok) {
-              console.log(`=== PDF download failed: ${pdfResponse.status}`);
-              continue;
-            }
-            
-            const pdfBlob = await pdfResponse.blob();
-            const filePath = `${pageSlug}/${pdf.name}`;
-            
-            console.log(`=== Uploading PDF to: ${filePath}`);
-            await wait(150);
-            
-            const { error: uploadError } = await supabase.storage
-              .from('page-images')
-              .upload(filePath, pdfBlob, {
-                contentType: 'application/pdf',
-                upsert: true,
-              });
-            
-            if (uploadError) {
-              console.log(`=== PDF upload error: ${uploadError.message}`);
-              continue;
-            }
-            
-            // Get public URL
-            const { data: urlData } = supabase.storage
-              .from('page-images')
-              .getPublicUrl(filePath);
-            
-            availablePdfs.push({
-              name: pdf.name,
-              url: urlData.publicUrl,
-              title: pdf.title || pdf.name.replace('.pdf', '').replace(/_/g, ' '),
-            });
-            
-            console.log(`=== PDF ${i + 1} uploaded successfully: ${pdf.name}`);
-            await wait(200); // Delay after upload
-            
-          } catch (pdfError) {
-            console.log(`=== Error downloading PDF ${pdf.name}:`, pdfError);
-            // Continue with next PDF, don't break the import
+          // Check if this PDF already exists in our list
+          const existingPdf = availablePdfs.find(p => 
+            p.url === pdf.url || p.name === pdf.name
+          );
+          
+          if (existingPdf) {
+            console.log(`=== PDF ${i + 1}: ${pdf.name} already in list, skipping`);
+            continue;
           }
+          
+          // Add PDF with original URL (no download needed - links directly to source)
+          availablePdfs.push({
+            name: pdf.name,
+            url: pdf.url, // Use original URL from source page
+            title: pdf.title || pdf.name.replace('.pdf', '').replace(/_/g, ' '),
+          });
+          
+          console.log(`=== Added PDF ${i + 1}: ${pdf.title} → ${pdf.url}`);
         }
         
-        console.log('=== PDF download complete. Total available:', availablePdfs.length);
+        console.log('=== PDF processing complete. Total available:', availablePdfs.length);
       }
       
       await wait(150); // Final delay before tiles processing
