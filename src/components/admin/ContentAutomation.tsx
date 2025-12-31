@@ -395,55 +395,65 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     // All extracted sections keep their full description text for maximum content fidelity.
     const extractSectionsFromMarkdown = (markdown: string): { title: string; description: string }[] => {
       const sections: { title: string; description: string }[] = [];
+      const seenTitles = new Set<string>();
       
-      // Try multiple header levels: ##, ###, ####, ##### (from h2 to h5)
-      // More flexible regex to catch content sections
-      const headerPatterns = [
-        /#{2}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2}\s|\n#{1}\s|$)/g,  // ## headers
-        /#{3}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2,3}\s|$)/g,          // ### headers
-        /#{4,5}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2,5}\s|$)/g,        // #### or ##### headers
-      ];
+      // Split markdown by header lines and process each section
+      // This approach is more reliable than regex for nested headers
+      const lines = markdown.split('\n');
+      let currentTitle = '';
+      let currentContent: string[] = [];
       
-      // Try each pattern until we find sections
-      for (const pattern of headerPatterns) {
-        let match;
-        const tempSections: { title: string; description: string }[] = [];
+      for (const line of lines) {
+        // Check if this line is a header (## to #####)
+        const headerMatch = line.match(/^(#{2,5})\s+(.+)$/);
         
-        while ((match = pattern.exec(markdown)) !== null) {
-          const title = match[1].trim();
-          let desc = match[2].trim();
-          
-          // Skip navigation/menu items and empty sections
-          if (!title || title.includes('Main Menu') || title.includes('Navigation') || 
-              title.includes('Cookie') || title.includes('Footer') || desc.length < 20) {
-            continue;
+        if (headerMatch) {
+          // Save previous section if it has content
+          if (currentTitle && currentContent.length > 0) {
+            const desc = currentContent.join('\n').trim();
+            if (desc.length >= 20 && !seenTitles.has(currentTitle.toLowerCase())) {
+              sections.push({ title: currentTitle, description: desc });
+              seenTitles.add(currentTitle.toLowerCase());
+              console.log(`=== Extracted section: "${currentTitle}" (${desc.length} chars)`);
+            }
           }
           
-          // Clean up description - remove links but keep text
-          desc = desc.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-          // Remove bullet points formatting but keep content
-          desc = desc.replace(/^-\s+/gm, '• ');
-          // Remove multiple consecutive newlines but keep single ones
-          desc = desc.replace(/\n{3,}/g, '\n\n');
+          // Start new section
+          currentTitle = headerMatch[2].trim();
+          currentContent = [];
+          
+          // Skip navigation/menu items
+          if (currentTitle.includes('Main Menu') || currentTitle.includes('Navigation') || 
+              currentTitle.includes('Cookie') || currentTitle.includes('Footer') ||
+              currentTitle.includes('Downloads') || currentTitle.includes('Related')) {
+            currentTitle = ''; // Skip this section
+          }
+        } else if (currentTitle) {
+          // Add line to current section content
+          let cleanLine = line;
+          // Remove links but keep text
+          cleanLine = cleanLine.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
           // Remove images markdown
-          desc = desc.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
-          // NO LENGTH LIMIT - import complete text!
+          cleanLine = cleanLine.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
+          // Clean bullet points
+          cleanLine = cleanLine.replace(/^-\s+/, '• ');
           
-          if (title && desc.length > 20) {
-            tempSections.push({ title, description: desc });
-            console.log(`=== Extracted section: "${title}" (${desc.length} chars)`);
-          }
+          currentContent.push(cleanLine);
         }
-        
-        // If we found sections with this pattern, use them
-        if (tempSections.length >= 2) {
-          sections.push(...tempSections);
-          break;
+      }
+      
+      // Don't forget the last section!
+      if (currentTitle && currentContent.length > 0) {
+        const desc = currentContent.join('\n').trim();
+        if (desc.length >= 20 && !seenTitles.has(currentTitle.toLowerCase())) {
+          sections.push({ title: currentTitle, description: desc });
+          seenTitles.add(currentTitle.toLowerCase());
+          console.log(`=== Extracted section: "${currentTitle}" (${desc.length} chars)`);
         }
       }
       
       console.log(`=== Total sections extracted: ${sections.length}`);
-      return sections.slice(0, 9); // Max 9 sections for 3x Image-Text segments with 3 columns each
+      return sections.slice(0, 12); // Max 12 sections for 4x Image-Text segments with 3 columns each
     };
 
     try {
@@ -503,9 +513,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       
       if (existingAssets && existingAssets.length > 0) {
         // USE EXISTING ASSETS - no download needed
-        console.log('=== Using existing Media Management assets');
+        // Filter to only image files (exclude PDFs)
+        const imageAssets = existingAssets.filter(a => 
+          /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(a.file_path)
+        );
+        console.log('=== Using existing Media Management assets (images only):', imageAssets.length);
         
-        for (const asset of existingAssets.slice(0, 5)) {
+        // Take ALL images, not just 5
+        for (const asset of imageAssets) {
           // Build public URL from file_path
           const { data: urlData } = supabase.storage
             .from('page-images')
@@ -764,25 +779,31 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       setImportStep('Step 11b/24: Search for existing PDFs...');
       await wait(150);
       
-      const { data: pdfFiles } = await supabase
+      // List ALL files in the pageSlug folder and filter for PDFs
+      const { data: allFiles, error: listErr } = await supabase
         .storage
         .from('page-images')
-        .list(pageSlug, { search: '.pdf' });
+        .list(pageSlug);
+      
+      if (listErr) {
+        console.warn('=== PDF list error:', listErr.message);
+      }
+      console.log(`=== Found ${allFiles?.length || 0} files in ${pageSlug}/ folder`);
       
       // Get full PDF URLs from existing files
       const availablePdfs: { name: string; url: string; title?: string }[] = [];
-      if (pdfFiles && pdfFiles.length > 0) {
-        for (const pdf of pdfFiles) {
-          if (pdf.name.endsWith('.pdf')) {
+      if (allFiles && allFiles.length > 0) {
+        for (const file of allFiles) {
+          if (file.name.toLowerCase().endsWith('.pdf')) {
             const { data: urlData } = supabase.storage
               .from('page-images')
-              .getPublicUrl(`${pageSlug}/${pdf.name}`);
+              .getPublicUrl(`${pageSlug}/${file.name}`);
             availablePdfs.push({
-              name: pdf.name,
+              name: file.name,
               url: urlData.publicUrl,
-              title: pdf.name.replace('.pdf', '').replace(/_/g, ' '),
+              title: file.name.replace('.pdf', '').replace(/_/g, ' '),
             });
-            console.log('=== Found existing PDF:', pdf.name);
+            console.log('=== Found existing PDF:', file.name, '→', urlData.publicUrl);
           }
         }
       }
@@ -880,7 +901,14 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             }
           } catch (pdfErr) {
             console.warn(`=== PDF download error (CORS/network):`, pdfErr);
-            // CORS blocked - cannot download, skip this PDF
+            // CORS blocked - add with EXTERNAL URL as fallback so Downloads are still shown!
+            // This ensures Downloads segment is created even if we can't download the file
+            console.log(`=== Adding external PDF link as fallback: ${dl.title}`);
+            availablePdfs.push({
+              name: urlFileName || 'document.pdf',
+              url: dl.url, // Use external URL
+              title: dl.title || urlFileName.replace('.pdf', '').replace(/_/g, ' '),
+            });
           }
           
           await wait(300); // Rate limiting between PDF downloads
