@@ -399,8 +399,10 @@ function parseFirecrawlContent(
   console.log('[Firecrawl] Extracted specifications:', result.specifications.length);
 
   // === USE CASES ===
+  // PROTOCOL: Extract COMPLETE section content - no truncation!
   // Look for H3/H4 sections with descriptions in cleaned markdown
-  const sectionMatches = cleanedMarkdown.matchAll(/^###?\s+(.+)\n+([^#]+)/gm);
+  // Extract ALL content following the header, not just first paragraph
+  const sectionMatches = cleanedMarkdown.matchAll(/^###?\s+(.+)\n+([\s\S]*?)(?=^###?\s|\n##\s|$)/gm);
   for (const match of sectionMatches) {
     let title = match[1].trim().replace(/\*\*/g, '').replace(/\\\\/g, '');
     const content = match[2].trim();
@@ -408,23 +410,25 @@ function parseFirecrawlContent(
     // Skip JSON artifacts
     if (title.includes('"') || title.includes('{')) continue;
     
-    // Get first paragraph as description
-    let firstPara = content.split('\n\n')[0]
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-      .replace(/\*\*([^*]+)\*\*/g, '$1')
-      .replace(/\*([^*]+)\*/g, '$1')
+    // Get FULL content, not just first paragraph - clean it but don't truncate
+    let fullContent = content
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // Remove links, keep text
+      .replace(/\*\*([^*]+)\*\*/g, '$1')         // Remove bold
+      .replace(/\*([^*]+)\*/g, '$1')             // Remove italic
       .replace(/\\\\/g, '')
       .replace(/\\"/g, '"')
+      .replace(/\n{3,}/g, '\n\n')                // Collapse multiple newlines
       .trim();
     
     // Skip if contains JSON artifacts
-    if (firstPara.includes('":') || firstPara.includes('{"')) continue;
+    if (fullContent.includes('":') || fullContent.includes('{"')) continue;
     
-    if (title.length > 3 && title.length < 120 && firstPara.length > 20 && !isFooterContent(title)) {
+    if (title.length > 3 && title.length < 120 && fullContent.length > 20 && !isFooterContent(title)) {
       result.useCases.push({ 
         title, 
-        description: firstPara.slice(0, 400) 
+        description: fullContent // NO LIMIT - import complete text!
       });
+      console.log(`[Firecrawl] Extracted section: "${title}" (${fullContent.length} chars)`);
     }
     
     if (result.useCases.length >= 6) break;
