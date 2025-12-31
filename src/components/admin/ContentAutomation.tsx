@@ -391,6 +391,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
     // Helper: Extract sections from markdown content
+    // PROTOCOL: Import COMPLETE text content - no truncation!
+    // All extracted sections keep their full description text for maximum content fidelity.
     const extractSectionsFromMarkdown = (markdown: string): { title: string; description: string }[] => {
       const sections: { title: string; description: string }[] = [];
       
@@ -406,14 +408,17 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         desc = desc.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
         // Remove bullet points formatting but keep content
         desc = desc.replace(/^-\s+/gm, '• ');
-        // Limit length
-        desc = desc.substring(0, 300);
+        // Remove multiple consecutive newlines but keep single ones
+        desc = desc.replace(/\n{3,}/g, '\n\n');
+        // NO LENGTH LIMIT - import complete text!
         
         if (title && desc && !title.includes('Main Menu')) {
           sections.push({ title, description: desc });
+          console.log(`=== Extracted section: "${title}" (${desc.length} chars)`);
         }
       }
       
+      console.log(`=== Total sections extracted: ${sections.length}`);
       return sections.slice(0, 6); // Max 6 tiles
     };
 
