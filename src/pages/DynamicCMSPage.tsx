@@ -1103,6 +1103,43 @@ const DynamicCMSPage = () => {
           />
         );
 
+      case "product-hero":
+        // Single image product hero - use ProductHeroGallery with single image in array
+        const singleImage = segment.data?.imageUrl ? [{
+          imageUrl: segment.data.imageUrl,
+          title: segment.data?.metadata?.altText || segment.data?.title || "",
+          description: segment.data?.metadata?.altText || segment.data?.title || "",
+          metadata: segment.data?.metadata || {}
+        }] : [];
+        return (
+          <ProductHeroGallery
+            key={`${segmentId}-${refreshCounter}`}
+            id={segmentDbId?.toString()}
+            hasMetaNavigation={hasMetaNavigation}
+            data={{
+              title: segment.data?.title || "",
+              subtitle: segment.data?.subtitle || "",
+              description: segment.data?.description || "",
+              images: singleImage,
+              cta1Text: segment.data?.cta1Text || "",
+              cta1Link: segment.data?.cta1Link || "",
+              cta1Style: segment.data?.cta1Style || "standard",
+              cta2Text: segment.data?.cta2Text || "",
+              cta2Link: segment.data?.cta2Link || "",
+              cta2Style: segment.data?.cta2Style || "standard",
+              imagePosition: segment.data?.imagePosition || "right",
+              layoutRatio: segment.data?.layoutRatio || "2-5",
+              topSpacing: segment.data?.topSpacing || "medium",
+              imageMaxWidth: segment.data?.imageMaxWidth || null,
+              imageMaxHeight: segment.data?.imageMaxHeight || null,
+            }}
+            segmentKey={`${segment.type}-${segment.id}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
+          />
+        );
+
       case "feature-overview":
         return (
           <FeatureOverview
