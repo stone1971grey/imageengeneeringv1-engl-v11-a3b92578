@@ -72,26 +72,30 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
     if (data && data.length > 0) {
       try {
         const segments = JSON.parse(data[0].content_value);
+        // Support both 'hero' and 'product-hero' (Content Automation) types
         const heroSegment = segments.find((seg: any) => 
-          seg.type === "hero" && String(seg.id) === String(segmentId)
+          (seg.type === "hero" || seg.type === "product-hero") && String(seg.id) === String(segmentId)
         );
 
         if (heroSegment?.data) {
-          setTitle(heroSegment.data.hero_title || '');
-          setSubtitle(heroSegment.data.hero_subtitle || '');
-          setDescription(heroSegment.data.hero_description || '');
-          setCtaText(heroSegment.data.hero_cta_text || '');
-          setCtaLink(heroSegment.data.hero_cta_link || '');
-          setCtaStyle(heroSegment.data.hero_cta_style || 'standard');
+          // Support both field naming conventions:
+          // - Content Automation uses: title, subtitle, description, imageUrl
+          // - Legacy uses: hero_title, hero_subtitle, hero_description, hero_image_url
+          setTitle(heroSegment.data.hero_title || heroSegment.data.title || '');
+          setSubtitle(heroSegment.data.hero_subtitle || heroSegment.data.subtitle || '');
+          setDescription(heroSegment.data.hero_description || heroSegment.data.description || '');
+          setCtaText(heroSegment.data.hero_cta_text || heroSegment.data.ctaText || '');
+          setCtaLink(heroSegment.data.hero_cta_link || heroSegment.data.ctaLink || '');
+          setCtaStyle(heroSegment.data.hero_cta_style || heroSegment.data.ctaStyle || 'standard');
           
           // Load current language values
-          let currentImageUrl = heroSegment.data.hero_image_url || '';
-          let currentImageMetadata = heroSegment.data.hero_image_metadata || null;
-          let currentImagePosition = heroSegment.data.hero_image_position || 'right';
-          let currentLayoutRatio = heroSegment.data.hero_layout_ratio || '2-5';
-          let currentTopSpacing = heroSegment.data.hero_top_spacing || 'medium';
-          let currentImageMaxWidth = heroSegment.data.hero_image_max_width || null;
-          let currentImageMaxHeight = heroSegment.data.hero_image_max_height || null;
+          let currentImageUrl = heroSegment.data.hero_image_url || heroSegment.data.imageUrl || '';
+          let currentImageMetadata = heroSegment.data.hero_image_metadata || heroSegment.data.metadata || null;
+          let currentImagePosition = heroSegment.data.hero_image_position || heroSegment.data.imagePosition || 'right';
+          let currentLayoutRatio = heroSegment.data.hero_layout_ratio || heroSegment.data.layoutRatio || '2-5';
+          let currentTopSpacing = heroSegment.data.hero_top_spacing || heroSegment.data.topSpacing || 'medium';
+          let currentImageMaxWidth = heroSegment.data.hero_image_max_width || heroSegment.data.imageMaxWidth || null;
+          let currentImageMaxHeight = heroSegment.data.hero_image_max_height || heroSegment.data.imageMaxHeight || null;
 
           // FALLBACK: For non-EN languages, ALWAYS load layout settings from EN reference
           if (language !== 'en') {
@@ -106,24 +110,24 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
             if (enData?.content_value) {
               const enSegments = JSON.parse(enData.content_value);
               const enHeroSegment = enSegments.find((seg: any) => 
-                seg.type === "hero" && String(seg.id) === String(segmentId)
+                (seg.type === "hero" || seg.type === "product-hero") && String(seg.id) === String(segmentId)
               );
 
               if (enHeroSegment?.data) {
                 console.log(`✅ Fallback: Loading layout settings from EN reference for segment ${segmentId}`);
                 
                 // If no image in current language, use EN image
-                if (!currentImageUrl && enHeroSegment.data.hero_image_url) {
-                  currentImageUrl = enHeroSegment.data.hero_image_url;
-                  currentImageMetadata = enHeroSegment.data.hero_image_metadata;
+                if (!currentImageUrl) {
+                  currentImageUrl = enHeroSegment.data.hero_image_url || enHeroSegment.data.imageUrl || '';
+                  currentImageMetadata = enHeroSegment.data.hero_image_metadata || enHeroSegment.data.metadata || null;
                 }
                 
                 // ALWAYS use EN layout settings to ensure consistency
-                currentImagePosition = enHeroSegment.data.hero_image_position || 'right';
-                currentLayoutRatio = enHeroSegment.data.hero_layout_ratio || '2-5';
-                currentTopSpacing = enHeroSegment.data.hero_top_spacing || 'medium';
-                currentImageMaxWidth = enHeroSegment.data.hero_image_max_width || null;
-                currentImageMaxHeight = enHeroSegment.data.hero_image_max_height || null;
+                currentImagePosition = enHeroSegment.data.hero_image_position || enHeroSegment.data.imagePosition || 'right';
+                currentLayoutRatio = enHeroSegment.data.hero_layout_ratio || enHeroSegment.data.layoutRatio || '2-5';
+                currentTopSpacing = enHeroSegment.data.hero_top_spacing || enHeroSegment.data.topSpacing || 'medium';
+                currentImageMaxWidth = enHeroSegment.data.hero_image_max_width || enHeroSegment.data.imageMaxWidth || null;
+                currentImageMaxHeight = enHeroSegment.data.hero_image_max_height || enHeroSegment.data.imageMaxHeight || null;
               }
             }
           }
@@ -191,13 +195,20 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         
         if (existingContent) {
           const existingSegments = JSON.parse(existingContent.content_value);
-          const segmentIndex = existingSegments.findIndex((s: any) => s.id === segmentId);
+          // Support both 'hero' and 'product-hero' segment types
+          const segmentIndex = existingSegments.findIndex((s: any) => 
+            String(s.id) === String(segmentId) && (s.type === 'hero' || s.type === 'product-hero')
+          );
           
           if (segmentIndex !== -1) {
+            // Normalize: always use hero_* fields for consistency when saving
             existingSegments[segmentIndex].data = {
               ...existingSegments[segmentIndex].data,
               hero_image_url: result.url,
-              hero_image_metadata: metadata
+              hero_image_metadata: metadata,
+              // Also set Content Automation fields for bidirectional compat
+              imageUrl: result.url,
+              metadata: metadata
             };
             
             await supabase
@@ -241,13 +252,20 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
       
       if (existingContent) {
         const existingSegments = JSON.parse(existingContent.content_value);
-        const segmentIndex = existingSegments.findIndex((s: any) => s.id === segmentId);
+        // Support both 'hero' and 'product-hero' segment types
+        const segmentIndex = existingSegments.findIndex((s: any) => 
+          String(s.id) === String(segmentId) && (s.type === 'hero' || s.type === 'product-hero')
+        );
         
         if (segmentIndex !== -1) {
+          // Normalize: always use both field sets for bidirectional compat
           existingSegments[segmentIndex].data = {
             ...existingSegments[segmentIndex].data,
             hero_image_url: url,
-            hero_image_metadata: imageMetadata
+            hero_image_metadata: imageMetadata,
+            // Also set Content Automation fields
+            imageUrl: url,
+            metadata: imageMetadata
           };
           
           await supabase
@@ -316,14 +334,16 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
       }
 
       const segments = JSON.parse(data.content_value);
+      // Support both 'hero' and 'product-hero' (Content Automation) types
       const heroSegment = segments.find((seg: any) => 
-        seg.type === "hero" && String(seg.id) === String(segmentId)
+        (seg.type === "hero" || seg.type === "product-hero") && String(seg.id) === String(segmentId)
       );
 
-      const sourceTitle = heroSegment?.data?.hero_title || '';
-      const sourceSubtitle = heroSegment?.data?.hero_subtitle || '';
-      const sourceDescription = heroSegment?.data?.hero_description || '';
-      const sourceCtaText = heroSegment?.data?.hero_cta_text || '';
+      // Support both field naming conventions
+      const sourceTitle = heroSegment?.data?.hero_title || heroSegment?.data?.title || '';
+      const sourceSubtitle = heroSegment?.data?.hero_subtitle || heroSegment?.data?.subtitle || '';
+      const sourceDescription = heroSegment?.data?.hero_description || heroSegment?.data?.description || '';
+      const sourceCtaText = heroSegment?.data?.hero_cta_text || heroSegment?.data?.ctaText || '';
 
       if (!sourceTitle && !sourceSubtitle && !sourceDescription && !sourceCtaText) {
         toast.error("No English content available to translate");
@@ -383,8 +403,16 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       // CRITICAL: Always use String() for ID comparisons and storage to prevent duplicates
       const segmentIdStr = String(segmentId);
-      const segmentIndex = segments.findIndex((s: any) => String(s.id) === segmentIdStr);
+      // Support both 'hero' and 'product-hero' segment types
+      const segmentIndex = segments.findIndex((s: any) => 
+        String(s.id) === segmentIdStr && (s.type === 'hero' || s.type === 'product-hero')
+      );
+      
+      // Normalize: write BOTH field sets for bidirectional compatibility
+      // - hero_* fields for legacy components
+      // - simple fields for Content Automation and Frontend
       const updatedData = {
+        // Legacy hero_* fields
         hero_title: title,
         hero_subtitle: subtitle,
         hero_description: description,
@@ -397,17 +425,32 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         hero_layout_ratio: layoutRatio,
         hero_top_spacing: topSpacing,
         hero_image_max_width: imageMaxWidth,
-        hero_image_max_height: imageMaxHeight
+        hero_image_max_height: imageMaxHeight,
+        // Content Automation / Frontend fields
+        title: title,
+        subtitle: subtitle,
+        description: description,
+        ctaText: ctaText,
+        ctaLink: ctaLink,
+        ctaStyle: ctaStyle,
+        imageUrl: imageUrl,
+        metadata: imageMetadata,
+        imagePosition: imagePosition,
+        layoutRatio: layoutRatio,
+        topSpacing: topSpacing,
+        imageMaxWidth: imageMaxWidth,
+        imageMaxHeight: imageMaxHeight
       };
 
       if (segmentIndex !== -1) {
-        // Ensure stored ID is always a string
+        // Ensure stored ID is always a string, preserve original type
         segments[segmentIndex].id = segmentIdStr;
         segments[segmentIndex].data = updatedData;
       } else {
+        // New segment: use 'product-hero' type (modern convention)
         segments.push({
           id: segmentIdStr,
-          type: 'hero',
+          type: 'product-hero',
           data: updatedData
         });
       }
