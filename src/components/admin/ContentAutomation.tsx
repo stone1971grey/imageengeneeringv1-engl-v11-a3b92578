@@ -128,6 +128,10 @@ const SOURCE_URL_MAPPING: Record<string, LanguageUrls> = {
     default: 'https://www.image-engineering.de/products/equipment/illumination-devices/1258-versatile-light-system',
     de: 'https://www.image-engineering.de/de/produkte/equipment/illumination-devices/1258-versatile-light-system',
   },
+  'products/illumination-devices/kork': {
+    default: 'https://www.image-engineering.de/products/equipment/measurement-devices/1245-kork',
+    de: 'https://www.image-engineering.de/de/produkte/equipment/measurement-devices/1245-kork',
+  },
 };
 
 // Helper to get URL for current language
