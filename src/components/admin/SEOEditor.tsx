@@ -643,31 +643,40 @@ export const SEOEditor = ({
       }
     }
     
-    // 4. Check Product Hero segment (legacy "hero" type that stores data in page_segments JSON)
+    // 4. Check Product Hero segment (supports both 'hero' and 'product-hero' segment types)
+    // Content Automation uses 'product-hero', legacy uses 'hero'
     if (!autoH1) {
-      const productHeroRegistry = segmentRegistry.find(seg => seg.segment_type === 'hero' && !seg.deleted);
+      // Find product hero with either type
+      const productHeroRegistry = segmentRegistry.find(seg => 
+        (seg.segment_type === 'hero' || seg.segment_type === 'product-hero') && !seg.deleted
+      );
       if (productHeroRegistry) {
         // Product Hero stores data in page_segments JSON, not in individual section_keys
         const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
         if (pageSegmentsEntry) {
           try {
             const segments = JSON.parse(pageSegmentsEntry.content_value);
+            // Search for both 'hero' and 'product-hero' types in the JSON
             const heroSegment = segments.find((seg: any) => 
-              seg.type === 'hero' && String(seg.id) === String(productHeroRegistry.segment_id)
+              (seg.type === 'hero' || seg.type === 'product-hero') && 
+              String(seg.id) === String(productHeroRegistry.segment_id)
             );
             if (heroSegment?.data) {
-              const title = heroSegment.data.hero_title || '';
-              const subtitle = heroSegment.data.hero_subtitle || '';
+              // Support both field naming conventions:
+              // - Content Automation uses: title, subtitle
+              // - Legacy uses: hero_title, hero_subtitle
+              const title = heroSegment.data.title || heroSegment.data.hero_title || '';
+              const subtitle = heroSegment.data.subtitle || heroSegment.data.hero_subtitle || '';
               const combinedTitle = [title, subtitle].filter(Boolean).join(' ');
               if (combinedTitle) {
                 autoH1 = combinedTitle;
                 h1Source = {
-                  type: 'hero',
+                  type: productHeroRegistry.segment_type,
                   key: productHeroRegistry.segment_key,
                   id: productHeroRegistry.segment_id,
                   label: 'Product Hero'
                 };
-                console.log('[SEO Editor] H1 from Product Hero:', autoH1);
+                console.log('[SEO Editor] H1 from Product Hero:', autoH1, '(segment_type:', productHeroRegistry.segment_type, ')');
               }
             }
           } catch (e) {
