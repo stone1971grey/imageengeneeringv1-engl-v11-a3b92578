@@ -396,30 +396,54 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
     const extractSectionsFromMarkdown = (markdown: string): { title: string; description: string }[] => {
       const sections: { title: string; description: string }[] = [];
       
-      // Split by ##### headers (subsections)
-      const sectionRegex = /#{4,5}\s+(.+?)(?=\n)([\s\S]*?)(?=#{4,5}\s|$)/g;
-      let match;
+      // Try multiple header levels: ##, ###, ####, ##### (from h2 to h5)
+      // More flexible regex to catch content sections
+      const headerPatterns = [
+        /#{2}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2}\s|\n#{1}\s|$)/g,  // ## headers
+        /#{3}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2,3}\s|$)/g,          // ### headers
+        /#{4,5}\s+([^#\n]+?)(?=\n)([\s\S]*?)(?=\n#{2,5}\s|$)/g,        // #### or ##### headers
+      ];
       
-      while ((match = sectionRegex.exec(markdown)) !== null) {
-        const title = match[1].trim();
-        let desc = match[2].trim();
+      // Try each pattern until we find sections
+      for (const pattern of headerPatterns) {
+        let match;
+        const tempSections: { title: string; description: string }[] = [];
         
-        // Clean up description - remove links but keep text
-        desc = desc.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-        // Remove bullet points formatting but keep content
-        desc = desc.replace(/^-\s+/gm, '• ');
-        // Remove multiple consecutive newlines but keep single ones
-        desc = desc.replace(/\n{3,}/g, '\n\n');
-        // NO LENGTH LIMIT - import complete text!
+        while ((match = pattern.exec(markdown)) !== null) {
+          const title = match[1].trim();
+          let desc = match[2].trim();
+          
+          // Skip navigation/menu items and empty sections
+          if (!title || title.includes('Main Menu') || title.includes('Navigation') || 
+              title.includes('Cookie') || title.includes('Footer') || desc.length < 20) {
+            continue;
+          }
+          
+          // Clean up description - remove links but keep text
+          desc = desc.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+          // Remove bullet points formatting but keep content
+          desc = desc.replace(/^-\s+/gm, '• ');
+          // Remove multiple consecutive newlines but keep single ones
+          desc = desc.replace(/\n{3,}/g, '\n\n');
+          // Remove images markdown
+          desc = desc.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
+          // NO LENGTH LIMIT - import complete text!
+          
+          if (title && desc.length > 20) {
+            tempSections.push({ title, description: desc });
+            console.log(`=== Extracted section: "${title}" (${desc.length} chars)`);
+          }
+        }
         
-        if (title && desc && !title.includes('Main Menu')) {
-          sections.push({ title, description: desc });
-          console.log(`=== Extracted section: "${title}" (${desc.length} chars)`);
+        // If we found sections with this pattern, use them
+        if (tempSections.length >= 2) {
+          sections.push(...tempSections);
+          break;
         }
       }
       
       console.log(`=== Total sections extracted: ${sections.length}`);
-      return sections.slice(0, 6); // Max 6 tiles
+      return sections.slice(0, 9); // Max 9 sections for 3x Image-Text segments with 3 columns each
     };
 
     try {
@@ -927,22 +951,22 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       console.log('=== Total PDF tiles for Downloads segment:', pdfTiles.length);
 
       // ============================================
-      // NEW RULE: Long text sections → Image-Text segments (not Tiles!)
+      // NEW RULE: Long text sections → Image-Text segments with MULTI-COLUMN layout
       // Tiles are ONLY for short lists or downloads.
-      // Image-Text segments allow better text flow and formatting.
+      // Image-Text segments: Group 2-3 features per segment for side-by-side display
       // ============================================
       
       // Create Feature Image-Text segments from extracted sections
       const featureSections = extractedSections.length > 0 
-        ? extractedSections.slice(0, 6)
+        ? extractedSections.slice(0, 9) // Max 9 for 3 segments × 3 columns
         : [
             { title: 'Overview', description: 'Key features and capabilities of this product.' },
           ];
 
       console.log('=== Feature sections for Image-Text:', featureSections.length);
 
-      // STEP 12: Create multiple Image-Text segments for features
-      console.log('=== STEP 12: Create Feature Image-Text segments ===');
+      // STEP 12: Create grouped Image-Text segments (2-3 items per segment for column layout)
+      console.log('=== STEP 12: Create Feature Image-Text segments with columns ===');
       setImportStep('Step 12/26: Feature sections...');
       setImportProgress(12);
       await wait(150);
@@ -950,28 +974,50 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const featureImageTextSegments: any[] = [];
       const featureSegmentIds: number[] = [];
       
-      // Create one Image-Text segment per feature section
-      for (let i = 0; i < featureSections.length; i++) {
-        const section = featureSections[i];
+      // Determine columns based on content:
+      // - 6+ sections: Create 2-3 segments with 3 columns each
+      // - 4-5 sections: Create 2 segments (3 + 1-2 columns)
+      // - 2-3 sections: Create 1 segment with 2-3 columns
+      // - 1 section: Create 1 segment with 1 column
+      const itemsPerSegment = featureSections.length >= 6 ? 3 : 
+                              featureSections.length >= 4 ? 3 :
+                              featureSections.length >= 2 ? featureSections.length : 1;
+      
+      // Group sections into multi-column segments
+      for (let segmentIndex = 0; segmentIndex * itemsPerSegment < featureSections.length; segmentIndex++) {
         const segmentId = nextId;
+        const startIdx = segmentIndex * itemsPerSegment;
+        const endIdx = Math.min(startIdx + itemsPerSegment, featureSections.length);
+        const segmentSections = featureSections.slice(startIdx, endIdx);
         
-        // Use gallery images in rotation for variety
-        const imageIndex = (i + 1) % galleryImages.length; // Start from index 1 for variety
-        const sectionImage = galleryImages[imageIndex]?.imageUrl || galleryImages[0]?.imageUrl || '';
+        // Build items array for this segment (multiple columns)
+        const items = segmentSections.map((section, idx) => {
+          const imageIndex = (startIdx + idx + 1) % galleryImages.length;
+          const sectionImage = galleryImages[imageIndex]?.imageUrl || galleryImages[0]?.imageUrl || '';
+          
+          return {
+            title: section.title,
+            description: section.description, // Full text without truncation!
+            imageUrl: sectionImage,
+            metadata: { altText: section.title },
+          };
+        });
+        
+        // Determine column count based on items
+        const columnCount = items.length === 1 ? '1' : items.length === 2 ? '2' : '3';
+        
+        // Use first item's title as segment title, or generic title for multi-item
+        const segmentTitle = items.length === 1 ? items[0].title : 
+                            segmentIndex === 0 ? 'Features' : 
+                            `Features ${segmentIndex + 1}`;
         
         const featureSegment = {
           id: String(segmentId),
           type: 'image-text',
           data: {
-            title: section.title,
-            items: [
-              {
-                title: section.title,
-                description: section.description, // Full text without truncation!
-                imageUrl: sectionImage,
-                metadata: { altText: section.title },
-              }
-            ],
+            title: segmentTitle,
+            layout: columnCount, // Set column layout!
+            items: items,
           },
         };
         
@@ -979,7 +1025,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         featureSegmentIds.push(segmentId);
         
         // Insert to registry
-        console.log(`=== STEP 12.${i + 1}: Insert Feature Image-Text ${segmentId} registry ===`);
+        console.log(`=== STEP 12.${segmentIndex + 1}: Insert Feature Image-Text ${segmentId} with ${items.length} items (${columnCount} columns) ===`);
         const { error: regErrFeature } = await supabase
           .from('segment_registry')
           .insert({
@@ -987,12 +1033,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             segment_id: segmentId,
             segment_key: `import-feature-${segmentId}`,
             segment_type: 'image-text',
-            position: 3 + i, // Position after Image-Text (2), starting at 3
+            position: 3 + segmentIndex, // Position after Image-Text (2), starting at 3
           });
 
-        if (regErrFeature) throw new Error(`Feature Image-Text Registry ${i}: ` + regErrFeature.message);
+        if (regErrFeature) throw new Error(`Feature Image-Text Registry ${segmentIndex}: ` + regErrFeature.message);
         
-        console.log(`=== Feature Image-Text ${i + 1} created: "${section.title}" (ID: ${segmentId})`);
+        console.log(`=== Feature Image-Text ${segmentIndex + 1} created: "${segmentTitle}" with ${items.length} columns (ID: ${segmentId})`);
         nextId++;
         await wait(50);
       }
@@ -1038,8 +1084,10 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           },
         };
 
-        // Insert Video to registry at position 4
-        console.log('=== STEP 14b: Insert Video registry (position 4) ===');
+        // Insert Video to registry - position after all feature segments
+        // Feature segments are at positions 3, 4, ... so video goes after them
+        const videoPosition = 3 + featureImageTextSegments.length;
+        console.log(`=== STEP 14b: Insert Video registry (position ${videoPosition}) ===`);
         const { error: regErrVideo } = await supabase
           .from('segment_registry')
           .insert({
@@ -1047,7 +1095,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             segment_id: nextId,
             segment_key: `import-video-${nextId}`,
             segment_type: 'video',
-            position: 4,
+            position: videoPosition,
           });
 
         if (regErrVideo) throw new Error('Video Registry: ' + regErrVideo.message);
@@ -1078,8 +1126,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           },
         };
 
-        // Insert Downloads Tiles to registry at position 5 (after video)
-        console.log('=== STEP 15b: Insert Downloads Tiles registry (position 5) ===');
+        // Insert Downloads Tiles to registry - position after video (or after features if no video)
+        const downloadsPosition = 3 + featureImageTextSegments.length + (videoId ? 1 : 0);
+        console.log(`=== STEP 15b: Insert Downloads Tiles registry (position ${downloadsPosition}) ===`);
         const { error: regErrDl } = await supabase
           .from('segment_registry')
           .insert({
@@ -1087,7 +1136,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
             segment_id: nextId,
             segment_key: `import-downloads-${nextId}`,
             segment_type: 'tiles',
-            position: 5,
+            position: downloadsPosition,
           });
 
         if (regErrDl) throw new Error('Downloads Tiles Registry: ' + regErrDl.message);
