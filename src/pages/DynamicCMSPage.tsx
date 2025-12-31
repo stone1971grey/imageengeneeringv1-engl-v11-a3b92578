@@ -116,6 +116,7 @@ const DynamicCMSPage = () => {
   const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
   const [childPages, setChildPages] = useState<any[]>([]);
   const [isDraftPage, setIsDraftPage] = useState(false);
+  const [pageId, setPageId] = useState<number | null>(null);
   const [accessDenied, setAccessDenied] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -351,7 +352,7 @@ const DynamicCMSPage = () => {
       // Check if page exists in page_registry and if it's a shortcut
       const { data: pageData, error: pageError } = await supabase
         .from("page_registry")
-        .select("page_slug, target_page_slug, status")
+        .select("page_slug, target_page_slug, status, page_id")
         .eq("page_slug", pageSlug)
         .maybeSingle();
 
@@ -372,6 +373,11 @@ const DynamicCMSPage = () => {
       } else {
         setIsDraftPage(false);
         setAccessDenied(false);
+      }
+      
+      // Store page_id for toolbar display
+      if (pageData.page_id) {
+        setPageId(pageData.page_id);
       }
 
       // If this page is a shortcut, redirect to the target page
@@ -1682,10 +1688,17 @@ const DynamicCMSPage = () => {
               Admin Dashboard
             </a>
             
-            {/* Draft Badge - third (after Admin Dashboard), red background, no icon */}
+            {/* Draft Badge - red background */}
             {isDraftPage && (
               <div className="flex items-center bg-red-600 text-white px-3 py-2 rounded-lg font-semibold shadow-lg">
                 <span className="text-base">Draft</span>
+              </div>
+            )}
+            
+            {/* Page ID Badge - yellow background with black text */}
+            {pageId !== null && (
+              <div className="flex items-center bg-[#f9dc24] text-black px-3 py-2 rounded-lg font-semibold shadow-lg">
+                <span className="text-base">Page ID: {pageId}</span>
               </div>
             )}
             
