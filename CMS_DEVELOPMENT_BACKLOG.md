@@ -194,20 +194,82 @@ interface ContentTypeDefinition {
 
 ## 4. Priorisierte Roadmap
 
-### Phase 1: Quick Wins (Niedrig-hängend)
-- [ ] Plugin-Registry für Segment-Typen erstellen
+### ✅ Version 1.0.0 – Abgeschlossen (Dezember 2025)
+- [x] Draft/Publish-Mechanismus (Live-Content vs. Entwürfe)
+- [x] SEO-Suite mit AI-gestützter H1/Meta-Generierung
+- [x] Latest Edit im CMS Hub
+- [x] Copy Page Funktion
+- [x] Version History/Rollback
+- [x] Segment-Registry in Datenbank
+
+### 🔄 Version 1.1.0 – Content Automation (In Entwicklung)
+- [ ] AI-gestützter Content-Import via Firecrawl
+- [ ] Multi-Language-Generierung
+- [ ] Automatische Segment-Erstellung aus Quellseiten
+
+### 📋 Version 1.2.0 – Frontend Editing (Geplant)
+- [ ] In-Page-Editing für Editoren
+- [ ] Visual Edit Mode mit Overlay-Controls
+- [ ] Segment-Approval-Workflow
+
+### 🚀 Version 2.0.0 – Plugin-Architektur (Langfristig)
+- [ ] Plugin-Registry für Segment-Typen erstellen (siehe Kapitel 2)
 - [ ] `useAdminAuth` Hook extrahieren
-- [ ] Dokumentation des CMS-Kerns
-
-### Phase 2: Modularisierung (Medium)
-- [ ] Weitere Hooks extrahieren
-- [ ] AdminDashboard State aufteilen
-- [ ] Editor-Komponenten standardisieren
-
-### Phase 3: Architektur (Langfristig)
-- [ ] AdminDashboard als reiner Router
-- [ ] Vollständige Plugin-Architektur
+- [ ] AdminDashboard auf reinen Router reduzieren
+- [ ] Vollständige Plugin-Architektur mit `SegmentPlugin` Interface
 - [ ] CMS-Template für neue Projekte
+
+---
+
+## 4a. Plugin-Architektur – Was ist zu tun?
+
+### Konzept
+Die Plugin-Architektur ersetzt das aktuelle Hardcoding von Segment-Typen durch ein zentrales Registry-System.
+
+### Aktueller Zustand (Hardcoded)
+```typescript
+// AdminDashboard.tsx & DynamicCMSPage.tsx
+switch (segment.segment_type) {
+  case 'action_hero': return <ActionHeroEditor {...props} />;
+  case 'intro': return <IntroEditor {...props} />;
+  case 'faq': return <FAQEditor {...props} />;
+  // ... 20+ weitere Cases
+}
+```
+
+### Ziel-Architektur (Plugin-Registry)
+```typescript
+// lib/segmentPlugins.ts
+export const segmentPlugins: Record<string, SegmentPlugin> = {
+  action_hero: {
+    type: 'action_hero',
+    label: 'Action Hero',
+    icon: Layout,
+    editor: ActionHeroEditor,
+    renderer: ActionHeroSegment,
+    defaultContent: { title: '', subtitle: '' }
+  },
+  // Weitere Plugins...
+};
+
+// Verwendung in AdminDashboard
+const plugin = segmentPlugins[segment.segment_type];
+return <plugin.editor {...props} />;
+```
+
+### Vorteile
+1. **Neue Segmente:** 1 Datei erstellen + 1 Registry-Eintrag (statt 4+ Dateien ändern)
+2. **Zentrale Konfiguration:** Alle Segment-Metadaten an einem Ort
+3. **Einfachere Tests:** Plugins einzeln testbar
+4. **Potenzial:** DB-basierte Plugin-Definition für No-Code-Erweiterung
+
+### Aufwand: ~8-12 Iterationen
+| Schritt | Aufwand |
+|---------|---------|
+| Plugin-Registry Interface + erste Plugins | 2-3 Iterationen |
+| Admin-Dashboard umstellen | 3-4 Iterationen |
+| DynamicCMSPage umstellen | 2-3 Iterationen |
+| CreateDialog umstellen | 1-2 Iterationen |
 
 ---
 

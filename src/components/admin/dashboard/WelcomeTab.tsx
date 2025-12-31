@@ -64,6 +64,46 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
               <FeatureItem icon={Search} label="Smart Search" />
             </div>
+
+            {/* v1.0 Release Notes */}
+            <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-[#f9dc24]/10 via-yellow-500/5 to-transparent border border-[#f9dc24]/30">
+              <h3 className="text-lg font-bold text-[#f9dc24] mb-4 flex items-center gap-2">
+                🍾 Version 1.0.0 – Release Highlights
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>Draft/Publish-Mechanismus:</strong> Live-Content vs. Entwürfe mit Freigabe-Workflow</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>SEO-Suite:</strong> AI-gestützte H1/Meta-Generierung, Focus-Keyword-Analyse</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>Latest Edit:</strong> Schnellzugriff auf zuletzt bearbeitete Seiten im CMS Hub</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>Copy Page:</strong> Vollständige Seitenduplizierung mit allen Segmenten</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>Version History:</strong> Rollback für Editoren mit Backup-Funktion</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#f9dc24]">✓</span>
+                    <span className="text-gray-300"><strong>Segment-Registry:</strong> Dynamische Segment-Verwaltung in Datenbank</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-4 border-t border-gray-700/50 pt-3">
+                Roadmap: v1.1 Content Automation • v1.2 Frontend Editing • v2.0 Plugin-Architektur
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
