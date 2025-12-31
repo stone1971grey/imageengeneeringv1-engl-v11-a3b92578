@@ -919,11 +919,12 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
               title: sec.title,
               description: sec.description,
               icon: iconMapping[idx % iconMapping.length],
+              // Use correct field names matching Tiles component: ctaText, ctaLink, ctaStyle
               ...(pdfInfo && {
                 showButton: true,
-                buttonText: pdfInfo.text,
-                buttonLink: pdfInfo.url,
-                buttonStyle: 'primary',
+                ctaText: pdfInfo.text,
+                ctaLink: pdfInfo.url,
+                ctaStyle: 'standard' as const,
               }),
             };
           })
