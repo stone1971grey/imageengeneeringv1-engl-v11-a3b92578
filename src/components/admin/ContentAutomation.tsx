@@ -735,7 +735,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       const extractedSections = extractSectionsFromMarkdown(rawMarkdown);
       console.log('=== Found sections:', extractedSections.length);
 
-      // STEP 11b: Find PDFs in Media Management for this page
+      // STEP 11b: Find existing PDFs OR download new ones to Media Management
       console.log('=== STEP 11b: Search for existing PDFs in storage ===');
       setImportStep('Step 11b/24: Search for existing PDFs...');
       await wait(150);
@@ -764,10 +764,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       console.log('=== Existing PDFs found:', availablePdfs.length);
 
-      // STEP 11c: Match Firecrawl PDFs with Media Management PDFs
-      // PROTOCOL: PDFs MUST be linked from Media Management, NOT from original source URLs!
-      console.log('=== STEP 11c: Match extracted PDFs with Media Management ===');
-      setImportStep('Step 11c/26: Matching PDFs with Media Management...');
+      // STEP 11c: Check for PDFs from Firecrawl and download missing ones
+      console.log('=== STEP 11c: Process extracted PDFs ===');
+      setImportStep('Step 11c/26: Processing PDFs...');
       await wait(200);
 
       // Get downloads from parsedContent (already extracted by Edge Function)
@@ -782,7 +781,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           .replace(/pdf$/, '');       // Remove .pdf extension
       };
       
-      // For each Firecrawl PDF, try to find matching PDF in Media Management
+      // For each Firecrawl PDF, check if exists or download it
       for (const dl of preExtractedDownloads) {
         if (!dl.url || !dl.url.toLowerCase().includes('.pdf')) continue;
         
@@ -791,12 +790,11 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         const normalizedUrlName = normalizeFileName(urlFileName);
         const normalizedTitle = normalizeFileName(dl.title || '');
         
-        console.log(`=== Matching PDF: "${dl.title}" (file: ${urlFileName})`);
+        console.log(`=== Processing PDF: "${dl.title}" (file: ${urlFileName})`);
         
         // Search for matching PDF in availablePdfs (from Media Management)
         const matchingPdf = availablePdfs.find(existing => {
           const existingNormalized = normalizeFileName(existing.name);
-          // Match by normalized filename OR by normalized title
           return existingNormalized === normalizedUrlName || 
                  existingNormalized === normalizedTitle ||
                  existing.name.toLowerCase().includes(normalizedUrlName) ||
@@ -808,16 +806,64 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           if (dl.title && dl.title.length > 3) {
             matchingPdf.title = dl.title;
           }
-          console.log(`=== MATCHED: "${dl.title}" → Media Management: ${matchingPdf.url}`);
+          console.log(`=== MATCHED existing: "${dl.title}" → ${matchingPdf.url}`);
         } else {
-          console.warn(`=== NO MATCH in Media Management for: "${dl.title}" (${urlFileName})`);
-          console.warn(`=== Available PDFs in Media Management:`, availablePdfs.map(p => p.name));
-          // DO NOT add original URL - only use Media Management PDFs!
-          // User must upload missing PDFs to Media Management first
+          // PDF NOT in Media Management - DOWNLOAD IT!
+          console.log(`=== PDF not found, downloading: "${dl.title}" from ${dl.url}`);
+          setImportStep(`Downloading PDF: ${urlFileName}...`);
+          
+          try {
+            const pdfResponse = await fetch(dl.url);
+            if (pdfResponse.ok) {
+              const blob = await pdfResponse.blob();
+              const sanitizedFileName = urlFileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+              const filePath = `${pageSlug}/${sanitizedFileName}`;
+              
+              console.log(`=== Uploading PDF to: ${filePath}`);
+              const { error: uploadErr } = await supabase.storage
+                .from('page-images')
+                .upload(filePath, blob, { contentType: 'application/pdf', upsert: true });
+              
+              if (!uploadErr) {
+                const { data: urlData } = supabase.storage
+                  .from('page-images')
+                  .getPublicUrl(filePath);
+                
+                // Add to available PDFs
+                availablePdfs.push({
+                  name: sanitizedFileName,
+                  url: urlData.publicUrl,
+                  title: dl.title || sanitizedFileName.replace('.pdf', '').replace(/_/g, ' '),
+                });
+                
+                // Create file_segment_mapping entry
+                await supabase
+                  .from('file_segment_mappings')
+                  .upsert({
+                    file_path: filePath,
+                    bucket_id: 'page-images',
+                    segment_ids: [String(nextId)], // Use current segment ID
+                    alt_text: dl.title || sanitizedFileName,
+                    visibility: 'public',
+                  }, { onConflict: 'file_path' });
+                
+                console.log(`=== PDF uploaded and mapped: ${filePath}`);
+              } else {
+                console.error(`=== PDF upload error:`, uploadErr.message);
+              }
+            } else {
+              console.warn(`=== PDF download failed (${pdfResponse.status}): ${dl.url}`);
+            }
+          } catch (pdfErr) {
+            console.warn(`=== PDF download error (CORS/network):`, pdfErr);
+            // CORS blocked - cannot download, skip this PDF
+          }
+          
+          await wait(300); // Rate limiting between PDF downloads
         }
       }
       
-      console.log('=== PDF matching complete. Available from Media Management:', availablePdfs.length);
+      console.log('=== PDF processing complete. Total available:', availablePdfs.length);
 
       // Create Download Tiles from available PDFs
       // Each PDF becomes its own tile with a download button
