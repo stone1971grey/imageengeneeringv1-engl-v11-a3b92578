@@ -871,74 +871,87 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       
       await wait(150); // Final delay before tiles processing
 
-      // Map sections to tiles with icons and PDF buttons
-      const iconMapping = ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'];
-      
-      // Define PDF mapping for tiles (based on common naming patterns)
-      const pdfMappings: { [key: string]: string[] } = {
-        'flyer': ['flyer', 'product-flyer', 'VLS-product-flyer'],
-        'manual': ['manual', 'user-manual', 'User-Manual', 'anleitung', 'Betriebsanleitung'],
-        'datasheet': ['datasheet', 'data-sheet', 'spec', 'specification'],
-      };
+      // Create Download Tiles from available PDFs
+      // Each PDF becomes its own tile with a download button
+      const pdfTiles: Array<{
+        title: string;
+        description: string;
+        icon: string;
+        showButton: boolean;
+        ctaText: string;
+        ctaLink: string;
+        ctaStyle: 'standard' | 'technical';
+      }> = [];
 
-      const findPdfForTile = (tileIndex: number, tileTitle: string): { url: string; text: string } | null => {
-        // Try to match based on tile title keywords
-        const titleLower = tileTitle.toLowerCase();
-        
-        // For first 3 tiles, try to assign different PDF types
-        if (tileIndex === 0) {
-          // First tile: Product Flyer
-          const flyer = availablePdfs.find(p => 
-            p.name.toLowerCase().includes('flyer') || 
-            p.name.toLowerCase().includes('product')
-          );
-          if (flyer) return { url: flyer.url, text: 'Product Flyer' };
-        } else if (tileIndex === 1) {
-          // Second tile: User Manual (English)
-          const manual = availablePdfs.find(p => 
-            (p.name.toLowerCase().includes('manual') || p.name.toLowerCase().includes('user')) &&
-            p.name.toLowerCase().includes('en')
-          );
-          if (manual) return { url: manual.url, text: 'User Manual (EN)' };
-        } else if (tileIndex === 2) {
-          // Third tile: Betriebsanleitung (German)
-          const germanManual = availablePdfs.find(p => 
-            p.name.toLowerCase().includes('betriebsanleitung') || 
-            (p.name.toLowerCase().includes('de') && p.name.toLowerCase().includes('anleitung'))
-          );
-          if (germanManual) return { url: germanManual.url, text: 'Betriebsanleitung (DE)' };
+      // Map PDFs to tiles with appropriate titles and icons
+      for (const pdf of availablePdfs) {
+        const nameLower = pdf.name.toLowerCase();
+        let tileTitle = '';
+        let tileDescription = '';
+        let icon = 'FileText';
+        let ctaText = 'Download';
+
+        if (nameLower.includes('flyer') || nameLower.includes('product')) {
+          tileTitle = 'Product Flyer';
+          tileDescription = 'Download the product flyer with key specifications and features.';
+          icon = 'FileText';
+          ctaText = 'Download Flyer';
+        } else if (nameLower.includes('user-manual') || (nameLower.includes('manual') && nameLower.includes('en'))) {
+          tileTitle = 'User Manual (EN)';
+          tileDescription = 'Complete user manual with installation, operation, and troubleshooting guides.';
+          icon = 'BookOpen';
+          ctaText = 'Download Manual';
+        } else if (nameLower.includes('betriebsanleitung') || (nameLower.includes('de') && nameLower.includes('anleitung'))) {
+          tileTitle = 'Betriebsanleitung (DE)';
+          tileDescription = 'Vollständige Betriebsanleitung mit Installation, Bedienung und Fehlerbehebung.';
+          icon = 'BookOpen';
+          ctaText = 'Download Anleitung';
+        } else if (nameLower.includes('datasheet') || nameLower.includes('spec')) {
+          tileTitle = 'Technical Datasheet';
+          tileDescription = 'Detailed technical specifications and performance data.';
+          icon = 'BarChart3';
+          ctaText = 'Download Datasheet';
+        } else {
+          // Generic PDF
+          const cleanName = pdf.name.replace('.pdf', '').replace(/-/g, ' ').replace(/_/g, ' ');
+          tileTitle = cleanName;
+          tileDescription = `Download ${cleanName}`;
+          ctaText = 'Download';
         }
+
+        pdfTiles.push({
+          title: tileTitle,
+          description: tileDescription,
+          icon,
+          showButton: true,
+          ctaText,
+          ctaLink: pdf.url,
+          ctaStyle: 'standard',
+        });
         
-        return null;
-      };
+        console.log('=== Created PDF tile:', tileTitle, '→', pdf.url);
+      }
 
-      const realTiles = extractedSections.length > 0 
-        ? extractedSections.map((sec, idx) => {
-            const pdfInfo = findPdfForTile(idx, sec.title);
-            return {
-              title: sec.title,
-              description: sec.description,
-              icon: iconMapping[idx % iconMapping.length],
-              // Use correct field names matching Tiles component: ctaText, ctaLink, ctaStyle
-              ...(pdfInfo && {
-                showButton: true,
-                ctaText: pdfInfo.text,
-                ctaLink: pdfInfo.url,
-                ctaStyle: 'standard' as const,
-              }),
-            };
-          })
-        : [
-            { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
-            { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
-            { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
-          ];
+      // Use PDF tiles if available, otherwise fall back to feature extraction
+      const realTiles = pdfTiles.length > 0 
+        ? pdfTiles
+        : (extractedSections.length > 0 
+            ? extractedSections.slice(0, 6).map((sec, idx) => ({
+                title: sec.title,
+                description: sec.description,
+                icon: ['Zap', 'Target', 'Shield', 'Settings', 'Monitor', 'Camera'][idx % 6],
+              }))
+            : [
+                { title: 'Feature 1', description: 'Key feature from the content.', icon: 'Zap' },
+                { title: 'Feature 2', description: 'Another important aspect.', icon: 'Target' },
+                { title: 'Feature 3', description: 'Additional capability.', icon: 'Shield' },
+              ]);
 
-      console.log('=== Tiles with PDFs:', realTiles.filter(t => (t as any).showButton).length);
+      console.log('=== Total tiles created:', realTiles.length, '(PDFs:', pdfTiles.length, ')');
 
       // STEP 12: Create Tiles segment
       console.log('=== STEP 12: Create Tiles segment ===');
-      setImportStep('Step 12/21: Tiles segment...');
+      setImportStep('Step 12/24: Tiles segment...');
       setImportProgress(12);
       await wait(150);
 
@@ -946,7 +959,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         id: String(nextId),
         type: 'tiles',
         data: {
-          title: 'Downloads',
+          title: pdfTiles.length > 0 ? 'Downloads' : 'Key Features',
           columns: String(Math.min(realTiles.length, 3)),
           items: realTiles,
         },
