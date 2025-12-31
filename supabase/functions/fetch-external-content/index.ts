@@ -441,20 +441,49 @@ function parseFirecrawlContent(
 
   // === DOWNLOADS ===
   // Extract PDF links from multiple sources: links array, HTML, and markdown
-  const foundPdfUrls = new Set<string>();
-  const downloadEntries: { title: string; url: string; language: string }[] = [];
+  // Use normalized URLs to prevent duplicates
+  const normalizeUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      // Remove query params and hash, normalize to lowercase path
+      return `${urlObj.origin}${urlObj.pathname}`.toLowerCase();
+    } catch {
+      return url.toLowerCase().split('?')[0].split('#')[0];
+    }
+  };
+  
+  const seenUrls = new Set<string>(); // Normalized URLs for dedup
+  const pdfTitleMap = new Map<string, string>(); // URL -> title mapping
+  const uniquePdfUrls: string[] = []; // Original URLs in order
+  
+  const addPdfUrl = (url: string, title?: string) => {
+    const normalized = normalizeUrl(url);
+    if (!seenUrls.has(normalized)) {
+      seenUrls.add(normalized);
+      uniquePdfUrls.push(url);
+      if (title && title.length > 2) {
+        pdfTitleMap.set(url, title);
+      }
+    }
+  };
   
   // 1. Extract from links array
   for (const link of links) {
     if (link.toLowerCase().includes('.pdf')) {
-      foundPdfUrls.add(link);
+      let pdfUrl = link;
+      if (!pdfUrl.startsWith('http')) {
+        const urlObj = new URL(baseUrl);
+        pdfUrl = pdfUrl.startsWith('/') 
+          ? `${urlObj.origin}${pdfUrl}`
+          : `${urlObj.origin}/${pdfUrl}`;
+      }
+      addPdfUrl(pdfUrl);
     }
   }
-  console.log('[Firecrawl] PDF links from links array:', foundPdfUrls.size);
+  console.log('[Firecrawl] PDF links from links array:', seenUrls.size);
   
   // 2. Extract PDF links from HTML (with their link text for better titles)
   const htmlPdfMatches = html.matchAll(/<a[^>]*href="([^"]*\.pdf[^"]*)"[^>]*>([^<]*)<\/a>/gi);
-  const pdfTitleMap = new Map<string, string>();
   
   for (const match of htmlPdfMatches) {
     let pdfUrl = match[1];
@@ -468,14 +497,9 @@ function parseFirecrawlContent(
         : `${urlObj.origin}/${pdfUrl}`;
     }
     
-    foundPdfUrls.add(pdfUrl);
-    
-    // Store the link text as title (often better than filename)
-    if (linkText && linkText.length > 2 && !pdfTitleMap.has(pdfUrl)) {
-      pdfTitleMap.set(pdfUrl, linkText);
-    }
+    addPdfUrl(pdfUrl, linkText);
   }
-  console.log('[Firecrawl] PDF links from HTML:', foundPdfUrls.size);
+  console.log('[Firecrawl] PDF links after HTML:', seenUrls.size);
   
   // 3. Extract from markdown [text](url.pdf)
   const mdPdfMatches = markdown.matchAll(/\[([^\]]+)\]\(([^)]*\.pdf[^)]*)\)/gi);
@@ -491,16 +515,12 @@ function parseFirecrawlContent(
         : `${urlObj.origin}/${pdfUrl}`;
     }
     
-    foundPdfUrls.add(pdfUrl);
-    
-    if (linkText && linkText.length > 2 && !pdfTitleMap.has(pdfUrl)) {
-      pdfTitleMap.set(pdfUrl, linkText);
-    }
+    addPdfUrl(pdfUrl, linkText);
   }
-  console.log('[Firecrawl] Total unique PDF URLs found:', foundPdfUrls.size);
+  console.log('[Firecrawl] Total unique PDF URLs found:', uniquePdfUrls.length);
   
-  // Process all found PDFs
-  for (const pdfUrl of foundPdfUrls) {
+  // Process all found PDFs (deduplicated)
+  for (const pdfUrl of uniquePdfUrls) {
     // Get title from link text map, or generate from filename
     const filename = pdfUrl.split('/').pop()?.split('?')[0] || 'Document';
     let title = pdfTitleMap.get(pdfUrl) || filename
