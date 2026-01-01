@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -3979,11 +3979,10 @@ export const SEOEditor = ({
                     {getStatusIcon(checks.keywordInDescription)}
                     <span className="text-sm font-medium">FKW in Description</span>
                   </div>
-                  <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
-                    checks.keywordInSlug ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
-                  }`}>
-                    {getStatusIcon(checks.keywordInSlug)}
-                    <span className="text-sm font-medium">FKW in Slug</span>
+                  <div className="flex items-center gap-2 p-2.5 rounded-md transition-colors bg-zinc-700/30 border border-zinc-600/30">
+                    <Info className="h-4 w-4 text-zinc-400" />
+                    <span className="text-sm font-medium text-zinc-400">FKW in Slug</span>
+                    <span className="text-xs text-zinc-500 ml-auto">{checks.keywordInSlug ? '✓' : '–'}</span>
                   </div>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                     checks.keywordInH1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
