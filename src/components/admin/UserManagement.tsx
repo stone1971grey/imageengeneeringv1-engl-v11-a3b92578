@@ -1112,63 +1112,63 @@ export const UserManagement = () => {
 
       {/* Invite User Dialog */}
       <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+        <DialogContent className="w-[95vw] max-w-[1400px] max-h-[85vh] overflow-y-auto mt-16 bg-zinc-900 border-zinc-700 [&>button]:hidden">
           <DialogHeader className="relative">
             <button
               onClick={() => setShowInviteDialog(false)}
-              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+              className="absolute -top-2 -right-2 text-zinc-400 hover:text-white transition-colors text-3xl font-light leading-none focus:outline-none"
               title="Close"
             >
               ×
             </button>
-            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
+            <DialogTitle className="flex items-center gap-2 text-xl text-white">
               <UserPlus className="h-6 w-6" />
               Create New User
             </DialogTitle>
-            <DialogDescription className="text-base text-gray-700">
+            <DialogDescription className="text-base text-zinc-400">
               Create a new admin or editor.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-name" className="text-base font-semibold text-gray-900">Name</Label>
+              <Label htmlFor="invite-name" className="text-base font-semibold text-white">Name</Label>
               <Input
                 id="invite-name"
                 placeholder="John Doe"
                 value={inviteFullName}
                 onChange={(e) => setInviteFullName(e.target.value)}
-                className="text-base h-12"
+                className="text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email" className="text-base font-semibold text-gray-900">Email Address *</Label>
+              <Label htmlFor="invite-email" className="text-base font-semibold text-white">Email Address *</Label>
               <Input
                 id="invite-email"
                 type="email"
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className={`text-base h-12 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-200' : ''}`}
+                className={`text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-500/30' : ''}`}
               />
-              <p className="text-sm text-gray-600">For communication and as a fallback for login.</p>
+              <p className="text-sm text-zinc-400">For communication and as a fallback for login.</p>
               {existingUserMatch && (
-                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mt-2">
-                  <p className="text-base font-bold text-yellow-800 mb-2">
+                <div className="bg-yellow-900/30 border-2 border-yellow-600 rounded-lg p-4 mt-2">
+                  <p className="text-base font-bold text-yellow-400 mb-2">
                     ⚠️ This user already exists:
                   </p>
-                  <div className="bg-white rounded-lg p-3 border border-yellow-300">
+                  <div className="bg-zinc-800 rounded-lg p-3 border border-yellow-600/50">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-base font-bold text-gray-900">{existingUserMatch.full_name || 'No name'}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-base font-bold text-white">{existingUserMatch.full_name || 'No name'}</p>
+                        <p className="text-sm text-zinc-400">
                           {existingUserMatch.username && <span className="font-medium">Login: {existingUserMatch.username} | </span>}
                           {existingUserMatch.email}
                         </p>
                         <div className="flex gap-2 mt-1">
                           {existingUserMatch.roles.map(role => (
-                            <span key={role} className={`text-xs px-2 py-1 rounded ${role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                            <span key={role} className={`text-xs px-2 py-1 rounded ${role === 'admin' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'}`}>
                               {role}
                             </span>
                           ))}
@@ -1177,7 +1177,7 @@ export const UserManagement = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-yellow-500 text-yellow-700 hover:bg-yellow-100"
+                        className="border-yellow-500 text-yellow-400 hover:bg-yellow-500/20"
                         onClick={() => {
                           // Filter to only include valid CONTENT_EDITORS ids
                           const validEditorIds = CONTENT_EDITORS.map(e => e.id);
@@ -1204,20 +1204,20 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-username" className="text-base font-semibold text-gray-900">Login (Username)</Label>
+              <Label htmlFor="invite-username" className="text-base font-semibold text-white">Login (Username)</Label>
               <Input
                 id="invite-username"
                 type="text"
                 placeholder="e.g. admin123 or john.doe"
                 value={inviteUsername}
                 onChange={(e) => setInviteUsername(e.target.value)}
-                className="text-base h-12"
+                className="text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
               />
-              <p className="text-sm text-gray-600">The username for login. Can be freely chosen.</p>
+              <p className="text-sm text-zinc-400">The username for login. Can be freely chosen.</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-password" className="text-base font-semibold text-gray-900">Password *</Label>
+              <Label htmlFor="invite-password" className="text-base font-semibold text-white">Password *</Label>
               <div className="relative">
                 <Input
                   id="invite-password"
@@ -1225,12 +1225,12 @@ export const UserManagement = () => {
                   placeholder="At least 6 characters"
                   value={invitePassword}
                   onChange={(e) => setInvitePassword(e.target.value)}
-                  className="pr-12 text-base h-12"
+                  className="pr-12 text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowInvitePassword(!showInvitePassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
                 >
                   {showInvitePassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -1238,50 +1238,50 @@ export const UserManagement = () => {
             </div>
 
             <div className="space-y-3">
-              <Label className="text-lg font-bold text-gray-900">Role *</Label>
+              <Label className="text-lg font-bold text-white">Role *</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'editor' 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-blue-500 bg-blue-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setInviteRole('editor')}
                 >
                   <div className="flex items-center gap-3">
-                    <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
-                    <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
+                    <Pencil className={`h-6 w-6 ${inviteRole === 'editor' ? 'text-blue-400' : 'text-zinc-400'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'editor' ? 'text-blue-300' : 'text-white'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Can edit assigned content</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'editor' ? 'text-blue-400' : 'text-zinc-400'}`}>Can edit assigned content</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteRole === 'admin' 
-                      ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-red-500 bg-red-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setInviteRole('admin')}
                 >
                   <div className="flex items-center gap-3">
-                    <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
-                    <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
+                    <Crown className={`h-6 w-6 ${inviteRole === 'admin' ? 'text-red-400' : 'text-zinc-400'}`} />
+                    <span className={`text-lg font-bold ${inviteRole === 'admin' ? 'text-red-300' : 'text-white'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Full system access</p>
+                  <p className={`text-base mt-2 ${inviteRole === 'admin' ? 'text-red-400' : 'text-zinc-400'}`}>Full system access</p>
                 </div>
               </div>
             </div>
 
             {/* Global Language Permissions - only shown when Editor is selected */}
             {inviteRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-purple-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-purple-400" />
                     Language Permissions
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Select the languages the editor may edit.
-                    This permission applies to <strong>all areas</strong>: CMS segments, News, Events, Products, Downloads.
+                    This permission applies to <strong className="text-white">all areas</strong>: CMS segments, News, Events, Products, Downloads.
                   </p>
                 </div>
                 
@@ -1301,30 +1301,30 @@ export const UserManagement = () => {
                         }}
                         className={`px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-2 ${
                           isSelected
-                            ? 'bg-purple-100 border-purple-500 text-purple-800 shadow-md'
-                            : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                            ? 'bg-purple-600/20 border-purple-500 text-purple-300 shadow-md'
+                            : 'bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:border-zinc-600'
                         }`}
                       >
                         <span className="text-xl">{lang.flag}</span>
                         <span className="font-semibold">{lang.name}</span>
-                        {isSelected && <Check className="h-4 w-4 text-purple-600" />}
+                        {isSelected && <Check className="h-4 w-4 text-purple-400" />}
                       </button>
                     );
                   })}
                 </div>
                 
                 {inviteGlobalSegmentLanguages.length > 0 ? (
-                  <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-purple-800">
+                  <div className="bg-purple-600/20 border-2 border-purple-500 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-purple-300">
                       ✓ {inviteGlobalSegmentLanguages.length} language(s) selected
                     </p>
-                    <p className="text-sm text-purple-600 mt-1">
+                    <p className="text-sm text-purple-400 mt-1">
                       The editor can edit content in these languages across all areas (CMS segments, News, Events, Products, Downloads).
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-amber-50 border-2 border-amber-300 rounded-lg px-5 py-4">
-                    <p className="text-base text-amber-800">
+                  <div className="bg-amber-600/20 border-2 border-amber-500 rounded-lg px-5 py-4">
+                    <p className="text-base text-amber-300">
                       ⚠️ No languages selected - the editor cannot edit any content.
                     </p>
                   </div>
@@ -1334,13 +1334,13 @@ export const UserManagement = () => {
 
             {/* Draft/Publish Permissions - only shown when Editor is selected */}
             {inviteRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Save className="h-5 w-5 text-orange-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <Save className="h-5 w-5 text-orange-400" />
                     Content Workflow Permissions
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Control whether the editor can save drafts and/or publish content directly.
                   </p>
                 </div>
@@ -1349,8 +1349,8 @@ export const UserManagement = () => {
                   <div 
                     className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                       inviteCanDraft 
-                        ? 'border-orange-500 bg-orange-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                        ? 'border-orange-500 bg-orange-600/20' 
+                        : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                     }`}
                     onClick={() => setInviteCanDraft(!inviteCanDraft)}
                   >
@@ -1360,19 +1360,19 @@ export const UserManagement = () => {
                         onCheckedChange={(checked) => setInviteCanDraft(checked === true)}
                         className="h-5 w-5"
                       />
-                      <span className={`text-lg font-bold ${inviteCanDraft ? 'text-orange-900' : 'text-gray-900'}`}>
+                      <span className={`text-lg font-bold ${inviteCanDraft ? 'text-orange-300' : 'text-white'}`}>
                         Save Drafts
                       </span>
                     </div>
-                    <p className={`text-base mt-2 ${inviteCanDraft ? 'text-orange-600' : 'text-gray-600'}`}>
+                    <p className={`text-base mt-2 ${inviteCanDraft ? 'text-orange-400' : 'text-zinc-400'}`}>
                       Can save content as draft for review
                     </p>
                   </div>
                   <div 
                     className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                       inviteCanPublish 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                        ? 'border-green-500 bg-green-600/20' 
+                        : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                     }`}
                     onClick={() => setInviteCanPublish(!inviteCanPublish)}
                   >
@@ -1382,11 +1382,11 @@ export const UserManagement = () => {
                         onCheckedChange={(checked) => setInviteCanPublish(checked === true)}
                         className="h-5 w-5"
                       />
-                      <span className={`text-lg font-bold ${inviteCanPublish ? 'text-green-900' : 'text-gray-900'}`}>
+                      <span className={`text-lg font-bold ${inviteCanPublish ? 'text-green-300' : 'text-white'}`}>
                         Publish Content
                       </span>
                     </div>
-                    <p className={`text-base mt-2 ${inviteCanPublish ? 'text-green-600' : 'text-gray-600'}`}>
+                    <p className={`text-base mt-2 ${inviteCanPublish ? 'text-green-400' : 'text-zinc-400'}`}>
                       Can publish content directly (live)
                     </p>
                   </div>
@@ -1394,17 +1394,17 @@ export const UserManagement = () => {
                 
                 <div className={`rounded-lg px-5 py-4 ${
                   inviteCanPublish 
-                    ? 'bg-green-100 border-2 border-green-400' 
+                    ? 'bg-green-600/20 border-2 border-green-500' 
                     : inviteCanDraft 
-                      ? 'bg-orange-100 border-2 border-orange-400'
-                      : 'bg-amber-50 border-2 border-amber-300'
+                      ? 'bg-orange-600/20 border-2 border-orange-500'
+                      : 'bg-amber-600/20 border-2 border-amber-500'
                 }`}>
                   <p className={`text-base font-semibold ${
                     inviteCanPublish 
-                      ? 'text-green-800' 
+                      ? 'text-green-300' 
                       : inviteCanDraft 
-                        ? 'text-orange-800'
-                        : 'text-amber-800'
+                        ? 'text-orange-300'
+                        : 'text-amber-300'
                   }`}>
                     {inviteCanPublish && inviteCanDraft && '✓ Editor can save drafts and publish content directly.'}
                     {inviteCanPublish && !inviteCanDraft && '✓ Editor can only publish content (no drafts).'}
@@ -1417,13 +1417,13 @@ export const UserManagement = () => {
 
             {/* Frontend Editing Settings - only shown when Editor is selected */}
             {inviteRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <MonitorSmartphone className="h-5 w-5 text-cyan-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <MonitorSmartphone className="h-5 w-5 text-cyan-400" />
                     Frontend Editing
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Allow the editor to make changes directly on the live website preview.
                   </p>
                 </div>
@@ -1431,8 +1431,8 @@ export const UserManagement = () => {
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     inviteFrontendEditingEnabled 
-                      ? 'border-cyan-500 bg-cyan-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-cyan-500 bg-cyan-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setInviteFrontendEditingEnabled(!inviteFrontendEditingEnabled)}
                 >
@@ -1442,21 +1442,21 @@ export const UserManagement = () => {
                       onCheckedChange={(checked) => setInviteFrontendEditingEnabled(checked === true)}
                       className="h-5 w-5"
                     />
-                    <span className={`text-lg font-bold ${inviteFrontendEditingEnabled ? 'text-cyan-900' : 'text-gray-900'}`}>
+                    <span className={`text-lg font-bold ${inviteFrontendEditingEnabled ? 'text-cyan-300' : 'text-white'}`}>
                       Enable Frontend Editing
                     </span>
                   </div>
-                  <p className={`text-base mt-2 ${inviteFrontendEditingEnabled ? 'text-cyan-600' : 'text-gray-600'}`}>
+                  <p className={`text-base mt-2 ${inviteFrontendEditingEnabled ? 'text-cyan-400' : 'text-zinc-400'}`}>
                     Editor can use the visual in-page editor to modify content directly on the website
                   </p>
                 </div>
                 
                 <div className={`rounded-lg px-5 py-4 ${
                   inviteFrontendEditingEnabled 
-                    ? 'bg-cyan-100 border-2 border-cyan-400' 
-                    : 'bg-gray-100 border-2 border-gray-300'
+                    ? 'bg-cyan-600/20 border-2 border-cyan-500' 
+                    : 'bg-zinc-800/50 border-2 border-zinc-700'
                 }`}>
-                  <p className={`text-base font-semibold ${inviteFrontendEditingEnabled ? 'text-cyan-800' : 'text-gray-600'}`}>
+                  <p className={`text-base font-semibold ${inviteFrontendEditingEnabled ? 'text-cyan-300' : 'text-zinc-400'}`}>
                     {inviteFrontendEditingEnabled 
                       ? '✓ Editor can access Frontend Editing mode via ?edit=true URL parameter'
                       : 'Frontend Editing is disabled - editor must use the Admin Dashboard'}
@@ -1465,10 +1465,10 @@ export const UserManagement = () => {
               </div>
             )}
             {inviteRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <Label className="text-xl font-bold text-white">Select Content Editors</Label>
+                  <p className="text-base text-zinc-400 mt-2">
                     Click on the editors (News, Events, etc.) that the user should have access to.
                     Language permissions are controlled by the selection above.
                   </p>
@@ -1490,8 +1490,8 @@ export const UserManagement = () => {
                         }}
                         className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
-                            ? `${editor.borderColor} bg-white shadow-xl` 
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
+                            ? `${editor.borderColor} bg-zinc-800 shadow-xl` 
+                            : 'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600 hover:shadow-lg'
                         }`}
                       >
                         <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
@@ -1499,8 +1499,8 @@ export const UserManagement = () => {
                           <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-xs text-gray-500">{editor.description}</p>
+                          <h4 className="text-sm font-bold text-white">{editor.name}</h4>
+                          <p className="text-xs text-zinc-400">{editor.description}</p>
                           {isSelected && (
                             <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
                               <Check className="h-4 w-4 text-white" strokeWidth={3} />
@@ -1513,8 +1513,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {inviteSelectedEditors.length > 0 && (
-                  <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-green-800">
+                  <div className="bg-green-600/20 border-2 border-green-500 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-green-300">
                       ✓ {inviteSelectedEditors.length} editor(s) selected
                     </p>
                   </div>
@@ -1523,14 +1523,14 @@ export const UserManagement = () => {
             )}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+          <DialogFooter className="border-t border-zinc-700 pt-4">
+            <Button variant="outline" onClick={() => setShowInviteDialog(false)} className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white">
               Cancel
             </Button>
             <Button 
               onClick={handleInviteUser} 
               disabled={isInviting || !inviteEmail.trim() || !invitePassword.trim()}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               {isInviting ? (
                 <>Creating...</>
@@ -1547,23 +1547,23 @@ export const UserManagement = () => {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-700">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Trash2 className="h-5 w-5 text-red-600" />
+            <AlertDialogTitle className="flex items-center gap-2 text-white">
+              <Trash2 className="h-5 w-5 text-red-500" />
               Delete User
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              Do you really want to delete user <strong>{selectedUser?.full_name || selectedUser?.email}</strong>? 
+            <AlertDialogDescription className="text-zinc-400">
+              Do you really want to delete user <strong className="text-white">{selectedUser?.full_name || selectedUser?.email}</strong>? 
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteUser}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
@@ -1573,20 +1573,20 @@ export const UserManagement = () => {
 
       {/* Editor Access Dialog */}
       <Dialog open={showEditorAccessDialog} onOpenChange={setShowEditorAccessDialog}>
-        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-zinc-900 border-zinc-700 [&>button]:hidden">
           <DialogHeader className="relative">
             <button
               onClick={() => setShowEditorAccessDialog(false)}
-              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+              className="absolute -top-2 -right-2 text-zinc-400 hover:text-white transition-colors text-3xl font-light leading-none focus:outline-none"
               title="Close"
             >
               ×
             </button>
-            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
-              <Settings className="h-6 w-6 text-blue-600" />
+            <DialogTitle className="flex items-center gap-2 text-xl text-white">
+              <Settings className="h-6 w-6 text-blue-400" />
               Manage Editor Permissions
             </DialogTitle>
-            <DialogDescription className="text-base text-gray-700">
+            <DialogDescription className="text-base text-zinc-400">
               Select the areas that {selectedUser?.full_name || selectedUser?.email} may edit.
             </DialogDescription>
           </DialogHeader>
@@ -1594,8 +1594,8 @@ export const UserManagement = () => {
           <div className="space-y-6 py-4">
             {/* Access Type Selection */}
             <div>
-              <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
-              <p className="text-base text-gray-700 mt-2">Click on the editors the user should have access to.</p>
+              <Label className="text-xl font-bold text-white">Select Content Editors</Label>
+              <p className="text-base text-zinc-400 mt-2">Click on the editors the user should have access to.</p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1614,8 +1614,8 @@ export const UserManagement = () => {
                     }}
                     className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                       isSelected 
-                        ? `${editor.borderColor} bg-white shadow-xl` 
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
+                        ? `${editor.borderColor} bg-zinc-800 shadow-xl` 
+                        : 'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600 hover:shadow-lg'
                     }`}
                   >
                     <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
@@ -1623,8 +1623,8 @@ export const UserManagement = () => {
                       <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                         <div className="text-white">{editor.icon}</div>
                       </div>
-                      <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                      <p className="text-xs text-gray-500">{editor.description}</p>
+                      <h4 className="text-sm font-bold text-white">{editor.name}</h4>
+                      <p className="text-xs text-zinc-400">{editor.description}</p>
                       {isSelected && (
                         <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
                           <Check className="h-4 w-4 text-white" strokeWidth={3} />
@@ -1637,16 +1637,16 @@ export const UserManagement = () => {
             </div>
             
             {selectedEditors.length > 0 && (
-              <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
-                <p className="text-lg font-bold text-green-800">
+              <div className="bg-green-600/20 border-2 border-green-500 rounded-lg px-5 py-4">
+                <p className="text-lg font-bold text-green-300">
                   ✓ {selectedEditors.length} editor(s) selected
                 </p>
               </div>
             )}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditorAccessDialog(false)}>
+          <DialogFooter className="border-t border-zinc-700 pt-4">
+            <Button variant="outline" onClick={() => setShowEditorAccessDialog(false)} className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white">
               Close
             </Button>
             <Button 
@@ -1665,20 +1665,20 @@ export const UserManagement = () => {
       </Dialog>
       {/* Edit User Dialog */}
       <Dialog open={showEditUserDialog} onOpenChange={setShowEditUserDialog}>
-        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-white [&>button]:hidden">
+        <DialogContent className="w-[95vw] max-w-[1200px] max-h-[85vh] overflow-y-auto mt-16 bg-zinc-900 border-zinc-700 [&>button]:hidden">
           <DialogHeader className="relative">
             <button
               onClick={() => setShowEditUserDialog(false)}
-              className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-900 transition-colors text-3xl font-light leading-none focus:outline-none"
+              className="absolute -top-2 -right-2 text-zinc-400 hover:text-white transition-colors text-3xl font-light leading-none focus:outline-none"
               title="Close"
             >
               ×
             </button>
-            <DialogTitle className="flex items-center gap-2 text-xl text-gray-900">
-              <Pencil className="h-6 w-6 text-yellow-600" />
+            <DialogTitle className="flex items-center gap-2 text-xl text-white">
+              <Pencil className="h-6 w-6 text-yellow-500" />
               Edit User
             </DialogTitle>
-            <DialogDescription className="text-base text-gray-700">
+            <DialogDescription className="text-base text-zinc-400">
               Edit settings for {selectedUser?.full_name || selectedUser?.email}
             </DialogDescription>
           </DialogHeader>
@@ -1687,44 +1687,44 @@ export const UserManagement = () => {
             {/* Editable User Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name" className="text-base font-semibold text-gray-900">Name</Label>
+                <Label htmlFor="edit-name" className="text-base font-semibold text-white">Name</Label>
                 <Input
                   id="edit-name"
                   placeholder="Enter name"
                   value={editUserName}
                   onChange={(e) => setEditUserName(e.target.value)}
-                  className="text-base h-12"
+                  className="text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-username" className="text-base font-semibold text-gray-900">Login (Username)</Label>
+                <Label htmlFor="edit-username" className="text-base font-semibold text-white">Login (Username)</Label>
                 <Input
                   id="edit-username"
                   type="text"
                   placeholder="e.g. admin123"
                   value={editUsername}
                   onChange={(e) => setEditUsername(e.target.value)}
-                  className="text-base h-12"
+                  className="text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
                 />
-                <p className="text-sm text-gray-600">The username for login</p>
+                <p className="text-sm text-zinc-400">The username for login</p>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-email" className="text-base font-semibold text-gray-900">Email Address</Label>
+                <Label htmlFor="edit-email" className="text-base font-semibold text-white">Email Address</Label>
                 <Input
                   id="edit-email"
                   type="email"
                   placeholder="email@example.com"
                   value={editUserEmail}
                   onChange={(e) => setEditUserEmail(e.target.value)}
-                  className="text-base h-12"
+                  className="text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
                 />
-                <p className="text-sm text-gray-600">For communication (profile email)</p>
+                <p className="text-sm text-zinc-400">For communication (profile email)</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-password" className="text-base font-semibold text-gray-900">New Password</Label>
+                <Label htmlFor="edit-password" className="text-base font-semibold text-white">New Password</Label>
                 <div className="relative">
                   <Input
                     id="edit-password"
@@ -1732,51 +1732,51 @@ export const UserManagement = () => {
                     placeholder="Leave empty = unchanged"
                     value={editUserPassword}
                     onChange={(e) => setEditUserPassword(e.target.value)}
-                    className="pr-12 text-base h-12"
+                    className="pr-12 text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500"
                   />
                   <button
                     type="button"
                     onClick={() => setShowEditPassword(!showEditPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
                   >
                     {showEditPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                <p className="text-sm text-gray-600">Only fill in if password should be changed</p>
+                <p className="text-sm text-zinc-400">Only fill in if password should be changed</p>
               </div>
             </div>
 
             {/* Role Selection */}
-            <div className="space-y-3 pt-4 border-t border-gray-200">
-              <Label className="text-lg font-bold text-gray-900">Role</Label>
+            <div className="space-y-3 pt-4 border-t border-zinc-700">
+              <Label className="text-lg font-bold text-white">Role</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'editor' 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-blue-500 bg-blue-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setEditUserRole('editor')}
                 >
                   <div className="flex items-center gap-3">
-                    <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`} />
-                    <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-900' : 'text-gray-900'}`}>Editor</span>
+                    <Pencil className={`h-6 w-6 ${editUserRole === 'editor' ? 'text-blue-400' : 'text-zinc-400'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'editor' ? 'text-blue-300' : 'text-white'}`}>Editor</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-600' : 'text-gray-600'}`}>Can edit assigned content</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'editor' ? 'text-blue-400' : 'text-zinc-400'}`}>Can edit assigned content</p>
                 </div>
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editUserRole === 'admin' 
-                      ? 'border-red-500 bg-red-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-red-500 bg-red-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setEditUserRole('admin')}
                 >
                   <div className="flex items-center gap-3">
-                    <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`} />
-                    <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-900' : 'text-gray-900'}`}>Admin</span>
+                    <Crown className={`h-6 w-6 ${editUserRole === 'admin' ? 'text-red-400' : 'text-zinc-400'}`} />
+                    <span className={`text-lg font-bold ${editUserRole === 'admin' ? 'text-red-300' : 'text-white'}`}>Admin</span>
                   </div>
-                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-600' : 'text-gray-600'}`}>Full system access</p>
+                  <p className={`text-base mt-2 ${editUserRole === 'admin' ? 'text-red-400' : 'text-zinc-400'}`}>Full system access</p>
                 </div>
               </div>
             </div>
@@ -2034,8 +2034,8 @@ export const UserManagement = () => {
             )}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditUserDialog(false)}>
+          <DialogFooter className="border-t border-zinc-700 pt-4">
+            <Button variant="outline" onClick={() => setShowEditUserDialog(false)} className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white">
               Close
             </Button>
             <Button 
