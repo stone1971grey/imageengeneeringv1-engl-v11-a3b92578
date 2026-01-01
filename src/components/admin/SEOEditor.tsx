@@ -4022,14 +4022,19 @@ export const SEOEditor = ({
       return;
     }
 
+    // Preserve already applied suggestions before regenerating
+    const previouslyAppliedSuggestions = fkwContentSuggestions.filter(s => s.applied);
+    
     setIsGeneratingFkwContent(true);
-    setFkwContentSuggestions([]);
+    // Keep applied suggestions visible
+    setFkwContentSuggestions(previouslyAppliedSuggestions);
     setFkwContentAnalysis(null);
     setFkwContentScore(0);
     setFkwContentRecommendations([]);
 
     try {
       console.log('[SEO Editor] Generating FKW content suggestions with keyword:', focusKeyword);
+      console.log('[SEO Editor] Preserving', previouslyAppliedSuggestions.length, 'applied suggestions');
       
       const response = await supabase.functions.invoke('generate-fkw-content-suggestions', {
         body: {
@@ -4052,15 +4057,26 @@ export const SEOEditor = ({
         return;
       }
 
-      setFkwContentSuggestions(result.suggestions || []);
+      // Merge: Keep applied suggestions + add new non-applied suggestions
+      const newSuggestions = result.suggestions || [];
+      const mergedSuggestions = [
+        ...previouslyAppliedSuggestions,
+        ...newSuggestions.filter((newS: any) => 
+          !previouslyAppliedSuggestions.some(applied => 
+            applied.segmentId === newS.segmentId && applied.fieldPath === newS.fieldPath
+          )
+        )
+      ];
+      
+      setFkwContentSuggestions(mergedSuggestions);
       setFkwContentAnalysis(result.analysis || null);
       setFkwContentScore(result.score || 0);
       setFkwContentRecommendations(result.recommendations || []);
       setShowFkwContentSuggestions(true);
 
-      // Persist the FKW content analysis to database
+      // Persist the FKW content analysis to database (including applied suggestions)
       const fkwContentToSave = {
-        suggestions: result.suggestions || [],
+        suggestions: mergedSuggestions,
         analysis: result.analysis || null,
         score: result.score || 0,
         recommendations: result.recommendations || [],
@@ -4098,10 +4114,13 @@ export const SEOEditor = ({
       }
       console.log('[SEO Editor] Persisted FKW content analysis to DB');
 
-      if ((result.suggestions || []).length === 0) {
+      const newSuggestionsCount = (result.suggestions || []).length;
+      if (newSuggestionsCount === 0 && previouslyAppliedSuggestions.length === 0) {
         toast.info('Content is already well-optimized for the focus keyword!');
+      } else if (newSuggestionsCount === 0 && previouslyAppliedSuggestions.length > 0) {
+        toast.success(`Analysis updated. ${previouslyAppliedSuggestions.length} applied optimizations preserved.`);
       } else {
-        toast.success(`${result.suggestions.length} optimization suggestions generated`);
+        toast.success(`${newSuggestionsCount} new suggestions generated, ${previouslyAppliedSuggestions.length} applied optimizations preserved.`);
       }
     } catch (error) {
       console.error('[SEO Editor] Error generating FKW content suggestions:', error);
