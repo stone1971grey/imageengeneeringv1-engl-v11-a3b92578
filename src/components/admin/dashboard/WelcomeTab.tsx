@@ -46,70 +46,74 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               </div>
             </div>
 
-            {/* v0.5 Foundation */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.5 – Foundation</h3>
-              <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
-                <FeatureItem icon={Layers} label="Modular Segments" />
-                <FeatureItem icon={Languages} label="Multi-Language" />
-                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+            {/* All Features - Unified Grid */}
+            <div className="space-y-6">
+              {/* v0.5 Foundation */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.5 – Foundation</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={Layers} label="Modular Segments" />
+                  <FeatureItem icon={Languages} label="Multi-Language" />
+                  <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+                </div>
               </div>
-            </div>
 
-            {/* v0.6 Translation */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.6 – Translation</h3>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
-                <FeatureItem icon={Book} label="Translation Glossary" />
-                <FeatureItem icon={Sparkles} label="Auto Translation" />
+              {/* v0.6 Translation */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.6 – Translation</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={Book} label="Translation Glossary" />
+                  <FeatureItem icon={Sparkles} label="Auto Translation" />
+                </div>
               </div>
-            </div>
 
-            {/* v0.7 Content Types */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.7 – Content Types</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <FeatureItem icon={Newspaper} label="News Management" />
-                <FeatureItem icon={Calendar} label="Event Management" />
-                <FeatureItem icon={FolderOpen} label="Media Management" />
-                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
+              {/* v0.7 Content Types */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.7 – Content Types</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={Newspaper} label="News Management" />
+                  <FeatureItem icon={Calendar} label="Event Management" />
+                  <FeatureItem icon={FolderOpen} label="Media Management" />
+                  <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
+                </div>
               </div>
-            </div>
 
-            {/* v0.8 Extended Content */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.8 – Extended Content</h3>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
-                <FeatureItem icon={Target} label="Product Management" />
-                <FeatureItem icon={Download} label="Download Management" />
+              {/* v0.8 Extended Content */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.8 – Extended Content</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={Target} label="Product Management" />
+                  <FeatureItem icon={Download} label="Download Management" />
+                </div>
               </div>
-            </div>
 
-            {/* v0.9 Advanced Features */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.9 – Advanced Features</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <FeatureItem icon={Eye} label="SEO Suite" />
-                <FeatureItem icon={Shield} label="User Management" />
-                <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
-                <FeatureItem icon={Search} label="Smart Search" />
+              {/* v0.9 Advanced Features */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.9 – Advanced Features</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={Eye} label="SEO Suite" />
+                  <FeatureItem icon={Shield} label="User Management" />
+                  <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
+                  <FeatureItem icon={Search} label="Smart Search" />
+                </div>
               </div>
-            </div>
 
-            {/* v1.0 Release Highlights */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
-                🍾 v1.0.0 – Release Highlights
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
-                <FeatureItem icon={Wand2} label="AI SEO-Suite" />
-                <FeatureItem icon={Clock} label="Latest Edit" />
-                <FeatureItem icon={Copy} label="Copy Page" />
-                <FeatureItem icon={HistoryIcon} label="Version History" />
-                <FeatureItem icon={Database} label="Segment-Registry" />
+              {/* v1.0 Release Highlights */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
+                  🍾 v1.0.0 – Release Highlights
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
+                  <FeatureItem icon={Wand2} label="AI SEO-Suite" />
+                  <FeatureItem icon={Clock} label="Latest Edit" />
+                  <FeatureItem icon={Copy} label="Copy Page" />
+                  <FeatureItem icon={HistoryIcon} label="Version History" />
+                  <FeatureItem icon={Database} label="Segment-Registry" />
+                </div>
               </div>
-              <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-700/50">
+
+              <p className="text-xs text-gray-500 pt-2 border-t border-gray-700/50">
                 Roadmap: v1.1 Content Automation • v1.2 Frontend Editing • v2.0 Plugin-Architektur
               </p>
             </div>
