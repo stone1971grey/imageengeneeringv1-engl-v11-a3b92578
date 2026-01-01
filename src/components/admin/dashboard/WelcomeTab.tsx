@@ -203,12 +203,12 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
 
                   <VersionSection 
                     versionKey="v1.7"
-                    label="v1.7 – Deployment Pipeline"
+                    label="v1.7 – Tenant Onboarding"
                     isOpen={openVersions["v1.7"]}
                     onToggle={() => toggleVersion("v1.7")}
                     isPlanned
                   >
-                    <FeatureItem icon={GitBranch} label="Automated Deployment Pipeline" isPlanned />
+                    <FeatureItem icon={GitBranch} label="Tenant Onboarding Pipeline" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
