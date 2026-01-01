@@ -3287,32 +3287,47 @@ export const SEOEditor = ({
       let segments = JSON.parse(contentData.content_value);
       let updated = false;
       
-      // Find and update the H2 in the correct segment
+      // Find and update the H2 in the correct segment - PRESERVE ALL EXISTING DATA
       segments = segments.map((seg: any) => {
         if (String(seg.segmentId || seg.id) === String(suggestion.segmentId)) {
-          const segData = seg.data || seg;
           const segType = seg.type || '';
           
-          // Handle image-text segments
-          if (segType === 'image-text' && segData.items) {
-            segData.items = segData.items.map((item: any) => {
-              if (item.title === suggestion.originalText) {
-                updated = true;
-                return { ...item, title: suggestion.suggestedText };
-              }
-              return item;
-            });
+          // Handle image-text segments - update only the specific item title
+          if (segType === 'image-text') {
+            const segData = seg.data ? { ...seg.data } : {};
+            if (segData.items && Array.isArray(segData.items)) {
+              segData.items = segData.items.map((item: any) => {
+                if (item.title === suggestion.originalText) {
+                  updated = true;
+                  console.log('[SEO Editor] Updating H2 in image-text item:', {
+                    from: item.title,
+                    to: suggestion.suggestedText,
+                    segmentId: suggestion.segmentId
+                  });
+                  // Preserve ALL item properties, only change title
+                  return { ...item, title: suggestion.suggestedText };
+                }
+                return item;
+              });
+            }
+            // Return segment with updated data, preserving everything else
+            return { ...seg, data: segData };
           }
           
           // Handle segments with title field (feature-overview, tiles, table, faq)
           if (['feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+            const segData = seg.data ? { ...seg.data } : {};
             if (segData.title === suggestion.originalText) {
+              console.log('[SEO Editor] Updating H2 title in segment:', {
+                from: segData.title,
+                to: suggestion.suggestedText,
+                segmentId: suggestion.segmentId
+              });
               segData.title = suggestion.suggestedText;
               updated = true;
             }
+            return { ...seg, data: segData };
           }
-          
-          return { ...seg, data: segData };
         }
         return seg;
       });
@@ -3357,8 +3372,13 @@ export const SEOEditor = ({
           if (pageSegmentsEntry) {
             try {
               const updatedSegments = JSON.parse(pageSegmentsEntry.content_value);
-              console.log('[SEO Editor] Recalculating FKW analysis after H2 update...');
+              console.log('[SEO Editor] Recalculating FKW analysis after H2 update...', {
+                segmentsCount: updatedSegments.length,
+                focusKeyword: data.focusKeyword
+              });
+              
               const newAnalysis = await recalculateFkwAnalysis(updatedSegments, data.focusKeyword);
+              console.log('[SEO Editor] New FKW analysis:', newAnalysis);
               setFkwContentAnalysis(newAnalysis);
               
               // Recalculate score
@@ -3373,7 +3393,70 @@ export const SEOEditor = ({
               if (newAnalysis.h3WithFkw > 0) newScore += 10;
               setFkwContentScore(Math.min(100, newScore));
               
-              console.log('[SEO Editor] Updated FKW score after H2:', newScore, 'H2 with FKW:', newAnalysis.h2WithFkw);
+              // Update recommendations with new analysis
+              const newRecommendations: string[] = [];
+              
+              // H1 recommendation
+              if (!actualH1HasFkw) {
+                newRecommendations.push(`✗ Füge "${data.focusKeyword}" in die H1-Überschrift ein`);
+              } else {
+                newRecommendations.push('✓ H1 enthält Focus Keyword');
+              }
+              
+              // Intro recommendation
+              if (!newAnalysis.introHasFkw) {
+                newRecommendations.push(`✗ Füge "${data.focusKeyword}" in den Intro-Text ein (idealerweise in den ersten 15 Wörtern)`);
+              } else {
+                newRecommendations.push('✓ Intro enthält Focus Keyword');
+              }
+              
+              // H2 recommendation - specific counts
+              if (newAnalysis.h2Count > 0) {
+                const h2Missing = newAnalysis.h2Count - newAnalysis.h2WithFkw;
+                const targetH2s = Math.ceil(newAnalysis.h2Count / 2);
+                const h2sNeeded = Math.max(0, targetH2s - newAnalysis.h2WithFkw);
+                
+                if (h2Missing === 0) {
+                  newRecommendations.push(`✓ Alle ${newAnalysis.h2Count} H2-Überschriften enthalten das FKW`);
+                } else if (newAnalysis.h2WithFkw === 0) {
+                  newRecommendations.push(`✗ Füge "${data.focusKeyword}" in mindestens ${targetH2s} von ${newAnalysis.h2Count} H2-Überschriften ein`);
+                } else if (h2sNeeded > 0) {
+                  newRecommendations.push(`○ Füge "${data.focusKeyword}" in ${h2sNeeded} weitere H2-Überschrift${h2sNeeded > 1 ? 'en' : ''} ein (aktuell: ${newAnalysis.h2WithFkw}/${newAnalysis.h2Count})`);
+                } else {
+                  newRecommendations.push(`✓ ${newAnalysis.h2WithFkw}/${newAnalysis.h2Count} H2-Überschriften enthalten das FKW (≥50%)`);
+                }
+              }
+              
+              // Density recommendation
+              if (newAnalysis.densityStatus === 'too_low') {
+                const currentDensity = newAnalysis.fkwDensity.toFixed(2);
+                const wordsNeeded = Math.ceil((0.5 * newAnalysis.totalWords / 100) - newAnalysis.fkwOccurrences);
+                if (wordsNeeded > 0) {
+                  newRecommendations.push(`✗ Keyword-Dichte zu niedrig (${currentDensity}%). Füge "${data.focusKeyword}" ca. ${wordsNeeded}× mehr im Text ein`);
+                } else {
+                  newRecommendations.push(`○ Keyword-Dichte leicht erhöhen (${currentDensity}% → Ziel: 0.5-2.0%)`);
+                }
+              } else if (newAnalysis.densityStatus === 'too_high') {
+                const currentDensity = newAnalysis.fkwDensity.toFixed(2);
+                newRecommendations.push(`✗ Keyword-Dichte zu hoch (${currentDensity}%). Reduziere die Verwendung von "${data.focusKeyword}"`);
+              } else {
+                newRecommendations.push(`✓ Keyword-Dichte optimal (${newAnalysis.fkwDensity.toFixed(2)}%)`);
+              }
+              
+              // H3 recommendation
+              if (newAnalysis.h3Count > 0 && newAnalysis.h3WithFkw === 0) {
+                newRecommendations.push(`○ Optional: Füge "${data.focusKeyword}" in eine H3-Überschrift ein (+10 Punkte)`);
+              } else if (newAnalysis.h3WithFkw > 0) {
+                newRecommendations.push(`✓ ${newAnalysis.h3WithFkw} H3-Überschrift${newAnalysis.h3WithFkw > 1 ? 'en' : ''} enthält das FKW`);
+              }
+              
+              setFkwContentRecommendations(newRecommendations);
+              
+              console.log('[SEO Editor] Updated after H2 apply:', {
+                score: newScore,
+                h2WithFkw: newAnalysis.h2WithFkw,
+                h2Count: newAnalysis.h2Count
+              });
             } catch (e) {
               console.error('[SEO Editor] Error recalculating FKW analysis:', e);
             }
