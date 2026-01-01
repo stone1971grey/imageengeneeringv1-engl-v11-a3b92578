@@ -65,3 +65,6 @@ verify_jwt = true
 
 [functions.download-external-file]
 verify_jwt = false
+
+[functions.generate-fkw-content-suggestions]
+verify_jwt = true

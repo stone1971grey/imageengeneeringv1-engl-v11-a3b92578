@@ -299,6 +299,39 @@ export const SEOEditor = ({
     localStorage.setItem('seo-serp-preview-open', String(isSerpPreviewOpen));
   }, [isSerpPreviewOpen]);
   
+  // FKW Content Optimizer state
+  const [isGeneratingFkwContent, setIsGeneratingFkwContent] = useState(false);
+  const [fkwContentSuggestions, setFkwContentSuggestions] = useState<Array<{
+    suggestionType: 'heading' | 'body';
+    headingLevel?: 'h2' | 'h3';
+    currentText: string;
+    suggestedText: string;
+    segmentKey: string;
+    segmentId: number;
+    segmentType: string;
+    fieldPath: string;
+    reason: string;
+    priority: number;
+    applied?: boolean;
+    rejected?: boolean;
+  }>>([]);
+  const [showFkwContentSuggestions, setShowFkwContentSuggestions] = useState(false);
+  const [fkwContentAnalysis, setFkwContentAnalysis] = useState<{
+    totalWords: number;
+    fkwOccurrences: number;
+    fkwDensity: number;
+    densityStatus: 'too_low' | 'optimal' | 'too_high';
+    h1HasFkw: boolean;
+    h2Count: number;
+    h2WithFkw: number;
+    h3Count: number;
+    h3WithFkw: number;
+    introHasFkw: boolean;
+  } | null>(null);
+  const [fkwContentScore, setFkwContentScore] = useState<number>(0);
+  const [fkwContentRecommendations, setFkwContentRecommendations] = useState<string[]>([]);
+  const [isApplyingFkwContent, setIsApplyingFkwContent] = useState<number | null>(null);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -3909,6 +3942,176 @@ export const SEOEditor = ({
     }
   };
 
+  // FKW Content Optimizer - Generate suggestions
+  const handleGenerateFkwContentSuggestions = async () => {
+    if (!data.focusKeyword) {
+      toast.error('Please define a Focus Keyword first');
+      return;
+    }
+
+    setIsGeneratingFkwContent(true);
+    setFkwContentSuggestions([]);
+    setFkwContentAnalysis(null);
+    setFkwContentScore(0);
+    setFkwContentRecommendations([]);
+
+    try {
+      console.log('[SEO Editor] Generating FKW content suggestions...');
+      
+      const response = await supabase.functions.invoke('generate-fkw-content-suggestions', {
+        body: {
+          pageSlug,
+          focusKeyword: data.focusKeyword,
+          language: editorLanguage,
+          pageSegments
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to generate suggestions');
+      }
+
+      const result = response.data;
+      console.log('[SEO Editor] FKW content suggestions result:', result);
+
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      setFkwContentSuggestions(result.suggestions || []);
+      setFkwContentAnalysis(result.analysis || null);
+      setFkwContentScore(result.score || 0);
+      setFkwContentRecommendations(result.recommendations || []);
+      setShowFkwContentSuggestions(true);
+
+      if ((result.suggestions || []).length === 0) {
+        toast.info('Content is already well-optimized for the focus keyword!');
+      } else {
+        toast.success(`${result.suggestions.length} optimization suggestions generated`);
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Error generating FKW content suggestions:', error);
+      toast.error('Failed to generate content suggestions');
+    } finally {
+      setIsGeneratingFkwContent(false);
+    }
+  };
+
+  // FKW Content Optimizer - Apply suggestion
+  const handleApplyFkwContentSuggestion = async (suggestion: typeof fkwContentSuggestions[0], index: number) => {
+    setIsApplyingFkwContent(index);
+    
+    try {
+      console.log('[SEO Editor] Applying FKW content suggestion:', suggestion);
+      
+      // Find the segment in page_segments
+      const segmentId = suggestion.segmentId;
+      const fieldPath = suggestion.fieldPath;
+      
+      // Get current page_segments from database
+      const { data: contentData } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (!contentData) {
+        toast.error('Page segments not found');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      
+      // Find segment by ID
+      const segIdx = segments.findIndex((seg: any) => 
+        parseInt(seg.id) === segmentId || seg.id === segmentId
+      );
+      
+      if (segIdx === -1) {
+        toast.error(`Segment ${segmentId} not found`);
+        return;
+      }
+      
+      const segmentData = segments[segIdx];
+      const dataObj = segmentData.data || segmentData;
+      
+      // Parse field path and update value
+      // fieldPath can be like: "headline", "introText", "items[0].title", "features[1].description"
+      const pathParts = fieldPath.match(/([^\[\]\.]+)|\[(\d+)\]/g) || [];
+      let current = dataObj;
+      
+      for (let i = 0; i < pathParts.length - 1; i++) {
+        const part = pathParts[i];
+        const arrayMatch = part.match(/\[(\d+)\]/);
+        if (arrayMatch) {
+          current = current[parseInt(arrayMatch[1])];
+        } else {
+          current = current[part];
+        }
+        if (!current) {
+          toast.error(`Field path ${fieldPath} not found in segment`);
+          return;
+        }
+      }
+      
+      // Set the final value
+      const finalPart = pathParts[pathParts.length - 1];
+      const finalArrayMatch = finalPart.match(/\[(\d+)\]/);
+      if (finalArrayMatch) {
+        current[parseInt(finalArrayMatch[1])] = suggestion.suggestedText;
+      } else {
+        current[finalPart] = suggestion.suggestedText;
+      }
+      
+      // Write back to segment
+      if (segmentData.data) {
+        segments[segIdx].data = dataObj;
+      } else {
+        segments[segIdx] = dataObj;
+      }
+      
+      // Save to database
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      // Mark suggestion as applied
+      setFkwContentSuggestions(prev => 
+        prev.map((s, i) => i === index ? { ...s, applied: true } : s)
+      );
+      
+      toast.success(`Applied: "${suggestion.suggestedText.substring(0, 40)}..."`);
+      
+      // Auto-save
+      setTimeout(() => onSave(), 100);
+      
+    } catch (error) {
+      console.error('[SEO Editor] Error applying FKW content suggestion:', error);
+      toast.error('Failed to apply suggestion');
+    } finally {
+      setIsApplyingFkwContent(null);
+    }
+  };
+
+  // FKW Content Optimizer - Reject suggestion
+  const handleRejectFkwContentSuggestion = (index: number) => {
+    setFkwContentSuggestions(prev => 
+      prev.map((s, i) => i === index ? { ...s, rejected: true } : s)
+    );
+    toast.info('Suggestion rejected');
+  };
+
   const getStatusIcon = (status: boolean) => {
     return status ? (
       <CheckCircle2 className="h-5 w-5 text-green-600 animate-scale-in" />
@@ -5552,6 +5755,259 @@ export const SEOEditor = ({
             <p className="text-sm text-muted-foreground mt-3">
               Optimal: 40-80 words, Focus Keyphrase in first sentence (first 10-15 words)
             </p>
+          </div>
+
+          {/* FKW Content Optimizer - Smart content optimization */}
+          <div className="p-5 bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold text-foreground">
+                  FKW Content Optimizer
+                </Label>
+                <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
+                  AI-Powered
+                </Badge>
+              </div>
+              {fkwContentAnalysis && (
+                <div className="flex items-center gap-2">
+                  <Badge className={`text-xs ${
+                    fkwContentScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                    fkwContentScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                    'bg-red-500/20 text-red-400 border-red-500/30'
+                  }`}>
+                    Score: {fkwContentScore}/100
+                  </Badge>
+                </div>
+              )}
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-4">
+              Analyze content for keyword optimization. Get AI suggestions for H2/H3 headings and body text to naturally include your focus keyword.
+            </p>
+
+            {/* Analysis Results */}
+            {fkwContentAnalysis && (
+              <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border/50">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground block text-xs">Word Count</span>
+                    <span className="font-semibold text-foreground">{fkwContentAnalysis.totalWords}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block text-xs">FKW Occurrences</span>
+                    <span className="font-semibold text-foreground">{fkwContentAnalysis.fkwOccurrences}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block text-xs">Keyword Density</span>
+                    <span className={`font-semibold ${
+                      fkwContentAnalysis.densityStatus === 'optimal' ? 'text-green-400' :
+                      fkwContentAnalysis.densityStatus === 'too_low' ? 'text-yellow-400' :
+                      'text-red-400'
+                    }`}>
+                      {fkwContentAnalysis.fkwDensity.toFixed(2)}%
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block text-xs">H2 with FKW</span>
+                    <span className="font-semibold text-foreground">
+                      {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Status Indicators */}
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Badge className={`text-xs ${fkwContentAnalysis.h1HasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                    {fkwContentAnalysis.h1HasFkw ? '✓' : '✗'} H1
+                  </Badge>
+                  <Badge className={`text-xs ${fkwContentAnalysis.introHasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                    {fkwContentAnalysis.introHasFkw ? '✓' : '✗'} Intro
+                  </Badge>
+                  <Badge className={`text-xs ${fkwContentAnalysis.h2WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                    {fkwContentAnalysis.h2WithFkw > 0 ? '✓' : '○'} H2
+                  </Badge>
+                  <Badge className={`text-xs ${fkwContentAnalysis.h3WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
+                    {fkwContentAnalysis.h3WithFkw > 0 ? '✓' : '–'} H3
+                  </Badge>
+                </div>
+                
+                {/* Recommendations */}
+                {fkwContentRecommendations.length > 0 && (
+                  <div className="mt-3 space-y-1">
+                    {fkwContentRecommendations.map((rec, i) => (
+                      <p key={i} className={`text-xs ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
+                        {rec}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Suggestions List */}
+            {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
+              <div className="mb-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground">
+                    Content Optimization Suggestions:
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowFkwContentSuggestions(false)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {fkwContentSuggestions.filter(s => !s.rejected).map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg border transition-all ${
+                        suggestion.applied 
+                          ? 'bg-green-500/10 border-green-500/30' 
+                          : 'bg-muted/30 border-border/50 hover:border-orange-500/30'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Priority indicator */}
+                        <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                          suggestion.applied 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-400'
+                        }`}>
+                          {suggestion.applied ? '✓' : suggestion.priority}
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 space-y-2">
+                          {/* Type badge */}
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className={`text-xs ${
+                              suggestion.suggestionType === 'heading' 
+                                ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                                : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                            }`}>
+                              {suggestion.suggestionType === 'heading' 
+                                ? `${suggestion.headingLevel?.toUpperCase()} Heading` 
+                                : 'Body Text'}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
+                              Segment {suggestion.segmentId}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              ({suggestion.segmentType})
+                            </span>
+                          </div>
+                          
+                          {/* Current text */}
+                          <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
+                            <span className="text-xs text-red-400 block mb-1">Current:</span>
+                            <p className="text-sm text-foreground/70 line-through">
+                              {suggestion.currentText.length > 150 
+                                ? suggestion.currentText.substring(0, 150) + '...' 
+                                : suggestion.currentText}
+                            </p>
+                          </div>
+                          
+                          {/* Suggested text */}
+                          <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
+                            <span className="text-xs text-green-400 block mb-1">Suggested:</span>
+                            <p className="text-sm text-foreground font-medium">
+                              {data.focusKeyword 
+                                ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
+                                : suggestion.suggestedText}
+                            </p>
+                          </div>
+                          
+                          {/* Reason */}
+                          <p className="text-xs text-muted-foreground">
+                            {suggestion.reason}
+                          </p>
+                        </div>
+                        
+                        {/* Action buttons */}
+                        {!suggestion.applied && (
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              onClick={() => handleApplyFkwContentSuggestion(suggestion, index)}
+                              disabled={isApplyingFkwContent === index}
+                              size="sm"
+                              className="h-8 px-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                            >
+                              {isApplyingFkwContent === index ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <>
+                                  <Check className="h-3 w-3 mr-1" />
+                                  Apply
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              onClick={() => handleRejectFkwContentSuggestion(index)}
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            >
+                              <X className="h-3 w-3 mr-1" />
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                        {suggestion.applied && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                            Applied ✓
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Summary after processing */}
+                {fkwContentSuggestions.every(s => s.applied || s.rejected) && fkwContentSuggestions.length > 0 && (
+                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
+                    <p className="text-sm text-green-400 font-medium">
+                      ✓ All suggestions processed! 
+                      {fkwContentSuggestions.filter(s => s.applied).length} applied, 
+                      {fkwContentSuggestions.filter(s => s.rejected).length} rejected.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Generate Button */}
+            <Button
+              onClick={handleGenerateFkwContentSuggestions}
+              disabled={isGeneratingFkwContent || !data.focusKeyword}
+              className="w-full h-12 relative overflow-hidden bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 hover:from-orange-700 hover:via-amber-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/20 transition-all duration-300 disabled:opacity-50"
+              style={{
+                backgroundSize: '200% 100%',
+                animation: isGeneratingFkwContent ? 'none' : 'shimmer 3s ease-in-out infinite',
+              }}
+            >
+              {isGeneratingFkwContent ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analyzing Content...
+                </>
+              ) : (
+                <>
+                  <GeminiIcon className="h-4 w-4 mr-2" />
+                  Analyze & Optimize Content
+                </>
+              )}
+            </Button>
+            
+            {!data.focusKeyword && (
+              <p className="text-xs text-amber-400 mt-2 text-center">
+                ⚠️ Please define a Focus Keyword first
+              </p>
+            )}
           </div>
 
           {/* Smart Internal Links */}
