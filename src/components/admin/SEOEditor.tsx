@@ -4282,6 +4282,130 @@ export const SEOEditor = ({
     toast.info('Suggestion rejected');
   };
 
+  // FKW Content Optimizer - Remove/Revert an applied suggestion
+  const handleRemoveFkwContentSuggestion = async (suggestion: typeof fkwContentSuggestions[0], index: number) => {
+    try {
+      console.log('[SEO Editor] Removing FKW content suggestion:', suggestion);
+      
+      // Find the segment in page_segments and revert to original text
+      const segmentId = suggestion.segmentId;
+      const fieldPath = suggestion.fieldPath;
+      
+      // Get current page_segments from database
+      const { data: contentData } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (!contentData) {
+        toast.error('Page segments not found');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      
+      // Find segment by ID
+      const segIdx = segments.findIndex((seg: any) => 
+        parseInt(seg.id) === segmentId || seg.id === segmentId
+      );
+      
+      if (segIdx === -1) {
+        toast.error(`Segment ${segmentId} not found`);
+        return;
+      }
+      
+      const segmentData = segments[segIdx];
+      const dataObj = segmentData.data || segmentData;
+      
+      // Parse field path and revert value to original
+      const pathParts = fieldPath.match(/([^\[\]\.]+)|\[(\d+)\]/g) || [];
+      let current = dataObj;
+      
+      for (let i = 0; i < pathParts.length - 1; i++) {
+        const part = pathParts[i];
+        const arrayMatch = part.match(/\[(\d+)\]/);
+        if (arrayMatch) {
+          current = current[parseInt(arrayMatch[1])];
+        } else {
+          current = current[part];
+        }
+        if (!current) {
+          toast.error(`Field path ${fieldPath} not found in segment`);
+          return;
+        }
+      }
+      
+      // Revert to original text
+      const finalPart = pathParts[pathParts.length - 1];
+      const finalArrayMatch = finalPart.match(/\[(\d+)\]/);
+      if (finalArrayMatch) {
+        current[parseInt(finalArrayMatch[1])] = suggestion.currentText;
+      } else {
+        current[finalPart] = suggestion.currentText;
+      }
+      
+      // Write back to segment
+      if (segmentData.data) {
+        segments[segIdx].data = dataObj;
+      } else {
+        segments[segIdx] = dataObj;
+      }
+      
+      // Save to database
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      // Remove the suggestion from the list entirely
+      const updatedSuggestions = fkwContentSuggestions.filter((_, i) => i !== index);
+      setFkwContentSuggestions(updatedSuggestions);
+      
+      // Persist updated suggestions to database
+      const fkwContentToSave = {
+        suggestions: updatedSuggestions,
+        analysis: fkwContentAnalysis,
+        score: fkwContentScore,
+        recommendations: fkwContentRecommendations,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const { data: existingEntry } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_fkw_content_analysis')
+        .eq('language', editorLanguage)
+        .maybeSingle();
+      
+      if (existingEntry) {
+        await supabase
+          .from('page_content')
+          .update({ 
+            content_value: JSON.stringify(fkwContentToSave),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingEntry.id);
+      }
+      
+      toast.success('Optimization reverted to original text');
+      
+    } catch (error) {
+      console.error('[SEO Editor] Error removing FKW content suggestion:', error);
+      toast.error('Failed to remove optimization');
+    }
+  };
+
   const getStatusIcon = (status: boolean) => {
     return status ? (
       <CheckCircle2 className="h-5 w-5 text-green-600 animate-scale-in" />
@@ -6061,22 +6185,81 @@ export const SEOEditor = ({
                   </div>
                 )}
                 
-                {/* Applied Suggestions Summary */}
+                {/* Applied Optimizations - Interactive List with Delete */}
                 {fkwContentSuggestions.filter(s => s.applied).length > 0 && (
-                  <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <p className="text-sm font-medium text-green-400 mb-2">
-                      ✓ Applied Optimizations ({fkwContentSuggestions.filter(s => s.applied).length})
-                    </p>
-                    <div className="space-y-2">
-                      {fkwContentSuggestions.filter(s => s.applied).map((s, i) => (
-                        <div key={i} className="text-xs text-green-400/80 flex items-start gap-2">
-                          <span className="shrink-0">•</span>
-                          <span>
-                            <span className="font-medium">{s.suggestionType === 'heading' ? s.headingLevel?.toUpperCase() : 'Body'}</span>
-                            {' in Segment '}{s.segmentId}: "{s.suggestedText.substring(0, 60)}{s.suggestedText.length > 60 ? '...' : ''}"
-                          </span>
-                        </div>
-                      ))}
+                  <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-green-400">
+                        ✓ Applied Optimizations ({fkwContentSuggestions.filter(s => s.applied).length})
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      {fkwContentSuggestions.map((s, originalIndex) => {
+                        if (!s.applied) return null;
+                        return (
+                          <div key={originalIndex} className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                {/* Type and Segment Info */}
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                  <Badge variant="outline" className={`text-xs ${
+                                    s.suggestionType === 'heading' 
+                                      ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                                      : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                                  }`}>
+                                    {s.suggestionType === 'heading' 
+                                      ? `${s.headingLevel?.toUpperCase()} Heading` 
+                                      : 'Body Text'}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
+                                    Segment {s.segmentId}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    ({s.segmentType})
+                                  </span>
+                                </div>
+                                
+                                {/* Original Text (crossed out) */}
+                                <div className="mb-2">
+                                  <span className="text-xs text-red-400/70 block mb-1">Original:</span>
+                                  <p className="text-xs text-foreground/50 line-through">
+                                    {s.currentText.length > 80 ? s.currentText.substring(0, 80) + '...' : s.currentText}
+                                  </p>
+                                </div>
+                                
+                                {/* Applied Text */}
+                                <div>
+                                  <span className="text-xs text-green-400 block mb-1">Applied:</span>
+                                  <p className="text-sm text-foreground font-medium">
+                                    {data.focusKeyword 
+                                      ? highlightKeyword(
+                                          s.suggestedText.length > 100 
+                                            ? s.suggestedText.substring(0, 100) + '...' 
+                                            : s.suggestedText, 
+                                          data.focusKeyword
+                                        )
+                                      : (s.suggestedText.length > 100 
+                                          ? s.suggestedText.substring(0, 100) + '...' 
+                                          : s.suggestedText)
+                                    }
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Delete Button */}
+                              <Button
+                                onClick={() => handleRemoveFkwContentSuggestion(s, originalIndex)}
+                                variant="ghost"
+                                size="sm"
+                                className="shrink-0 h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                title="Revert to original text"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
