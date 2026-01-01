@@ -372,7 +372,7 @@ export const AdminHeader = ({
             colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
             defaultOpen={false}
           >
-            {isAdmin && (
+            {(isAdmin || isEditor) && selectedPage && (
               <Button
                 variant="decision"
                 className="flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg"
@@ -392,11 +392,13 @@ export const AdminHeader = ({
                 Glossary
               </Button>
             )}
-            {isAdmin && selectedPage && setIsContentAutomationOpen && (
+            {isAdmin && setIsContentAutomationOpen && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[#8B0000] hover:bg-[#6B0000] text-white shadow-soft hover:shadow-lg"
-                onClick={() => setIsContentAutomationOpen(!isContentAutomationOpen)}
+                className={`flex items-center gap-2 bg-[#8B0000] hover:bg-[#6B0000] text-white shadow-soft hover:shadow-lg ${!selectedPage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => selectedPage && setIsContentAutomationOpen(!isContentAutomationOpen)}
+                disabled={!selectedPage}
+                title={!selectedPage ? 'Select a page first to use Content Automation' : undefined}
               >
                 <FirecrawlIcon className="h-4 w-4 text-white" />
                 Content Automation
