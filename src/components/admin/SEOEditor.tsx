@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -6302,10 +6302,7 @@ export const SEOEditor = ({
                         {isSavingContentSuggestions ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
                         ) : (
-                          <>
-                            <Save className="h-3 w-3 mr-1" />
-                            Save
-                          </>
+                          'Save'
                         )}
                       </Button>
                     )}
@@ -6993,14 +6990,13 @@ export const SEOEditor = ({
         />
       </Tabs>
 
-      {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t">
+      {/* Save Button - Yellow, full width, no icon (convention) */}
+      <div className="pt-4 border-t">
         <Button 
           onClick={onSave}
-          className="gap-2"
+          className="w-full h-12 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-semibold text-lg"
         >
-          <Save className="h-4 w-4" />
-          Save SEO Changes
+          Save
         </Button>
       </div>
     </div>
