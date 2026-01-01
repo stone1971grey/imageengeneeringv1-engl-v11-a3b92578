@@ -973,8 +973,16 @@ export const UserManagement = () => {
                         <div className="flex flex-wrap gap-1">
                           {user.globalSegmentLanguages.map(lang => {
                             const langInfo = AVAILABLE_LANGUAGES.find(l => l.code === lang);
+                            // Rainbow colors for languages
+                            const langColors: Record<string, string> = {
+                              'en': 'bg-rose-600 border-rose-700',
+                              'de': 'bg-amber-600 border-amber-700',
+                              'ja': 'bg-emerald-600 border-emerald-700',
+                              'ko': 'bg-blue-600 border-blue-700',
+                              'zh': 'bg-violet-600 border-violet-700'
+                            };
                             return (
-                              <Badge key={lang} className="bg-violet-600 text-white border-violet-700 text-xs">
+                              <Badge key={lang} className={`${langColors[lang] || 'bg-zinc-600 border-zinc-700'} text-white text-xs`}>
                                 {langInfo?.flag} {lang.toUpperCase()}
                               </Badge>
                             );
@@ -999,8 +1007,18 @@ export const UserManagement = () => {
                             {user.contentEditors.map(editorId => {
                               const editor = CONTENT_EDITORS.find(e => e.id === editorId);
                               const displayName = editor?.name?.replace('Manage ', '') || editorId.charAt(0).toUpperCase() + editorId.slice(1);
+                              // Use matching editor colors
+                              const editorColors: Record<string, string> = {
+                                'news': 'bg-[hsl(var(--primary))] border-[hsl(var(--primary))]',
+                                'events': 'bg-[hsl(var(--events-button))] border-[hsl(var(--events-button))]',
+                                'products': 'bg-[hsl(var(--accent-blue))] border-[hsl(var(--accent-blue))]',
+                                'downloads': 'bg-[hsl(180_60%_45%)] border-[hsl(180_60%_40%)]',
+                                'seo': 'bg-[hsl(var(--seo-button))] border-[hsl(var(--seo-button))]',
+                                'glossary': 'bg-[hsl(var(--accent-violet))] border-[hsl(var(--accent-violet))]',
+                                'version-history': 'bg-[hsl(280_60%_50%)] border-[hsl(280_60%_45%)]'
+                              };
                               return (
-                                <Badge key={editorId} className="bg-zinc-700 text-white border-zinc-800 text-xs">
+                                <Badge key={editorId} className={`${editorColors[editorId] || 'bg-zinc-600 border-zinc-700'} text-white text-xs`}>
                                   {displayName}
                                 </Badge>
                               );
@@ -1783,21 +1801,30 @@ export const UserManagement = () => {
 
             {/* Global Language Permissions - only for Editor role */}
             {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-purple-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-purple-400" />
                     Language Permissions
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Select the languages the editor may edit. 
-                    This permission applies to <strong>all areas</strong>: CMS segments, News, Events, Products, Downloads.
+                    This permission applies to <strong className="text-white">all areas</strong>: CMS segments, News, Events, Products, Downloads.
                   </p>
                 </div>
                 
                 <div className="flex flex-wrap gap-3">
                   {AVAILABLE_LANGUAGES.map((lang) => {
                     const isSelected = editGlobalSegmentLanguages.includes(lang.code);
+                    // Rainbow colors for languages
+                    const langColors: Record<string, { selected: string; unselected: string }> = {
+                      'en': { selected: 'bg-rose-600/30 border-rose-500 text-rose-300', unselected: 'bg-zinc-800/50 border-zinc-700 text-zinc-300' },
+                      'de': { selected: 'bg-amber-600/30 border-amber-500 text-amber-300', unselected: 'bg-zinc-800/50 border-zinc-700 text-zinc-300' },
+                      'ja': { selected: 'bg-emerald-600/30 border-emerald-500 text-emerald-300', unselected: 'bg-zinc-800/50 border-zinc-700 text-zinc-300' },
+                      'ko': { selected: 'bg-blue-600/30 border-blue-500 text-blue-300', unselected: 'bg-zinc-800/50 border-zinc-700 text-zinc-300' },
+                      'zh': { selected: 'bg-violet-600/30 border-violet-500 text-violet-300', unselected: 'bg-zinc-800/50 border-zinc-700 text-zinc-300' }
+                    };
+                    const colors = langColors[lang.code] || langColors['en'];
                     return (
                       <button
                         key={lang.code}
@@ -1810,31 +1837,29 @@ export const UserManagement = () => {
                           }
                         }}
                         className={`px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center gap-2 ${
-                          isSelected
-                            ? 'bg-purple-100 border-purple-500 text-purple-800 shadow-md'
-                            : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                          isSelected ? colors.selected + ' shadow-md' : colors.unselected + ' hover:bg-zinc-800 hover:border-zinc-600'
                         }`}
                       >
                         <span className="text-xl">{lang.flag}</span>
                         <span className="font-semibold">{lang.name}</span>
-                        {isSelected && <Check className="h-4 w-4 text-purple-600" />}
+                        {isSelected && <Check className="h-4 w-4" />}
                       </button>
                     );
                   })}
                 </div>
                 
                 {editGlobalSegmentLanguages.length > 0 ? (
-                  <div className="bg-purple-100 border-2 border-purple-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-purple-800">
+                  <div className="bg-purple-600/20 border-2 border-purple-500 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-purple-300">
                       ✓ {editGlobalSegmentLanguages.length} language(s) selected
                     </p>
-                    <p className="text-sm text-purple-600 mt-1">
+                    <p className="text-sm text-purple-400 mt-1">
                       The editor can edit content in these languages across all areas (CMS segments, News, Events, Products, Downloads).
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-amber-50 border-2 border-amber-300 rounded-lg px-5 py-4">
-                    <p className="text-base text-amber-800">
+                  <div className="bg-amber-600/20 border-2 border-amber-500 rounded-lg px-5 py-4">
+                    <p className="text-base text-amber-300">
                       ⚠️ No languages selected - the editor cannot edit any content.
                     </p>
                   </div>
@@ -1844,10 +1869,10 @@ export const UserManagement = () => {
 
             {/* Content Editor Selection - only for Editor role */}
             {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900">Select Content Editors</Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <Label className="text-xl font-bold text-white">Select Content Editors</Label>
+                  <p className="text-base text-zinc-400 mt-2">
                     Click on the editors (News, Events, etc.) that the user should have access to.
                     Language permissions are controlled by the selection above.
                   </p>
@@ -1868,8 +1893,8 @@ export const UserManagement = () => {
                         }}
                         className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
-                            ? `${editor.borderColor} bg-white shadow-xl` 
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
+                            ? `${editor.borderColor} bg-zinc-800 shadow-xl` 
+                            : 'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600 hover:shadow-lg'
                         }`}
                       >
                         <div className={`absolute top-0 left-0 right-0 h-1 ${editor.bgColor}`}></div>
@@ -1877,8 +1902,8 @@ export const UserManagement = () => {
                           <div className={`h-12 w-12 mx-auto rounded-xl ${editor.bgColor} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                             <div className="text-white">{editor.icon}</div>
                           </div>
-                          <h4 className="text-sm font-bold text-gray-900">{editor.name}</h4>
-                          <p className="text-xs text-gray-500">{editor.description}</p>
+                          <h4 className="text-sm font-bold text-white">{editor.name}</h4>
+                          <p className="text-xs text-zinc-400">{editor.description}</p>
                           {isSelected && (
                             <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 shadow-md">
                               <Check className="h-4 w-4 text-white" strokeWidth={3} />
@@ -1891,8 +1916,8 @@ export const UserManagement = () => {
                 </div>
                 
                 {editSelectedEditors.length > 0 && (
-                  <div className="bg-green-100 border-2 border-green-400 rounded-lg px-5 py-4">
-                    <p className="text-lg font-bold text-green-800">
+                  <div className="bg-green-600/20 border-2 border-green-500 rounded-lg px-5 py-4">
+                    <p className="text-lg font-bold text-green-300">
                       ✓ {editSelectedEditors.length} editor(s) selected
                     </p>
                   </div>
@@ -1902,13 +1927,13 @@ export const UserManagement = () => {
 
             {/* Draft/Publish Permissions - only for Editor role */}
             {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Save className="h-5 w-5 text-orange-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <Save className="h-5 w-5 text-orange-400" />
                     Content Workflow Permissions
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Control whether the editor can save drafts and/or publish content directly.
                   </p>
                 </div>
@@ -1917,8 +1942,8 @@ export const UserManagement = () => {
                   <div 
                     className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                       editCanDraft 
-                        ? 'border-orange-500 bg-orange-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                        ? 'border-orange-500 bg-orange-600/20' 
+                        : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                     }`}
                     onClick={() => setEditCanDraft(!editCanDraft)}
                   >
@@ -1928,19 +1953,19 @@ export const UserManagement = () => {
                         onCheckedChange={(checked) => setEditCanDraft(checked === true)}
                         className="h-5 w-5"
                       />
-                      <span className={`text-lg font-bold ${editCanDraft ? 'text-orange-900' : 'text-gray-900'}`}>
+                      <span className={`text-lg font-bold ${editCanDraft ? 'text-orange-300' : 'text-white'}`}>
                         Save Drafts
                       </span>
                     </div>
-                    <p className={`text-base mt-2 ${editCanDraft ? 'text-orange-600' : 'text-gray-600'}`}>
+                    <p className={`text-base mt-2 ${editCanDraft ? 'text-orange-400' : 'text-zinc-400'}`}>
                       Can save content as draft for review
                     </p>
                   </div>
                   <div 
                     className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                       editCanPublish 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                        ? 'border-green-500 bg-green-600/20' 
+                        : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                     }`}
                     onClick={() => setEditCanPublish(!editCanPublish)}
                   >
@@ -1950,11 +1975,11 @@ export const UserManagement = () => {
                         onCheckedChange={(checked) => setEditCanPublish(checked === true)}
                         className="h-5 w-5"
                       />
-                      <span className={`text-lg font-bold ${editCanPublish ? 'text-green-900' : 'text-gray-900'}`}>
+                      <span className={`text-lg font-bold ${editCanPublish ? 'text-green-300' : 'text-white'}`}>
                         Publish Content
                       </span>
                     </div>
-                    <p className={`text-base mt-2 ${editCanPublish ? 'text-green-600' : 'text-gray-600'}`}>
+                    <p className={`text-base mt-2 ${editCanPublish ? 'text-green-400' : 'text-zinc-400'}`}>
                       Can publish content directly (live)
                     </p>
                   </div>
@@ -1962,17 +1987,17 @@ export const UserManagement = () => {
                 
                 <div className={`rounded-lg px-5 py-4 ${
                   editCanPublish 
-                    ? 'bg-green-100 border-2 border-green-400' 
+                    ? 'bg-green-600/20 border-2 border-green-500' 
                     : editCanDraft 
-                      ? 'bg-orange-100 border-2 border-orange-400'
-                      : 'bg-amber-50 border-2 border-amber-300'
+                      ? 'bg-orange-600/20 border-2 border-orange-500'
+                      : 'bg-amber-600/20 border-2 border-amber-500'
                 }`}>
                   <p className={`text-base font-semibold ${
                     editCanPublish 
-                      ? 'text-green-800' 
+                      ? 'text-green-300' 
                       : editCanDraft 
-                        ? 'text-orange-800'
-                        : 'text-amber-800'
+                        ? 'text-orange-300'
+                        : 'text-amber-300'
                   }`}>
                     {editCanPublish && editCanDraft && '✓ Editor can save drafts and publish content directly.'}
                     {editCanPublish && !editCanDraft && '✓ Editor can only publish content (no drafts).'}
@@ -1985,13 +2010,13 @@ export const UserManagement = () => {
 
             {/* Frontend Editing Settings - only for Editor role */}
             {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
-                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <MonitorSmartphone className="h-5 w-5 text-cyan-600" />
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <MonitorSmartphone className="h-5 w-5 text-cyan-400" />
                     Frontend Editing
                   </Label>
-                  <p className="text-base text-gray-700 mt-2">
+                  <p className="text-base text-zinc-400 mt-2">
                     Allow the editor to make changes directly on the live website preview.
                   </p>
                 </div>
@@ -1999,8 +2024,8 @@ export const UserManagement = () => {
                 <div 
                   className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
                     editFrontendEditingEnabled 
-                      ? 'border-cyan-500 bg-cyan-50' 
-                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                      ? 'border-cyan-500 bg-cyan-600/20' 
+                      : 'bg-zinc-800/50 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600'
                   }`}
                   onClick={() => setEditFrontendEditingEnabled(!editFrontendEditingEnabled)}
                 >
@@ -2010,21 +2035,21 @@ export const UserManagement = () => {
                       onCheckedChange={(checked) => setEditFrontendEditingEnabled(checked === true)}
                       className="h-5 w-5"
                     />
-                    <span className={`text-lg font-bold ${editFrontendEditingEnabled ? 'text-cyan-900' : 'text-gray-900'}`}>
+                    <span className={`text-lg font-bold ${editFrontendEditingEnabled ? 'text-cyan-300' : 'text-white'}`}>
                       Enable Frontend Editing
                     </span>
                   </div>
-                  <p className={`text-base mt-2 ${editFrontendEditingEnabled ? 'text-cyan-600' : 'text-gray-600'}`}>
+                  <p className={`text-base mt-2 ${editFrontendEditingEnabled ? 'text-cyan-400' : 'text-zinc-400'}`}>
                     Editor can use the visual in-page editor to modify content directly on the website
                   </p>
                 </div>
                 
                 <div className={`rounded-lg px-5 py-4 ${
                   editFrontendEditingEnabled 
-                    ? 'bg-cyan-100 border-2 border-cyan-400' 
-                    : 'bg-gray-100 border-2 border-gray-300'
+                    ? 'bg-cyan-600/20 border-2 border-cyan-500' 
+                    : 'bg-zinc-800/50 border-2 border-zinc-700'
                 }`}>
-                  <p className={`text-base font-semibold ${editFrontendEditingEnabled ? 'text-cyan-800' : 'text-gray-600'}`}>
+                  <p className={`text-base font-semibold ${editFrontendEditingEnabled ? 'text-cyan-300' : 'text-zinc-400'}`}>
                     {editFrontendEditingEnabled 
                       ? '✓ Editor can access Frontend Editing mode via ?edit=true URL parameter'
                       : 'Frontend Editing is disabled - editor must use the Admin Dashboard'}
