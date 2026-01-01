@@ -89,6 +89,66 @@ Bei der Entwicklung des "Refine Content with AI" Dialogs wurden verschiedene AI 
 | `generate-h1-headline` | ✅ Aktiv | Generiert H1-Überschriften |
 | `suggest-content-links` | ✅ Aktiv | Schlägt interne Links vor |
 | `generate-internal-links` | ✅ Aktiv | Generiert interne Verlinkungen |
+| `generate-external-links` | ✅ Aktiv | Generiert externe Verlinkungen zu neutralen Quellen |
+
+---
+
+## ⚠️ KRITISCHE SICHERHEITSREGEL: Externe Links
+
+### Verbotene Ziele für externe Links
+
+**NIEMALS** dürfen externe Links auf folgende Seiten verweisen:
+
+1. **Wettbewerber/Marktbegleiter**
+   - Keine Links zu Unternehmen, die ähnliche Produkte oder Dienstleistungen anbieten
+   - Keine Links zu Kameratestgeräte-Herstellern
+   - Keine Links zu Bildqualitätstestunternehmen
+   - Keine Links zu optischen Messgeräteanbietern
+   - Keine Links zu Testchartherstellern
+
+2. **Kommerzielle Alternativanbieter**
+   - Keine Links zu E-Commerce-Plattformen (Amazon, eBay, Alibaba)
+   - Keine Links zu Produktseiten anderer Anbieter
+   - Keine Links zu Unternehmensblogs von Mitbewerbern
+
+3. **Blockierte Domains (Beispiele)**
+   - imatest.com, dxomark.com, basler.com, flir.com
+   - teledyne.com, ximea.com, stemmer-imaging.com
+   - edmund.com, thorlabs.com, radiantvision.com
+
+### Erlaubte Quellen für externe Links
+
+**NUR** folgende Quelltypen sind zulässig:
+
+1. **Akademisch/Forschung**
+   - Universitäten (.edu Domains)
+   - Forschungseinrichtungen
+   - Wissenschaftliche Journale (ieee.org, acm.org)
+
+2. **Standards-Organisationen**
+   - ISO, IEC, DIN, NIST
+   - Offizielle Normungsgremien
+
+3. **Wissensdatenbanken**
+   - Wikipedia, Scholarpedia
+   - Bildungsbezogene .edu-Seiten
+
+4. **Regierungs-/Institutionsseiten**
+   - .gov Domains
+   - Nationale Institute
+
+5. **Technische Dokumentation**
+   - W3C Spezifikationen
+   - IETF RFCs
+   - Open-Source-Dokumentation
+
+### Implementierung
+
+Die Sicherheitsregel ist in der Edge Function `generate-external-links` implementiert:
+- AI-Prompt enthält explizite Ausschlussliste
+- Validierung blockiert bekannte kommerzielle Domains
+- Niedrige Temperatur (0.3) für konservative Vorschläge
+- Maximum 3 Vorschläge pro Seite
 
 ---
 
@@ -105,3 +165,4 @@ Bei der Entwicklung des "Refine Content with AI" Dialogs wurden verschiedene AI 
 - Vermeidung von Feature-Kannibalisierung zwischen Refine Dialog und SEO-Suite
 - SEO-Suite sollte als zentraler Ort für alle SEO-bezogenen AI-Features dienen
 - Refine Dialog fokussiert auf Content-Erstellung und -Erweiterung
+- **KRITISCH:** Externe Links dürfen niemals auf Wettbewerber oder kommerzielle Alternativanbieter verweisen
