@@ -214,6 +214,8 @@ export type Database = {
       }
       editor_page_access: {
         Row: {
+          can_draft: boolean | null
+          can_publish: boolean | null
           created_at: string | null
           frontend_editing_enabled: boolean | null
           id: string
@@ -222,6 +224,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          can_draft?: boolean | null
+          can_publish?: boolean | null
           created_at?: string | null
           frontend_editing_enabled?: boolean | null
           id?: string
@@ -230,6 +234,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          can_draft?: boolean | null
+          can_publish?: boolean | null
           created_at?: string | null
           frontend_editing_enabled?: boolean | null
           id?: string
