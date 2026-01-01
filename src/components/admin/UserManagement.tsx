@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book, History, MonitorSmartphone } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book, History, MonitorSmartphone, Flame } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -103,6 +103,15 @@ const CONTENT_EDITORS: ContentEditor[] = [
     color: 'hsl(280 60% 50%)',
     bgColor: 'bg-[hsl(280_60%_50%)]',
     borderColor: 'border-[hsl(280_60%_50%)]'
+  },
+  {
+    id: 'content-automation',
+    name: 'Content Automation',
+    description: 'AI-powered content automation',
+    icon: <Flame className="h-6 w-6" />,
+    color: 'hsl(var(--destructive))',
+    bgColor: 'bg-[hsl(var(--destructive))]',
+    borderColor: 'border-[hsl(var(--destructive))]'
   }
 ];
 
