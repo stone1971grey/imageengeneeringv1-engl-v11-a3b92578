@@ -5206,11 +5206,15 @@ export const SEOEditor = ({
             
             {/* Two Button Row */}
             <div className="flex gap-3 mb-4">
-              {/* Smart Internal Links Button (Pink) - for existing links */}
+              {/* Smart Internal Links Button (Pink) - AI gradient with animated shimmer */}
               <Button
                 onClick={handleGenerateInternalLinks}
                 disabled={isGeneratingInternalLinks}
-                className="flex-1 h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="flex-1 h-12 relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-700 hover:via-pink-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/20 transition-all duration-300"
+                style={{
+                  backgroundSize: '200% 100%',
+                  animation: isGeneratingInternalLinks ? 'none' : 'shimmer 3s ease-in-out infinite',
+                }}
               >
                 {isGeneratingInternalLinks ? (
                   <>
