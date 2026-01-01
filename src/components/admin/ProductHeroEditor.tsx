@@ -21,9 +21,11 @@ interface ProductHeroEditorProps {
   segmentId: number;
   onSave: () => void;
   language?: string;
+  /** If H1 is defined in another segment (e.g. Intro), pass the source info here */
+  externalH1Source?: { type: string; key: string; label: string } | null;
 }
 
-const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' }: ProductHeroEditorProps) => {
+const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en', externalH1Source }: ProductHeroEditorProps) => {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,9 +43,63 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Track if H1 is defined elsewhere (e.g., in Intro segment)
+  const [detectedH1Source, setDetectedH1Source] = useState<{ type: string; key: string; label: string } | null>(null);
+  
+  // Effective H1 source: external prop takes precedence, then detected
+  const effectiveH1Source = externalH1Source || detectedH1Source;
+
+  // Check if H1 is defined in an Intro segment
+  const checkExternalH1 = async () => {
+    try {
+      const { data: registryData } = await supabase
+        .from('segment_registry')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('segment_type', 'intro')
+        .eq('deleted', false)
+        .limit(1);
+      
+      if (registryData && registryData.length > 0) {
+        const introRegistry = registryData[0];
+        const { data: pageSegmentsRow } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+        
+        if (pageSegmentsRow?.content_value) {
+          try {
+            const segments = JSON.parse(pageSegmentsRow.content_value);
+            const introSegment = segments.find((seg: any) => 
+              String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
+            );
+            
+            if (introSegment?.data?.headline && introSegment.data.headingLevel === 'h1') {
+              setDetectedH1Source({
+                type: 'intro',
+                key: introRegistry.segment_key,
+                label: `Intro (ID: ${introRegistry.segment_id})`
+              });
+              return;
+            }
+          } catch (e) {
+            console.error('[PHE] Failed to parse page_segments:', e);
+          }
+        }
+      }
+      setDetectedH1Source(null);
+    } catch (e) {
+      console.error('[PHE] Error checking external H1:', e);
+    }
+  };
 
   useEffect(() => {
     loadContent();
+    checkExternalH1();
 
     const handleExternalTranslate = () => {
       handleTranslate();
@@ -554,7 +610,14 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       <div className="space-y-4">
         <div>
-          <Label className="text-white">Title (H1 – Zeile 1)</Label>
+          <Label className="text-white flex items-center gap-2">
+            {effectiveH1Source ? 'Title (H2 – Zeile 1)' : 'Title (H1 – Zeile 1)'}
+            {effectiveH1Source && (
+              <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                H1 → H2 (H1 in {effectiveH1Source.label})
+              </span>
+            )}
+          </Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -563,7 +626,14 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         </div>
         
         <div>
-          <Label className="text-white">Subtitle (H1 – Zeile 2, Optional)</Label>
+          <Label className="text-white flex items-center gap-2">
+            {effectiveH1Source ? 'Subtitle (H2 – Zeile 2)' : 'Subtitle (H1 – Zeile 2, Optional)'}
+            {effectiveH1Source && (
+              <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                H1 → H2
+              </span>
+            )}
+          </Label>
           <Input
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
