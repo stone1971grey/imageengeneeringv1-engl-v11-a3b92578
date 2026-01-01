@@ -270,6 +270,16 @@ export const SEOEditor = ({
     segmentType?: string;
   }>>([]);
   
+  // Extracted external links state (for display in Basics tab)
+  const [extractedExternalLinks, setExtractedExternalLinks] = useState<Array<{
+    anchorText: string;
+    targetUrl: string;
+    segmentKey: string;
+    segmentId?: number | null;
+    segmentType?: string;
+    targetTitle?: string;
+  }>>([]);
+  
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
     const saved = localStorage.getItem('seo-healthcheck-open');
@@ -1011,8 +1021,11 @@ export const SEOEditor = ({
       }
       // Check for external links (http/https) - but exclude internal-link class
       const externalLinkPattern = /href=["'](https?:\/\/(?!localhost)[^"']+)["']/gi;
-      if (externalLinkPattern.test(content) && !content.includes('internal-link')) {
-        hasExternalLinks = true;
+      if (externalLinkPattern.test(content)) {
+        // Re-check without the internal-link exclusion for external links with class
+        if (content.includes('class="external-link"') || content.includes("class='external-link'") || !content.includes('internal-link')) {
+          hasExternalLinks = true;
+        }
       }
     });
 
@@ -1106,16 +1119,113 @@ export const SEOEditor = ({
     
     setExtractedInternalLinks(extractedLinks);
     
+    // Extract external links with details for display in Basics tab
+    const extractedExtLinks: Array<{
+      anchorText: string;
+      targetUrl: string;
+      segmentKey: string;
+      segmentId?: number | null;
+      segmentType?: string;
+      targetTitle?: string;
+    }> = [];
+    
+    pageContent.forEach(item => {
+      const content = item.content_value || '';
+      // Match all anchor tags with external-link class or absolute http/https hrefs
+      const linkPattern = /<a[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>([^<]*)<\/a>/gi;
+      let match;
+      while ((match = linkPattern.exec(content)) !== null) {
+        const href = match[1];
+        const text = match[2];
+        // Only include external links (exclude localhost)
+        if (!href.includes('localhost')) {
+          const segmentMatch = item.section_key.match(/segment-(\d+)/);
+          const segmentId = segmentMatch ? parseInt(segmentMatch[1]) : null;
+          const segmentInfo = segmentId ? segmentRegistry.find(s => s.segment_id === segmentId) : null;
+          
+          // Try to get domain name as title hint
+          let domainTitle = '';
+          try {
+            const url = new URL(href);
+            domainTitle = url.hostname.replace('www.', '');
+          } catch {}
+          
+          extractedExtLinks.push({
+            anchorText: text.trim() || href,
+            targetUrl: href,
+            segmentKey: item.section_key,
+            segmentId: segmentId,
+            segmentType: segmentInfo?.segment_type || 'unknown',
+            targetTitle: domainTitle
+          });
+        }
+      }
+      
+      // Also check page_segments JSON for external links
+      if (item.section_key === 'page_segments') {
+        try {
+          const segments = JSON.parse(content);
+          segments.forEach((seg: any) => {
+            const checkExtField = (fieldValue: string) => {
+              if (!fieldValue || typeof fieldValue !== 'string') return;
+              let fieldMatch;
+              const fieldPattern = /<a[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>([^<]*)<\/a>/gi;
+              while ((fieldMatch = fieldPattern.exec(fieldValue)) !== null) {
+                const href = fieldMatch[1];
+                const text = fieldMatch[2];
+                if (!href.includes('localhost')) {
+                  let domainTitle = '';
+                  try {
+                    const url = new URL(href);
+                    domainTitle = url.hostname.replace('www.', '');
+                  } catch {}
+                  
+                  extractedExtLinks.push({
+                    anchorText: text.trim() || href,
+                    targetUrl: href,
+                    segmentKey: `segment-${seg.id}`,
+                    segmentId: seg.id,
+                    segmentType: seg.type || 'unknown',
+                    targetTitle: domainTitle
+                  });
+                }
+              }
+            };
+            if (seg.data) {
+              checkExtField(seg.data.description);
+              checkExtField(seg.data.text);
+              checkExtField(seg.data.content);
+              checkExtField(seg.data.introText);
+              checkExtField(seg.data.subtitle);
+              if (Array.isArray(seg.data.items)) {
+                seg.data.items.forEach((itm: any) => {
+                  if (itm.description) checkExtField(itm.description);
+                  if (itm.text) checkExtField(itm.text);
+                });
+              }
+            }
+          });
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    });
+    
+    setExtractedExternalLinks(extractedExtLinks);
+    
     // IMPORTANT: Use extractedLinks for hasInternalLinks check - this is more reliable
     // than string pattern matching since it parses the actual link structure
     const finalHasInternalLinks = hasInternalLinks || extractedLinks.length > 0;
+    
+    // Use extractedExtLinks for hasExternalLinks check as well
+    const finalHasExternalLinks = hasExternalLinks || extractedExtLinks.length > 0;
 
     setChecks({
       titleLength,
       descriptionLength,
       hasH1,
       hasInternalLinks: finalHasInternalLinks,
-      hasExternalLinks,
+      hasExternalLinks: finalHasExternalLinks,
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
@@ -1131,7 +1241,8 @@ export const SEOEditor = ({
       keywordInIntroduction,
       hasInternalLinks: finalHasInternalLinks,
       extractedLinksCount: extractedLinks.length,
-      hasExternalLinks,
+      hasExternalLinks: finalHasExternalLinks,
+      extractedExtLinksCount: extractedExtLinks.length,
       hasH1
     });
   }, [data, pageSegments, pageContent, segmentRegistry]);
@@ -4078,7 +4189,7 @@ export const SEOEditor = ({
                   {/* Source Badge - simplified */}
                   {h1SourceInfo && (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Quelle:</span>
+                      <span className="text-sm text-muted-foreground">Source:</span>
                       <Badge className="bg-[#f9dc24] text-black font-medium text-sm px-3 py-1">
                         {h1SourceInfo.label} ({h1SourceInfo.id})
                       </Badge>
@@ -4088,7 +4199,7 @@ export const SEOEditor = ({
               ) : (
                 <span className="flex items-center gap-2 text-red-400 text-base">
                   <AlertCircle className="h-5 w-5" />
-                  Keine H1 gefunden – bitte Intro, Hero oder Product Hero Gallery Segment hinzufügen
+                  No H1 found – please add an Intro, Hero or Product Hero Gallery segment
                 </span>
               )}
             </div>
@@ -4102,7 +4213,7 @@ export const SEOEditor = ({
             
             {/* Priority Explanation */}
             <p className="text-sm text-muted-foreground mt-3">
-              <span className="font-medium">Auto-detect Priorität:</span> Intro → Full Hero → Product Hero Gallery → Product Hero → Action Hero
+              <span className="font-medium">Auto-detect Priority:</span> Intro → Full Hero → Product Hero Gallery → Product Hero → Action Hero
             </p>
           </div>
 
@@ -4150,11 +4261,74 @@ export const SEOEditor = ({
             ) : (
               <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground">
                 <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">Keine internen Links auf dieser Seite gefunden.</span>
+                <span className="text-sm">No internal links found on this page.</span>
               </div>
             )}
             <p className="text-sm text-muted-foreground mt-3">
-              Zeigt alle internen Links auf dieser Seite mit Link-Text, Ziel und Segment-Position.
+              Shows all internal links on this page with anchor text, target, and segment position.
+            </p>
+          </div>
+
+          {/* External Links Overview */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+                <ExternalLink className="h-4 w-4" />
+                External Links
+              </Label>
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${extractedExternalLinks.length > 0 ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+              >
+                {extractedExternalLinks.length} {extractedExternalLinks.length === 1 ? 'Link' : 'Links'}
+              </Badge>
+            </div>
+            
+            {extractedExternalLinks.length > 0 ? (
+              <div className="space-y-2">
+                {extractedExternalLinks.map((link, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/20 border border-border/50 rounded-md">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-foreground text-sm">"{link.anchorText}"</span>
+                        <span className="text-muted-foreground text-xs">→</span>
+                        <a 
+                          href={link.targetUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-emerald-400 hover:text-emerald-300 text-sm break-all flex items-center gap-1"
+                        >
+                          {link.targetUrl.length > 60 ? link.targetUrl.substring(0, 60) + '...' : link.targetUrl}
+                          <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <Badge variant="outline" className="text-xs bg-muted/30">
+                          {link.segmentType}
+                        </Badge>
+                        {link.segmentId && (
+                          <span className="text-xs text-muted-foreground">
+                            Segment {link.segmentId}
+                          </span>
+                        )}
+                        {link.targetTitle && (
+                          <span className="text-xs text-emerald-400/70">
+                            ({link.targetTitle})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">No external links found on this page.</span>
+              </div>
+            )}
+            <p className="text-sm text-muted-foreground mt-3">
+              Shows all external links on this page with anchor text, target URL, and segment position.
             </p>
           </div>
 
@@ -4334,7 +4508,7 @@ export const SEOEditor = ({
                 {data.focusKeyword && (
                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                    <span className="text-xs font-medium text-green-400">Optimized</span>
                   </div>
                 )}
               </div>
@@ -4363,7 +4537,7 @@ export const SEOEditor = ({
                 {isGeneratingKeywords ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analysiere...
+                    Analyzing...
                   </>
                 ) : (
                   <>
@@ -4381,9 +4555,9 @@ export const SEOEditor = ({
                 <div className="flex items-center justify-between mt-2">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
                     {countStyle.showCheck && <Check className="h-3 w-3" />}
-                    {data.focusKeyword.length} Zeichen
+                    {data.focusKeyword.length} chars
                   </span>
-                  <span className="text-xs text-muted-foreground">(Ideal: 15-40 Zeichen, 3-6 Wörter)</span>
+                  <span className="text-xs text-muted-foreground">(Ideal: 15-40 chars, 3-6 words)</span>
                 </div>
               );
             })()}
@@ -4422,7 +4596,7 @@ export const SEOEditor = ({
                             return (
                               <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
                                 {countStyle.showCheck && <Check className="h-3 w-3" />}
-                                {suggestion.keyword.length} Zeichen
+                                {suggestion.keyword.length} chars
                               </span>
                             );
                           })()}
@@ -4460,11 +4634,11 @@ export const SEOEditor = ({
                 <Label className="text-base font-semibold text-foreground">
                   Optimized Title
                 </Label>
-                {/* Optimiert Badge: shown when length is 50-60 AND FKW is included */}
+                {/* Optimized Badge: shown when length is 50-60 AND FKW is included */}
                 {data.title && data.title.length >= 50 && data.title.length <= 60 && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-                    <span className="text-xs font-medium text-green-400">Optimiert</span>
+                    <span className="text-xs font-medium text-green-400">Optimized</span>
                   </div>
                 )}
               </div>
@@ -4515,7 +4689,7 @@ export const SEOEditor = ({
                 <div className="flex items-center justify-between mt-2">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
                     {countStyle.showCheck && <Check className="h-3 w-3" />}
-                    {titleLen} Zeichen
+                    {titleLen} chars
                   </span>
                   <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
                 </div>
@@ -4563,7 +4737,7 @@ export const SEOEditor = ({
                             return (
                               <Badge className={`shrink-0 text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
                                 {countStyle.showCheck && <Check className="h-3 w-3" />}
-                                {suggestion.characterCount} Zeichen
+                                {suggestion.characterCount} chars
                               </Badge>
                             );
                           })()}
@@ -4591,7 +4765,7 @@ export const SEOEditor = ({
             )}
             
             <p className="text-sm text-muted-foreground mt-3">
-              Optimierter Title mit Focus Keyword – Ideal: 50-60 Zeichen
+              Optimized Title with Focus Keyword – Ideal: 50-60 characters
             </p>
           </div>
 
@@ -4661,7 +4835,7 @@ export const SEOEditor = ({
                 <div className="flex items-center justify-between mt-2">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
                     {countStyle.showCheck && <Check className="h-3 w-3" />}
-                    {descLen} Zeichen
+                    {descLen} chars
                   </span>
                   <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
                 </div>
@@ -4711,7 +4885,7 @@ export const SEOEditor = ({
                             return (
                               <Badge className={`shrink-0 text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
                                 {countStyle.showCheck && <Check className="h-3 w-3" />}
-                                {suggestion.characterCount} Zeichen
+                                {suggestion.characterCount} chars
                               </Badge>
                             );
                           })()}
@@ -4950,7 +5124,7 @@ export const SEOEditor = ({
             {h1ChangeLog && (
               <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-blue-400">📋 Änderungsprotokoll</p>
+                  <p className="text-sm font-medium text-blue-400">📋 Change Log</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -4964,16 +5138,16 @@ export const SEOEditor = ({
                 <div className="space-y-3 text-sm">
                   {/* Timestamp */}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>Angewendet am:</span>
-                    <span className="font-mono">{new Date(h1ChangeLog.timestamp).toLocaleString('de-DE')}</span>
+                    <span>Applied at:</span>
+                    <span className="font-mono">{new Date(h1ChangeLog.timestamp).toLocaleString('en-US')}</span>
                   </div>
                   
                   {/* New H1 */}
                   <div className="p-3 bg-green-500/10 border border-green-500/20 rounded">
-                    <p className="text-xs text-green-400 font-medium mb-1">✅ Neue H1 gesetzt:</p>
+                    <p className="text-xs text-green-400 font-medium mb-1">✅ New H1 set:</p>
                     <p className="text-foreground font-semibold">"{h1ChangeLog.newH1}"</p>
                     <div className="mt-2 text-xs text-muted-foreground">
-                      <span>Ziel-Segment: </span>
+                      <span>Target Segment: </span>
                       <span className="font-medium text-green-400">{h1ChangeLog.targetSegment.label}</span>
                       <span className="text-muted-foreground"> (ID: #{h1ChangeLog.targetSegment.id}, Key: {h1ChangeLog.targetSegment.key})</span>
                     </div>
@@ -4982,7 +5156,7 @@ export const SEOEditor = ({
                   {/* Old H1 conversion if applicable */}
                   {h1ChangeLog.oldH1 && (
                     <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded">
-                      <p className="text-xs text-yellow-400 font-medium mb-1">🔄 Vorherige H1 konvertiert:</p>
+                      <p className="text-xs text-yellow-400 font-medium mb-1">🔄 Previous H1 converted:</p>
                       <p className="text-foreground">"{h1ChangeLog.oldH1.text}"</p>
                       <div className="mt-2 text-xs text-muted-foreground">
                         <span>Segment: </span>
@@ -4995,7 +5169,7 @@ export const SEOEditor = ({
                   
                   {/* Info about Basic/Advanced sync */}
                   <div className="p-2 bg-muted/30 rounded text-xs text-muted-foreground">
-                    <p>💡 Die H1 wurde sowohl im Segment als auch in den SEO-Einstellungen (Basic & Advanced) aktualisiert.</p>
+                    <p>💡 The H1 was updated both in the segment and in the SEO settings (Basic & Advanced).</p>
                   </div>
                 </div>
               </div>
@@ -5183,11 +5357,11 @@ export const SEOEditor = ({
                         <>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${charStyle.bgClass} ${charStyle.textClass}`}>
                             {charStyle.showCheck && <Check className="h-3 w-3" />}
-                            {introductionText.description.length} Zeichen
+                            {introductionText.description.length} chars
                           </span>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${wordStyle.bgClass} ${wordStyle.textClass}`}>
                             {wordStyle.showCheck && <Check className="h-3 w-3" />}
-                            {wordCount} Wörter
+                            {wordCount} words
                           </span>
                         </>
                       );
@@ -5207,7 +5381,7 @@ export const SEOEditor = ({
             {showGeneratedIntro && generatedIntro && (
               <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-green-400">✓ Generierter Intro-Text</p>
+                  <p className="text-sm font-medium text-green-400">✓ Generated Intro Text</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -5236,12 +5410,12 @@ export const SEOEditor = ({
                     return (
                       <Badge variant="outline" className={`text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
                         {countStyle.showCheck && <Check className="h-3 w-3" />}
-                        {generatedIntro.wordCount} Wörter
+                        {generatedIntro.wordCount} words
                       </Badge>
                     );
                   })()}
                   <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
-                    {generatedIntro.sentenceCount} Sätze
+                    {generatedIntro.sentenceCount} sentences
                   </Badge>
                   {data.focusKeyword && (
                     <Badge variant="outline" className={`text-xs ${
@@ -5528,18 +5702,18 @@ export const SEOEditor = ({
             <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Internen Link entfernen?</AlertDialogTitle>
+                  <AlertDialogTitle>Remove internal link?</AlertDialogTitle>
                   <AlertDialogDescription className="space-y-2">
                     <p>
-                      Möchtest du den Link zu <strong className="text-foreground">"{linkToDelete?.suggestion.targetTitle}"</strong> wirklich entfernen?
+                      Do you want to remove the link to <strong className="text-foreground">"{linkToDelete?.suggestion.targetTitle}"</strong>?
                     </p>
                     <p className="text-sm">
-                      Der Link wird aus dem Segment <code className="bg-muted px-1 py-0.5 rounded">{linkToDelete?.suggestion.segmentKey}</code> entfernt und der Anchor-Text "{linkToDelete?.suggestion.anchorText}" wird wieder als normaler Text angezeigt.
+                      The link will be removed from segment <code className="bg-muted px-1 py-0.5 rounded">{linkToDelete?.suggestion.segmentKey}</code> and the anchor text "{linkToDelete?.suggestion.anchorText}" will be displayed as plain text.
                     </p>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel disabled={isDeletingLink}>Abbrechen</AlertDialogCancel>
+                  <AlertDialogCancel disabled={isDeletingLink}>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDeleteInternalLink}
                     disabled={isDeletingLink}
@@ -5548,12 +5722,12 @@ export const SEOEditor = ({
                     {isDeletingLink ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Wird entfernt...
+                        Removing...
                       </>
                     ) : (
                       <>
                         <Trash2 className="h-4 w-4 mr-2" />
-                        Link entfernen
+                        Remove Link
                       </>
                     )}
                   </AlertDialogAction>
