@@ -1712,30 +1712,8 @@ const AdminDashboard = () => {
                       const reverseRegistry = (window as any).__segmentKeyRegistry || {};
                       const customKey = reverseRegistry[String(segmentId)];
                       
-                      let label = '';
-                      // Always use type-based label for consistent display
-                      if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
-                      if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
-                      if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
-                      if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
-                      
-                      if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
-                      if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
-                      if (segment.type === 'table') label = `Table - L ${displayNumber}`;
-                      if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
-                      if (segment.type === 'video') label = `Video - M ${displayNumber}`;
-                      if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
-                      if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
-                      if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
-                      if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
-                      if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
-                      if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-                      if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
-                      if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
-                      if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
-                      if (segment.type === 'product-list') label = `Product List - S-${displayNumber}`;
-                      if (segment.type === 'downloads') label = `Downloads - T-${displayNumber}`;
-                      if (segment.type === 'mini-footer') label = `Mini Footer - U-${displayNumber}`;
+                      // Use buildSegmentLabel for consistent segment labels
+                      const label = buildSegmentLabel(segment.type as string, displayNumber);
                       
                       return (
                         <SortableTab key={tabId} id={tabId} value={tabId}>
