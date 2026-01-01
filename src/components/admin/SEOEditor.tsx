@@ -2428,8 +2428,11 @@ export const SEOEditor = ({
         }
         
         // Update the intro segment description
+        // CRITICAL: Set BOTH introText and description to ensure Frontend picks up the new value
+        // Frontend prioritizes introText over description, so we must update both
         segments[introIndex].data = {
           ...segments[introIndex].data,
+          introText: generatedIntro.introText,
           description: generatedIntro.introText
         };
         
