@@ -6348,30 +6348,31 @@ export const SEOEditor = ({
                 </Badge>
               </div>
               {fkwContentAnalysis && (() => {
-                // Calculate corrected score that uses actual H1 from SEO data
-                const actualH1HasFkw = data.h1 && data.focusKeyword 
-                  ? data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
-                  : fkwContentAnalysis.h1HasFkw;
+                // v2.0: Calculate corrected score using actual H1 from SEO data (not backend)
+                const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && 
+                  data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
                 
-                // Recalculate score with correct H1 status
-                let correctedScore = 0;
-                if (actualH1HasFkw) correctedScore += 25;
-                if (fkwContentAnalysis.introHasFkw) correctedScore += 20;
-                if (fkwContentAnalysis.h2WithFkw > 0) correctedScore += 15;
-                if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) correctedScore += 10; // Bonus for multiple H2
-                if (fkwContentAnalysis.densityStatus === 'optimal') correctedScore += 20;
-                else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) correctedScore += 10;
-                if (fkwContentAnalysis.h3WithFkw > 0) correctedScore += 10;
-                correctedScore = Math.min(100, correctedScore);
+                // Recalculate score client-side with correct H1 status
+                let calculatedScore = 0;
+                if (actualH1ContainsFkw) calculatedScore += 25;
+                if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+                if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+                if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+                if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+                else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+                if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+                calculatedScore = Math.min(100, calculatedScore);
+                
+                console.log('[FKW Score v2.0] H1:', data.h1, 'FKW:', data.focusKeyword, 'H1hasFKW:', actualH1ContainsFkw, 'Score:', calculatedScore);
                 
                 return (
                   <div className="flex items-center gap-2">
                     <Badge className={`text-sm ${
-                      correctedScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                      correctedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                      calculatedScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                      calculatedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
                       'bg-red-500/20 text-red-400 border-red-500/30'
                     }`}>
-                      Score: {correctedScore}/100
+                      Score: {calculatedScore}/100
                     </Badge>
                   </div>
                 );
@@ -6382,23 +6383,22 @@ export const SEOEditor = ({
               Analyze content for keyword optimization. Get AI suggestions for H2/H3 headings and body text to naturally include your focus keyword.
             </p>
 
-            {/* Analysis Results */}
+            {/* Analysis Results - v2.0 */}
             {fkwContentAnalysis && (() => {
-              // Calculate corrected score that uses actual H1 from SEO data
-              const actualH1HasFkw = data.h1 && data.focusKeyword 
-                ? data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
-                : fkwContentAnalysis.h1HasFkw;
+              // v2.0: Calculate corrected score using actual H1 from SEO data (not backend)
+              const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && 
+                data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
               
-              // Recalculate score with correct H1 status
-              let correctedScore = 0;
-              if (actualH1HasFkw) correctedScore += 25;
-              if (fkwContentAnalysis.introHasFkw) correctedScore += 20;
-              if (fkwContentAnalysis.h2WithFkw > 0) correctedScore += 15;
-              if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) correctedScore += 10;
-              if (fkwContentAnalysis.densityStatus === 'optimal') correctedScore += 20;
-              else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) correctedScore += 10;
-              if (fkwContentAnalysis.h3WithFkw > 0) correctedScore += 10;
-              correctedScore = Math.min(100, correctedScore);
+              // Recalculate score client-side with correct H1 status
+              let calculatedScore = 0;
+              if (actualH1ContainsFkw) calculatedScore += 25;
+              if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+              if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+              if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+              if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+              else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+              if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+              calculatedScore = Math.min(100, calculatedScore);
               
               return (
               <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border/50">
@@ -6406,20 +6406,20 @@ export const SEOEditor = ({
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                   <div className="flex items-center gap-3">
                     <div className={`text-3xl font-bold ${
-                      correctedScore >= 80 ? 'text-green-400' :
-                      correctedScore >= 50 ? 'text-yellow-400' :
+                      calculatedScore >= 80 ? 'text-green-400' :
+                      calculatedScore >= 50 ? 'text-yellow-400' :
                       'text-red-400'
                     }`}>
-                      {correctedScore}/100
+                      {calculatedScore}/100
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <p className="font-medium">
-                        {correctedScore >= 80 ? 'Excellent' :
-                         correctedScore >= 50 ? 'Needs Improvement' :
+                        {calculatedScore >= 80 ? 'Excellent' :
+                         calculatedScore >= 50 ? 'Needs Improvement' :
                          'Optimization Required'}
                       </p>
                       <p className="text-xs">
-                        {correctedScore < 80 && 'Check items marked with ✗ below'}
+                        {calculatedScore < 80 && 'Check items marked with ✗ below'}
                       </p>
                     </div>
                   </div>
@@ -6508,12 +6508,12 @@ export const SEOEditor = ({
               );
             })()}
 
-            {/* Suggestions List */}
+            {/* Single Suggestions List - v2.0 */}
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
               <div className="mb-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-base font-medium text-foreground">
-                    Content Optimization Suggestions:
+                    Optimization Suggestions:
                   </p>
                   <Button
                     variant="ghost"
