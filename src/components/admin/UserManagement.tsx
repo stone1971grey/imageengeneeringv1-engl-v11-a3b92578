@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book, History } from "lucide-react";
+import { Shield, ShieldCheck, ShieldAlert, User, UserPlus, Trash2, Lock, Eye, EyeOff, Users, Crown, Pencil, Save, Settings, Globe, Check, Newspaper, Calendar, Target, Download, Book, History, MonitorSmartphone } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -119,6 +119,7 @@ interface UserWithRole {
   contentEditors?: string[];
   canDraft?: boolean;  // Permission to save drafts
   canPublish?: boolean; // Permission to publish content
+  frontendEditingEnabled?: boolean; // Permission to use frontend editing
 }
 
 export const UserManagement = () => {
@@ -160,6 +161,9 @@ export const UserManagement = () => {
   const [inviteCanPublish, setInviteCanPublish] = useState(false);
   const [editCanDraft, setEditCanDraft] = useState(true);
   const [editCanPublish, setEditCanPublish] = useState(false);
+  // Frontend Editing permissions
+  const [inviteFrontendEditingEnabled, setInviteFrontendEditingEnabled] = useState(false);
+  const [editFrontendEditingEnabled, setEditFrontendEditingEnabled] = useState(false);
 
   // Check for existing user when username or email changes
   useEffect(() => {
@@ -200,7 +204,7 @@ export const UserManagement = () => {
       // Fetch editor page access (now used for content editors) including language_code and permissions
       const { data: editorAccess, error: accessError } = await supabase
         .from('editor_page_access')
-        .select('user_id, page_slug, language_code, can_draft, can_publish');
+        .select('user_id, page_slug, language_code, can_draft, can_publish, frontend_editing_enabled');
 
       if (accessError) throw accessError;
 
@@ -227,20 +231,30 @@ export const UserManagement = () => {
         const editorLanguageAccess: EditorLanguageAccess[] = [];
         const globalSegmentLanguages: LanguageCode[] = [];
         
-        // Extract draft/publish permissions (from global entry or first entry found)
+        // Extract draft/publish/frontend-editing permissions (from global entry or first entry found)
         let canDraft = true;  // Default: can draft
         let canPublish = false; // Default: cannot publish
+        let frontendEditingEnabled = false; // Default: no frontend editing
         
         userEditorAccess.forEach(access => {
           // Collect global segment languages
           if (access.page_slug === '__global__' && access.language_code) {
             globalSegmentLanguages.push(access.language_code as LanguageCode);
-            // Get draft/publish permissions from global entry
+            // Get draft/publish/frontend-editing permissions from global entry
             if (access.can_draft !== null && access.can_draft !== undefined) {
               canDraft = access.can_draft;
             }
             if (access.can_publish !== null && access.can_publish !== undefined) {
               canPublish = access.can_publish;
+            }
+            if (access.frontend_editing_enabled !== null && access.frontend_editing_enabled !== undefined) {
+              frontendEditingEnabled = access.frontend_editing_enabled;
+            }
+          }
+          // Also check __all__ entry for frontend editing
+          else if (access.page_slug === '__all__') {
+            if (access.frontend_editing_enabled !== null && access.frontend_editing_enabled !== undefined) {
+              frontendEditingEnabled = access.frontend_editing_enabled;
             }
           }
           // Collect editor-specific language access (legacy)
@@ -269,7 +283,8 @@ export const UserManagement = () => {
           editorLanguageAccess,
           globalSegmentLanguages,
           canDraft,
-          canPublish
+          canPublish,
+          frontendEditingEnabled
         };
       });
 
@@ -383,29 +398,31 @@ export const UserManagement = () => {
 
       // If editor, add permissions
       if (inviteRole === 'editor') {
-        const entries: { user_id: string; page_slug: string; language_code?: string | null; can_draft?: boolean; can_publish?: boolean }[] = [];
+        const entries: { user_id: string; page_slug: string; language_code?: string | null; can_draft?: boolean; can_publish?: boolean; frontend_editing_enabled?: boolean }[] = [];
         
         // Add global language permissions (applies to all: CMS segments + content editors)
-        // Include draft/publish permissions on the first global entry
+        // Include draft/publish/frontend-editing permissions on the first global entry
         if (inviteGlobalSegmentLanguages.length > 0) {
           inviteGlobalSegmentLanguages.forEach((lang, index) => {
             entries.push({
               user_id: newUserId,
               page_slug: '__global__',
               language_code: lang,
-              // Set draft/publish permissions on first entry
+              // Set draft/publish/frontend-editing permissions on first entry
               can_draft: index === 0 ? inviteCanDraft : undefined,
-              can_publish: index === 0 ? inviteCanPublish : undefined
+              can_publish: index === 0 ? inviteCanPublish : undefined,
+              frontend_editing_enabled: index === 0 ? inviteFrontendEditingEnabled : undefined
             });
           });
         } else {
-          // If no languages selected, still create a permission entry for draft/publish
+          // If no languages selected, still create a permission entry for draft/publish/frontend-editing
           entries.push({
             user_id: newUserId,
             page_slug: '__global__',
             language_code: null,
             can_draft: inviteCanDraft,
-            can_publish: inviteCanPublish
+            can_publish: inviteCanPublish,
+            frontend_editing_enabled: inviteFrontendEditingEnabled
           });
         }
         
@@ -446,6 +463,7 @@ export const UserManagement = () => {
       setInviteGlobalSegmentLanguages([]);
       setInviteCanDraft(true);
       setInviteCanPublish(false);
+      setInviteFrontendEditingEnabled(false);
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
@@ -672,10 +690,10 @@ export const UserManagement = () => {
 
       // Add editor access if role is editor
       if (editUserRole === 'editor') {
-        const entries: { user_id: string; page_slug: string; language_code: string | null; can_draft?: boolean; can_publish?: boolean }[] = [];
+        const entries: { user_id: string; page_slug: string; language_code: string | null; can_draft?: boolean; can_publish?: boolean; frontend_editing_enabled?: boolean }[] = [];
         
         // Add global language permissions (applies to all: CMS segments + content editors)
-        // Include draft/publish permissions on the first global entry
+        // Include draft/publish/frontend-editing permissions on the first global entry
         if (editGlobalSegmentLanguages.length > 0) {
           console.log('Inserting global languages:', editGlobalSegmentLanguages);
           editGlobalSegmentLanguages.forEach((lang, index) => {
@@ -683,19 +701,21 @@ export const UserManagement = () => {
               user_id: selectedUser.id,
               page_slug: '__global__',
               language_code: lang,
-              // Set draft/publish permissions on first entry
+              // Set draft/publish/frontend-editing permissions on first entry
               can_draft: index === 0 ? editCanDraft : undefined,
-              can_publish: index === 0 ? editCanPublish : undefined
+              can_publish: index === 0 ? editCanPublish : undefined,
+              frontend_editing_enabled: index === 0 ? editFrontendEditingEnabled : undefined
             });
           });
         } else {
-          // If no languages selected, still create a permission entry for draft/publish
+          // If no languages selected, still create a permission entry for draft/publish/frontend-editing
           entries.push({
             user_id: selectedUser.id,
             page_slug: '__global__',
             language_code: null,
             can_draft: editCanDraft,
-            can_publish: editCanPublish
+            can_publish: editCanPublish,
+            frontend_editing_enabled: editFrontendEditingEnabled
           });
         }
         
@@ -990,6 +1010,7 @@ export const UserManagement = () => {
                             setEditGlobalSegmentLanguages(user.globalSegmentLanguages || []);
                             setEditCanDraft(user.canDraft ?? true);
                             setEditCanPublish(user.canPublish ?? false);
+                            setEditFrontendEditingEnabled(user.frontendEditingEnabled ?? false);
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors border border-gray-200 hover:border-yellow-300"
@@ -1363,7 +1384,55 @@ export const UserManagement = () => {
               </div>
             )}
 
-            {/* Editor Access Selection - only shown when Editor is selected */}
+            {/* Frontend Editing Settings - only shown when Editor is selected */}
+            {inviteRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <MonitorSmartphone className="h-5 w-5 text-cyan-600" />
+                    Frontend Editing
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Allow the editor to make changes directly on the live website preview.
+                  </p>
+                </div>
+                
+                <div 
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                    inviteFrontendEditingEnabled 
+                      ? 'border-cyan-500 bg-cyan-50' 
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                  }`}
+                  onClick={() => setInviteFrontendEditingEnabled(!inviteFrontendEditingEnabled)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox 
+                      checked={inviteFrontendEditingEnabled} 
+                      onCheckedChange={(checked) => setInviteFrontendEditingEnabled(checked === true)}
+                      className="h-5 w-5"
+                    />
+                    <span className={`text-lg font-bold ${inviteFrontendEditingEnabled ? 'text-cyan-900' : 'text-gray-900'}`}>
+                      Enable Frontend Editing
+                    </span>
+                  </div>
+                  <p className={`text-base mt-2 ${inviteFrontendEditingEnabled ? 'text-cyan-600' : 'text-gray-600'}`}>
+                    Editor can use the visual in-page editor to modify content directly on the website
+                  </p>
+                </div>
+                
+                <div className={`rounded-lg px-5 py-4 ${
+                  inviteFrontendEditingEnabled 
+                    ? 'bg-cyan-100 border-2 border-cyan-400' 
+                    : 'bg-gray-100 border-2 border-gray-300'
+                }`}>
+                  <p className={`text-base font-semibold ${inviteFrontendEditingEnabled ? 'text-cyan-800' : 'text-gray-600'}`}>
+                    {inviteFrontendEditingEnabled 
+                      ? '✓ Editor can access Frontend Editing mode via ?edit=true URL parameter'
+                      : 'Frontend Editing is disabled - editor must use the Admin Dashboard'}
+                  </p>
+                </div>
+              </div>
+            )}
             {inviteRole === 'editor' && (
               <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
                 <div>
@@ -1878,6 +1947,56 @@ export const UserManagement = () => {
                     {editCanPublish && !editCanDraft && '✓ Editor can only publish content (no drafts).'}
                     {!editCanPublish && editCanDraft && '✓ Editor can save drafts (requires admin approval to publish).'}
                     {!editCanPublish && !editCanDraft && '⚠️ Editor cannot save or publish any content.'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Frontend Editing Settings - only for Editor role */}
+            {editUserRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <MonitorSmartphone className="h-5 w-5 text-cyan-600" />
+                    Frontend Editing
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Allow the editor to make changes directly on the live website preview.
+                  </p>
+                </div>
+                
+                <div 
+                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                    editFrontendEditingEnabled 
+                      ? 'border-cyan-500 bg-cyan-50' 
+                      : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                  }`}
+                  onClick={() => setEditFrontendEditingEnabled(!editFrontendEditingEnabled)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox 
+                      checked={editFrontendEditingEnabled} 
+                      onCheckedChange={(checked) => setEditFrontendEditingEnabled(checked === true)}
+                      className="h-5 w-5"
+                    />
+                    <span className={`text-lg font-bold ${editFrontendEditingEnabled ? 'text-cyan-900' : 'text-gray-900'}`}>
+                      Enable Frontend Editing
+                    </span>
+                  </div>
+                  <p className={`text-base mt-2 ${editFrontendEditingEnabled ? 'text-cyan-600' : 'text-gray-600'}`}>
+                    Editor can use the visual in-page editor to modify content directly on the website
+                  </p>
+                </div>
+                
+                <div className={`rounded-lg px-5 py-4 ${
+                  editFrontendEditingEnabled 
+                    ? 'bg-cyan-100 border-2 border-cyan-400' 
+                    : 'bg-gray-100 border-2 border-gray-300'
+                }`}>
+                  <p className={`text-base font-semibold ${editFrontendEditingEnabled ? 'text-cyan-800' : 'text-gray-600'}`}>
+                    {editFrontendEditingEnabled 
+                      ? '✓ Editor can access Frontend Editing mode via ?edit=true URL parameter'
+                      : 'Frontend Editing is disabled - editor must use the Admin Dashboard'}
                   </p>
                 </div>
               </div>
