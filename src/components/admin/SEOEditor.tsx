@@ -498,36 +498,56 @@ export const SEOEditor = ({
     let introDescription = '';
     
     // Check if tiles, image-text or intro segment exists and is NOT deleted
-    const tilesRegistry = segmentRegistry.find(seg => seg.segment_type === 'tiles');
-    const imageTextRegistry = segmentRegistry.find(seg => seg.segment_type === 'image-text');
-    const introRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro');
+    const tilesRegistry = segmentRegistry.find(seg => seg.segment_type === 'tiles' && !seg.deleted);
+    const imageTextRegistry = segmentRegistry.find(seg => seg.segment_type === 'image-text' && !seg.deleted);
+    
+    // CRITICAL FIX: For intro, find segment that actually exists in page_segments
+    // The segment_registry may have orphaned entries that don't exist in page_segments
+    let validIntroRegistry = null;
+    const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+    if (pageSegmentsEntry) {
+      try {
+        const segments = JSON.parse(pageSegmentsEntry.content_value);
+        const introSegmentIds = segments.filter((s: any) => s.type === 'intro').map((s: any) => String(s.id));
+        
+        // Find first registry entry that exists in page_segments
+        validIntroRegistry = segmentRegistry.find(seg => 
+          seg.segment_type === 'intro' && 
+          !seg.deleted && 
+          introSegmentIds.includes(String(seg.segment_id))
+        );
+        
+        console.log('[SEO Editor] Valid intro registry found:', validIntroRegistry?.segment_id, 'from page_segments IDs:', introSegmentIds);
+      } catch (e) {
+        console.error('[SEO Editor] Failed to parse page_segments for intro validation:', e);
+      }
+    }
     
     console.log('[SEO Editor] Segment Registry Check:', {
       pageSlug,
       segmentRegistryLength: segmentRegistry.length,
       tilesRegistry,
       imageTextRegistry,
-      introRegistry,
+      validIntroRegistry,
       pageContentLength: pageContent.length
     });
     
-    // Priority: Intro > Tiles > Image-Text (but only if NOT deleted)
-    // INTRO has highest priority and ONLY uses description (no title)
+    // Priority: Intro > Tiles > Image-Text (but only if NOT deleted AND exists in page_segments)
     let activeSegmentType = null;
     let activeSegmentKey = null;
     
-    if (introRegistry && !introRegistry.deleted) {
+    if (validIntroRegistry) {
       activeSegmentType = 'intro';
-      activeSegmentKey = introRegistry.segment_key;
-      console.log('[SEO Editor] Using INTRO segment:', { activeSegmentKey, deleted: introRegistry.deleted });
-    } else if (tilesRegistry && !tilesRegistry.deleted) {
+      activeSegmentKey = validIntroRegistry.segment_key;
+      console.log('[SEO Editor] Using INTRO segment:', { activeSegmentKey, id: validIntroRegistry.segment_id });
+    } else if (tilesRegistry) {
       activeSegmentType = 'tiles';
       activeSegmentKey = tilesRegistry.segment_key;
-      console.log('[SEO Editor] Using TILES segment:', { activeSegmentKey, deleted: tilesRegistry.deleted });
-    } else if (imageTextRegistry && !imageTextRegistry.deleted) {
+      console.log('[SEO Editor] Using TILES segment:', { activeSegmentKey });
+    } else if (imageTextRegistry) {
       activeSegmentType = 'image-text';
       activeSegmentKey = imageTextRegistry.segment_key;
-      console.log('[SEO Editor] Using IMAGE-TEXT segment:', { activeSegmentKey, deleted: imageTextRegistry.deleted });
+      console.log('[SEO Editor] Using IMAGE-TEXT segment:', { activeSegmentKey });
     }
     
     console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
@@ -791,11 +811,31 @@ export const SEOEditor = ({
         if (pageSegmentsEntry) {
           try {
             const segments = JSON.parse(pageSegmentsEntry.content_value);
-            // Find the intro segment by ID from the registry
-            const introSegmentId = introRegistry?.segment_id;
-            const introSegment = segments.find((seg: any) => 
-              seg.type === 'intro' && String(seg.id) === String(introSegmentId)
-            );
+            
+            // CRITICAL FIX: Find ALL intro segments that exist in page_segments
+            // and match them with non-deleted registry entries
+            // This prevents issues where registry has orphaned entries
+            const allIntroRegistryIds = segmentRegistry
+              .filter(seg => seg.segment_type === 'intro' && !seg.deleted)
+              .map(seg => String(seg.segment_id));
+            
+            // Find first intro segment that exists in BOTH page_segments AND registry (not deleted)
+            let introSegment = null;
+            for (const seg of segments) {
+              if (seg.type === 'intro' && allIntroRegistryIds.includes(String(seg.id))) {
+                introSegment = seg;
+                console.log('[SEO Editor] Found matching intro segment:', seg.id);
+                break;
+              }
+            }
+            
+            // Fallback: if no registry match, use first intro from page_segments
+            if (!introSegment) {
+              introSegment = segments.find((seg: any) => seg.type === 'intro');
+              if (introSegment) {
+                console.log('[SEO Editor] Using fallback intro segment from page_segments:', introSegment.id);
+              }
+            }
             
             console.log('[SEO Editor] Found intro segment in page_segments:', introSegment);
             
@@ -842,7 +882,7 @@ export const SEOEditor = ({
     
     // Set intro source info for display
     if (activeSegmentType && activeSegmentKey) {
-      const activeRegistry = activeSegmentType === 'intro' ? introRegistry 
+      const activeRegistry = activeSegmentType === 'intro' ? validIntroRegistry 
         : activeSegmentType === 'tiles' ? tilesRegistry 
         : imageTextRegistry;
       
