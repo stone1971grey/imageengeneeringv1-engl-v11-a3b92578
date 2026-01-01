@@ -935,6 +935,16 @@ const DynamicCMSPage = () => {
   // Check if page has Meta Navigation segment
   const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
+  // H1/H2 Hierarchy Logic:
+  // - If an Intro segment with headline exists → Intro gets H1, Hero gets H2
+  // - If no Intro with headline → Hero gets H1
+  const introWithHeadline = pageSegments.find(seg => {
+    if (seg.type !== 'intro') return false;
+    const headline = seg.data?.headline || seg.data?.title || '';
+    return headline.trim().length > 0;
+  });
+  const hasIntroWithHeadline = !!introWithHeadline;
+
   const renderSegment = (segmentId: string) => {
     // Enhanced segment matching: try multiple strategies
     let segment = pageSegments.find((s) =>
@@ -1017,12 +1027,21 @@ const DynamicCMSPage = () => {
                 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
               }`}>
                 <div className={segment.data?.hero_image_position === 'left' ? 'order-2 lg:order-2' : 'order-1 lg:order-1'}>
-                  <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900">
-                    {segment.data?.hero_title || ''}
-                    {segment.data?.hero_subtitle && (
-                      <span className="font-medium block">{segment.data.hero_subtitle}</span>
-                    )}
-                  </h2>
+                  {hasIntroWithHeadline ? (
+                    <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900">
+                      {segment.data?.hero_title || ''}
+                      {segment.data?.hero_subtitle && (
+                        <span className="font-medium block">{segment.data.hero_subtitle}</span>
+                      )}
+                    </h2>
+                  ) : (
+                    <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900">
+                      {segment.data?.hero_title || ''}
+                      {segment.data?.hero_subtitle && (
+                        <span className="font-medium block">{segment.data.hero_subtitle}</span>
+                      )}
+                    </h1>
+                  )}
                   <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed mb-8">
                     {segment.data?.hero_description || ''}
                   </p>
@@ -1079,6 +1098,7 @@ const DynamicCMSPage = () => {
             key={`${segmentId}-${refreshCounter}`}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
+            headingLevel={hasIntroWithHeadline ? 'h2' : 'h1'}
             data={{
               title: segment.data?.title || "",
               subtitle: segment.data?.subtitle || "",
@@ -1116,6 +1136,7 @@ const DynamicCMSPage = () => {
             key={`${segmentId}-${refreshCounter}`}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
+            headingLevel={hasIntroWithHeadline ? 'h2' : 'h1'}
             data={{
               title: segment.data?.title || "",
               subtitle: segment.data?.subtitle || "",
@@ -1246,7 +1267,7 @@ const DynamicCMSPage = () => {
             topSpacing={heroData.topSpacing}
             kenBurnsEffect={heroData.kenBurnsEffect || "standard"}
             overlayOpacity={heroData.overlayOpacity ?? 15}
-            useH1={heroData.useH1 ?? false}
+            useH1={!hasIntroWithHeadline && (heroData.useH1 ?? true)}
             segmentKey={`${segment.type}-${segment.id}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
@@ -1267,6 +1288,7 @@ const DynamicCMSPage = () => {
             key={`${segmentId}-${refreshCounter}`}
             title={introTitle}
             description={introDescription}
+            headingLevel="h1"
             segmentKey={`${segment.type}-${segment.id}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
