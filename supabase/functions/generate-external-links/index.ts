@@ -77,7 +77,7 @@ serve(async (req) => {
     }
 
     // Extract text content from segments for analysis
-    const textSegments: Array<{ key: string; text: string; type: string; field: string; segmentId?: number }> = [];
+    const textSegments: Array<{ key: string; text: string; type: string; field: string; segmentId?: number; internalId?: string }> = [];
 
     if (contentData) {
       for (const item of contentData) {
@@ -105,7 +105,8 @@ serve(async (req) => {
                         text: plainText,
                         type: segType,
                         field: field,
-                        segmentId: realSegmentId
+                        segmentId: realSegmentId,
+                        internalId: internalId // Keep internal ID for finding segment in array
                       });
                     }
                   }
@@ -336,17 +337,22 @@ REMEMBER: NEVER link to any commercial competitor or market rival. Only neutral,
         
         return true;
       })
-      .map((s: any) => ({
-        anchorText: s.anchorText,
-        targetUrl: s.targetUrl,
-        targetTitle: s.targetTitle || s.targetUrl,
-        segmentKey: s.segmentKey,
-        segmentId: segmentKeyToIdMap[s.segmentKey] || null,
-        segmentType: s.segmentType || segmentKeyToTypeMap[s.segmentKey] || 'unknown',
-        reason: s.reason || '',
-        sourceType: s.sourceType || 'knowledge',
-        priority: s.priority || 1
-      }))
+      .map((s: any) => {
+        // Find the corresponding textSegment to get both real segmentId and internalId
+        const matchingTextSegment = textSegments.find(ts => ts.key === s.segmentKey);
+        return {
+          anchorText: s.anchorText,
+          targetUrl: s.targetUrl,
+          targetTitle: s.targetTitle || s.targetUrl,
+          segmentKey: s.segmentKey,
+          segmentId: matchingTextSegment?.segmentId || segmentKeyToIdMap[s.segmentKey] || null,
+          internalId: matchingTextSegment?.internalId || null, // For finding in page_segments array
+          segmentType: s.segmentType || matchingTextSegment?.type || segmentKeyToTypeMap[s.segmentKey] || 'unknown',
+          reason: s.reason || '',
+          sourceType: s.sourceType || 'knowledge',
+          priority: s.priority || 1
+        };
+      })
       .sort((a: any, b: any) => a.priority - b.priority)
       .slice(0, 3); // Maximum 3 suggestions
 
