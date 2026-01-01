@@ -63,6 +63,19 @@ serve(async (req) => {
       }
     }
 
+    // Create a map from internal segment id (from page_segments array) to real segment_id from registry
+    // The page_segments array uses internal IDs, but we need the real segment_id from segment_registry
+    const internalIdToRealIdMap: Record<string, number> = {};
+    if (segmentRegistryData) {
+      for (const seg of segmentRegistryData) {
+        // segment_key format is "segment-{internal_id}" - extract internal_id
+        const match = seg.segment_key.match(/^segment-(\d+)$/);
+        if (match) {
+          internalIdToRealIdMap[match[1]] = seg.segment_id;
+        }
+      }
+    }
+
     // Extract text content from segments for analysis
     const textSegments: Array<{ key: string; text: string; type: string; field: string; segmentId?: number }> = [];
 
@@ -74,9 +87,12 @@ serve(async (req) => {
             const pageSegments = JSON.parse(item.content_value);
             if (Array.isArray(pageSegments)) {
               for (const seg of pageSegments) {
-                const segId = seg.id;
+                const internalId = String(seg.id);
                 const segType = seg.type;
                 const segData = seg.data || {};
+                
+                // Get the REAL segment_id from registry, not the internal page_segments id
+                const realSegmentId = internalIdToRealIdMap[internalId] || segmentKeyToIdMap[`segment-${internalId}`];
                 
                 // Extract text from common text fields
                 const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
@@ -85,11 +101,11 @@ serve(async (req) => {
                     const plainText = segData[field].replace(/<[^>]*>/g, '');
                     if (plainText.length > 20) {
                       textSegments.push({
-                        key: `segment-${segId}`,
+                        key: `segment-${internalId}`,
                         text: plainText,
                         type: segType,
                         field: field,
-                        segmentId: segId
+                        segmentId: realSegmentId
                       });
                     }
                   }
