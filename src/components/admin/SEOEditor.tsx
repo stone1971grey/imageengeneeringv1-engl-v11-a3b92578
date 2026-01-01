@@ -5774,16 +5774,16 @@ export const SEOEditor = ({
           <div className="p-5 bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Label className="text-base font-semibold text-foreground">
+                <Label className="text-lg font-semibold text-foreground">
                   FKW Content Optimizer
                 </Label>
-                <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
+                <Badge variant="outline" className="text-sm bg-orange-500/10 text-orange-400 border-orange-500/30">
                   AI-Powered
                 </Badge>
               </div>
               {fkwContentAnalysis && (
                 <div className="flex items-center gap-2">
-                  <Badge className={`text-xs ${
+                  <Badge className={`text-sm ${
                     fkwContentScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
                     fkwContentScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
                     'bg-red-500/20 text-red-400 border-red-500/30'
@@ -5794,25 +5794,25 @@ export const SEOEditor = ({
               )}
             </div>
             
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-base text-muted-foreground mb-4">
               Analyze content for keyword optimization. Get AI suggestions for H2/H3 headings and body text to naturally include your focus keyword.
             </p>
 
             {/* Analysis Results */}
             {fkwContentAnalysis && (
               <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border/50">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-base">
                   <div>
-                    <span className="text-muted-foreground block text-xs">Word Count</span>
-                    <span className="font-semibold text-foreground">{fkwContentAnalysis.totalWords}</span>
+                    <span className="text-muted-foreground block text-sm">Word Count</span>
+                    <span className="font-semibold text-foreground text-lg">{fkwContentAnalysis.totalWords}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-xs">FKW Occurrences</span>
-                    <span className="font-semibold text-foreground">{fkwContentAnalysis.fkwOccurrences}</span>
+                    <span className="text-muted-foreground block text-sm">FKW Occurrences</span>
+                    <span className="font-semibold text-foreground text-lg">{fkwContentAnalysis.fkwOccurrences}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-xs">Keyword Density</span>
-                    <span className={`font-semibold ${
+                    <span className="text-muted-foreground block text-sm">Keyword Density</span>
+                    <span className={`font-semibold text-lg ${
                       fkwContentAnalysis.densityStatus === 'optimal' ? 'text-green-400' :
                       fkwContentAnalysis.densityStatus === 'too_low' ? 'text-yellow-400' :
                       'text-red-400'
@@ -5821,8 +5821,8 @@ export const SEOEditor = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-xs">H2 with FKW</span>
-                    <span className="font-semibold text-foreground">
+                    <span className="text-muted-foreground block text-sm">H2 with FKW</span>
+                    <span className="font-semibold text-foreground text-lg">
                       {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count}
                     </span>
                   </div>
@@ -5830,16 +5830,16 @@ export const SEOEditor = ({
                 
                 {/* Status Indicators */}
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <Badge className={`text-xs ${fkwContentAnalysis.h1HasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                  <Badge className={`text-sm ${fkwContentAnalysis.h1HasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
                     {fkwContentAnalysis.h1HasFkw ? '✓' : '✗'} H1
                   </Badge>
-                  <Badge className={`text-xs ${fkwContentAnalysis.introHasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                  <Badge className={`text-sm ${fkwContentAnalysis.introHasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
                     {fkwContentAnalysis.introHasFkw ? '✓' : '✗'} Intro
                   </Badge>
-                  <Badge className={`text-xs ${fkwContentAnalysis.h2WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                  <Badge className={`text-sm ${fkwContentAnalysis.h2WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
                     {fkwContentAnalysis.h2WithFkw > 0 ? '✓' : '○'} H2
                   </Badge>
-                  <Badge className={`text-xs ${fkwContentAnalysis.h3WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
+                  <Badge className={`text-sm ${fkwContentAnalysis.h3WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
                     {fkwContentAnalysis.h3WithFkw > 0 ? '✓' : '–'} H3
                   </Badge>
                 </div>
@@ -5848,7 +5848,7 @@ export const SEOEditor = ({
                 {fkwContentRecommendations.length > 0 && (
                   <div className="mt-3 space-y-1">
                     {fkwContentRecommendations.map((rec, i) => (
-                      <p key={i} className={`text-xs ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
+                      <p key={i} className={`text-sm ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
                         {rec}
                       </p>
                     ))}
@@ -5861,7 +5861,7 @@ export const SEOEditor = ({
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
               <div className="mb-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-base font-medium text-foreground">
                     Content Optimization Suggestions:
                   </p>
                   <Button
@@ -5898,7 +5898,7 @@ export const SEOEditor = ({
                         <div className="flex-1 min-w-0 space-y-2">
                           {/* Type badge */}
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={`text-xs ${
+                            <Badge variant="outline" className={`text-sm ${
                               suggestion.suggestionType === 'heading' 
                                 ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
                                 : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
@@ -5907,18 +5907,18 @@ export const SEOEditor = ({
                                 ? `${suggestion.headingLevel?.toUpperCase()} Heading` 
                                 : 'Body Text'}
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
+                            <Badge variant="outline" className="text-sm bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
                               Segment {suggestion.segmentId}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-sm text-muted-foreground">
                               ({suggestion.segmentType})
                             </span>
                           </div>
                           
                           {/* Current text */}
-                          <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
-                            <span className="text-xs text-red-400 block mb-1">Current:</span>
-                            <p className="text-sm text-foreground/70 line-through">
+                          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded">
+                            <span className="text-sm text-red-400 block mb-1">Current:</span>
+                            <p className="text-base text-foreground/70 line-through">
                               {suggestion.currentText.length > 150 
                                 ? suggestion.currentText.substring(0, 150) + '...' 
                                 : suggestion.currentText}
@@ -5926,9 +5926,9 @@ export const SEOEditor = ({
                           </div>
                           
                           {/* Suggested text */}
-                          <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
-                            <span className="text-xs text-green-400 block mb-1">Suggested:</span>
-                            <p className="text-sm text-foreground font-medium">
+                          <div className="p-3 bg-green-500/10 border border-green-500/20 rounded">
+                            <span className="text-sm text-green-400 block mb-1">Suggested:</span>
+                            <p className="text-base text-foreground font-medium">
                               {data.focusKeyword 
                                 ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
                                 : suggestion.suggestedText}
@@ -5936,7 +5936,7 @@ export const SEOEditor = ({
                           </div>
                           
                           {/* Reason */}
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm text-muted-foreground mt-2">
                             {suggestion.reason}
                           </p>
                         </div>
@@ -5983,7 +5983,7 @@ export const SEOEditor = ({
                 {/* Summary after processing */}
                 {fkwContentSuggestions.every(s => s.applied || s.rejected) && fkwContentSuggestions.length > 0 && (
                   <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
-                    <p className="text-sm text-green-400 font-medium">
+                    <p className="text-base text-green-400 font-medium">
                       ✓ All suggestions processed! 
                       {fkwContentSuggestions.filter(s => s.applied).length} applied, 
                       {fkwContentSuggestions.filter(s => s.rejected).length} rejected.
