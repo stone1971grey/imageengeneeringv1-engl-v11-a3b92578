@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink } from "lucide-react";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -78,6 +79,7 @@ interface AdminHeaderProps {
   loadPageInfo: () => void;
   currentUser?: SupabaseUser | null;
   onPageStatusChange?: (newStatus: 'draft' | 'published') => void;
+  onFrontendEditingChange?: (enabled: boolean) => void;
 }
 
 export const AdminHeader = ({
@@ -106,9 +108,39 @@ export const AdminHeader = ({
   loadPageInfo,
   currentUser,
   onPageStatusChange,
+  onFrontendEditingChange,
 }: AdminHeaderProps) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const [isTogglingFrontendEditing, setIsTogglingFrontendEditing] = useState(false);
+
+  // Handle frontend editing toggle
+  const handleFrontendEditingToggle = async (enabled: boolean) => {
+    if (!pageInfo) return;
+    
+    setIsTogglingFrontendEditing(true);
+    try {
+      const { error } = await supabase
+        .from('page_registry')
+        .update({ frontend_editing_enabled: enabled })
+        .eq('page_id', pageInfo.pageId);
+      
+      if (error) throw error;
+      
+      toast.success(enabled 
+        ? `Frontend Editing für "${pageInfo.pageSlug}" aktiviert` 
+        : `Frontend Editing für "${pageInfo.pageSlug}" deaktiviert`
+      );
+      
+      onFrontendEditingChange?.(enabled);
+      loadPageInfo(); // Reload to get updated state
+    } catch (error: any) {
+      console.error('Error toggling frontend editing:', error);
+      toast.error('Failed to update Frontend Editing status');
+    } finally {
+      setIsTogglingFrontendEditing(false);
+    }
+  };
 
   const selectedDesignIconOption = pageInfo
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
@@ -408,24 +440,32 @@ export const AdminHeader = ({
                 Content Automation
               </Button>
             )}
-            {/* Frontend Editing - Admin always, requires selectedPage */}
+            {/* Frontend Editing - Admin only, with toggle and open button */}
             {isAdmin && (
-              <Button
-                variant="decision"
-                className={`flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white shadow-soft hover:shadow-lg ${!selectedPage ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={() => {
-                  if (selectedPage) {
-                    // Navigate to the page with ?edit=true to activate frontend editing
-                    const targetUrl = selectedPage === 'index' ? '/?edit=true' : `/${selectedPage}?edit=true`;
-                    window.open(targetUrl, '_blank');
-                  }
-                }}
-                disabled={!selectedPage}
-                title={!selectedPage ? 'Select a page first to activate Frontend Editing' : 'Open page in Frontend Editing mode'}
-              >
-                <MonitorSmartphone className="h-4 w-4" />
-                Frontend Editing
-              </Button>
+              <div className={`flex items-center gap-3 px-3 py-2 rounded-lg bg-cyan-600/10 border border-cyan-600/30 ${!selectedPage ? 'opacity-50' : ''}`}>
+                <MonitorSmartphone className="h-4 w-4 text-cyan-600 flex-shrink-0" />
+                <span className="text-sm font-medium text-cyan-700 whitespace-nowrap">Frontend Editing</span>
+                <Switch
+                  checked={pageInfo?.frontendEditingEnabled ?? false}
+                  onCheckedChange={handleFrontendEditingToggle}
+                  disabled={!selectedPage || isTogglingFrontendEditing}
+                  className="data-[state=checked]:bg-cyan-600"
+                />
+                {pageInfo?.frontendEditingEnabled && selectedPage && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 text-cyan-700 hover:text-cyan-800 hover:bg-cyan-100"
+                    onClick={() => {
+                      const targetUrl = selectedPage === 'index' ? '/?edit=true' : `/${selectedPage}?edit=true`;
+                      window.open(targetUrl, '_blank');
+                    }}
+                    title="Open page in Frontend Editing mode"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
             )}
           </CollapsibleSection>
 
