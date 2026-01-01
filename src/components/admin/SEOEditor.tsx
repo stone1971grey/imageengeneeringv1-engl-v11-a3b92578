@@ -509,6 +509,32 @@ export const SEOEditor = ({
         }
       }
 
+      // Load persisted applied external links
+      const { data: appliedExternalLinksData, error: appliedExternalLinksError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_applied_external_links')
+        .eq('language', editorLanguage)
+        .single();
+      
+      if (!appliedExternalLinksError && appliedExternalLinksData) {
+        try {
+          const parsedLinks = JSON.parse(appliedExternalLinksData.content_value);
+          if (Array.isArray(parsedLinks)) {
+            // Set suggestions with applied status for display in Advanced tab
+            setExternalLinkSuggestions(parsedLinks.map((link: any) => ({
+              ...link,
+              applied: true
+            })));
+            setShowExternalLinkSuggestions(true);
+            console.log('[SEO Editor] Loaded applied external links:', parsedLinks.length);
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse applied external links:', e);
+        }
+      }
+
       // Load persisted content suggestions
       const { data: contentSuggestionsData, error: contentSuggestionsError } = await supabase
         .from('page_content')
@@ -2039,6 +2065,37 @@ export const SEOEditor = ({
       updatedSuggestions[index] = { ...updatedSuggestions[index], applied: true };
       setExternalLinkSuggestions(updatedSuggestions);
 
+      // Persist applied external links to database
+      const appliedLinks = updatedSuggestions.filter(s => s.applied);
+      const { data: existingEntry } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_applied_external_links')
+        .eq('language', editorLanguage)
+        .single();
+
+      if (existingEntry) {
+        await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(appliedLinks),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingEntry.id);
+      } else {
+        await supabase
+          .from('page_content')
+          .insert({
+            page_slug: pageSlug,
+            section_key: 'seo_applied_external_links',
+            language: editorLanguage,
+            content_type: 'json',
+            content_value: JSON.stringify(appliedLinks)
+          });
+      }
+      console.log('[SEO Editor] Persisted applied external links:', appliedLinks.length);
+
       toast.success(`External link to "${suggestion.targetTitle}" applied!`);
     } catch (error) {
       console.error('[SEO Editor] Error applying external link:', error);
@@ -2148,6 +2205,28 @@ export const SEOEditor = ({
         const updatedSuggestions = [...externalLinkSuggestions];
         updatedSuggestions[index] = { ...updatedSuggestions[index], applied: false };
         setExternalLinkSuggestions(updatedSuggestions);
+
+        // Update persisted external links in database
+        const appliedLinks = updatedSuggestions.filter(s => s.applied);
+        const { data: existingEntry } = await supabase
+          .from('page_content')
+          .select('id')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_applied_external_links')
+          .eq('language', editorLanguage)
+          .single();
+
+        if (existingEntry) {
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(appliedLinks),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingEntry.id);
+        }
+        console.log('[SEO Editor] Updated persisted external links after removal:', appliedLinks.length);
+
         toast.success(`External link to "${suggestion.targetTitle}" removed`);
       } else {
         toast.error('Could not find the link to remove');
