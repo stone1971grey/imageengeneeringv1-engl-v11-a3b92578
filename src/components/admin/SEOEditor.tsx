@@ -589,6 +589,37 @@ export const SEOEditor = ({
           console.error('[SEO Editor] Failed to parse content suggestions:', e);
         }
       }
+
+      // Load persisted FKW content suggestions and analysis
+      const { data: fkwContentData, error: fkwContentError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_fkw_content_analysis')
+        .eq('language', editorLanguage)
+        .single();
+      
+      if (!fkwContentError && fkwContentData) {
+        try {
+          const parsed = JSON.parse(fkwContentData.content_value);
+          if (parsed.suggestions) {
+            setFkwContentSuggestions(parsed.suggestions);
+            setShowFkwContentSuggestions(true);
+          }
+          if (parsed.analysis) {
+            setFkwContentAnalysis(parsed.analysis);
+          }
+          if (parsed.score !== undefined) {
+            setFkwContentScore(parsed.score);
+          }
+          if (parsed.recommendations) {
+            setFkwContentRecommendations(parsed.recommendations);
+          }
+          console.log('[SEO Editor] Loaded FKW content analysis from DB:', parsed);
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse FKW content analysis:', e);
+        }
+      }
     };
     
     loadPageData();
@@ -3957,7 +3988,36 @@ export const SEOEditor = ({
 
   // FKW Content Optimizer - Generate suggestions
   const handleGenerateFkwContentSuggestions = async () => {
-    if (!data.focusKeyword) {
+    // Robust Focus Keyword handling - try to get from state, fallback to DB
+    let focusKeyword = data.focusKeyword;
+    
+    if (!focusKeyword) {
+      // Try to load from database directly
+      console.log('[SEO Editor] Focus keyword not in state, checking DB...');
+      const { data: seoData } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_settings')
+        .eq('language', editorLanguage)
+        .maybeSingle();
+      
+      if (seoData?.content_value) {
+        try {
+          const parsed = JSON.parse(seoData.content_value);
+          focusKeyword = parsed.focusKeyword || '';
+          if (focusKeyword) {
+            console.log('[SEO Editor] Loaded focus keyword from DB:', focusKeyword);
+            // Also update the state so it's available
+            onChange({ ...data, focusKeyword });
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse seo_settings:', e);
+        }
+      }
+    }
+    
+    if (!focusKeyword) {
       toast.error('Please define a Focus Keyword first');
       return;
     }
@@ -3969,12 +4029,12 @@ export const SEOEditor = ({
     setFkwContentRecommendations([]);
 
     try {
-      console.log('[SEO Editor] Generating FKW content suggestions...');
+      console.log('[SEO Editor] Generating FKW content suggestions with keyword:', focusKeyword);
       
       const response = await supabase.functions.invoke('generate-fkw-content-suggestions', {
         body: {
           pageSlug,
-          focusKeyword: data.focusKeyword,
+          focusKeyword, // Use the robust focusKeyword variable, not data.focusKeyword
           language: editorLanguage,
           pageSegments
         }
@@ -3997,6 +4057,46 @@ export const SEOEditor = ({
       setFkwContentScore(result.score || 0);
       setFkwContentRecommendations(result.recommendations || []);
       setShowFkwContentSuggestions(true);
+
+      // Persist the FKW content analysis to database
+      const fkwContentToSave = {
+        suggestions: result.suggestions || [],
+        analysis: result.analysis || null,
+        score: result.score || 0,
+        recommendations: result.recommendations || [],
+        generatedAt: new Date().toISOString(),
+        focusKeyword
+      };
+      
+      // Check if entry exists
+      const { data: existingEntry } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_fkw_content_analysis')
+        .eq('language', editorLanguage)
+        .maybeSingle();
+      
+      if (existingEntry) {
+        await supabase
+          .from('page_content')
+          .update({ 
+            content_value: JSON.stringify(fkwContentToSave),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingEntry.id);
+      } else {
+        await supabase
+          .from('page_content')
+          .insert({
+            page_slug: pageSlug,
+            section_key: 'seo_fkw_content_analysis',
+            content_type: 'json',
+            content_value: JSON.stringify(fkwContentToSave),
+            language: editorLanguage
+          });
+      }
+      console.log('[SEO Editor] Persisted FKW content analysis to DB');
 
       if ((result.suggestions || []).length === 0) {
         toast.info('Content is already well-optimized for the focus keyword!');
@@ -4100,13 +4200,41 @@ export const SEOEditor = ({
       }
       
       // Mark suggestion as applied
-      setFkwContentSuggestions(prev => 
-        prev.map((s, i) => i === index ? { ...s, applied: true } : s)
+      const updatedSuggestions = fkwContentSuggestions.map((s, i) => 
+        i === index ? { ...s, applied: true } : s
       );
+      setFkwContentSuggestions(updatedSuggestions);
+      
+      // Persist updated suggestions to database
+      const fkwContentToSave = {
+        suggestions: updatedSuggestions,
+        analysis: fkwContentAnalysis,
+        score: fkwContentScore,
+        recommendations: fkwContentRecommendations,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const { data: existingEntry } = await supabase
+        .from('page_content')
+        .select('id')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'seo_fkw_content_analysis')
+        .eq('language', editorLanguage)
+        .maybeSingle();
+      
+      if (existingEntry) {
+        await supabase
+          .from('page_content')
+          .update({ 
+            content_value: JSON.stringify(fkwContentToSave),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingEntry.id);
+      }
       
       toast.success(`Applied: "${suggestion.suggestedText.substring(0, 40)}..."`);
       
-      // Auto-save
+      // Auto-save SEO settings
       setTimeout(() => onSave(), 100);
       
     } catch (error) {
@@ -4118,10 +4246,39 @@ export const SEOEditor = ({
   };
 
   // FKW Content Optimizer - Reject suggestion
-  const handleRejectFkwContentSuggestion = (index: number) => {
-    setFkwContentSuggestions(prev => 
-      prev.map((s, i) => i === index ? { ...s, rejected: true } : s)
+  const handleRejectFkwContentSuggestion = async (index: number) => {
+    const updatedSuggestions = fkwContentSuggestions.map((s, i) => 
+      i === index ? { ...s, rejected: true } : s
     );
+    setFkwContentSuggestions(updatedSuggestions);
+    
+    // Persist updated suggestions to database
+    const fkwContentToSave = {
+      suggestions: updatedSuggestions,
+      analysis: fkwContentAnalysis,
+      score: fkwContentScore,
+      recommendations: fkwContentRecommendations,
+      updatedAt: new Date().toISOString()
+    };
+    
+    const { data: existingEntry } = await supabase
+      .from('page_content')
+      .select('id')
+      .eq('page_slug', pageSlug)
+      .eq('section_key', 'seo_fkw_content_analysis')
+      .eq('language', editorLanguage)
+      .maybeSingle();
+    
+    if (existingEntry) {
+      await supabase
+        .from('page_content')
+        .update({ 
+          content_value: JSON.stringify(fkwContentToSave),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingEntry.id);
+    }
+    
     toast.info('Suggestion rejected');
   };
 
