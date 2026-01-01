@@ -442,14 +442,14 @@ export const AdminHeader = ({
             )}
             {/* Frontend Editing - Admin only, with toggle and open button */}
             {isAdmin && (
-              <div className={`flex items-center gap-3 px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 h-10 ${!selectedPage ? 'opacity-50' : ''}`}>
-                <MonitorSmartphone className="h-4 w-4 text-white flex-shrink-0" />
-                <span className="text-sm font-medium text-white whitespace-nowrap">Frontend Editing</span>
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-700 border border-emerald-600 h-10 ${!selectedPage ? 'opacity-50' : ''}`}>
+                <MonitorSmartphone className="h-5 w-5 text-white flex-shrink-0" />
+                <span className="text-base font-medium text-white whitespace-nowrap">Frontend Editing</span>
                 <Switch
                   checked={pageInfo?.frontendEditingEnabled ?? false}
                   onCheckedChange={handleFrontendEditingToggle}
                   disabled={!selectedPage || isTogglingFrontendEditing}
-                  className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-500 [&>span]:data-[state=checked]:bg-zinc-900 [&>span]:data-[state=unchecked]:bg-white"
+                  className="data-[state=checked]:bg-white data-[state=unchecked]:bg-emerald-900 [&>span]:data-[state=checked]:bg-emerald-700 [&>span]:data-[state=unchecked]:bg-white"
                 />
                 {/* Fixed width container for the button to prevent layout shift */}
                 <div className="w-7 h-7 flex-shrink-0 flex items-center justify-center">
@@ -457,14 +457,14 @@ export const AdminHeader = ({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 w-7 p-0 text-white hover:text-zinc-200 hover:bg-zinc-700"
+                      className="h-7 w-7 p-0 text-white hover:text-emerald-100 hover:bg-emerald-600"
                       onClick={() => {
                         const targetUrl = selectedPage === 'index' ? '/?edit=true' : `/${selectedPage}?edit=true`;
                         window.open(targetUrl, '_blank');
                       }}
                       title="Open page in Frontend Editing mode"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <ExternalLink className="h-4 w-4" />
                     </Button>
                   ) : null}
                 </div>
