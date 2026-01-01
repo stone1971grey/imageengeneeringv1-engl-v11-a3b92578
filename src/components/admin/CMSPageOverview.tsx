@@ -147,18 +147,24 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
       
-      // Find the second most recently edited page (not the current one being viewed)
-      // We get the top 2 and use the second one, as the first is likely the page currently open
+      // Find the most recently edited page based on actual content changes
+      // Exclude technical entries like seo_settings, seo_fkw_*, footer_*, tab_order etc.
       const { data: latestEditDataList } = await supabase
         .from("page_content")
-        .select("page_slug, updated_at")
+        .select("page_slug, section_key, updated_at")
         .order("updated_at", { ascending: false })
-        .limit(10);
+        .limit(50);
       
-      // Get unique page slugs from recent edits
+      // Filter to only include actual content edits (page_segments or segment-* entries)
+      const contentEditPatterns = ['page_segments', 'segment-'];
+      const actualContentEdits = (latestEditDataList || []).filter(edit => 
+        contentEditPatterns.some(pattern => edit.section_key.startsWith(pattern))
+      );
+      
+      // Get unique page slugs from recent content edits
       const uniqueRecentEdits: { page_slug: string; updated_at: string }[] = [];
       const seenSlugs = new Set<string>();
-      for (const edit of latestEditDataList || []) {
+      for (const edit of actualContentEdits) {
         if (!seenSlugs.has(edit.page_slug)) {
           seenSlugs.add(edit.page_slug);
           uniqueRecentEdits.push(edit);
@@ -166,7 +172,7 @@ export const CMSPageOverview = () => {
         if (uniqueRecentEdits.length >= 2) break;
       }
       
-      // Use the second unique page (the one edited before the current)
+      // Use the second unique page (the one edited before the current), or first if only one
       const latestEditData = uniqueRecentEdits.length >= 2 ? uniqueRecentEdits[1] : uniqueRecentEdits[0] || null;
       const latestEditedSlug = latestEditData?.page_slug || null;
       const latestEditedTime = latestEditData?.updated_at || null;
