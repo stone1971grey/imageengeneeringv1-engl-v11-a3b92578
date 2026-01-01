@@ -332,6 +332,22 @@ export const SEOEditor = ({
   const [fkwContentRecommendations, setFkwContentRecommendations] = useState<string[]>([]);
   const [isApplyingFkwContent, setIsApplyingFkwContent] = useState<number | null>(null);
   
+  // Smart H2 Generator state
+  const [isGeneratingH2, setIsGeneratingH2] = useState(false);
+  const [h2Suggestions, setH2Suggestions] = useState<Array<{
+    originalText: string;
+    suggestedText: string;
+    segmentId: number | null;
+    segmentType: string;
+    segmentKey: string | null;
+    reason: string;
+    characterCount: number;
+    priority: number;
+    applied?: boolean;
+  }>>([]);
+  const [showH2Suggestions, setShowH2Suggestions] = useState(false);
+  const [isApplyingH2, setIsApplyingH2] = useState<number | null>(null);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -3129,6 +3145,219 @@ export const SEOEditor = ({
       toast.error('Unexpected error generating H1');
     } finally {
       setIsGeneratingH1(false);
+    }
+  };
+
+  // Generate Smart H2 Headlines using AI
+  const handleGenerateH2Headlines = async () => {
+    setIsGeneratingH2(true);
+    setH2Suggestions([]);
+    setShowH2Suggestions(false);
+
+    if (!data.focusKeyword) {
+      toast.error('Please define a Focus Keyword first');
+      setIsGeneratingH2(false);
+      return;
+    }
+
+    try {
+      // Get existing H2 headings from page segments
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      let existingH2s: Array<{ text: string; segmentType: string; segmentId: number | string; segmentKey: string }> = [];
+      let availableSegments: Array<{ type: string; key: string; id: string | number }> = [];
+      
+      if (pageSegmentsEntry) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          availableSegments = segments.map((seg: any) => ({
+            type: seg.type || seg.segmentType || 'unknown',
+            key: seg.segmentKey || seg.id || '',
+            id: seg.segmentId || seg.id || seg.segmentKey || ''
+          }));
+          
+          // Extract H2 headings from each segment type
+          segments.forEach((seg: any) => {
+            const segData = seg.data || seg;
+            const segType = seg.type || '';
+            const segId = seg.segmentId || seg.id || '';
+            const segKey = seg.segmentKey || seg.id || '';
+            
+            // Image-Text segments
+            if (segType === 'image-text') {
+              const items = segData.items || [];
+              items.forEach((item: any, itemIndex: number) => {
+                const headingLevel = item.headingLevel || 'h2';
+                if (headingLevel === 'h2' && item.title) {
+                  existingH2s.push({
+                    text: item.title,
+                    segmentType: segType,
+                    segmentId: segId,
+                    segmentKey: segKey
+                  });
+                }
+              });
+            }
+            
+            // Feature overview, tiles, table, faq - their titles are typically H2
+            if (['feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+              if (segData.title) {
+                existingH2s.push({
+                  text: segData.title,
+                  segmentType: segType,
+                  segmentId: segId,
+                  segmentKey: segKey
+                });
+              }
+            }
+          });
+          
+          console.log('[SEO Editor] Extracted H2 headings:', existingH2s);
+        } catch (parseError) {
+          console.error('[SEO Editor] Failed to parse page_segments:', parseError);
+        }
+      }
+
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        h1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+      };
+
+      console.log('[SEO Editor] Generating H2 headlines with data:', { pageData, existingH2s: existingH2s.length });
+
+      const { data: result, error } = await supabase.functions.invoke('generate-h2-headlines', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword,
+          existingH2s,
+          segments: availableSegments
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating H2:', error);
+        toast.error('Error generating H2: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated H2 suggestions:', result.suggestions);
+        setH2Suggestions(result.suggestions);
+        setShowH2Suggestions(true);
+        toast.success(`${result.suggestions.length} H2 suggestions generated`);
+      } else {
+        toast.error('No H2 suggestions generated');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unexpected error generating H2');
+    } finally {
+      setIsGeneratingH2(false);
+    }
+  };
+
+  // Apply Smart H2 suggestion to segment
+  const handleApplyH2Suggestion = async (suggestion: typeof h2Suggestions[0], index: number) => {
+    setIsApplyingH2(index);
+    
+    try {
+      // Get current page_segments from database
+      const { data: contentData } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (!contentData) {
+        toast.error('Page segments not found');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      let updated = false;
+      
+      // Find and update the H2 in the correct segment
+      segments = segments.map((seg: any) => {
+        if (String(seg.segmentId || seg.id) === String(suggestion.segmentId)) {
+          const segData = seg.data || seg;
+          const segType = seg.type || '';
+          
+          // Handle image-text segments
+          if (segType === 'image-text' && segData.items) {
+            segData.items = segData.items.map((item: any) => {
+              if (item.title === suggestion.originalText) {
+                updated = true;
+                return { ...item, title: suggestion.suggestedText };
+              }
+              return item;
+            });
+          }
+          
+          // Handle segments with title field (feature-overview, tiles, table, faq)
+          if (['feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+            if (segData.title === suggestion.originalText) {
+              segData.title = suggestion.suggestedText;
+              updated = true;
+            }
+          }
+          
+          return { ...seg, data: segData };
+        }
+        return seg;
+      });
+      
+      if (!updated) {
+        toast.error('Could not find the H2 to update');
+        return;
+      }
+      
+      // Save back to database
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (saveError) {
+        toast.error('Failed to save: ' + saveError.message);
+        return;
+      }
+      
+      // Update suggestion state
+      setH2Suggestions(prev => prev.map((s, i) => 
+        i === index ? { ...s, applied: true } : s
+      ));
+      
+      // Refresh page content from database
+      const { data: refreshedContent } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
+      
+      if (refreshedContent) {
+        setPageContent(refreshedContent);
+      }
+      
+      toast.success('H2 updated successfully!');
+    } catch (error) {
+      console.error('[SEO Editor] Error applying H2:', error);
+      toast.error('Failed to apply H2 suggestion');
+    } finally {
+      setIsApplyingH2(null);
     }
   };
 
@@ -6523,6 +6752,159 @@ export const SEOEditor = ({
               </div>
               );
             })()}
+
+            {/* Smart H2 Generator */}
+            {fkwContentAnalysis && fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw < fkwContentAnalysis.h2Count && (
+              <div className="mb-4 p-4 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-base font-semibold text-foreground">
+                      Smart H2 Generator
+                    </Label>
+                    <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30">
+                      AI-Powered
+                    </Badge>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
+                    {fkwContentAnalysis.h2Count - fkwContentAnalysis.h2WithFkw} H2s ohne FKW
+                  </Badge>
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-4">
+                  {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count} H2-Überschriften enthalten das Focus Keyword. 
+                  Generiere optimierte H2-Vorschläge, die das FKW natürlich integrieren.
+                </p>
+                
+                {/* H2 Suggestions List */}
+                {showH2Suggestions && h2Suggestions.length > 0 && (
+                  <div className="mb-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground">
+                        H2 Optimization Suggestions:
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowH2Suggestions(false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {h2Suggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className={`p-3 rounded-lg border transition-all ${
+                            suggestion.applied 
+                              ? 'bg-green-500/10 border-green-500/30' 
+                              : 'bg-muted/30 border-border/50 hover:border-teal-500/30'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            {/* Priority indicator */}
+                            <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                              suggestion.applied 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-gradient-to-br from-teal-500/20 to-cyan-500/20 text-teal-400'
+                            }`}>
+                              {suggestion.applied ? '✓' : suggestion.priority}
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 min-w-0 space-y-2">
+                              {/* Type badge */}
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30">
+                                  H2 Heading
+                                </Badge>
+                                <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
+                                  {suggestion.segmentType}
+                                </Badge>
+                              </div>
+                              
+                              {/* Original text */}
+                              <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
+                                <span className="text-xs text-red-400 block mb-1">Original:</span>
+                                <p className="text-sm text-foreground/70 line-through">
+                                  {suggestion.originalText}
+                                </p>
+                              </div>
+                              
+                              {/* Suggested text */}
+                              <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
+                                <span className="text-xs text-green-400 block mb-1">Optimiert:</span>
+                                <p className="text-sm text-foreground font-medium">
+                                  {data.focusKeyword 
+                                    ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
+                                    : suggestion.suggestedText}
+                                </p>
+                                <span className="text-xs text-muted-foreground mt-1 block">
+                                  {suggestion.characterCount} Zeichen
+                                </span>
+                              </div>
+                              
+                              {/* Reason */}
+                              <p className="text-xs text-muted-foreground">
+                                {suggestion.reason}
+                              </p>
+                            </div>
+                            
+                            {/* Action button */}
+                            {!suggestion.applied && (
+                              <Button
+                                onClick={() => handleApplyH2Suggestion(suggestion, index)}
+                                disabled={isApplyingH2 === index}
+                                size="sm"
+                                className="h-8 px-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                              >
+                                {isApplyingH2 === index ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1" />
+                                    Apply
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                            {suggestion.applied && (
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                Applied ✓
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Generate Button */}
+                <Button
+                  onClick={handleGenerateH2Headlines}
+                  disabled={isGeneratingH2 || !data.focusKeyword}
+                  className="w-full h-10 relative overflow-hidden bg-gradient-to-r from-teal-600 via-cyan-500 to-teal-600 hover:from-teal-700 hover:via-cyan-600 hover:to-teal-700 text-white shadow-lg shadow-teal-500/20 transition-all duration-300"
+                  style={{
+                    backgroundSize: '200% 100%',
+                    animation: isGeneratingH2 ? 'none' : 'shimmer 3s ease-in-out infinite',
+                  }}
+                >
+                  {isGeneratingH2 ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Analyzing H2s...
+                    </>
+                  ) : (
+                    <>
+                      <GeminiIcon className="h-4 w-4 mr-2" />
+                      Smart H2 Generator
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
 
             {/* Single Suggestions List - v2.0 */}
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (

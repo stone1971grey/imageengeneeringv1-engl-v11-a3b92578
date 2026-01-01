@@ -68,3 +68,6 @@ verify_jwt = false
 
 [functions.generate-fkw-content-suggestions]
 verify_jwt = true
+
+[functions.generate-h2-headlines]
+verify_jwt = true
