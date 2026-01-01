@@ -5892,67 +5892,110 @@ export const SEOEditor = ({
                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                   Suggestions (neutral, authoritative sources only):
                 </p>
-                {externalLinkSuggestions.map((suggestion, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`p-4 rounded-lg border transition-all ${
-                      suggestion.applied 
-                        ? 'bg-green-500/10 border-green-500/30' 
-                        : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-2">
-                          <span className="font-medium text-foreground">"{suggestion.anchorText}"</span>
-                          <span className="text-muted-foreground">→</span>
-                          <a 
-                            href={suggestion.targetUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-emerald-400 hover:text-emerald-300 text-sm truncate max-w-[250px] flex items-center gap-1"
-                          >
-                            {suggestion.targetTitle}
-                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-xs bg-muted/30">
-                            {suggestion.segmentType}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                            {suggestion.sourceType}
-                          </Badge>
-                          {suggestion.segmentId && (
-                            <span className="text-xs text-muted-foreground">
-                              Segment {suggestion.segmentId}
-                            </span>
+                {externalLinkSuggestions.map((suggestion, idx) => {
+                  // Map sourceType to clear display labels with icons
+                  const sourceTypeLabels: Record<string, { label: string; color: string }> = {
+                    'academic': { label: '🎓 Academic Research', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
+                    'standards': { label: '📐 Industry Standard', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
+                    'knowledge': { label: '📚 Knowledge Base', color: 'bg-purple-500/10 text-purple-400 border-purple-500/30' },
+                    'government': { label: '🏛️ Government/Official', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' },
+                    'technical': { label: '⚙️ Technical Docs', color: 'bg-gray-500/10 text-gray-400 border-gray-500/30' },
+                  };
+                  const sourceInfo = sourceTypeLabels[suggestion.sourceType] || { 
+                    label: `📎 ${suggestion.sourceType || 'Resource'}`, 
+                    color: 'bg-muted/30 text-muted-foreground border-border' 
+                  };
+
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`p-4 rounded-lg border transition-all ${
+                        suggestion.applied 
+                          ? 'bg-green-500/10 border-green-500/30' 
+                          : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          {/* Source segment info */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="text-xs bg-background border-primary/30 text-primary font-mono">
+                              Segment #{suggestion.segmentId || '?'}
+                            </Badge>
+                            {suggestion.segmentType && suggestion.segmentType !== 'unknown' && (
+                              <span className="text-xs text-muted-foreground">
+                                ({suggestion.segmentType})
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Anchor text */}
+                          <div className="flex items-start gap-2 mb-2">
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">Link text:</span>
+                            <span className="font-medium text-foreground text-sm">"{suggestion.anchorText}"</span>
+                          </div>
+
+                          {/* Target URL - show full URL */}
+                          <div className="flex items-start gap-2 mb-2">
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">Target URL:</span>
+                            <a 
+                              href={suggestion.targetUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-emerald-400 hover:text-emerald-300 text-sm break-all flex items-start gap-1"
+                            >
+                              {suggestion.targetUrl}
+                              <ExternalLink className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                            </a>
+                          </div>
+
+                          {/* Target page title / description */}
+                          {suggestion.targetTitle && suggestion.targetTitle !== suggestion.targetUrl && (
+                            <div className="flex items-start gap-2 mb-2">
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">Page title:</span>
+                              <span className="text-sm text-foreground/80">{suggestion.targetTitle}</span>
+                            </div>
+                          )}
+
+                          {/* Source type badge */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className={`text-xs ${sourceInfo.color}`}>
+                              {sourceInfo.label}
+                            </Badge>
+                          </div>
+
+                          {/* Reason / summary */}
+                          {suggestion.reason && (
+                            <div className="mt-2 p-2 bg-muted/30 rounded-md">
+                              <p className="text-xs text-muted-foreground">
+                                <strong>Why link here:</strong> {suggestion.reason}
+                              </p>
+                            </div>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">{suggestion.reason}</p>
+                        <Button
+                          size="sm"
+                          variant={suggestion.applied ? "outline" : "default"}
+                          disabled={suggestion.applied}
+                          onClick={() => handleApplyExternalLink(suggestion, idx)}
+                          className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
+                        >
+                          {suggestion.applied ? (
+                            <>
+                              <Check className="h-4 w-4 mr-1" />
+                              Applied
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-1" />
+                              Apply
+                            </>
+                          )}
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant={suggestion.applied ? "outline" : "default"}
-                        disabled={suggestion.applied}
-                        onClick={() => handleApplyExternalLink(suggestion, idx)}
-                        className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
-                      >
-                        {suggestion.applied ? (
-                          <>
-                            <Check className="h-4 w-4 mr-1" />
-                            Applied
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-1" />
-                            Apply
-                          </>
-                        )}
-                      </Button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
