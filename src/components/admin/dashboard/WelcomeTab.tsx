@@ -46,21 +46,49 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               </div>
             </div>
 
-            {/* Core Features Grid */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Core Features</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* v0.5 Foundation */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.5 – Foundation</h3>
+              <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
                 <FeatureItem icon={Layers} label="Modular Segments" />
                 <FeatureItem icon={Languages} label="Multi-Language" />
+                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+              </div>
+            </div>
+
+            {/* v0.6 Translation */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.6 – Translation</h3>
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
                 <FeatureItem icon={Book} label="Translation Glossary" />
                 <FeatureItem icon={Sparkles} label="Auto Translation" />
-                <FeatureItem icon={FolderOpen} label="Media Management" />
+              </div>
+            </div>
+
+            {/* v0.7 Content Types */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.7 – Content Types</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <FeatureItem icon={Newspaper} label="News Management" />
                 <FeatureItem icon={Calendar} label="Event Management" />
+                <FeatureItem icon={FolderOpen} label="Media Management" />
+                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
+              </div>
+            </div>
+
+            {/* v0.8 Extended Content */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.8 – Extended Content</h3>
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
                 <FeatureItem icon={Target} label="Product Management" />
                 <FeatureItem icon={Download} label="Download Management" />
-                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
-                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+              </div>
+            </div>
+
+            {/* v0.9 Advanced Features */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.9 – Advanced Features</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <FeatureItem icon={Eye} label="SEO Suite" />
                 <FeatureItem icon={Shield} label="User Management" />
                 <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
@@ -69,11 +97,11 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
             </div>
 
             {/* v1.0 Release Highlights */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
-                🍾 Version 1.0.0 – Release Highlights
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
+                🍾 v1.0.0 – Release Highlights
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
                 <FeatureItem icon={Wand2} label="AI SEO-Suite" />
                 <FeatureItem icon={Clock} label="Latest Edit" />
