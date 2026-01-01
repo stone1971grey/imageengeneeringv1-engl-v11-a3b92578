@@ -602,10 +602,106 @@ export const SEOEditor = ({
       if (!fkwContentError && fkwContentData) {
         try {
           const parsed = JSON.parse(fkwContentData.content_value);
-          if (parsed.suggestions) {
-            setFkwContentSuggestions(parsed.suggestions);
+          const loadedSuggestions = parsed.suggestions || [];
+          const focusKw = parsed.focusKeyword || '';
+          
+          // If we have a focus keyword but no applied suggestions, try to detect them from segments
+          if (focusKw && loadedSuggestions.filter((s: any) => s.applied).length === 0 && pageSegments.length > 0) {
+            console.log('[SEO Editor] No applied suggestions found, scanning segments for FKW occurrences...');
+            const detectedApplied: typeof loadedSuggestions = [];
+            const fkwLower = focusKw.toLowerCase();
+            
+            for (const seg of pageSegments) {
+              const segId = parseInt(seg.id);
+              const segType = seg.type;
+              const segData = seg.data || {};
+              
+              // Check intro segment
+              if (segType === 'intro') {
+                if (segData.headline && segData.headline.toLowerCase().includes(fkwLower)) {
+                  detectedApplied.push({
+                    suggestionType: 'heading',
+                    headingLevel: 'h2',
+                    currentText: '(detected)',
+                    suggestedText: segData.headline,
+                    segmentKey: `segment-${segId}`,
+                    segmentId: segId,
+                    segmentType: segType,
+                    fieldPath: 'headline',
+                    reason: 'Focus keyword detected in H2 headline',
+                    priority: 1,
+                    applied: true
+                  });
+                }
+                if (segData.introText) {
+                  const cleanText = segData.introText.replace(/<[^>]*>/g, '');
+                  if (cleanText.toLowerCase().includes(fkwLower)) {
+                    detectedApplied.push({
+                      suggestionType: 'body',
+                      currentText: '(detected)',
+                      suggestedText: cleanText.substring(0, 150) + (cleanText.length > 150 ? '...' : ''),
+                      segmentKey: `segment-${segId}`,
+                      segmentId: segId,
+                      segmentType: segType,
+                      fieldPath: 'introText',
+                      reason: 'Focus keyword detected in intro text',
+                      priority: 2,
+                      applied: true
+                    });
+                  }
+                }
+              }
+              
+              // Check image-text segments
+              if (segType === 'image-text' && segData.items) {
+                for (let i = 0; i < segData.items.length; i++) {
+                  const item = segData.items[i];
+                  if (item.title && item.title.toLowerCase().includes(fkwLower)) {
+                    detectedApplied.push({
+                      suggestionType: 'heading',
+                      headingLevel: 'h2',
+                      currentText: '(detected)',
+                      suggestedText: item.title,
+                      segmentKey: `segment-${segId}`,
+                      segmentId: segId,
+                      segmentType: segType,
+                      fieldPath: `items[${i}].title`,
+                      reason: 'Focus keyword detected in image-text title',
+                      priority: 3,
+                      applied: true
+                    });
+                  }
+                  if (item.description) {
+                    const cleanDesc = item.description.replace(/<[^>]*>/g, '');
+                    if (cleanDesc.toLowerCase().includes(fkwLower)) {
+                      detectedApplied.push({
+                        suggestionType: 'body',
+                        currentText: '(detected)',
+                        suggestedText: cleanDesc.substring(0, 150) + (cleanDesc.length > 150 ? '...' : ''),
+                        segmentKey: `segment-${segId}`,
+                        segmentId: segId,
+                        segmentType: segType,
+                        fieldPath: `items[${i}].description`,
+                        reason: 'Focus keyword detected in description',
+                        priority: 4,
+                        applied: true
+                      });
+                    }
+                  }
+                }
+              }
+            }
+            
+            if (detectedApplied.length > 0) {
+              console.log('[SEO Editor] Detected', detectedApplied.length, 'FKW occurrences in segments');
+              setFkwContentSuggestions(detectedApplied);
+              setShowFkwContentSuggestions(true);
+            }
+          } else if (loadedSuggestions.length > 0) {
+            setFkwContentSuggestions(loadedSuggestions);
             setShowFkwContentSuggestions(true);
           }
+          
           if (parsed.analysis) {
             setFkwContentAnalysis(parsed.analysis);
           }
