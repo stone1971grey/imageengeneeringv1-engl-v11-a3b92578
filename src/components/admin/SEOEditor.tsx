@@ -4397,6 +4397,147 @@ export const SEOEditor = ({
     toast.info('Suggestion rejected');
   };
 
+  // Helper function to recalculate FKW analysis from current page content
+  const recalculateFkwAnalysis = async (segments: any[], focusKeyword: string): Promise<{
+    totalWords: number;
+    fkwOccurrences: number;
+    fkwDensity: number;
+    densityStatus: 'too_low' | 'optimal' | 'too_high';
+    h1HasFkw: boolean;
+    h2Count: number;
+    h2WithFkw: number;
+    h3Count: number;
+    h3WithFkw: number;
+    introHasFkw: boolean;
+  }> => {
+    const keywordLower = focusKeyword.toLowerCase();
+    let totalWords = 0;
+    let fkwOccurrences = 0;
+    let h1HasFkw = false;
+    let h2Count = 0;
+    let h2WithFkw = 0;
+    let h3Count = 0;
+    let h3WithFkw = 0;
+    let introHasFkw = false;
+
+    // Helper to count words and FKW occurrences in text
+    const analyzeText = (text: string, isH1 = false, isH2 = false, isH3 = false, isIntro = false) => {
+      if (!text || typeof text !== 'string') return;
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+      totalWords += words.length;
+      
+      // Count FKW occurrences (case insensitive)
+      const textLower = text.toLowerCase();
+      let searchIndex = 0;
+      while (true) {
+        const found = textLower.indexOf(keywordLower, searchIndex);
+        if (found === -1) break;
+        fkwOccurrences++;
+        searchIndex = found + keywordLower.length;
+      }
+      
+      const hasFkw = textLower.includes(keywordLower);
+      if (isH1 && hasFkw) h1HasFkw = true;
+      if (isH2) {
+        h2Count++;
+        if (hasFkw) h2WithFkw++;
+      }
+      if (isH3) {
+        h3Count++;
+        if (hasFkw) h3WithFkw++;
+      }
+      if (isIntro && hasFkw) introHasFkw = true;
+    };
+
+    // Analyze each segment
+    segments.forEach(seg => {
+      const segData = seg.data || seg;
+      const segType = seg.type || seg.segment_type || '';
+      
+      // Hero segments (H1)
+      if (segType.includes('hero') || segType.includes('product-hero')) {
+        analyzeText(segData.title || segData.hero_title || '', true);
+        analyzeText(segData.subtitle || segData.hero_subtitle || '');
+        analyzeText(segData.description || '');
+      }
+      
+      // Intro segments
+      if (segType === 'intro') {
+        analyzeText(segData.headline || segData.title || '', true);
+        analyzeText(segData.introText || segData.description || '', false, false, false, true);
+      }
+      
+      // Image-Text segments
+      if (segType === 'image-text') {
+        const items = segData.items || [];
+        items.forEach((item: any) => {
+          const headingLevel = item.headingLevel || 'h2';
+          analyzeText(item.title || '', false, headingLevel === 'h2', headingLevel === 'h3');
+          analyzeText(item.description || '');
+        });
+      }
+      
+      // Feature overview
+      if (segType === 'feature-overview') {
+        analyzeText(segData.title || '', false, true);
+        analyzeText(segData.subtext || '');
+        const items = segData.items || [];
+        items.forEach((item: any) => {
+          analyzeText(item.title || '', false, false, true);
+          analyzeText(item.description || '');
+        });
+      }
+      
+      // FAQ segments
+      if (segType === 'faq') {
+        analyzeText(segData.title || '', false, true);
+        const items = segData.items || [];
+        items.forEach((item: any) => {
+          analyzeText(item.question || '', false, false, true);
+          analyzeText(item.answer || '');
+        });
+      }
+      
+      // Table segments
+      if (segType === 'table') {
+        analyzeText(segData.title || '', false, true);
+        analyzeText(segData.description || segData.subtext || '');
+      }
+      
+      // Tiles segments
+      if (segType === 'tiles') {
+        analyzeText(segData.title || '', false, true);
+        analyzeText(segData.description || '');
+        const items = segData.items || [];
+        items.forEach((item: any) => {
+          analyzeText(item.title || '', false, false, true);
+          analyzeText(item.description || '');
+        });
+      }
+    });
+
+    const fkwDensity = totalWords > 0 ? (fkwOccurrences / totalWords) * 100 : 0;
+    let densityStatus: 'too_low' | 'optimal' | 'too_high' = 'too_low';
+    if (fkwDensity >= 0.5 && fkwDensity <= 2.5) {
+      densityStatus = 'optimal';
+    } else if (fkwDensity > 2.5) {
+      densityStatus = 'too_high';
+    }
+
+    return {
+      totalWords,
+      fkwOccurrences,
+      fkwDensity,
+      densityStatus,
+      h1HasFkw,
+      h2Count,
+      h2WithFkw,
+      h3Count,
+      h3WithFkw,
+      introHasFkw
+    };
+  };
+
   // FKW Content Optimizer - Remove/Revert an applied suggestion
   const handleRemoveFkwContentSuggestion = async (suggestion: typeof fkwContentSuggestions[0], index: number) => {
     try {
@@ -4486,7 +4627,36 @@ export const SEOEditor = ({
       const updatedSuggestions = fkwContentSuggestions.filter((_, i) => i !== index);
       setFkwContentSuggestions(updatedSuggestions);
       
-      // Persist updated suggestions to database
+      // CRITICAL: Dynamically recalculate FKW analysis after removing optimization
+      const focusKeyword = data.focusKeyword || '';
+      if (focusKeyword) {
+        console.log('[SEO Editor] Recalculating FKW analysis after removal...');
+        const newAnalysis = await recalculateFkwAnalysis(segments, focusKeyword);
+        setFkwContentAnalysis(newAnalysis);
+        
+        // Recalculate score based on new analysis
+        let newScore = 0;
+        if (newAnalysis.densityStatus === 'optimal') newScore += 30;
+        else if (newAnalysis.densityStatus === 'too_low' && newAnalysis.fkwDensity >= 0.3) newScore += 15;
+        if (newAnalysis.h1HasFkw) newScore += 20;
+        if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw > 0) newScore += 15;
+        if (newAnalysis.introHasFkw) newScore += 20;
+        if (newAnalysis.fkwOccurrences >= 3) newScore += 15;
+        setFkwContentScore(Math.min(100, newScore));
+        
+        // Update recommendations based on new analysis
+        const newRecommendations: string[] = [];
+        if (!newAnalysis.h1HasFkw) newRecommendations.push('Add focus keyword to H1 headline');
+        if (newAnalysis.densityStatus === 'too_low') newRecommendations.push('Increase keyword usage in content');
+        if (newAnalysis.densityStatus === 'too_high') newRecommendations.push('Reduce keyword usage to avoid over-optimization');
+        if (!newAnalysis.introHasFkw) newRecommendations.push('Add focus keyword to introduction text');
+        if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw === 0) newRecommendations.push('Include focus keyword in at least one H2 heading');
+        setFkwContentRecommendations(newRecommendations);
+        
+        console.log('[SEO Editor] Updated FKW analysis:', newAnalysis);
+      }
+      
+      // Persist updated suggestions and analysis to database
       const fkwContentToSave = {
         suggestions: updatedSuggestions,
         analysis: fkwContentAnalysis,
