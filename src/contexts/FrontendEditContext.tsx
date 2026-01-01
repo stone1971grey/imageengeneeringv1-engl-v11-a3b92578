@@ -114,6 +114,35 @@ export const FrontendEditProvider: React.FC<{
       console.log('[FrontendEdit] Starting permission check...');
       
       try {
+        // FIRST: Check if frontend editing is enabled for this PAGE in page_registry
+        const { data: pageRegistry, error: pageRegistryError } = await supabase
+          .from('page_registry')
+          .select('frontend_editing_enabled')
+          .eq('page_slug', pageSlug)
+          .maybeSingle();
+        
+        if (pageRegistryError) {
+          console.warn('[FrontendEdit] Page registry check error (non-critical):', pageRegistryError);
+        }
+        
+        const pageHasFrontendEditingEnabled = pageRegistry?.frontend_editing_enabled ?? false;
+        console.log('[FrontendEdit] Page frontend_editing_enabled:', pageHasFrontendEditingEnabled, 'for page:', pageSlug);
+        
+        // If page-level toggle is OFF, no one can edit (not even admins via frontend)
+        if (!pageHasFrontendEditingEnabled) {
+          console.log('[FrontendEdit] Frontend editing is disabled for this page via page_registry toggle');
+          if (isMounted) {
+            setCanEdit(false);
+            setCanApprove(false);
+            setIsAdmin(false);
+            setIsEditor(false);
+            setFrontendEditingEnabled(false);
+            setUserId(null);
+            setIsLoading(false);
+          }
+          return;
+        }
+        
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -169,8 +198,8 @@ export const FrontendEditProvider: React.FC<{
         const userIsEditor = !!editorRole;
         setIsEditor(userIsEditor);
         
-        // Check if frontend editing is enabled for this editor
-        let hasFrontendEditing = false;
+        // Check if frontend editing is enabled for this editor (user-level permission)
+        let userHasFrontendEditing = false;
         if (userIsEditor) {
           const { data: pageAccess, error: accessError } = await supabase
             .from('editor_page_access')
@@ -184,19 +213,24 @@ export const FrontendEditProvider: React.FC<{
             console.warn('[FrontendEdit] Page access check error (non-critical):', accessError);
           }
           
-          hasFrontendEditing = !!pageAccess?.frontend_editing_enabled;
+          userHasFrontendEditing = !!pageAccess?.frontend_editing_enabled;
         }
         
         if (!isMounted) return;
         
-        setFrontendEditingEnabled(hasFrontendEditing);
+        setFrontendEditingEnabled(userHasFrontendEditing);
         
-        // Admins can always edit and approve
-        // Editors can edit if frontend editing is enabled, but only admins can approve
-        setCanEdit(userIsAdmin || (userIsEditor && hasFrontendEditing));
+        // Admins can edit if page-level toggle is ON (already checked above)
+        // Editors can edit if page-level toggle is ON AND they have user-level permission
+        setCanEdit(userIsAdmin || (userIsEditor && userHasFrontendEditing));
         setCanApprove(userIsAdmin);
         
-        console.log('[FrontendEdit] Permission check complete:', { userIsAdmin, userIsEditor, hasFrontendEditing });
+        console.log('[FrontendEdit] Permission check complete:', { 
+          userIsAdmin, 
+          userIsEditor, 
+          userHasFrontendEditing,
+          pageHasFrontendEditingEnabled 
+        });
         
       } catch (error) {
         console.error('[FrontendEdit] Permission check failed with exception:', error);
