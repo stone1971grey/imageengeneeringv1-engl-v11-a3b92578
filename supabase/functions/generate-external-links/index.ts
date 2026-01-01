@@ -63,18 +63,27 @@ serve(async (req) => {
       }
     }
 
-    // Create a map from internal segment id (from page_segments array) to real segment_id from registry
-    // The page_segments array uses internal IDs, but we need the real segment_id from segment_registry
+    // Create a map from internal segment id (from page_segments array) to segment_id from registry
+    // In our system, segment_key is "segment-{segment_id}" and page_segments stores { id: segment_id }
+    // So we need to map both ways: from the extracted number and from page_segments ids
     const internalIdToRealIdMap: Record<string, number> = {};
     if (segmentRegistryData) {
       for (const seg of segmentRegistryData) {
-        // segment_key format is "segment-{internal_id}" - extract internal_id
+        // segment_key format is "segment-{segment_id}" - extract and map
         const match = seg.segment_key.match(/^segment-(\d+)$/);
         if (match) {
+          // Map both the extracted key number AND the actual segment_id
           internalIdToRealIdMap[match[1]] = seg.segment_id;
+          internalIdToRealIdMap[String(seg.segment_id)] = seg.segment_id;
         }
       }
     }
+    
+    console.log('[External Links] Segment ID mappings:', {
+      segmentKeyToIdMap,
+      internalIdToRealIdMapKeys: Object.keys(internalIdToRealIdMap),
+      segmentRegistryCount: segmentRegistryData?.length || 0
+    });
 
     // Extract text content from segments for analysis
     const textSegments: Array<{ key: string; text: string; type: string; field: string; segmentId?: number; internalId?: string }> = [];
@@ -91,8 +100,15 @@ serve(async (req) => {
                 const segType = seg.type;
                 const segData = seg.data || {};
                 
-                // Get the REAL segment_id from registry, not the internal page_segments id
-                const realSegmentId = internalIdToRealIdMap[internalId] || segmentKeyToIdMap[`segment-${internalId}`];
+                // Get the segment_id - try multiple lookup methods
+                // 1. Direct lookup from internalIdToRealIdMap
+                // 2. Lookup using segment-key format
+                // 3. Fallback to the id itself (in our system, page_segments.id IS the segment_id)
+                const realSegmentId = internalIdToRealIdMap[internalId] 
+                  || segmentKeyToIdMap[`segment-${internalId}`]
+                  || parseInt(internalId, 10) || null;
+                
+                console.log('[External Links] Processing segment:', { internalId, segType, realSegmentId });
                 
                 // Extract text from common text fields
                 const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
@@ -105,7 +121,7 @@ serve(async (req) => {
                         text: plainText,
                         type: segType,
                         field: field,
-                        segmentId: realSegmentId,
+                        segmentId: realSegmentId ?? undefined,
                         internalId: internalId // Keep internal ID for finding segment in array
                       });
                     }

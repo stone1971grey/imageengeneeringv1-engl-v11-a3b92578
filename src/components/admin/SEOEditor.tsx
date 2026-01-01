@@ -6235,7 +6235,7 @@ export const SEOEditor = ({
                           {/* Source segment info */}
                           <div className="flex items-center gap-2 mb-2">
                             <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
-                              Segment ID {suggestion.segmentId || '?'}
+                              Segment {suggestion.segmentId || suggestion.internalId || suggestion.segmentKey?.replace('segment-', '') || '?'}
                             </Badge>
                             {suggestion.segmentType && suggestion.segmentType !== 'unknown' && (
                               <span className="text-xs text-muted-foreground">
