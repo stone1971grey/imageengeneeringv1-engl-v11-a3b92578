@@ -53,13 +53,42 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { pageSlug, focusKeyword, language = 'en', pageSegments = [] } = await req.json();
+    const { pageSlug, focusKeyword, language = 'en', pageSegments: passedSegments = [] } = await req.json();
 
     if (!pageSlug || !focusKeyword) {
       throw new Error('Page slug and focus keyword are required');
     }
 
     console.log('[FKW Content] Analyzing page:', pageSlug, 'FKW:', focusKeyword, 'language:', language);
+    console.log('[FKW Content] Passed segments count:', passedSegments.length);
+
+    // If no segments passed, fetch from database
+    let pageSegments = passedSegments;
+    if (!pageSegments || pageSegments.length === 0) {
+      console.log('[FKW Content] No segments passed, fetching from database...');
+      
+      // Fetch page_segments from page_content table
+      const { data: pageContentData, error: pageContentError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('language', language)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (pageContentError) {
+        console.error('[FKW Content] Error fetching page_segments:', pageContentError);
+      }
+      
+      if (pageContentData?.content_value) {
+        try {
+          pageSegments = JSON.parse(pageContentData.content_value);
+          console.log('[FKW Content] Loaded segments from DB:', pageSegments.length);
+        } catch (e) {
+          console.error('[FKW Content] Error parsing page_segments:', e);
+        }
+      }
+    }
 
     // Get segment registry for this page
     const { data: segmentRegistryData } = await supabase
