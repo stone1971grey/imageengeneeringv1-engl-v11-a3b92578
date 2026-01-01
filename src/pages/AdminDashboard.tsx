@@ -1583,7 +1583,7 @@ const AdminDashboard = () => {
         {/* Welcome Screen - Show when no page is selected */}
         {/* Note: Only show welcome when no page selected. If a page is selected but has no segments, still show tab UI */}
         {!selectedPage ? (
-          <WelcomeTab version={CMS_VERSION} />
+          <WelcomeTab version={CMS_VERSION} isAdmin={isAdmin} />
         ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
