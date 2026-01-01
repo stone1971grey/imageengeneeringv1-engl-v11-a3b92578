@@ -228,6 +228,7 @@ export const SEOEditor = ({
     applied?: boolean;
   }>>([]);
   const [showExternalLinkSuggestions, setShowExternalLinkSuggestions] = useState(false);
+  const [externalLinkToDelete, setExternalLinkToDelete] = useState<{ suggestion: typeof externalLinkSuggestions[0]; index: number } | null>(null);
   
   // Possible Content Links state (for content suggestions)
   const [isGeneratingContentLinks, setIsGeneratingContentLinks] = useState(false);
@@ -1931,6 +1932,121 @@ export const SEOEditor = ({
     } catch (error) {
       console.error('[SEO Editor] Error applying external link:', error);
       toast.error('Error applying external link');
+    }
+  };
+
+  // Remove an applied external link
+  const handleRemoveExternalLink = async (suggestion: typeof externalLinkSuggestions[0], index: number) => {
+    try {
+      // Build the link HTML that was inserted
+      const linkHtml = `<a href="${suggestion.targetUrl}" target="_blank" rel="noopener noreferrer" class="external-link">${suggestion.anchorText}</a>`;
+      
+      let linkRemoved = false;
+      
+      // STRATEGY 1: Try page_segments JSON first
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          const internalIdToFind = suggestion.internalId || suggestion.segmentKey?.replace('segment-', '');
+          const targetSegment = segments.find((s: any) => String(s.id) === String(internalIdToFind));
+          
+          if (targetSegment?.data) {
+            const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
+            for (const field of textFields) {
+              if (targetSegment.data[field] && typeof targetSegment.data[field] === 'string') {
+                if (targetSegment.data[field].includes(linkHtml)) {
+                  // Replace the link HTML with just the anchor text
+                  targetSegment.data[field] = targetSegment.data[field].replace(linkHtml, suggestion.anchorText);
+                  linkRemoved = true;
+                  
+                  const { error: updateError } = await supabase
+                    .from('page_content')
+                    .update({
+                      content_value: JSON.stringify(segments),
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', pageSegmentsEntry.id);
+                  
+                  if (updateError) {
+                    console.error('[SEO Editor] Error removing external link from page_segments:', updateError);
+                  } else {
+                    console.log('[SEO Editor] External link removed from page_segments');
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Error parsing page_segments for external link removal:', e);
+        }
+      }
+      
+      // STRATEGY 2: Try individual segment entry
+      if (!linkRemoved) {
+        const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
+        if (segmentEntry) {
+          try {
+            const contentObj = JSON.parse(segmentEntry.content_value);
+            const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
+            
+            for (const field of textFields) {
+              if (contentObj[field] && typeof contentObj[field] === 'string') {
+                if (contentObj[field].includes(linkHtml)) {
+                  contentObj[field] = contentObj[field].replace(linkHtml, suggestion.anchorText);
+                  linkRemoved = true;
+                  
+                  const { error: updateError } = await supabase
+                    .from('page_content')
+                    .update({
+                      content_value: JSON.stringify(contentObj),
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', segmentEntry.id);
+                  
+                  if (updateError) {
+                    console.error('[SEO Editor] Error removing external link:', updateError);
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            // Non-JSON content
+            if (segmentEntry.content_value.includes(linkHtml)) {
+              const updatedContent = segmentEntry.content_value.replace(linkHtml, suggestion.anchorText);
+              const { error: updateError } = await supabase
+                .from('page_content')
+                .update({
+                  content_value: updatedContent,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', segmentEntry.id);
+              
+              if (!updateError) {
+                linkRemoved = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (linkRemoved) {
+        // Update UI - mark as not applied
+        const updatedSuggestions = [...externalLinkSuggestions];
+        updatedSuggestions[index] = { ...updatedSuggestions[index], applied: false };
+        setExternalLinkSuggestions(updatedSuggestions);
+        toast.success(`External link to "${suggestion.targetTitle}" removed`);
+      } else {
+        toast.error('Could not find the link to remove');
+      }
+      
+      setExternalLinkToDelete(null);
+    } catch (error) {
+      console.error('[SEO Editor] Error removing external link:', error);
+      toast.error('Error removing external link');
+      setExternalLinkToDelete(null);
     }
   };
 
@@ -5930,7 +6046,17 @@ export const SEOEditor = ({
                           : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        {/* Left side: Checkmark or priority indicator */}
+                        <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                          suggestion.applied 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400'
+                        }`}>
+                          {suggestion.applied ? '✓' : suggestion.priority}
+                        </div>
+                        
+                        {/* Content */}
                         <div className="flex-1 min-w-0">
                           {/* Source segment info */}
                           <div className="flex items-center gap-2 mb-2">
@@ -5988,25 +6114,33 @@ export const SEOEditor = ({
                             </div>
                           )}
                         </div>
-                        <Button
-                          size="sm"
-                          variant={suggestion.applied ? "outline" : "default"}
-                          disabled={suggestion.applied}
-                          onClick={() => handleApplyExternalLink(suggestion, idx)}
-                          className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
-                        >
-                          {suggestion.applied ? (
-                            <>
-                              <Check className="h-4 w-4 mr-1" />
-                              Applied
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="h-4 w-4 mr-1" />
-                              Apply
-                            </>
-                          )}
-                        </Button>
+                        
+                        {/* Right side: Apply button or Applied badge with trash */}
+                        {!suggestion.applied && (
+                          <Button
+                            onClick={() => handleApplyExternalLink(suggestion, idx)}
+                            size="sm"
+                            className="flex-shrink-0 h-8 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+                          >
+                            Apply Link
+                          </Button>
+                        )}
+                        {suggestion.applied && (
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              Applied ✓
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setExternalLinkToDelete({ suggestion, index: idx })}
+                              className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              title="Remove link"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -6020,6 +6154,32 @@ export const SEOEditor = ({
                 <span className="text-sm">No suitable external link opportunities found.</span>
               </div>
             )}
+
+            {/* Delete External Link Confirmation Dialog */}
+            <AlertDialog open={!!externalLinkToDelete} onOpenChange={(open) => !open && setExternalLinkToDelete(null)}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Remove external link?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <p>
+                      Do you want to remove the link to <strong className="text-foreground">"{externalLinkToDelete?.suggestion.targetTitle}"</strong>?
+                    </p>
+                    <p className="text-sm">
+                      The anchor text "{externalLinkToDelete?.suggestion.anchorText}" will remain, but the link will be removed.
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => externalLinkToDelete && handleRemoveExternalLink(externalLinkToDelete.suggestion, externalLinkToDelete.index)}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Remove Link
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-md">
               <p className="text-xs text-emerald-300/80">
