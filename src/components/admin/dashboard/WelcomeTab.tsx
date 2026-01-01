@@ -7,7 +7,7 @@ import {
   ListChecks, Table2, HelpCircle, FileText, Building2,
   Navigation2, Images, Monitor, Zap, Image as ImageIcon,
   SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
-  Search
+  Search, FileCheck, Wand2, Clock, Copy, Database
 } from "lucide-react";
 import lovableIcon from "@/assets/lovable-icon.png";
 
@@ -46,61 +46,42 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               </div>
             </div>
 
-            {/* Features Grid - Compact */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <FeatureItem icon={Layers} label="Modular Segments" />
-              <FeatureItem icon={Languages} label="Multi-Language" />
-              <FeatureItem icon={Book} label="Translation Glossary" />
-              <FeatureItem icon={Sparkles} label="Auto Translation" />
-              <FeatureItem icon={FolderOpen} label="Media Management" />
-              <FeatureItem icon={Newspaper} label="News Management" />
-              <FeatureItem icon={Calendar} label="Event Management" />
-              <FeatureItem icon={Target} label="Product Management" />
-              <FeatureItem icon={Download} label="Download Management" />
-              <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
-              <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
-              <FeatureItem icon={Eye} label="SEO Suite" />
-              <FeatureItem icon={Shield} label="User Management" />
-              <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
-              <FeatureItem icon={Search} label="Smart Search" />
+            {/* Core Features Grid */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Core Features</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <FeatureItem icon={Layers} label="Modular Segments" />
+                <FeatureItem icon={Languages} label="Multi-Language" />
+                <FeatureItem icon={Book} label="Translation Glossary" />
+                <FeatureItem icon={Sparkles} label="Auto Translation" />
+                <FeatureItem icon={FolderOpen} label="Media Management" />
+                <FeatureItem icon={Newspaper} label="News Management" />
+                <FeatureItem icon={Calendar} label="Event Management" />
+                <FeatureItem icon={Target} label="Product Management" />
+                <FeatureItem icon={Download} label="Download Management" />
+                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
+                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+                <FeatureItem icon={Eye} label="SEO Suite" />
+                <FeatureItem icon={Shield} label="User Management" />
+                <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
+                <FeatureItem icon={Search} label="Smart Search" />
+              </div>
             </div>
 
-            {/* v1.0 Release Notes */}
-            <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-[#f9dc24]/10 via-yellow-500/5 to-transparent border border-[#f9dc24]/30">
-              <h3 className="text-lg font-bold text-[#f9dc24] mb-4 flex items-center gap-2">
+            {/* v1.0 Release Highlights */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
                 🍾 Version 1.0.0 – Release Highlights
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>Draft/Publish-Mechanismus:</strong> Live-Content vs. Entwürfe mit Freigabe-Workflow</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>SEO-Suite:</strong> AI-gestützte H1/Meta-Generierung, Focus-Keyword-Analyse</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>Latest Edit:</strong> Schnellzugriff auf zuletzt bearbeitete Seiten im CMS Hub</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>Copy Page:</strong> Vollständige Seitenduplizierung mit allen Segmenten</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>Version History:</strong> Rollback für Editoren mit Backup-Funktion</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#f9dc24]">✓</span>
-                    <span className="text-gray-300"><strong>Segment-Registry:</strong> Dynamische Segment-Verwaltung in Datenbank</span>
-                  </div>
-                </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
+                <FeatureItem icon={Wand2} label="AI SEO-Suite" />
+                <FeatureItem icon={Clock} label="Latest Edit" />
+                <FeatureItem icon={Copy} label="Copy Page" />
+                <FeatureItem icon={HistoryIcon} label="Version History" />
+                <FeatureItem icon={Database} label="Segment-Registry" />
               </div>
-              <p className="text-xs text-gray-500 mt-4 border-t border-gray-700/50 pt-3">
+              <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-700/50">
                 Roadmap: v1.1 Content Automation • v1.2 Frontend Editing • v2.0 Plugin-Architektur
               </p>
             </div>
