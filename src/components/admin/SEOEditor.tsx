@@ -693,12 +693,20 @@ export const SEOEditor = ({
             }
             
             if (detectedApplied.length > 0) {
-              console.log('[SEO Editor] Detected', detectedApplied.length, 'FKW occurrences in segments');
-              setFkwContentSuggestions(detectedApplied);
+              // De-duplicate detected suggestions (same segmentId + fieldPath)
+              const uniqueDetected = detectedApplied.filter((s, idx, arr) => 
+                arr.findIndex(x => x.segmentId === s.segmentId && x.fieldPath === s.fieldPath) === idx
+              );
+              console.log('[SEO Editor] Detected', uniqueDetected.length, 'unique FKW occurrences in segments');
+              setFkwContentSuggestions(uniqueDetected);
               setShowFkwContentSuggestions(true);
             }
           } else if (loadedSuggestions.length > 0) {
-            setFkwContentSuggestions(loadedSuggestions);
+            // De-duplicate loaded suggestions as well
+            const uniqueLoaded = loadedSuggestions.filter((s: any, idx: number, arr: any[]) => 
+              arr.findIndex(x => x.segmentId === s.segmentId && x.fieldPath === s.fieldPath) === idx
+            );
+            setFkwContentSuggestions(uniqueLoaded);
             setShowFkwContentSuggestions(true);
           }
           
@@ -4154,25 +4162,33 @@ export const SEOEditor = ({
       }
 
       // Merge: Keep applied suggestions + add new non-applied suggestions
+      // CRITICAL: Use unique key (segmentId + fieldPath) to prevent duplicates
       const newSuggestions = result.suggestions || [];
+      const existingKeys = new Set(
+        previouslyAppliedSuggestions.map(s => `${s.segmentId}:${s.fieldPath}`)
+      );
+      
       const mergedSuggestions = [
         ...previouslyAppliedSuggestions,
         ...newSuggestions.filter((newS: any) => 
-          !previouslyAppliedSuggestions.some(applied => 
-            applied.segmentId === newS.segmentId && applied.fieldPath === newS.fieldPath
-          )
+          !existingKeys.has(`${newS.segmentId}:${newS.fieldPath}`)
         )
       ];
       
-      setFkwContentSuggestions(mergedSuggestions);
+      // Remove any remaining duplicates (same segmentId + fieldPath)
+      const uniqueSuggestions = mergedSuggestions.filter((s, idx, arr) => 
+        arr.findIndex(x => x.segmentId === s.segmentId && x.fieldPath === s.fieldPath) === idx
+      );
+      
+      setFkwContentSuggestions(uniqueSuggestions);
       setFkwContentAnalysis(result.analysis || null);
       setFkwContentScore(result.score || 0);
       setFkwContentRecommendations(result.recommendations || []);
       setShowFkwContentSuggestions(true);
 
-      // Persist the FKW content analysis to database (including applied suggestions)
+      // Persist the FKW content analysis to database (using de-duplicated suggestions)
       const fkwContentToSave = {
-        suggestions: mergedSuggestions,
+        suggestions: uniqueSuggestions,
         analysis: result.analysis || null,
         score: result.score || 0,
         recommendations: result.recommendations || [],
