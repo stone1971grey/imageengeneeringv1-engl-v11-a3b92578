@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone } from "lucide-react";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -406,6 +406,25 @@ export const AdminHeader = ({
               >
                 <FirecrawlIcon className="h-4 w-4 text-white" />
                 Content Automation
+              </Button>
+            )}
+            {/* Frontend Editing - Admin always, requires selectedPage */}
+            {isAdmin && (
+              <Button
+                variant="decision"
+                className={`flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white shadow-soft hover:shadow-lg ${!selectedPage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => {
+                  if (selectedPage) {
+                    // Navigate to the page with ?edit=true to activate frontend editing
+                    const targetUrl = selectedPage === 'index' ? '/?edit=true' : `/${selectedPage}?edit=true`;
+                    window.open(targetUrl, '_blank');
+                  }
+                }}
+                disabled={!selectedPage}
+                title={!selectedPage ? 'Select a page first to activate Frontend Editing' : 'Open page in Frontend Editing mode'}
+              >
+                <MonitorSmartphone className="h-4 w-4" />
+                Frontend Editing
               </Button>
             )}
           </CollapsibleSection>
