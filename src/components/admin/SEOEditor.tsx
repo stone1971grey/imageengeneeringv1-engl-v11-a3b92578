@@ -3754,6 +3754,16 @@ export const SEOEditor = ({
               </Button>
             </div>
             
+            {/* Character count indicator for Focus Keyword */}
+            {data.focusKeyword && (
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                  {data.focusKeyword.length} Zeichen
+                </span>
+                <span className="text-xs text-muted-foreground">(Ideal: 15-40 Zeichen, 3-6 Wörter)</span>
+              </div>
+            )}
+            
             {/* Keyword Suggestions */}
             {showKeywordSuggestions && keywordSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -3779,9 +3789,14 @@ export const SEOEditor = ({
                         {suggestion.priority}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
-                          {suggestion.keyword}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
+                            {suggestion.keyword}
+                          </p>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                            {suggestion.keyword.length} Zeichen
+                          </span>
+                        </div>
                         <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                           {suggestion.reason}
                         </p>
@@ -3862,18 +3877,10 @@ export const SEOEditor = ({
               </Button>
             </div>
             
-            {/* Character count indicator */}
+            {/* Character count indicator - yellow style */}
             <div className="flex items-center justify-between mt-2">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60 
-                  ? 'bg-green-500/20 text-green-400' 
-                  : (data.title?.length || 0) > 60 
-                  ? 'bg-red-500/20 text-red-400' 
-                  : (data.title?.length || 0) >= 40
-                  ? 'bg-yellow-500/20 text-yellow-400'
-                  : 'bg-red-500/20 text-red-400'
-              }`}>
-                {data.title?.length || 0}/60 Zeichen
+              <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                {data.title?.length || 0} Zeichen
                 {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60 && ' ✓'}
               </span>
               <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
@@ -4008,18 +4015,10 @@ export const SEOEditor = ({
               </Button>
             </div>
             
-            {/* Character count indicator */}
+            {/* Character count indicator - yellow style */}
             <div className="flex items-center justify-between mt-2">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 
-                  ? 'bg-green-500/20 text-green-400' 
-                  : (data.metaDescription?.length || 0) > 160 
-                  ? 'bg-red-500/20 text-red-400' 
-                  : (data.metaDescription?.length || 0) >= 100
-                  ? 'bg-yellow-500/20 text-yellow-400'
-                  : 'bg-red-500/20 text-red-400'
-              }`}>
-                {data.metaDescription?.length || 0}/160 characters
+              <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                {data.metaDescription?.length || 0} Zeichen
                 {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 && ' ✓'}
               </span>
               <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
@@ -4130,12 +4129,8 @@ export const SEOEditor = ({
                 </div>
                 {data.h1 && (
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-medium ${
-                      data.h1.length >= 40 && data.h1.length <= 70 ? 'text-green-400' : 
-                      data.h1.length >= 20 && data.h1.length < 40 ? 'text-yellow-400' : 
-                      data.h1.length > 70 ? 'text-red-400' : 'text-yellow-400'
-                    }`}>
-                      {data.h1.length} characters {data.h1.length >= 40 && data.h1.length <= 70 ? '✓' : ''}
+                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                      {data.h1.length} Zeichen {data.h1.length >= 40 && data.h1.length <= 70 ? '✓' : ''}
                     </span>
                     <span className="text-xs text-muted-foreground">(Ideal: 40-70)</span>
                   </div>
@@ -4527,16 +4522,14 @@ export const SEOEditor = ({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs font-medium text-muted-foreground">Description</p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                      introductionText.description.trim().split(/\s+/).length >= 40 && 
-                      introductionText.description.trim().split(/\s+/).length <= 80
-                        ? 'bg-green-500/20 text-green-400'
-                        : introductionText.description.trim().split(/\s+/).length > 80
-                        ? 'bg-red-500/20 text-red-400'
-                        : 'bg-yellow-500/20 text-yellow-400'
-                    }`}>
-                      {introductionText.description.trim().split(/\s+/).length} Wörter
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                        {introductionText.description.length} Zeichen
+                      </span>
+                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
+                        {introductionText.description.trim().split(/\s+/).length} Wörter
+                      </span>
+                    </div>
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
                 </div>
