@@ -1103,12 +1103,16 @@ export const SEOEditor = ({
     });
     
     setExtractedInternalLinks(extractedLinks);
+    
+    // IMPORTANT: Use extractedLinks for hasInternalLinks check - this is more reliable
+    // than string pattern matching since it parses the actual link structure
+    const finalHasInternalLinks = hasInternalLinks || extractedLinks.length > 0;
 
     setChecks({
       titleLength,
       descriptionLength,
       hasH1,
-      hasInternalLinks,
+      hasInternalLinks: finalHasInternalLinks,
       hasExternalLinks,
       keywordInTitle,
       keywordInDescription,
@@ -1123,7 +1127,8 @@ export const SEOEditor = ({
       keywordInDescription,
       keywordInSlug,
       keywordInIntroduction,
-      hasInternalLinks,
+      hasInternalLinks: finalHasInternalLinks,
+      extractedLinksCount: extractedLinks.length,
       hasExternalLinks,
       hasH1
     });
@@ -4033,125 +4038,6 @@ export const SEOEditor = ({
             </p>
           </div>
 
-          {/* External Links - Smart Suggestions */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
-                <ExternalLink className="h-4 w-4" />
-                External Links
-              </Label>
-              <Badge 
-                variant="outline" 
-                className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
-              >
-                {checks.hasExternalLinks ? 'Vorhanden' : 'Keine'}
-              </Badge>
-            </div>
-            
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerateExternalLinks}
-              disabled={isGeneratingExternalLinks}
-              className="w-full mb-4 h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
-            >
-              {isGeneratingExternalLinks ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analysiere...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Smart External Links generieren
-                </>
-              )}
-            </Button>
-
-            {/* External Link Suggestions */}
-            {showExternalLinkSuggestions && externalLinkSuggestions.length > 0 && (
-              <div className="space-y-3 mb-4">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-                  Vorschläge (nur neutrale, autoritative Quellen):
-                </p>
-                {externalLinkSuggestions.map((suggestion, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`p-4 rounded-lg border transition-all ${
-                      suggestion.applied 
-                        ? 'bg-green-500/10 border-green-500/30' 
-                        : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-2">
-                          <span className="font-medium text-foreground">"{suggestion.anchorText}"</span>
-                          <span className="text-muted-foreground">→</span>
-                          <a 
-                            href={suggestion.targetUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-emerald-400 hover:text-emerald-300 text-sm truncate max-w-[250px] flex items-center gap-1"
-                          >
-                            {suggestion.targetTitle}
-                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-xs bg-muted/30">
-                            {suggestion.segmentType}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                            {suggestion.sourceType}
-                          </Badge>
-                          {suggestion.segmentId && (
-                            <span className="text-xs text-muted-foreground">
-                              Segment {suggestion.segmentId}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground">{suggestion.reason}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant={suggestion.applied ? "outline" : "default"}
-                        disabled={suggestion.applied}
-                        onClick={() => handleApplyExternalLink(suggestion, idx)}
-                        className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
-                      >
-                        {suggestion.applied ? (
-                          <>
-                            <Check className="h-4 w-4 mr-1" />
-                            Eingefügt
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-1" />
-                            Einfügen
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {showExternalLinkSuggestions && externalLinkSuggestions.length === 0 && (
-              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground mb-4">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">Keine geeigneten externen Link-Möglichkeiten gefunden.</span>
-              </div>
-            )}
-
-            <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-md">
-              <p className="text-xs text-emerald-300/80">
-                <strong>Sicherheitsregel:</strong> Es werden nur Links zu neutralen, autoritativen Quellen vorgeschlagen 
-                (Universitäten, Standards-Organisationen, Wikipedia, etc.). 
-                Links zu Wettbewerbern oder kommerziellen Anbietern sind ausgeschlossen.
-              </p>
-            </div>
-          </div>
         </TabsContent>
 
         {/* Social Media Tab */}
@@ -5964,6 +5850,126 @@ export const SEOEditor = ({
                 )}
               </div>
             )}
+          </div>
+
+          {/* External Links - Smart Suggestions (Advanced Feature) */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+                <ExternalLink className="h-4 w-4" />
+                Smart External Links
+              </Label>
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+              >
+                {checks.hasExternalLinks ? 'Vorhanden' : 'Keine'}
+              </Badge>
+            </div>
+            
+            {/* Generate Button */}
+            <Button
+              onClick={handleGenerateExternalLinks}
+              disabled={isGeneratingExternalLinks}
+              className="w-full mb-4 h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+            >
+              {isGeneratingExternalLinks ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analysiere...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Smart External Links generieren
+                </>
+              )}
+            </Button>
+
+            {/* External Link Suggestions */}
+            {showExternalLinkSuggestions && externalLinkSuggestions.length > 0 && (
+              <div className="space-y-3 mb-4">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                  Vorschläge (nur neutrale, autoritative Quellen):
+                </p>
+                {externalLinkSuggestions.map((suggestion, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`p-4 rounded-lg border transition-all ${
+                      suggestion.applied 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span className="font-medium text-foreground">"{suggestion.anchorText}"</span>
+                          <span className="text-muted-foreground">→</span>
+                          <a 
+                            href={suggestion.targetUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-emerald-400 hover:text-emerald-300 text-sm truncate max-w-[250px] flex items-center gap-1"
+                          >
+                            {suggestion.targetTitle}
+                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs bg-muted/30">
+                            {suggestion.segmentType}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                            {suggestion.sourceType}
+                          </Badge>
+                          {suggestion.segmentId && (
+                            <span className="text-xs text-muted-foreground">
+                              Segment {suggestion.segmentId}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{suggestion.reason}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={suggestion.applied ? "outline" : "default"}
+                        disabled={suggestion.applied}
+                        onClick={() => handleApplyExternalLink(suggestion, idx)}
+                        className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
+                      >
+                        {suggestion.applied ? (
+                          <>
+                            <Check className="h-4 w-4 mr-1" />
+                            Eingefügt
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-1" />
+                            Einfügen
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showExternalLinkSuggestions && externalLinkSuggestions.length === 0 && (
+              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">Keine geeigneten externen Link-Möglichkeiten gefunden.</span>
+              </div>
+            )}
+
+            <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-md">
+              <p className="text-xs text-emerald-300/80">
+                <strong>Sicherheitsregel:</strong> Es werden nur Links zu neutralen, autoritativen Quellen vorgeschlagen 
+                (Universitäten, Standards-Organisationen, Wikipedia, etc.). 
+                Links zu Wettbewerbern oder kommerziellen Anbietern sind ausgeschlossen.
+              </p>
+            </div>
           </div>
 
           {/* Canonical URL */}
