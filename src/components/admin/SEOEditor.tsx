@@ -1105,8 +1105,14 @@ export const SEOEditor = ({
       while ((match = linkPattern.exec(content)) !== null) {
         const href = match[1];
         const text = match[2];
-        // Only include internal links (relative or internal-link class)
-        if (href.startsWith('/') || href.startsWith('./') || href.startsWith('#') || content.includes('internal-link')) {
+        const fullMatch = match[0]; // Get full <a> tag to check for class
+        // Only include internal links: relative paths OR has internal-link class
+        // Exclude external http/https links explicitly
+        const isExternalUrl = href.startsWith('http://') || href.startsWith('https://');
+        const isInternalPath = href.startsWith('/') || href.startsWith('./') || href.startsWith('#');
+        const hasInternalLinkClass = fullMatch.includes('internal-link');
+        
+        if (isInternalPath || (hasInternalLinkClass && !isExternalUrl)) {
           // Find segment info from registry
           const segmentMatch = item.section_key.match(/segment-(\d+)/);
           const segmentId = segmentMatch ? parseInt(segmentMatch[1]) : null;
@@ -1134,7 +1140,14 @@ export const SEOEditor = ({
               while ((fieldMatch = fieldPattern.exec(fieldValue)) !== null) {
                 const href = fieldMatch[1];
                 const text = fieldMatch[2];
-                if (href.startsWith('/') || href.startsWith('./') || href.startsWith('#') || fieldValue.includes('internal-link')) {
+                const fullTag = fieldMatch[0];
+                // Only include internal links: relative paths OR has internal-link class
+                // Exclude external http/https links explicitly
+                const isExternalUrl = href.startsWith('http://') || href.startsWith('https://');
+                const isInternalPath = href.startsWith('/') || href.startsWith('./') || href.startsWith('#');
+                const hasInternalLinkClass = fullTag.includes('internal-link');
+                
+                if (isInternalPath || (hasInternalLinkClass && !isExternalUrl)) {
                   extractedLinks.push({
                     anchorText: text.trim() || href,
                     targetUrl: href,
