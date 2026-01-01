@@ -1165,7 +1165,7 @@ export const SEOEditor = ({
 
       if (error) {
         console.error('[SEO Editor] Error generating keywords:', error);
-        toast.error('Fehler beim Generieren der Keywords: ' + error.message);
+        toast.error('Error generating keywords: ' + error.message);
         return;
       }
 
@@ -1179,13 +1179,13 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Generated keywords:', result.keywords);
         setKeywordSuggestions(result.keywords);
         setShowKeywordSuggestions(true);
-        toast.success(`${result.keywords.length} Keyword-Vorschläge generiert`);
+        toast.success(`${result.keywords.length} keyword suggestions generated`);
       } else {
-        toast.error('Keine Keywords generiert');
+        toast.error('No keywords generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
-      toast.error('Unerwarteter Fehler beim Generieren der Keywords');
+      toast.error('Unexpected error generating keywords');
     } finally {
       setIsGeneratingKeywords(false);
     }
@@ -1194,7 +1194,7 @@ export const SEOEditor = ({
   const handleSelectKeyword = (keyword: string) => {
     handleChange('focusKeyword', keyword);
     setShowKeywordSuggestions(false);
-    toast.success(`Focus Keyword "${keyword}" ausgewählt`);
+    toast.success(`Focus Keyword "${keyword}" selected`);
   };
 
   // Generate Smart SEO Titles using AI
@@ -1224,7 +1224,7 @@ export const SEOEditor = ({
 
       if (error) {
         console.error('[SEO Editor] Error generating titles:', error);
-        toast.error('Fehler beim Generieren der Titles: ' + error.message);
+        toast.error('Error generating titles: ' + error.message);
         return;
       }
 
@@ -1238,13 +1238,13 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Generated titles:', result.titles);
         setTitleSuggestions(result.titles);
         setShowTitleSuggestions(true);
-        toast.success(`${result.titles.length} Title-Vorschläge generiert`);
+        toast.success(`${result.titles.length} title suggestions generated`);
       } else {
-        toast.error('Keine Titles generiert');
+        toast.error('No titles generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
-      toast.error('Unerwarteter Fehler beim Generieren der Titles');
+      toast.error('Unexpected error generating titles');
     } finally {
       setIsGeneratingTitle(false);
     }
@@ -1253,7 +1253,7 @@ export const SEOEditor = ({
   const handleSelectTitle = (title: string) => {
     handleChange('title', title);
     setShowTitleSuggestions(false);
-    toast.success(`Title "${title.substring(0, 30)}..." übernommen`);
+    toast.success(`Title "${title.substring(0, 30)}..." applied`);
   };
 
   // Generate Smart SEO Descriptions using AI
@@ -1284,7 +1284,7 @@ export const SEOEditor = ({
 
       if (error) {
         console.error('[SEO Editor] Error generating descriptions:', error);
-        toast.error('Fehler beim Generieren der Descriptions: ' + error.message);
+        toast.error('Error generating descriptions: ' + error.message);
         return;
       }
 
@@ -1298,13 +1298,13 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Generated descriptions:', result.suggestions);
         setDescriptionSuggestions(result.suggestions);
         setShowDescriptionSuggestions(true);
-        toast.success(`${result.suggestions.length} Description-Vorschläge generiert`);
+        toast.success(`${result.suggestions.length} description suggestions generated`);
       } else {
-        toast.error('Keine Descriptions generiert');
+        toast.error('No descriptions generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
-      toast.error('Unerwarteter Fehler beim Generieren der Descriptions');
+      toast.error('Unexpected error generating descriptions');
     } finally {
       setIsGeneratingDescription(false);
     }
@@ -1593,10 +1593,10 @@ export const SEOEditor = ({
         }
       }
 
-      toast.success(`Link zu "${suggestion.targetTitle}" eingefügt!`);
+      toast.success(`Link to "${suggestion.targetTitle}" applied!`);
     } catch (error) {
       console.error('[SEO Editor] Error applying link:', error);
-      toast.error('Fehler beim Anwenden des Links');
+      toast.error('Error applying link');
     }
   };
 
@@ -1611,7 +1611,7 @@ export const SEOEditor = ({
       // Find the segment content
       const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
       if (!segmentEntry) {
-        toast.error(`Segment ${suggestion.segmentKey} nicht gefunden`);
+        toast.error(`Segment ${suggestion.segmentKey} not found`);
         setIsDeletingLink(false);
         setLinkToDelete(null);
         return;
@@ -1702,7 +1702,7 @@ export const SEOEditor = ({
 
         if (saveError) {
           console.error('[SEO Editor] Error saving content after link removal:', saveError);
-          toast.error('Fehler beim Speichern: ' + saveError.message);
+          toast.error('Error saving: ' + saveError.message);
           setIsDeletingLink(false);
           setLinkToDelete(null);
           return;
@@ -1753,10 +1753,10 @@ export const SEOEditor = ({
         }
       }
 
-      toast.success(`Link zu "${suggestion.targetTitle}" wurde entfernt`);
+      toast.success(`Link to "${suggestion.targetTitle}" removed`);
     } catch (error) {
       console.error('[SEO Editor] Error deleting link:', error);
-      toast.error('Fehler beim Löschen des Links');
+      toast.error('Error deleting link');
     } finally {
       setIsDeletingLink(false);
       setLinkToDelete(null);
@@ -1923,10 +1923,10 @@ export const SEOEditor = ({
       updatedSuggestions[index] = { ...updatedSuggestions[index], applied: true };
       setExternalLinkSuggestions(updatedSuggestions);
 
-      toast.success(`Externer Link zu "${suggestion.targetTitle}" eingefügt!`);
+      toast.success(`External link to "${suggestion.targetTitle}" applied!`);
     } catch (error) {
       console.error('[SEO Editor] Error applying external link:', error);
-      toast.error('Fehler beim Anwenden des externen Links');
+      toast.error('Error applying external link');
     }
   };
 
@@ -2553,7 +2553,7 @@ export const SEOEditor = ({
       setContentLinkSuggestions(prev => prev.map((s, i) => 
         i === index ? { ...s, isGeneratingContent: false } : s
       ));
-      toast.error('Fehler beim Generieren der Inhalte: ' + (error as Error).message);
+      toast.error('Error generating content: ' + (error as Error).message);
     }
   };
 
@@ -2615,7 +2615,7 @@ export const SEOEditor = ({
 
       if (error) {
         console.error('[SEO Editor] Error generating H1:', error);
-        toast.error('Fehler beim Generieren der H1: ' + error.message);
+        toast.error('Error generating H1: ' + error.message);
         return;
       }
 
@@ -2629,13 +2629,13 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Generated H1 suggestions:', result.suggestions);
         setH1Suggestions(result.suggestions);
         setShowH1Suggestions(true);
-        toast.success(`${result.suggestions.length} H1-Vorschläge generiert`);
+        toast.success(`${result.suggestions.length} H1 suggestions generated`);
       } else {
-        toast.error('Keine H1-Vorschläge generiert');
+        toast.error('No H1 suggestions generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
-      toast.error('Unerwarteter Fehler beim Generieren der H1');
+      toast.error('Unexpected error generating H1');
     } finally {
       setIsGeneratingH1(false);
     }
@@ -2689,7 +2689,7 @@ export const SEOEditor = ({
 
       if (error) {
         console.error('[SEO Editor] Error generating intro:', error);
-        toast.error('Fehler beim Generieren des Intros: ' + error.message);
+        toast.error('Error generating intro: ' + error.message);
         return;
       }
 
@@ -2703,13 +2703,13 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Generated intro:', result);
         setGeneratedIntro(result);
         setShowGeneratedIntro(true);
-        toast.success('Intro-Text erfolgreich generiert');
+        toast.success('Intro text generated successfully');
       } else {
-        toast.error('Kein Intro-Text generiert');
+        toast.error('No intro text generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
-      toast.error('Unerwarteter Fehler beim Generieren des Intros');
+      toast.error('Unexpected error generating intro');
     } finally {
       setIsGeneratingIntro(false);
     }
@@ -2718,7 +2718,7 @@ export const SEOEditor = ({
   // Apply generated intro to the Intro segment
   const handleApplyIntroToSegment = async () => {
     if (!generatedIntro) {
-      toast.error('Kein generierter Intro-Text vorhanden.');
+      toast.error('No generated intro text available.');
       return;
     }
 
@@ -2763,7 +2763,7 @@ export const SEOEditor = ({
 
       if (!pageSegmentsRow) {
         console.error('[SEO Editor] Failed to load page_segments - not found in any language');
-        toast.error('page_segments nicht gefunden', { duration: 5000 });
+        toast.error('page_segments not found', { duration: 5000 });
         setIsApplyingIntro(false);
         return;
       }
@@ -2777,7 +2777,7 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Found intro segments in page_segments:', introSegmentsInPage.map((s: any) => s.id));
         
         if (introSegmentsInPage.length === 0) {
-          toast.error('Kein Intro-Segment auf dieser Seite gefunden. Bitte zuerst ein Intro-Segment erstellen.', { duration: 5000 });
+          toast.error('No intro segment found on this page. Please create an intro segment first.', { duration: 5000 });
           setIsApplyingIntro(false);
           return;
         }
@@ -2803,7 +2803,7 @@ export const SEOEditor = ({
         
         if (introIndex === -1) {
           console.error('[SEO Editor] Intro segment not found at expected index');
-          toast.error('Intro-Segment nicht gefunden', { duration: 5000 });
+          toast.error('Intro segment not found', { duration: 5000 });
           setIsApplyingIntro(false);
           return;
         }
@@ -2830,14 +2830,14 @@ export const SEOEditor = ({
         
         if (updateError) {
           console.error('[SEO Editor] Failed to save page_segments:', updateError);
-          toast.error(`Speichern fehlgeschlagen: ${updateError.message}`, { duration: 5000 });
+          toast.error(`Save failed: ${updateError.message}`, { duration: 5000 });
           setIsApplyingIntro(false);
           return;
         }
         
         console.log('[SEO Editor] Successfully saved Intro with new description');
         
-        toast.success(`Intro-Text erfolgreich in Segment ${targetIntroId} übernommen`);
+        toast.success(`Intro text successfully applied to segment ${targetIntroId}`);
         
         // Refresh page content
         const { data: refreshedContent } = await supabase
@@ -2864,7 +2864,7 @@ export const SEOEditor = ({
         console.log('[SEO Editor] Auto-saving SEO changes after Intro update...');
         setTimeout(() => {
           onSave();
-          toast.success('Intro automatisch gespeichert', { duration: 3000 });
+          toast.success('Intro saved automatically', { duration: 3000 });
         }, 100);
         
       } catch (parseError) {
@@ -2942,7 +2942,7 @@ export const SEOEditor = ({
           segmentKey: existingIntroRegistry.segment_key,
           segmentId: existingIntroRegistry.segment_id,
           createNew: false,
-          note: `H1 in bestehendes Intro-Segment übernehmen (ID: ${existingIntroRegistry.segment_id})`
+          note: `Apply H1 to existing intro segment (ID: ${existingIntroRegistry.segment_id})`
         };
       }
       
@@ -2993,7 +2993,7 @@ export const SEOEditor = ({
     });
     setShowH1Suggestions(false);
     setH1ChangeLog(null);
-    toast.success(`H1 "${suggestion.headline}" ausgewählt`);
+    toast.success(`H1 "${suggestion.headline}" selected`);
   };
 
   // Change selected placement option
@@ -3005,7 +3005,7 @@ export const SEOEditor = ({
         ...selectedH1Suggestion,
         selectedPlacement: newPlacement
       });
-      toast.info(`Platzierung geändert: ${getSegmentLabel(newPlacement.segmentType, newPlacement.segmentKey || '')}`);
+      toast.info(`Placement changed: ${getSegmentLabel(newPlacement.segmentType, newPlacement.segmentKey || '')}`);
     }
   };
 
@@ -3056,7 +3056,7 @@ export const SEOEditor = ({
   // Apply H1 to the suggested segment and convert old H1 to H2
   const handleApplyH1ToSegment = async () => {
     if (!selectedH1Suggestion || !selectedH1Suggestion.selectedPlacement) {
-      toast.error('Kein H1-Vorschlag oder Platzierung ausgewählt.');
+      toast.error('No H1 suggestion or placement selected.');
       return;
     }
     
@@ -3081,11 +3081,11 @@ export const SEOEditor = ({
     try {
       // Check if we need to create a new segment
       if (placement.createNew) {
-        toast.info(`Neues ${getSegmentLabel(placement.segmentType, '')} Segment wird erstellt...`, { duration: 5000 });
+        toast.info(`Creating new ${getSegmentLabel(placement.segmentType, '')} segment...`, { duration: 5000 });
         setIsCreatingSegment(true);
         
         toast.warning(
-          `Bitte erstelle zuerst ein "${getSegmentLabel(placement.segmentType, '')}" Segment an Position ${placement.suggestedTabPosition} im Tab-Editor. Danach kannst du die H1 anwenden.`,
+          `Please create a "${getSegmentLabel(placement.segmentType, '')}" segment at position ${placement.suggestedTabPosition} in the Tab Editor first. Then you can apply the H1.`,
           { duration: 8000 }
         );
         setIsApplyingH1(false);
@@ -3126,7 +3126,7 @@ export const SEOEditor = ({
         
         if (loadError || !pageSegmentsRow) {
           console.error('[SEO Editor] Failed to load page_segments:', loadError);
-          toast.error(`page_segments nicht gefunden für ${pageSlug}`, { duration: 5000 });
+          toast.error(`page_segments not found for ${pageSlug}`, { duration: 5000 });
           setIsApplyingH1(false);
           return;
         }
@@ -3143,7 +3143,7 @@ export const SEOEditor = ({
           if (introIndex === -1) {
             console.error('[SEO Editor] Intro segment not found in page_segments. Available segments:', 
               segments.map((s: any) => ({ id: s.id, type: s.type })));
-            toast.error(`Intro-Segment ${targetSegmentId} nicht in page_segments gefunden`, { duration: 5000 });
+            toast.error(`Intro segment ${targetSegmentId} not found in page_segments`, { duration: 5000 });
             setIsApplyingH1(false);
             return;
           }
@@ -3243,7 +3243,7 @@ export const SEOEditor = ({
           // Set the changelog for display
           setH1ChangeLog(changeLogEntry);
           
-          toast.success(`H1 erfolgreich in Intro-Segment (ID: ${targetSegmentId}) gesetzt`);
+          toast.success(`H1 successfully set in intro segment (ID: ${targetSegmentId})`);
           
           // Refresh page content
           const { data: refreshedContent } = await supabase
@@ -3267,7 +3267,7 @@ export const SEOEditor = ({
           console.log('[SEO Editor] Auto-saving SEO changes after Intro H1 update...');
           setTimeout(() => {
             onSave();
-            toast.success('H1 automatisch gespeichert', { duration: 3000 });
+            toast.success('H1 saved automatically', { duration: 3000 });
           }, 100);
           
           setIsApplyingH1(false);
@@ -3275,7 +3275,7 @@ export const SEOEditor = ({
           
         } catch (parseError) {
           console.error('[SEO Editor] Failed to parse intro content:', parseError);
-          toast.error('Fehler beim Parsen des Intro-Segments', { duration: 5000 });
+          toast.error('Error parsing intro segment', { duration: 5000 });
           setIsApplyingH1(false);
           return;
         }
@@ -3562,7 +3562,7 @@ export const SEOEditor = ({
       // Set the changelog for display
       setH1ChangeLog(changeLogEntry);
       
-      toast.success(`H1 erfolgreich in "${targetSegmentInfo.label}" (ID: ${targetSegmentInfo.id}) gesetzt`);
+      toast.success(`H1 successfully set in "${targetSegmentInfo.label}" (ID: ${targetSegmentInfo.id})`);
       
       // Refresh page content - WITH LANGUAGE FILTER
       const { data: refreshedContent } = await supabase
@@ -3588,7 +3588,7 @@ export const SEOEditor = ({
       console.log('[SEO Editor] Auto-saving SEO changes after H1 update...');
       setTimeout(() => {
         onSave();
-        toast.success('H1 automatisch gespeichert', { duration: 3000 });
+        toast.success('H1 saved automatically', { duration: 3000 });
       }, 100);
       
     } catch (error) {
@@ -4648,7 +4648,7 @@ export const SEOEditor = ({
                   <p className="text-xs font-medium text-muted-foreground">Current H1</p>
                   {data.h1Locked && (
                     <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
-                      🔒 Gesperrt (manuell gesetzt)
+                      🔒 Locked (manually set)
                     </Badge>
                   )}
                   {/* H1 character count - LEFT side */}
@@ -4658,7 +4658,7 @@ export const SEOEditor = ({
                       <div className="flex items-center gap-2">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
                           {countStyle.showCheck && <Check className="h-3 w-3" />}
-                          {data.h1.length} Zeichen
+                          {data.h1.length} chars
                         </span>
                         <span className="text-xs text-muted-foreground">(Ideal: 20-70)</span>
                       </div>
@@ -4684,7 +4684,7 @@ export const SEOEditor = ({
                   onClick={() => onChange({ ...data, h1Locked: false })}
                   className="mt-2 text-xs text-muted-foreground hover:text-foreground"
                 >
-                  🔓 Entsperren (Auto-Erkennung aktivieren)
+                  🔓 Unlock (enable auto-detection)
                 </Button>
               )}
             </div>
@@ -4693,7 +4693,7 @@ export const SEOEditor = ({
             {selectedH1Suggestion && (
               <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-medium text-green-400">✓ Ausgewählte H1</p>
+                  <p className="text-sm font-medium text-green-400">✓ Selected H1</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -4712,7 +4712,7 @@ export const SEOEditor = ({
                     return (
                       <Badge variant="outline" className={`shrink-0 flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
                         {countStyle.showCheck && <Check className="h-3 w-3" />}
-                        {selectedH1Suggestion.headline.length} Zeichen
+                        {selectedH1Suggestion.headline.length} chars
                       </Badge>
                     );
                   })()}
@@ -4723,7 +4723,7 @@ export const SEOEditor = ({
                     {/* Placement Options Selector */}
                     {selectedH1Suggestion.allPlacementOptions.length > 1 && (
                       <div className="p-3 bg-muted/20 rounded-md border border-border/50">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">Platzierungsoptionen (Beste → Alternativ):</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Placement options (Best → Alternative):</p>
                         <div className="flex flex-wrap gap-2">
                           {selectedH1Suggestion.allPlacementOptions.map((opt, idx) => (
                             <button
@@ -4737,7 +4737,7 @@ export const SEOEditor = ({
                             >
                               <span className="font-semibold mr-1">#{opt.rank}</span>
                               {getSegmentLabel(opt.segmentType, opt.segmentKey || '')}
-                              {opt.createNew && <span className="ml-1 text-yellow-400">+ NEU</span>}
+                              {opt.createNew && <span className="ml-1 text-yellow-400">+ NEW</span>}
                             </button>
                           ))}
                         </div>
@@ -4747,7 +4747,7 @@ export const SEOEditor = ({
                     {/* Selected Placement Details */}
                     <div className="p-3 bg-muted/30 rounded-md border border-purple-500/20">
                       <p className="text-sm font-medium text-purple-400 mb-2">
-                        📍 {selectedH1Suggestion.selectedPlacement.createNew ? 'Neues Segment erstellen:' : 'Platzierung:'}
+                        📍 {selectedH1Suggestion.selectedPlacement.createNew ? 'Create new segment:' : 'Placement:'}
                       </p>
                       <p className="text-sm text-muted-foreground mb-2">{selectedH1Suggestion.selectedPlacement.note}</p>
                       
@@ -4755,20 +4755,20 @@ export const SEOEditor = ({
                       <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
-                            <span className="text-muted-foreground">Segment-Typ:</span>
+                            <span className="text-muted-foreground">Segment Type:</span>
                             <p className="font-medium text-foreground">
                               {getSegmentLabel(selectedH1Suggestion.selectedPlacement.segmentType, selectedH1Suggestion.selectedPlacement.segmentKey || '')}
                             </p>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">Tab-Position:</span>
+                            <span className="text-muted-foreground">Tab Position:</span>
                             <p className="font-mono font-medium text-purple-400">
                               #{selectedH1Suggestion.selectedPlacement.suggestedTabPosition}
                             </p>
                           </div>
                           {selectedH1Suggestion.selectedPlacement.segmentId && !selectedH1Suggestion.selectedPlacement.createNew && (
                             <div>
-                              <span className="text-muted-foreground">Segment-ID:</span>
+                              <span className="text-muted-foreground">Segment ID:</span>
                               <p className="font-mono font-medium text-purple-400">
                                 #{selectedH1Suggestion.selectedPlacement.segmentId}
                               </p>
@@ -4776,7 +4776,7 @@ export const SEOEditor = ({
                           )}
                           {selectedH1Suggestion.selectedPlacement.segmentKey && !selectedH1Suggestion.selectedPlacement.createNew && (
                             <div className="col-span-2">
-                              <span className="text-muted-foreground">Segment-Key:</span>
+                              <span className="text-muted-foreground">Segment Key:</span>
                               <p className="font-mono font-medium text-purple-400 break-all">
                                 {selectedH1Suggestion.selectedPlacement.segmentKey}
                               </p>
@@ -4785,7 +4785,7 @@ export const SEOEditor = ({
                           {selectedH1Suggestion.selectedPlacement.createNew && (
                             <div className="col-span-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
                               <p className="text-yellow-400 text-xs font-medium">
-                                ⚡ Neues Segment wird an Position {selectedH1Suggestion.selectedPlacement.suggestedTabPosition} erstellt
+                                ⚡ New segment will be created at position {selectedH1Suggestion.selectedPlacement.suggestedTabPosition}
                               </p>
                             </div>
                           )}
@@ -4795,10 +4795,10 @@ export const SEOEditor = ({
                       {h1SourceInfo && selectedH1Suggestion.selectedPlacement.segmentKey !== h1SourceInfo.key && !selectedH1Suggestion.selectedPlacement.createNew && (
                         <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-xs">
                           <p className="text-yellow-400 font-medium">
-                            ⚠️ Bestehende H1 wird angepasst:
+                            ⚠️ Existing H1 will be adjusted:
                           </p>
                           <p className="text-yellow-400/80 mt-1">
-                            H1 in "{h1SourceInfo.label}" ({h1SourceInfo.key}) → wird zu H2 konvertiert
+                            H1 in "{h1SourceInfo.label}" ({h1SourceInfo.key}) → will be converted to H2
                           </p>
                         </div>
                       )}
@@ -4814,12 +4814,12 @@ export const SEOEditor = ({
                   {isApplyingH1 ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Wird angewendet...
+                      Applying...
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-4 w-4 mr-2" />
-                      H1 in Segment übernehmen
+                      Apply H1 to Segment
                     </>
                   )}
                 </Button>
@@ -5144,12 +5144,12 @@ export const SEOEditor = ({
                   {isApplyingIntro ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Wird übernommen...
+                      Applying...
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-4 w-4 mr-2" />
-                      Intro in Segment übernehmen
+                      Apply Intro to Segment
                     </>
                   )}
                 </Button>
