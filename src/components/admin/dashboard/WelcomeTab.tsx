@@ -137,7 +137,7 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
 
               {/* Planned Versions */}
               <div className="pt-4 border-t border-gray-700/50 mt-4">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Roadmap</p>
+                <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">Roadmap</p>
                 
                 <VersionSection 
                   versionKey="v1.1"
@@ -271,7 +271,7 @@ const VersionSection = ({ label, isOpen, onToggle, isCurrent, isPlanned, childre
           : 'bg-gray-800/50 hover:bg-gray-800/70'
     }`}>
       <span className={`text-xs font-semibold uppercase tracking-wider ${
-        isCurrent ? 'text-[#f9dc24]' : isPlanned ? 'text-gray-400' : 'text-gray-500'
+        isCurrent ? 'text-[#f9dc24]' : 'text-white'
       }`}>
         {label}
         {isPlanned && <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-gray-600 text-gray-300 rounded">Planned</span>}
