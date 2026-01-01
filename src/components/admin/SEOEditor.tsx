@@ -272,6 +272,44 @@ export const SEOEditor = ({
     oldH1?: { text: string; segment: { key: string; label: string }; action: string };
   } | null>(null);
 
+  /**
+   * Helper function for consistent character/word count display
+   * Returns styling classes and checkmark based on value vs ideal range
+   * - Green + ✓: Within ideal range
+   * - Yellow: Slightly outside (within 20% of max)
+   * - Red: Significantly outside (more than 20% over max or under min)
+   */
+  const getCountDisplay = (
+    value: number,
+    min: number,
+    max: number,
+    unit: 'chars' | 'words' = 'chars'
+  ): { bgClass: string; textClass: string; showCheck: boolean } => {
+    const isInRange = value >= min && value <= max;
+    const slightlyOver = value > max && value <= max * 1.2;
+    const slightlyUnder = value < min && value >= min * 0.8;
+    
+    if (isInRange) {
+      return {
+        bgClass: 'bg-green-500/20',
+        textClass: 'text-green-400',
+        showCheck: true
+      };
+    } else if (slightlyOver || slightlyUnder) {
+      return {
+        bgClass: 'bg-yellow-500/20',
+        textClass: 'text-yellow-400',
+        showCheck: false
+      };
+    } else {
+      return {
+        bgClass: 'bg-red-500/20',
+        textClass: 'text-red-400',
+        showCheck: false
+      };
+    }
+  };
+
   // Load page content and segment registry
   useEffect(() => {
     const loadPageData = async () => {
@@ -3821,14 +3859,18 @@ export const SEOEditor = ({
             </div>
             
             {/* Character count indicator for Focus Keyword */}
-            {data.focusKeyword && (
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                  {data.focusKeyword.length} Zeichen
-                </span>
-                <span className="text-xs text-muted-foreground">(Ideal: 15-40 Zeichen, 3-6 Wörter)</span>
-              </div>
-            )}
+            {data.focusKeyword && (() => {
+              const countStyle = getCountDisplay(data.focusKeyword.length, 15, 40);
+              return (
+                <div className="flex items-center justify-between mt-2">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                    {countStyle.showCheck && <Check className="h-3 w-3" />}
+                    {data.focusKeyword.length} Zeichen
+                  </span>
+                  <span className="text-xs text-muted-foreground">(Ideal: 15-40 Zeichen, 3-6 Wörter)</span>
+                </div>
+              );
+            })()}
             
             {/* Keyword Suggestions */}
             {showKeywordSuggestions && keywordSuggestions.length > 0 && (
@@ -3859,9 +3901,15 @@ export const SEOEditor = ({
                           <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
                             {suggestion.keyword}
                           </p>
-                          <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                            {suggestion.keyword.length} Zeichen
-                          </span>
+                          {(() => {
+                            const countStyle = getCountDisplay(suggestion.keyword.length, 15, 40);
+                            return (
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                                {countStyle.showCheck && <Check className="h-3 w-3" />}
+                                {suggestion.keyword.length} Zeichen
+                              </span>
+                            );
+                          })()}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                           {suggestion.reason}
@@ -3943,14 +3991,20 @@ export const SEOEditor = ({
               </Button>
             </div>
             
-            {/* Character count indicator - yellow style */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                {data.title?.length || 0} Zeichen
-                {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60 && ' ✓'}
-              </span>
-              <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
-            </div>
+            {/* Character count indicator */}
+            {(() => {
+              const titleLen = data.title?.length || 0;
+              const countStyle = getCountDisplay(titleLen, 50, 60);
+              return (
+                <div className="flex items-center justify-between mt-2">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                    {countStyle.showCheck && <Check className="h-3 w-3" />}
+                    {titleLen} Zeichen
+                  </span>
+                  <span className="text-xs text-muted-foreground">(Ideal: 50-60)</span>
+                </div>
+              );
+            })()}
             
             {/* FKW Highlight Preview */}
             {data.title && data.focusKeyword && (
@@ -3988,13 +4042,15 @@ export const SEOEditor = ({
                           <p className="font-semibold text-lg text-foreground group-hover:text-purple-400 transition-colors">
                             {suggestion.title}
                           </p>
-                          <Badge className={`shrink-0 text-xs ${
-                            suggestion.characterCount >= 50 && suggestion.characterCount <= 60
-                              ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                          }`}>
-                            {suggestion.characterCount} Zeichen
-                          </Badge>
+                          {(() => {
+                            const countStyle = getCountDisplay(suggestion.characterCount, 50, 60);
+                            return (
+                              <Badge className={`shrink-0 text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
+                                {countStyle.showCheck && <Check className="h-3 w-3" />}
+                                {suggestion.characterCount} Zeichen
+                              </Badge>
+                            );
+                          })()}
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                           {suggestion.reason}
@@ -4081,14 +4137,20 @@ export const SEOEditor = ({
               </Button>
             </div>
             
-            {/* Character count indicator - yellow style */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                {data.metaDescription?.length || 0} Zeichen
-                {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160 && ' ✓'}
-              </span>
-              <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
-            </div>
+            {/* Character count indicator */}
+            {(() => {
+              const descLen = data.metaDescription?.length || 0;
+              const countStyle = getCountDisplay(descLen, 120, 160);
+              return (
+                <div className="flex items-center justify-between mt-2">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                    {countStyle.showCheck && <Check className="h-3 w-3" />}
+                    {descLen} Zeichen
+                  </span>
+                  <span className="text-xs text-muted-foreground">(Ideal: 120-160)</span>
+                </div>
+              );
+            })()}
             
             {/* FKW Highlight Preview */}
             {data.metaDescription && data.focusKeyword && (
@@ -4128,13 +4190,15 @@ export const SEOEditor = ({
                           </p>
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge className={`shrink-0 text-xs ${
-                            suggestion.characterCount >= 120 && suggestion.characterCount <= 160
-                              ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                          }`}>
-                            {suggestion.characterCount} characters
-                          </Badge>
+                          {(() => {
+                            const countStyle = getCountDisplay(suggestion.characterCount, 120, 160);
+                            return (
+                              <Badge className={`shrink-0 text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
+                                {countStyle.showCheck && <Check className="h-3 w-3" />}
+                                {suggestion.characterCount} Zeichen
+                              </Badge>
+                            );
+                          })()}
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed mt-1">
                           {suggestion.reason}
@@ -4193,14 +4257,18 @@ export const SEOEditor = ({
                     </Badge>
                   )}
                 </div>
-                {data.h1 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                      {data.h1.length} Zeichen {data.h1.length >= 40 && data.h1.length <= 70 ? '✓' : ''}
-                    </span>
-                    <span className="text-xs text-muted-foreground">(Ideal: 40-70)</span>
-                  </div>
-                )}
+                {data.h1 && (() => {
+                  const countStyle = getCountDisplay(data.h1.length, 40, 70);
+                  return (
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                        {countStyle.showCheck && <Check className="h-3 w-3" />}
+                        {data.h1.length} Zeichen
+                      </span>
+                      <span className="text-xs text-muted-foreground">(Ideal: 40-70)</span>
+                    </div>
+                  );
+                })()}
               </div>
               {data.h1 ? (
                 <p className="text-base font-medium">{highlightKeyword(data.h1, data.focusKeyword || '')}</p>
@@ -4243,13 +4311,15 @@ export const SEOEditor = ({
                   <p className="text-lg font-semibold text-foreground">
                     "{selectedH1Suggestion.headline}"
                   </p>
-                  <Badge variant="outline" className={`shrink-0 ${
-                    selectedH1Suggestion.headline.length >= 40 && selectedH1Suggestion.headline.length <= 70
-                      ? 'bg-green-500/10 text-green-400 border-green-500/30'
-                      : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                  }`}>
-                    {selectedH1Suggestion.headline.length} Zeichen
-                  </Badge>
+                  {(() => {
+                    const countStyle = getCountDisplay(selectedH1Suggestion.headline.length, 40, 70);
+                    return (
+                      <Badge variant="outline" className={`shrink-0 flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
+                        {countStyle.showCheck && <Check className="h-3 w-3" />}
+                        {selectedH1Suggestion.headline.length} Zeichen
+                      </Badge>
+                    );
+                  })()}
                 </div>
                 
                 {selectedH1Suggestion.selectedPlacement && (
@@ -4589,12 +4659,23 @@ export const SEOEditor = ({
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs font-medium text-muted-foreground">Description</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                        {introductionText.description.length} Zeichen
-                      </span>
-                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24]">
-                        {introductionText.description.trim().split(/\s+/).length} Wörter
-                      </span>
+                      {(() => {
+                        const wordCount = introductionText.description.trim().split(/\s+/).length;
+                        const charStyle = getCountDisplay(introductionText.description.length, 200, 500);
+                        const wordStyle = getCountDisplay(wordCount, 40, 80, 'words');
+                        return (
+                          <>
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${charStyle.bgClass} ${charStyle.textClass}`}>
+                              {charStyle.showCheck && <Check className="h-3 w-3" />}
+                              {introductionText.description.length} Zeichen
+                            </span>
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${wordStyle.bgClass} ${wordStyle.textClass}`}>
+                              {wordStyle.showCheck && <Check className="h-3 w-3" />}
+                              {wordCount} Wörter
+                            </span>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
@@ -4635,13 +4716,15 @@ export const SEOEditor = ({
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge variant="outline" className={`text-xs ${
-                    generatedIntro.wordCount >= 40 && generatedIntro.wordCount <= 80
-                      ? 'bg-green-500/10 text-green-400 border-green-500/30'
-                      : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                  }`}>
-                    {generatedIntro.wordCount} Wörter
-                  </Badge>
+                  {(() => {
+                    const countStyle = getCountDisplay(generatedIntro.wordCount, 40, 80, 'words');
+                    return (
+                      <Badge variant="outline" className={`text-xs flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass} border-0`}>
+                        {countStyle.showCheck && <Check className="h-3 w-3" />}
+                        {generatedIntro.wordCount} Wörter
+                      </Badge>
+                    );
+                  })()}
                   <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
                     {generatedIntro.sentenceCount} Sätze
                   </Badge>
