@@ -6347,17 +6347,35 @@ export const SEOEditor = ({
                   AI-Powered
                 </Badge>
               </div>
-              {fkwContentAnalysis && (
-                <div className="flex items-center gap-2">
-                  <Badge className={`text-sm ${
-                    fkwContentScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                    fkwContentScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
-                    'bg-red-500/20 text-red-400 border-red-500/30'
-                  }`}>
-                    Score: {fkwContentScore}/100
-                  </Badge>
-                </div>
-              )}
+              {fkwContentAnalysis && (() => {
+                // Calculate corrected score that uses actual H1 from SEO data
+                const actualH1HasFkw = data.h1 && data.focusKeyword 
+                  ? data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
+                  : fkwContentAnalysis.h1HasFkw;
+                
+                // Recalculate score with correct H1 status
+                let correctedScore = 0;
+                if (actualH1HasFkw) correctedScore += 25;
+                if (fkwContentAnalysis.introHasFkw) correctedScore += 20;
+                if (fkwContentAnalysis.h2WithFkw > 0) correctedScore += 15;
+                if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) correctedScore += 10; // Bonus for multiple H2
+                if (fkwContentAnalysis.densityStatus === 'optimal') correctedScore += 20;
+                else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) correctedScore += 10;
+                if (fkwContentAnalysis.h3WithFkw > 0) correctedScore += 10;
+                correctedScore = Math.min(100, correctedScore);
+                
+                return (
+                  <div className="flex items-center gap-2">
+                    <Badge className={`text-sm ${
+                      correctedScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                      correctedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                      'bg-red-500/20 text-red-400 border-red-500/30'
+                    }`}>
+                      Score: {correctedScore}/100
+                    </Badge>
+                  </div>
+                );
+              })()}
             </div>
             
             <p className="text-base text-muted-foreground mb-4">
@@ -6365,26 +6383,43 @@ export const SEOEditor = ({
             </p>
 
             {/* Analysis Results */}
-            {fkwContentAnalysis && (
+            {fkwContentAnalysis && (() => {
+              // Calculate corrected score that uses actual H1 from SEO data
+              const actualH1HasFkw = data.h1 && data.focusKeyword 
+                ? data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
+                : fkwContentAnalysis.h1HasFkw;
+              
+              // Recalculate score with correct H1 status
+              let correctedScore = 0;
+              if (actualH1HasFkw) correctedScore += 25;
+              if (fkwContentAnalysis.introHasFkw) correctedScore += 20;
+              if (fkwContentAnalysis.h2WithFkw > 0) correctedScore += 15;
+              if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) correctedScore += 10;
+              if (fkwContentAnalysis.densityStatus === 'optimal') correctedScore += 20;
+              else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) correctedScore += 10;
+              if (fkwContentAnalysis.h3WithFkw > 0) correctedScore += 10;
+              correctedScore = Math.min(100, correctedScore);
+              
+              return (
               <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border/50">
                 {/* Score with explanation */}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                   <div className="flex items-center gap-3">
                     <div className={`text-3xl font-bold ${
-                      fkwContentScore >= 80 ? 'text-green-400' :
-                      fkwContentScore >= 50 ? 'text-yellow-400' :
+                      correctedScore >= 80 ? 'text-green-400' :
+                      correctedScore >= 50 ? 'text-yellow-400' :
                       'text-red-400'
                     }`}>
-                      {fkwContentScore}/100
+                      {correctedScore}/100
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <p className="font-medium">
-                        {fkwContentScore >= 80 ? 'Excellent' :
-                         fkwContentScore >= 50 ? 'Needs Improvement' :
+                        {correctedScore >= 80 ? 'Excellent' :
+                         correctedScore >= 50 ? 'Needs Improvement' :
                          'Optimization Required'}
                       </p>
                       <p className="text-xs">
-                        {fkwContentScore < 80 && 'Check items marked with ✗ below'}
+                        {correctedScore < 80 && 'Check items marked with ✗ below'}
                       </p>
                     </div>
                   </div>
@@ -6469,87 +6504,9 @@ export const SEOEditor = ({
                       ))}
                   </div>
                 )}
-                
-                {/* Applied Optimizations - Interactive List with Delete */}
-                {fkwContentSuggestions.filter(s => s.applied).length > 0 && (
-                  <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-green-400">
-                        ✓ Applied Optimizations ({fkwContentSuggestions.filter(s => s.applied).length})
-                      </p>
-                    </div>
-                    <div className="space-y-3">
-                      {fkwContentSuggestions.map((s, originalIndex) => {
-                        if (!s.applied) return null;
-                        return (
-                          <div key={originalIndex} className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0">
-                                {/* Type and Segment Info */}
-                                <div className="flex flex-wrap items-center gap-2 mb-2">
-                                  <Badge variant="outline" className={`text-xs ${
-                                    s.suggestionType === 'heading' 
-                                      ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
-                                      : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                                  }`}>
-                                    {s.suggestionType === 'heading' 
-                                      ? `${s.headingLevel?.toUpperCase()} Heading` 
-                                      : 'Body Text'}
-                                  </Badge>
-                                  <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
-                                    Segment {s.segmentId}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">
-                                    ({s.segmentType})
-                                  </span>
-                                </div>
-                                
-                                {/* Original Text (crossed out) */}
-                                <div className="mb-2">
-                                  <span className="text-xs text-red-400/70 block mb-1">Original:</span>
-                                  <p className="text-xs text-foreground/50 line-through">
-                                    {s.currentText.length > 80 ? s.currentText.substring(0, 80) + '...' : s.currentText}
-                                  </p>
-                                </div>
-                                
-                                {/* Applied Text */}
-                                <div>
-                                  <span className="text-xs text-green-400 block mb-1">Applied:</span>
-                                  <p className="text-sm text-foreground font-medium">
-                                    {data.focusKeyword 
-                                      ? highlightKeyword(
-                                          s.suggestedText.length > 100 
-                                            ? s.suggestedText.substring(0, 100) + '...' 
-                                            : s.suggestedText, 
-                                          data.focusKeyword
-                                        )
-                                      : (s.suggestedText.length > 100 
-                                          ? s.suggestedText.substring(0, 100) + '...' 
-                                          : s.suggestedText)
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              {/* Delete Button */}
-                              <Button
-                                onClick={() => handleRemoveFkwContentSuggestion(s, originalIndex)}
-                                variant="ghost"
-                                size="sm"
-                                className="shrink-0 h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                title="Revert to original text"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
-            )}
+              );
+            })()}
 
             {/* Suggestions List */}
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
@@ -6665,9 +6622,21 @@ export const SEOEditor = ({
                           </div>
                         )}
                         {suggestion.applied && (
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                            Applied ✓
-                          </Badge>
+                          <div className="flex flex-col items-end gap-2">
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              Applied ✓
+                            </Badge>
+                            <Button
+                              onClick={() => handleRemoveFkwContentSuggestion(suggestion, fkwContentSuggestions.findIndex(s => s === suggestion))}
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              title="Revert to original text"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              <span className="text-xs">Revert</span>
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
