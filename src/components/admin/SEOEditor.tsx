@@ -212,6 +212,22 @@ export const SEOEditor = ({
   } | null>(null);
   const [isDeletingLink, setIsDeletingLink] = useState(false);
   
+  // Smart External Links state
+  const [isGeneratingExternalLinks, setIsGeneratingExternalLinks] = useState(false);
+  const [externalLinkSuggestions, setExternalLinkSuggestions] = useState<Array<{
+    anchorText: string;
+    targetUrl: string;
+    targetTitle: string;
+    segmentKey: string;
+    segmentId?: number | null;
+    segmentType?: string;
+    reason: string;
+    sourceType: string;
+    priority: number;
+    applied?: boolean;
+  }>>([]);
+  const [showExternalLinkSuggestions, setShowExternalLinkSuggestions] = useState(false);
+  
   // Possible Content Links state (for content suggestions)
   const [isGeneratingContentLinks, setIsGeneratingContentLinks] = useState(false);
   const [contentLinkSuggestions, setContentLinkSuggestions] = useState<Array<{
@@ -1721,6 +1737,173 @@ export const SEOEditor = ({
     } finally {
       setIsDeletingLink(false);
       setLinkToDelete(null);
+    }
+  };
+
+  // Generate Smart External Links using AI
+  const handleGenerateExternalLinks = async () => {
+    setIsGeneratingExternalLinks(true);
+    setShowExternalLinkSuggestions(false);
+
+    try {
+      console.log('[SEO Editor] Generating external link suggestions for:', pageSlug);
+
+      const { data: result, error } = await supabase.functions.invoke('generate-external-links', {
+        body: { 
+          pageSlug,
+          focusKeyword: data.focusKeyword,
+          language: editorLanguage
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating external links:', error);
+        toast.error('Error generating external link suggestions: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated external link suggestions:', result.suggestions);
+        setExternalLinkSuggestions(result.suggestions.map((s: any) => ({ ...s, applied: false })));
+        setShowExternalLinkSuggestions(true);
+        
+        if (result.suggestions.length === 0) {
+          toast.info(result.message || 'Keine geeigneten externen Link-Möglichkeiten gefunden');
+        } else {
+          toast.success(`${result.suggestions.length} externe Link-Vorschläge generiert`);
+        }
+      } else {
+        toast.info(result?.message || 'Keine Vorschläge generiert');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unexpected error generating external link suggestions');
+    } finally {
+      setIsGeneratingExternalLinks(false);
+    }
+  };
+
+  // Apply an external link suggestion
+  const handleApplyExternalLink = async (suggestion: typeof externalLinkSuggestions[0], index: number) => {
+    try {
+      // Build the link HTML with target="_blank" for external links
+      const linkHtml = `<a href="${suggestion.targetUrl}" target="_blank" rel="noopener noreferrer" class="external-link">${suggestion.anchorText}</a>`;
+      
+      let linkInserted = false;
+      let updateId: string | null = null;
+      
+      // STRATEGY 1: Try page_segments JSON first
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry && suggestion.segmentId) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          const targetSegment = segments.find((s: any) => String(s.id) === String(suggestion.segmentId));
+          
+          if (targetSegment?.data) {
+            const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
+            for (const field of textFields) {
+              if (targetSegment.data[field] && typeof targetSegment.data[field] === 'string') {
+                if (targetSegment.data[field].includes(suggestion.anchorText)) {
+                  targetSegment.data[field] = targetSegment.data[field].replace(
+                    suggestion.anchorText,
+                    linkHtml
+                  );
+                  linkInserted = true;
+                  updateId = pageSegmentsEntry.id;
+                  
+                  // Update in database
+                  const { error: updateError } = await supabase
+                    .from('page_content')
+                    .update({
+                      content_value: JSON.stringify(segments),
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', pageSegmentsEntry.id);
+                  
+                  if (updateError) {
+                    console.error('[SEO Editor] Error updating page_segments:', updateError);
+                  } else {
+                    console.log('[SEO Editor] External link inserted into page_segments, segment:', suggestion.segmentId);
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Error parsing page_segments for external link:', e);
+        }
+      }
+      
+      // STRATEGY 2: Try individual segment entry
+      if (!linkInserted) {
+        const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
+        if (segmentEntry) {
+          try {
+            const contentObj = JSON.parse(segmentEntry.content_value);
+            const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
+            
+            for (const field of textFields) {
+              if (contentObj[field] && typeof contentObj[field] === 'string') {
+                if (contentObj[field].includes(suggestion.anchorText)) {
+                  contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
+                  linkInserted = true;
+                  updateId = segmentEntry.id;
+                  
+                  const { error: updateError } = await supabase
+                    .from('page_content')
+                    .update({
+                      content_value: JSON.stringify(contentObj),
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('id', segmentEntry.id);
+                  
+                  if (updateError) {
+                    console.error('[SEO Editor] Error updating segment:', updateError);
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            // Non-JSON content
+            if (segmentEntry.content_value.includes(suggestion.anchorText)) {
+              const updatedContent = segmentEntry.content_value.replace(suggestion.anchorText, linkHtml);
+              linkInserted = true;
+              updateId = segmentEntry.id;
+              
+              await supabase
+                .from('page_content')
+                .update({
+                  content_value: updatedContent,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', segmentEntry.id);
+            }
+          }
+        }
+      }
+
+      if (!linkInserted) {
+        toast.error(`"${suggestion.anchorText}" nicht im Segment gefunden`);
+        return;
+      }
+
+      // Mark as applied in UI
+      const updatedSuggestions = [...externalLinkSuggestions];
+      updatedSuggestions[index] = { ...updatedSuggestions[index], applied: true };
+      setExternalLinkSuggestions(updatedSuggestions);
+
+      toast.success(`Externer Link zu "${suggestion.targetTitle}" eingefügt!`);
+    } catch (error) {
+      console.error('[SEO Editor] Error applying external link:', error);
+      toast.error('Fehler beim Anwenden des externen Links');
     }
   };
 
@@ -3835,6 +4018,126 @@ export const SEOEditor = ({
             <p className="text-sm text-muted-foreground mt-3">
               Zeigt alle internen Links auf dieser Seite mit Link-Text, Ziel und Segment-Position.
             </p>
+          </div>
+
+          {/* External Links - Smart Suggestions */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+                <ExternalLink className="h-4 w-4" />
+                External Links
+              </Label>
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+              >
+                {checks.hasExternalLinks ? 'Vorhanden' : 'Keine'}
+              </Badge>
+            </div>
+            
+            {/* Generate Button */}
+            <Button
+              onClick={handleGenerateExternalLinks}
+              disabled={isGeneratingExternalLinks}
+              className="w-full mb-4 h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+            >
+              {isGeneratingExternalLinks ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analysiere...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Smart External Links generieren
+                </>
+              )}
+            </Button>
+
+            {/* External Link Suggestions */}
+            {showExternalLinkSuggestions && externalLinkSuggestions.length > 0 && (
+              <div className="space-y-3 mb-4">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                  Vorschläge (nur neutrale, autoritative Quellen):
+                </p>
+                {externalLinkSuggestions.map((suggestion, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`p-4 rounded-lg border transition-all ${
+                      suggestion.applied 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-muted/20 border-border/50 hover:border-emerald-500/30'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span className="font-medium text-foreground">"{suggestion.anchorText}"</span>
+                          <span className="text-muted-foreground">→</span>
+                          <a 
+                            href={suggestion.targetUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-emerald-400 hover:text-emerald-300 text-sm truncate max-w-[250px] flex items-center gap-1"
+                          >
+                            {suggestion.targetTitle}
+                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs bg-muted/30">
+                            {suggestion.segmentType}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                            {suggestion.sourceType}
+                          </Badge>
+                          {suggestion.segmentId && (
+                            <span className="text-xs text-muted-foreground">
+                              Segment {suggestion.segmentId}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{suggestion.reason}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={suggestion.applied ? "outline" : "default"}
+                        disabled={suggestion.applied}
+                        onClick={() => handleApplyExternalLink(suggestion, idx)}
+                        className={suggestion.applied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-emerald-600 hover:bg-emerald-700"}
+                      >
+                        {suggestion.applied ? (
+                          <>
+                            <Check className="h-4 w-4 mr-1" />
+                            Eingefügt
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-1" />
+                            Einfügen
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showExternalLinkSuggestions && externalLinkSuggestions.length === 0 && (
+              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">Keine geeigneten externen Link-Möglichkeiten gefunden.</span>
+              </div>
+            )}
+
+            <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-md">
+              <p className="text-xs text-emerald-300/80">
+                <strong>Sicherheitsregel:</strong> Es werden nur Links zu neutralen, autoritativen Quellen vorgeschlagen 
+                (Universitäten, Standards-Organisationen, Wikipedia, etc.). 
+                Links zu Wettbewerbern oder kommerziellen Anbietern sind ausgeschlossen.
+              </p>
+            </div>
           </div>
         </TabsContent>
 

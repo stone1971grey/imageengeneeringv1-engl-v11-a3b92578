@@ -333,3 +333,26 @@ nav [data-radix-navigation-menu-list] > li:last-child [data-radix-navigation-men
 [data-theme="light"] .internal-link:hover {
   color: hsl(211 77% 35%);
 }
+
+/* External links styling (SEO Suite) */
+.external-link {
+  color: hsl(160 60% 45%);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.external-link:hover {
+  color: hsl(160 70% 55%);
+  text-decoration-color: hsl(160 70% 55%);
+}
+
+/* Light section external links */
+.light-section .external-link,
+[data-theme="light"] .external-link {
+  color: hsl(160 60% 35%);
+}
+
+[data-theme="light"] .external-link:hover {
+  color: hsl(160 70% 40%);
+}
