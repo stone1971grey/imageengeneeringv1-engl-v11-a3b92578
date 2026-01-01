@@ -2349,16 +2349,39 @@ export const SEOEditor = ({
 
     try {
       // Load page_segments content FIRST to find which intro segments actually exist
-      const { data: pageSegmentsRow, error: loadError } = await supabase
+      // CRITICAL: page_segments is typically stored in 'en' only, so we need fallback logic
+      let pageSegmentsRow = null;
+      
+      // First try current language
+      const { data: currentLangData, error: currentLangError } = await supabase
         .from('page_content')
         .select('*')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
         .eq('language', editorLanguage)
         .maybeSingle();
+      
+      if (currentLangData) {
+        pageSegmentsRow = currentLangData;
+      } else if (editorLanguage !== 'en') {
+        // Fallback to 'en' if not found in current language
+        console.log('[SEO Editor] page_segments not found in', editorLanguage, '- trying EN fallback');
+        const { data: enData, error: enError } = await supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', 'en')
+          .maybeSingle();
+        
+        if (enData) {
+          pageSegmentsRow = enData;
+          console.log('[SEO Editor] Using EN fallback for page_segments');
+        }
+      }
 
-      if (loadError || !pageSegmentsRow) {
-        console.error('[SEO Editor] Failed to load page_segments:', loadError);
+      if (!pageSegmentsRow) {
+        console.error('[SEO Editor] Failed to load page_segments - not found in any language');
         toast.error('page_segments nicht gefunden', { duration: 5000 });
         setIsApplyingIntro(false);
         return;
