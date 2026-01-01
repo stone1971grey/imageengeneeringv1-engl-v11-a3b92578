@@ -4889,13 +4889,63 @@ export const SEOEditor = ({
         if (newAnalysis.fkwOccurrences >= 3) newScore += 15;
         setFkwContentScore(Math.min(100, newScore));
         
-        // Update recommendations based on new analysis
+        // Update recommendations based on new analysis - CONCRETE & ACTIONABLE
         const newRecommendations: string[] = [];
-        if (!newAnalysis.h1HasFkw) newRecommendations.push('Add focus keyword to H1 headline');
-        if (newAnalysis.densityStatus === 'too_low') newRecommendations.push('Increase keyword usage in content');
-        if (newAnalysis.densityStatus === 'too_high') newRecommendations.push('Reduce keyword usage to avoid over-optimization');
-        if (!newAnalysis.introHasFkw) newRecommendations.push('Add focus keyword to introduction text');
-        if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw === 0) newRecommendations.push('Include focus keyword in at least one H2 heading');
+        
+        // H1 recommendation
+        if (!newAnalysis.h1HasFkw) {
+          newRecommendations.push(`✗ Füge "${data.focusKeyword}" in die H1-Überschrift ein`);
+        } else {
+          newRecommendations.push('✓ H1 enthält Focus Keyword');
+        }
+        
+        // Intro recommendation
+        if (!newAnalysis.introHasFkw) {
+          newRecommendations.push(`✗ Füge "${data.focusKeyword}" in den Intro-Text ein (idealerweise in den ersten 15 Wörtern)`);
+        } else {
+          newRecommendations.push('✓ Intro enthält Focus Keyword');
+        }
+        
+        // H2 recommendation - specific counts
+        if (newAnalysis.h2Count > 0) {
+          const h2Missing = newAnalysis.h2Count - newAnalysis.h2WithFkw;
+          const targetH2s = Math.ceil(newAnalysis.h2Count / 2); // At least 50%
+          const h2sNeeded = Math.max(0, targetH2s - newAnalysis.h2WithFkw);
+          
+          if (h2Missing === 0) {
+            newRecommendations.push(`✓ Alle ${newAnalysis.h2Count} H2-Überschriften enthalten das FKW`);
+          } else if (newAnalysis.h2WithFkw === 0) {
+            newRecommendations.push(`✗ Füge "${data.focusKeyword}" in mindestens ${targetH2s} von ${newAnalysis.h2Count} H2-Überschriften ein`);
+          } else if (h2sNeeded > 0) {
+            newRecommendations.push(`○ Füge "${data.focusKeyword}" in ${h2sNeeded} weitere H2-Überschrift${h2sNeeded > 1 ? 'en' : ''} ein (aktuell: ${newAnalysis.h2WithFkw}/${newAnalysis.h2Count})`);
+          } else {
+            newRecommendations.push(`✓ ${newAnalysis.h2WithFkw}/${newAnalysis.h2Count} H2-Überschriften enthalten das FKW (≥50%)`);
+          }
+        }
+        
+        // Density recommendation - specific targets
+        if (newAnalysis.densityStatus === 'too_low') {
+          const currentDensity = newAnalysis.fkwDensity.toFixed(2);
+          const wordsNeeded = Math.ceil((0.5 * newAnalysis.totalWords / 100) - newAnalysis.fkwOccurrences);
+          if (wordsNeeded > 0) {
+            newRecommendations.push(`✗ Keyword-Dichte zu niedrig (${currentDensity}%). Füge "${data.focusKeyword}" ca. ${wordsNeeded}× mehr im Text ein`);
+          } else {
+            newRecommendations.push(`○ Keyword-Dichte leicht erhöhen (${currentDensity}% → Ziel: 0.5-2.0%)`);
+          }
+        } else if (newAnalysis.densityStatus === 'too_high') {
+          const currentDensity = newAnalysis.fkwDensity.toFixed(2);
+          newRecommendations.push(`✗ Keyword-Dichte zu hoch (${currentDensity}%). Reduziere die Verwendung von "${data.focusKeyword}" um Überoptimierung zu vermeiden`);
+        } else {
+          newRecommendations.push(`✓ Keyword-Dichte optimal (${newAnalysis.fkwDensity.toFixed(2)}%)`);
+        }
+        
+        // H3 recommendation (bonus)
+        if (newAnalysis.h3Count > 0 && newAnalysis.h3WithFkw === 0) {
+          newRecommendations.push(`○ Optional: Füge "${data.focusKeyword}" in eine H3-Überschrift ein (+10 Punkte)`);
+        } else if (newAnalysis.h3WithFkw > 0) {
+          newRecommendations.push(`✓ ${newAnalysis.h3WithFkw} H3-Überschrift${newAnalysis.h3WithFkw > 1 ? 'en' : ''} enthält das FKW`);
+        }
+        
         setFkwContentRecommendations(newRecommendations);
         
         console.log('[SEO Editor] Updated FKW analysis:', newAnalysis);
@@ -6730,23 +6780,44 @@ export const SEOEditor = ({
                   );
                 })()}
                 
-                {/* Recommendations - filter out H1 warning if H1 actually has FKW */}
+                {/* Actionable Recommendations - with color-coded status indicators */}
                 {fkwContentRecommendations.length > 0 && (
-                  <div className="mt-3 space-y-1">
+                  <div className="mt-4 space-y-2 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Konkrete Handlungsanweisungen:
+                    </p>
                     {fkwContentRecommendations
                       .filter(rec => {
-                        // Filter out H1 warning if actual H1 from SEO data has FKW
-                        if (rec.includes('H1') && data.h1 && data.focusKeyword) {
+                        // Filter out H1 success message if actual H1 from SEO data has FKW and this is the positive H1 message
+                        if (rec.includes('H1') && rec.startsWith('✗') && data.h1 && data.focusKeyword) {
                           const actualH1HasFkw = data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase());
                           if (actualH1HasFkw) return false;
                         }
                         return true;
                       })
-                      .map((rec, i) => (
-                        <p key={i} className={`text-sm ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
-                          {rec}
-                        </p>
-                      ))}
+                      .map((rec, i) => {
+                        // Determine styling based on status indicator
+                        let statusClass = 'text-muted-foreground';
+                        let bgClass = 'bg-transparent';
+                        
+                        if (rec.startsWith('✓')) {
+                          statusClass = 'text-green-400';
+                          bgClass = 'bg-green-500/5';
+                        } else if (rec.startsWith('✗')) {
+                          statusClass = 'text-red-400';
+                          bgClass = 'bg-red-500/5';
+                        } else if (rec.startsWith('○')) {
+                          statusClass = 'text-yellow-400';
+                          bgClass = 'bg-yellow-500/5';
+                        }
+                        
+                        return (
+                          <div key={i} className={`text-sm px-3 py-2 rounded ${bgClass} ${statusClass} flex items-start gap-2`}>
+                            <span className="flex-shrink-0 w-4 text-center">{rec.charAt(0)}</span>
+                            <span className="flex-1">{rec.substring(2)}</span>
+                          </div>
+                        );
+                      })}
                   </div>
                 )}
               </div>
