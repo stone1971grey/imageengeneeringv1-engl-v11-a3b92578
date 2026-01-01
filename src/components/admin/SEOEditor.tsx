@@ -4983,17 +4983,17 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateFocusKeywords}
                 disabled={isGeneratingKeywords}
-                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[200px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center gap-2"
               >
                 {isGeneratingKeywords ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Analyzing...</span>
                   </>
                 ) : (
                   <>
-                    <GeminiIcon className="h-4 w-4 mr-2" />
-                    Smart FKW
+                    <GeminiIcon className="h-4 w-4" />
+                    <span>Smart FKW</span>
                   </>
                 )}
               </Button>
@@ -5116,17 +5116,17 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEOTitles}
                 disabled={isGeneratingTitle}
-                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[200px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center gap-2"
               >
                 {isGeneratingTitle ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generiere...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Generiere...</span>
                   </>
                 ) : (
                   <>
-                    <GeminiIcon className="h-4 w-4 mr-2" />
-                    Smart Title
+                    <GeminiIcon className="h-4 w-4" />
+                    <span>Smart Title</span>
                   </>
                 )}
               </Button>
@@ -5262,17 +5262,17 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEODescriptions}
                 disabled={isGeneratingDescription}
-                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[200px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center gap-2"
               >
                 {isGeneratingDescription ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Generating...</span>
                   </>
                 ) : (
                   <>
-                    <GeminiIcon className="h-4 w-4 mr-2" />
-                    Smart Description
+                    <GeminiIcon className="h-4 w-4" />
+                    <span>Smart Description</span>
                   </>
                 )}
               </Button>
@@ -5631,17 +5631,17 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateH1Headlines}
                 disabled={isGeneratingH1}
-                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[200px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center gap-2"
               >
                 {isGeneratingH1 ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analysiere...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Analysiere...</span>
                   </>
                 ) : (
                   <>
-                    <GeminiIcon className="h-4 w-4 mr-2" />
-                    Smart H1
+                    <GeminiIcon className="h-4 w-4" />
+                    <span>Smart H1</span>
                   </>
                 )}
               </Button>
@@ -5906,17 +5906,17 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateIntroText}
                 disabled={isGeneratingIntro}
-                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[200px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center gap-2"
               >
                 {isGeneratingIntro ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generiere...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Generiere...</span>
                   </>
                 ) : (
                   <>
-                    <GeminiIcon className="h-4 w-4 mr-2" />
-                    Smart Intro
+                    <GeminiIcon className="h-4 w-4" />
+                    <span>Smart Intro</span>
                   </>
                 )}
               </Button>
