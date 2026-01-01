@@ -10,7 +10,8 @@ import {
   Navigation2, Images, Monitor, Zap, Image as ImageIcon,
   SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
   Search, FileCheck, Wand2, Clock, Copy, Database,
-  ChevronDown, Flame, PenLine, Rocket
+  ChevronDown, Flame, PenLine, Rocket, Package, Sliders,
+  HardDrive, GitBranch, Puzzle
 } from "lucide-react";
 import lovableIcon from "@/assets/lovable-icon.png";
 
@@ -171,13 +172,26 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
                   </VersionSection>
 
                   <VersionSection 
+                    versionKey="v1.4"
+                    label="v1.4 – Multi-Tenancy Foundation"
+                    isOpen={openVersions["v1.4"]}
+                    onToggle={() => toggleVersion("v1.4")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={Package} label="Template/Boilerplate System" isPlanned />
+                    <FeatureItem icon={Sliders} label="Configuration Layer" isPlanned />
+                    <FeatureItem icon={HardDrive} label="Data Isolation" isPlanned />
+                    <FeatureItem icon={GitBranch} label="Deployment Pipeline" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
                     versionKey="v2.0"
                     label="v2.0 – Plugin-Architektur"
                     isOpen={openVersions["v2.0"]}
                     onToggle={() => toggleVersion("v2.0")}
                     isPlanned
                   >
-                    <FeatureItem icon={Rocket} label="Plugin-Architektur" isPlanned />
+                    <FeatureItem icon={Puzzle} label="Plugin-Architektur" isPlanned />
                   </VersionSection>
                 </div>
               )}
