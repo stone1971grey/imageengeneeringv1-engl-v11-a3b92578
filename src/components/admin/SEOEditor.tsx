@@ -243,6 +243,15 @@ export const SEOEditor = ({
   const [showContentLinkSuggestions, setShowContentLinkSuggestions] = useState(false);
   const [isSavingContentSuggestions, setIsSavingContentSuggestions] = useState(false);
   
+  // Extracted internal links state (for display in Basics tab)
+  const [extractedInternalLinks, setExtractedInternalLinks] = useState<Array<{
+    anchorText: string;
+    targetUrl: string;
+    segmentKey: string;
+    segmentId?: number | null;
+    segmentType?: string;
+  }>>([]);
+  
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
     const saved = localStorage.getItem('seo-healthcheck-open');
@@ -988,6 +997,78 @@ export const SEOEditor = ({
         hasExternalLinks = true;
       }
     });
+
+    // Extract internal links with details for display in Basics tab
+    const extractedLinks: Array<{
+      anchorText: string;
+      targetUrl: string;
+      segmentKey: string;
+      segmentId?: number | null;
+      segmentType?: string;
+    }> = [];
+    
+    pageContent.forEach(item => {
+      const content = item.content_value || '';
+      // Match all anchor tags with internal-link class or relative hrefs
+      const linkPattern = /<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi;
+      let match;
+      while ((match = linkPattern.exec(content)) !== null) {
+        const href = match[1];
+        const text = match[2];
+        // Only include internal links (relative or internal-link class)
+        if (href.startsWith('/') || href.startsWith('./') || href.startsWith('#') || content.includes('internal-link')) {
+          // Find segment info from registry
+          const segmentMatch = item.section_key.match(/segment-(\d+)/);
+          const segmentId = segmentMatch ? parseInt(segmentMatch[1]) : null;
+          const segmentInfo = segmentId ? segmentRegistry.find(s => s.segment_id === segmentId) : null;
+          
+          extractedLinks.push({
+            anchorText: text.trim() || href,
+            targetUrl: href,
+            segmentKey: item.section_key,
+            segmentId: segmentId,
+            segmentType: segmentInfo?.segment_type || 'unknown'
+          });
+        }
+      }
+      
+      // Also check page_segments JSON for links
+      if (item.section_key === 'page_segments') {
+        try {
+          const segments = JSON.parse(content);
+          segments.forEach((seg: any) => {
+            const checkField = (fieldValue: string, fieldName: string) => {
+              if (!fieldValue || typeof fieldValue !== 'string') return;
+              let fieldMatch;
+              const fieldPattern = /<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi;
+              while ((fieldMatch = fieldPattern.exec(fieldValue)) !== null) {
+                const href = fieldMatch[1];
+                const text = fieldMatch[2];
+                if (href.startsWith('/') || href.startsWith('./') || href.startsWith('#') || fieldValue.includes('internal-link')) {
+                  extractedLinks.push({
+                    anchorText: text.trim() || href,
+                    targetUrl: href,
+                    segmentKey: `segment-${seg.id}`,
+                    segmentId: seg.id,
+                    segmentType: seg.type || 'unknown'
+                  });
+                }
+              }
+            };
+            // Check common text fields
+            if (seg.data) {
+              checkField(seg.data.description, 'description');
+              checkField(seg.data.text, 'text');
+              checkField(seg.data.content, 'content');
+            }
+          });
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    });
+    
+    setExtractedInternalLinks(extractedLinks);
 
     setChecks({
       titleLength,
@@ -3696,6 +3777,63 @@ export const SEOEditor = ({
             {/* Priority Explanation */}
             <p className="text-sm text-muted-foreground mt-3">
               <span className="font-medium">Auto-detect Priorität:</span> Intro → Full Hero → Product Hero Gallery → Product Hero → Action Hero
+            </p>
+          </div>
+
+          {/* Internal Links Overview */}
+          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+                <Link2 className="h-4 w-4" />
+                Internal Links
+              </Label>
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${extractedInternalLinks.length > 0 ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}
+              >
+                {extractedInternalLinks.length} {extractedInternalLinks.length === 1 ? 'Link' : 'Links'}
+              </Badge>
+            </div>
+            
+            {extractedInternalLinks.length > 0 ? (
+              <div className="space-y-2">
+                {extractedInternalLinks.map((link, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/20 border border-border/50 rounded-md">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-foreground text-sm">"{link.anchorText}"</span>
+                        <span className="text-muted-foreground text-xs">→</span>
+                        <a 
+                          href={link.targetUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 text-sm truncate max-w-[200px]"
+                        >
+                          {link.targetUrl}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs bg-muted/30">
+                          {link.segmentType}
+                        </Badge>
+                        {link.segmentId && (
+                          <span className="text-xs text-muted-foreground">
+                            Segment {link.segmentId}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">Keine internen Links auf dieser Seite gefunden.</span>
+              </div>
+            )}
+            <p className="text-sm text-muted-foreground mt-3">
+              Zeigt alle internen Links auf dieser Seite mit Link-Text, Ziel und Segment-Position.
             </p>
           </div>
         </TabsContent>
