@@ -4293,7 +4293,6 @@ export const SEOEditor = ({
               </div>
             </div>
             
-            {/* Current H1 Display */}
             <div className="mb-4 p-4 bg-muted/20 border border-border/50 rounded-md">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -4303,19 +4302,20 @@ export const SEOEditor = ({
                       🔒 Gesperrt (manuell gesetzt)
                     </Badge>
                   )}
+                  {/* H1 character count - LEFT side */}
+                  {data.h1 && (() => {
+                    const countStyle = getCountDisplay(data.h1.length, 20, 70);
+                    return (
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
+                          {countStyle.showCheck && <Check className="h-3 w-3" />}
+                          {data.h1.length} Zeichen
+                        </span>
+                        <span className="text-xs text-muted-foreground">(Ideal: 20-70)</span>
+                      </div>
+                    );
+                  })()}
                 </div>
-                {data.h1 && (() => {
-                  const countStyle = getCountDisplay(data.h1.length, 40, 70);
-                  return (
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${countStyle.bgClass} ${countStyle.textClass}`}>
-                        {countStyle.showCheck && <Check className="h-3 w-3" />}
-                        {data.h1.length} Zeichen
-                      </span>
-                      <span className="text-xs text-muted-foreground">(Ideal: 40-70)</span>
-                    </div>
-                  );
-                })()}
               </div>
               {data.h1 ? (
                 <p className="text-base font-medium">{highlightKeyword(data.h1, data.focusKeyword || '')}</p>
@@ -4703,27 +4703,26 @@ export const SEOEditor = ({
               )}
               {introductionText.description && (
                 <div>
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 mb-1">
                     <p className="text-xs font-medium text-muted-foreground">Description</p>
-                    <div className="flex items-center gap-2">
-                      {(() => {
-                        const wordCount = introductionText.description.trim().split(/\s+/).length;
-                        const charStyle = getCountDisplay(introductionText.description.length, 200, 500);
-                        const wordStyle = getCountDisplay(wordCount, 40, 80, 'words');
-                        return (
-                          <>
-                            <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${charStyle.bgClass} ${charStyle.textClass}`}>
-                              {charStyle.showCheck && <Check className="h-3 w-3" />}
-                              {introductionText.description.length} Zeichen
-                            </span>
-                            <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${wordStyle.bgClass} ${wordStyle.textClass}`}>
-                              {wordStyle.showCheck && <Check className="h-3 w-3" />}
-                              {wordCount} Wörter
-                            </span>
-                          </>
-                        );
-                      })()}
-                    </div>
+                    {/* Character/word count - LEFT side */}
+                    {(() => {
+                      const wordCount = introductionText.description.trim().split(/\s+/).length;
+                      const charStyle = getCountDisplay(introductionText.description.length, 200, 500);
+                      const wordStyle = getCountDisplay(wordCount, 40, 80, 'words');
+                      return (
+                        <>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${charStyle.bgClass} ${charStyle.textClass}`}>
+                            {charStyle.showCheck && <Check className="h-3 w-3" />}
+                            {introductionText.description.length} Zeichen
+                          </span>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded flex items-center gap-1 ${wordStyle.bgClass} ${wordStyle.textClass}`}>
+                            {wordStyle.showCheck && <Check className="h-3 w-3" />}
+                            {wordCount} Wörter
+                          </span>
+                        </>
+                      );
+                    })()}
                   </div>
                   <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
                 </div>
