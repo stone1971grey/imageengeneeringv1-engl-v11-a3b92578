@@ -16,9 +16,10 @@ import lovableIcon from "@/assets/lovable-icon.png";
 
 interface WelcomeTabProps {
   version: string;
+  isAdmin?: boolean;
 }
 
-export const WelcomeTab = ({ version }: WelcomeTabProps) => {
+export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
   const [openVersions, setOpenVersions] = useState<Record<string, boolean>>({
     "v1.0": true // Only v1.0 open by default
   });
@@ -134,50 +135,52 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
                 <FeatureItem icon={Database} label="Segment-Registry" />
               </VersionSection>
 
-              {/* Planned Versions */}
-              <div className="pt-4 border-t border-gray-700/50 mt-4">
-                <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">Roadmap</p>
-                
-                <VersionSection 
-                  versionKey="v1.1"
-                  label="v1.1 – Advanced AI SEO Suite"
-                  isOpen={openVersions["v1.1"]}
-                  onToggle={() => toggleVersion("v1.1")}
-                  isPlanned
-                >
-                  <FeatureItem icon={Wand2} label="Advanced AI SEO Suite" isPlanned />
-                </VersionSection>
+              {/* Roadmap - Admin Only */}
+              {isAdmin && (
+                <div className="pt-4 border-t border-gray-700/50 mt-4">
+                  <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">Roadmap</p>
+                  
+                  <VersionSection 
+                    versionKey="v1.1"
+                    label="v1.1 – Advanced AI SEO Suite"
+                    isOpen={openVersions["v1.1"]}
+                    onToggle={() => toggleVersion("v1.1")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={Wand2} label="Advanced AI SEO Suite" isPlanned />
+                  </VersionSection>
 
-                <VersionSection 
-                  versionKey="v1.2"
-                  label="v1.2 – Frontend Editing"
-                  isOpen={openVersions["v1.2"]}
-                  onToggle={() => toggleVersion("v1.2")}
-                  isPlanned
-                >
-                  <FeatureItem icon={PenLine} label="Frontend Editing" isPlanned />
-                </VersionSection>
+                  <VersionSection 
+                    versionKey="v1.2"
+                    label="v1.2 – Frontend Editing"
+                    isOpen={openVersions["v1.2"]}
+                    onToggle={() => toggleVersion("v1.2")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={PenLine} label="Frontend Editing" isPlanned />
+                  </VersionSection>
 
-                <VersionSection 
-                  versionKey="v1.3"
-                  label="v1.3 – Content Automation"
-                  isOpen={openVersions["v1.3"]}
-                  onToggle={() => toggleVersion("v1.3")}
-                  isPlanned
-                >
-                  <FeatureItem icon={Flame} label="Content Automation" isPlanned />
-                </VersionSection>
+                  <VersionSection 
+                    versionKey="v1.3"
+                    label="v1.3 – Content Automation"
+                    isOpen={openVersions["v1.3"]}
+                    onToggle={() => toggleVersion("v1.3")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={Flame} label="Content Automation" isPlanned />
+                  </VersionSection>
 
-                <VersionSection 
-                  versionKey="v2.0"
-                  label="v2.0 – Plugin-Architektur"
-                  isOpen={openVersions["v2.0"]}
-                  onToggle={() => toggleVersion("v2.0")}
-                  isPlanned
-                >
-                  <FeatureItem icon={Rocket} label="Plugin-Architektur" isPlanned />
-                </VersionSection>
-              </div>
+                  <VersionSection 
+                    versionKey="v2.0"
+                    label="v2.0 – Plugin-Architektur"
+                    isOpen={openVersions["v2.0"]}
+                    onToggle={() => toggleVersion("v2.0")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={Rocket} label="Plugin-Architektur" isPlanned />
+                  </VersionSection>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
