@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Layers, Eye, Languages, Book, Sparkles, FolderOpen,
   Newspaper, Calendar, Target, Download, Settings,
@@ -7,7 +9,8 @@ import {
   ListChecks, Table2, HelpCircle, FileText, Building2,
   Navigation2, Images, Monitor, Zap, Image as ImageIcon,
   SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
-  Search, FileCheck, Wand2, Clock, Copy, Database
+  Search, FileCheck, Wand2, Clock, Copy, Database,
+  ChevronDown, Flame, PenLine, Rocket
 } from "lucide-react";
 import lovableIcon from "@/assets/lovable-icon.png";
 
@@ -16,6 +19,14 @@ interface WelcomeTabProps {
 }
 
 export const WelcomeTab = ({ version }: WelcomeTabProps) => {
+  const [openVersions, setOpenVersions] = useState<Record<string, boolean>>({
+    "v1.0": true // Only v1.0 open by default
+  });
+
+  const toggleVersion = (key: string) => {
+    setOpenVersions(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   return (
     <div className="space-y-6">
       {/* Hero Section */}
@@ -27,7 +38,7 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
           </span>
         </div>
         <CardContent className="p-12">
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-6">
               <img 
@@ -46,76 +57,128 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
               </div>
             </div>
 
-            {/* All Features - Unified Grid */}
-            <div className="space-y-6">
+            {/* Version History - Collapsible */}
+            <div className="space-y-2">
               {/* v0.5 Foundation */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.5 – Foundation</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={Layers} label="Modular Segments" />
-                  <FeatureItem icon={Languages} label="Multi-Language" />
-                  <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
-                </div>
-              </div>
+              <VersionSection 
+                versionKey="v0.5"
+                label="v0.5 – Foundation"
+                isOpen={openVersions["v0.5"]}
+                onToggle={() => toggleVersion("v0.5")}
+              >
+                <FeatureItem icon={Layers} label="Modular Segments" />
+                <FeatureItem icon={Languages} label="Multi-Language" />
+                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
+              </VersionSection>
 
-              {/* v0.6 Translation */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.6 – Translation</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={Book} label="Translation Glossary" />
-                  <FeatureItem icon={Sparkles} label="Auto Translation" />
-                </div>
-              </div>
+              {/* v0.6 Translation & SEO */}
+              <VersionSection 
+                versionKey="v0.6"
+                label="v0.6 – Translation & SEO"
+                isOpen={openVersions["v0.6"]}
+                onToggle={() => toggleVersion("v0.6")}
+              >
+                <FeatureItem icon={Book} label="Translation Glossary" />
+                <FeatureItem icon={Sparkles} label="Auto Translation" />
+                <FeatureItem icon={Eye} label="SEO Suite" />
+              </VersionSection>
 
               {/* v0.7 Content Types */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.7 – Content Types</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={Newspaper} label="News Management" />
-                  <FeatureItem icon={Calendar} label="Event Management" />
-                  <FeatureItem icon={FolderOpen} label="Media Management" />
-                  <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
-                </div>
-              </div>
+              <VersionSection 
+                versionKey="v0.7"
+                label="v0.7 – Content Types"
+                isOpen={openVersions["v0.7"]}
+                onToggle={() => toggleVersion("v0.7")}
+              >
+                <FeatureItem icon={Newspaper} label="News Management" />
+                <FeatureItem icon={Calendar} label="Event Management" />
+                <FeatureItem icon={FolderOpen} label="Media Management" />
+                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
+              </VersionSection>
 
               {/* v0.8 Extended Content */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.8 – Extended Content</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={Target} label="Product Management" />
-                  <FeatureItem icon={Download} label="Download Management" />
-                </div>
-              </div>
+              <VersionSection 
+                versionKey="v0.8"
+                label="v0.8 – Extended Content"
+                isOpen={openVersions["v0.8"]}
+                onToggle={() => toggleVersion("v0.8")}
+              >
+                <FeatureItem icon={Target} label="Product Management" />
+                <FeatureItem icon={Download} label="Download Management" />
+              </VersionSection>
 
               {/* v0.9 Advanced Features */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">v0.9 – Advanced Features</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={Eye} label="SEO Suite" />
-                  <FeatureItem icon={Shield} label="User Management" />
-                  <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
-                  <FeatureItem icon={Search} label="Smart Search" />
-                </div>
-              </div>
+              <VersionSection 
+                versionKey="v0.9"
+                label="v0.9 – Advanced Features"
+                isOpen={openVersions["v0.9"]}
+                onToggle={() => toggleVersion("v0.9")}
+              >
+                <FeatureItem icon={Shield} label="User Management" />
+                <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
+                <FeatureItem icon={Search} label="Smart Search" />
+              </VersionSection>
 
-              {/* v1.0 Release Highlights */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-[#f9dc24] uppercase tracking-wider flex items-center gap-2">
-                  🍾 v1.0.0 – Release Highlights
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
-                  <FeatureItem icon={Wand2} label="AI SEO-Suite" />
-                  <FeatureItem icon={Clock} label="Latest Edit" />
-                  <FeatureItem icon={Copy} label="Copy Page" />
-                  <FeatureItem icon={HistoryIcon} label="Version History" />
-                  <FeatureItem icon={Database} label="Segment-Registry" />
-                </div>
-              </div>
+              {/* v1.0 Release - Current */}
+              <VersionSection 
+                versionKey="v1.0"
+                label="🍾 v1.0.0 – Release"
+                isOpen={openVersions["v1.0"]}
+                onToggle={() => toggleVersion("v1.0")}
+                isCurrent
+              >
+                <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
+                <FeatureItem icon={Wand2} label="AI SEO-Suite" />
+                <FeatureItem icon={Clock} label="Latest Edit" />
+                <FeatureItem icon={Copy} label="Copy Page" />
+                <FeatureItem icon={HistoryIcon} label="Version History" />
+                <FeatureItem icon={Database} label="Segment-Registry" />
+              </VersionSection>
 
-              <p className="text-xs text-gray-500 pt-2 border-t border-gray-700/50">
-                Roadmap: v1.1 Content Automation • v1.2 Frontend Editing • v2.0 Plugin-Architektur
-              </p>
+              {/* Planned Versions */}
+              <div className="pt-4 border-t border-gray-700/50 mt-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Roadmap</p>
+                
+                <VersionSection 
+                  versionKey="v1.1"
+                  label="v1.1 – Advanced SEO Suite"
+                  isOpen={openVersions["v1.1"]}
+                  onToggle={() => toggleVersion("v1.1")}
+                  isPlanned
+                >
+                  <FeatureItem icon={Wand2} label="Advanced SEO Suite" isPlanned />
+                </VersionSection>
+
+                <VersionSection 
+                  versionKey="v1.2"
+                  label="v1.2 – Frontend Editing"
+                  isOpen={openVersions["v1.2"]}
+                  onToggle={() => toggleVersion("v1.2")}
+                  isPlanned
+                >
+                  <FeatureItem icon={PenLine} label="Frontend Editing" isPlanned />
+                </VersionSection>
+
+                <VersionSection 
+                  versionKey="v1.3"
+                  label="v1.3 – Content Automation"
+                  isOpen={openVersions["v1.3"]}
+                  onToggle={() => toggleVersion("v1.3")}
+                  isPlanned
+                >
+                  <FeatureItem icon={Flame} label="Content Automation" isPlanned />
+                </VersionSection>
+
+                <VersionSection 
+                  versionKey="v2.0"
+                  label="v2.0 – Plugin-Architektur"
+                  isOpen={openVersions["v2.0"]}
+                  onToggle={() => toggleVersion("v2.0")}
+                  isPlanned
+                >
+                  <FeatureItem icon={Rocket} label="Plugin-Architektur" isPlanned />
+                </VersionSection>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -187,11 +250,47 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
   );
 };
 
+// Version Section Component with Collapsible
+interface VersionSectionProps {
+  versionKey: string;
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  isCurrent?: boolean;
+  isPlanned?: boolean;
+  children: React.ReactNode;
+}
+
+const VersionSection = ({ label, isOpen, onToggle, isCurrent, isPlanned, children }: VersionSectionProps) => (
+  <Collapsible open={isOpen} onOpenChange={onToggle}>
+    <CollapsibleTrigger className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors ${
+      isCurrent 
+        ? 'bg-[#f9dc24]/20 hover:bg-[#f9dc24]/30' 
+        : isPlanned 
+          ? 'bg-gray-700/30 hover:bg-gray-700/50' 
+          : 'bg-gray-800/50 hover:bg-gray-800/70'
+    }`}>
+      <span className={`text-xs font-semibold uppercase tracking-wider ${
+        isCurrent ? 'text-[#f9dc24]' : isPlanned ? 'text-gray-400' : 'text-gray-500'
+      }`}>
+        {label}
+        {isPlanned && <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-gray-600 text-gray-300 rounded">Planned</span>}
+      </span>
+      <ChevronDown className={`h-4 w-4 ${isCurrent ? 'text-[#f9dc24]' : 'text-gray-500'} transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+    </CollapsibleTrigger>
+    <CollapsibleContent className="pt-2 pb-1">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pl-2">
+        {children}
+      </div>
+    </CollapsibleContent>
+  </Collapsible>
+);
+
 // Helper component for feature items
-const FeatureItem = ({ icon: Icon, label }: { icon: any; label: string }) => (
-  <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-    <Icon className="h-5 w-5 text-[#f9dc24]" />
-    <span className="text-white text-sm font-medium">{label}</span>
+const FeatureItem = ({ icon: Icon, label, isPlanned }: { icon: any; label: string; isPlanned?: boolean }) => (
+  <div className={`flex items-center gap-3 p-3 rounded-lg ${isPlanned ? 'bg-gray-700/30' : 'bg-gray-800/50'}`}>
+    <Icon className={`h-5 w-5 ${isPlanned ? 'text-gray-500' : 'text-[#f9dc24]'}`} />
+    <span className={`text-sm font-medium ${isPlanned ? 'text-gray-400' : 'text-white'}`}>{label}</span>
   </div>
 );
 
