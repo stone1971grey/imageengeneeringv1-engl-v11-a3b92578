@@ -278,13 +278,32 @@ export const SEOEditor = ({
       console.log('[SEO Editor] Loading page data for:', pageSlug, 'language:', editorLanguage);
       
       // Load page content - FILTER BY LANGUAGE
-      const { data: contentData, error: contentError } = await supabase
+      let { data: contentData, error: contentError } = await supabase
         .from('page_content')
         .select('*')
         .eq('page_slug', pageSlug)
         .eq('language', editorLanguage);
       
       console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items for language:', editorLanguage);
+      
+      // CRITICAL FIX: If seo_settings not found in current language, load from EN fallback
+      // SEO settings are typically stored in EN only
+      const hasSeoInCurrentLang = contentData?.some(item => item.section_key === 'seo_settings');
+      if (!hasSeoInCurrentLang && editorLanguage !== 'en') {
+        console.log('[SEO Editor] SEO settings not found in current language, loading EN fallback');
+        const { data: seoFallback } = await supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_settings')
+          .eq('language', 'en')
+          .maybeSingle();
+        
+        if (seoFallback) {
+          contentData = [...(contentData || []), seoFallback];
+          console.log('[SEO Editor] SEO settings loaded from EN fallback');
+        }
+      }
       
       // CRITICAL: Also load seo_settings directly and merge with data prop if missing
       // This ensures Advanced SEO features are always loaded even if parent component fails
@@ -294,40 +313,35 @@ export const SEOEditor = ({
           const savedSeoSettings = JSON.parse(seoSettingsEntry.content_value);
           console.log('[SEO Editor] Found seo_settings in DB:', savedSeoSettings);
           
-          // Check if data prop is missing critical Advanced SEO fields
-          const missingFocusKeyword = !data.focusKeyword && savedSeoSettings.focusKeyword;
-          const missingH1 = !data.h1 && savedSeoSettings.h1;
-          const missingIntroduction = !data.introduction && savedSeoSettings.introduction;
+          // ALWAYS merge DB values if they exist - don't rely on "missing" checks only
+          // This fixes the issue where saved SEO data wasn't displaying
+          const hasDbData = savedSeoSettings.focusKeyword || savedSeoSettings.h1 || 
+                           savedSeoSettings.title || savedSeoSettings.metaDescription;
           
-          if (missingFocusKeyword || missingH1 || missingIntroduction) {
-            console.log('[SEO Editor] CRITICAL: Advanced SEO data missing in props, merging from DB:', {
-              missingFocusKeyword,
-              missingH1,
-              missingIntroduction,
-              dbValues: {
-                focusKeyword: savedSeoSettings.focusKeyword,
-                h1: savedSeoSettings.h1,
-                introduction: savedSeoSettings.introduction?.substring(0, 50) + '...'
-              }
+          if (hasDbData) {
+            console.log('[SEO Editor] Merging SEO data from DB:', {
+              focusKeyword: savedSeoSettings.focusKeyword,
+              h1: savedSeoSettings.h1,
+              title: savedSeoSettings.title?.substring(0, 30) + '...'
             });
             
-            // Merge DB values into data, preserving any existing values
+            // Merge DB values into data, DB values take priority for SEO fields
             onChange({
               ...data,
-              focusKeyword: data.focusKeyword || savedSeoSettings.focusKeyword || '',
-              h1: data.h1 || savedSeoSettings.h1 || '',
-              h1Locked: data.h1Locked ?? savedSeoSettings.h1Locked ?? false,
-              introduction: data.introduction || savedSeoSettings.introduction || '',
-              title: data.title || savedSeoSettings.title || '',
-              metaDescription: data.metaDescription || savedSeoSettings.metaDescription || '',
-              slug: data.slug || savedSeoSettings.slug || pageSlug,
-              canonical: data.canonical || savedSeoSettings.canonical || '',
-              robotsIndex: data.robotsIndex || savedSeoSettings.robotsIndex || 'index',
-              robotsFollow: data.robotsFollow || savedSeoSettings.robotsFollow || 'follow',
-              ogTitle: data.ogTitle || savedSeoSettings.ogTitle || '',
-              ogDescription: data.ogDescription || savedSeoSettings.ogDescription || '',
-              ogImage: data.ogImage || savedSeoSettings.ogImage || '',
-              twitterCard: data.twitterCard || savedSeoSettings.twitterCard || 'summary_large_image'
+              focusKeyword: savedSeoSettings.focusKeyword || data.focusKeyword || '',
+              h1: savedSeoSettings.h1 || data.h1 || '',
+              h1Locked: savedSeoSettings.h1Locked ?? data.h1Locked ?? false,
+              introduction: savedSeoSettings.introduction || data.introduction || '',
+              title: savedSeoSettings.title || data.title || '',
+              metaDescription: savedSeoSettings.metaDescription || data.metaDescription || '',
+              slug: savedSeoSettings.slug || data.slug || pageSlug,
+              canonical: savedSeoSettings.canonical || data.canonical || '',
+              robotsIndex: savedSeoSettings.robotsIndex || data.robotsIndex || 'index',
+              robotsFollow: savedSeoSettings.robotsFollow || data.robotsFollow || 'follow',
+              ogTitle: savedSeoSettings.ogTitle || data.ogTitle || '',
+              ogDescription: savedSeoSettings.ogDescription || data.ogDescription || '',
+              ogImage: savedSeoSettings.ogImage || data.ogImage || '',
+              twitterCard: savedSeoSettings.twitterCard || data.twitterCard || 'summary_large_image'
             });
           }
         } catch (e) {
