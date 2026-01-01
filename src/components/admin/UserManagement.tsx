@@ -82,18 +82,18 @@ const CONTENT_EDITORS: ContentEditor[] = [
     name: 'SEO Settings',
     description: 'Edit SEO settings',
     icon: <Eye className="h-6 w-6" />,
-    color: 'hsl(var(--seo-button))',
-    bgColor: 'bg-[hsl(var(--seo-button))]',
-    borderColor: 'border-[hsl(var(--seo-button))]'
+    color: 'hsl(38 92% 50%)',
+    bgColor: 'bg-amber-600',
+    borderColor: 'border-amber-600'
   },
   {
     id: 'glossary',
     name: 'Translation Glossary',
     description: 'Manage translation glossary',
     icon: <Book className="h-6 w-6" />,
-    color: 'hsl(var(--accent-violet))',
-    bgColor: 'bg-[hsl(var(--accent-violet))]',
-    borderColor: 'border-[hsl(var(--accent-violet))]'
+    color: 'hsl(21 90% 48%)',
+    bgColor: 'bg-orange-700',
+    borderColor: 'border-orange-700'
   },
   {
     id: 'version-history',
@@ -109,9 +109,9 @@ const CONTENT_EDITORS: ContentEditor[] = [
     name: 'Content Automation',
     description: 'AI-powered content automation',
     icon: <Flame className="h-6 w-6" />,
-    color: 'hsl(var(--destructive))',
-    bgColor: 'bg-[hsl(var(--destructive))]',
-    borderColor: 'border-[hsl(var(--destructive))]'
+    color: 'hsl(0 100% 27%)',
+    bgColor: 'bg-[#8B0000]',
+    borderColor: 'border-[#8B0000]'
   }
 ];
 
@@ -930,7 +930,7 @@ export const UserManagement = () => {
                           user.roles.map((role) => (
                             <Badge 
                               key={role} 
-                              className={`${role === 'admin' ? 'bg-red-600 border-red-700' : 'bg-blue-600 border-blue-700'} text-white text-sm px-3 py-1 flex items-center gap-1.5`}
+                              className={`${role === 'admin' ? 'bg-red-600 border-red-700' : 'bg-blue-600 border-blue-700'} text-white text-sm px-3 py-1 flex items-center gap-1.5 rounded-sm`}
                             >
                               {getRoleIcon(role)}
                               {role === 'admin' ? 'Admin' : 'Editor'}
@@ -943,23 +943,23 @@ export const UserManagement = () => {
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
-                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1">
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1 rounded-sm">
                           Full Access
                         </Badge>
                       ) : user.roles.includes('editor') ? (
                         <div className="flex flex-wrap gap-1.5">
                           {user.canDraft && (
-                            <Badge className="bg-amber-600 text-white border-amber-700 text-sm px-3 py-1">
+                            <Badge className="bg-amber-600 text-white border-amber-700 text-sm px-3 py-1 rounded-sm">
                               Draft
                             </Badge>
                           )}
                           {user.canPublish && (
-                            <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1">
+                            <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1 rounded-sm">
                               Publish
                             </Badge>
                           )}
                           {user.frontendEditingEnabled && (
-                            <Badge className="bg-cyan-600 text-white border-cyan-700 text-sm px-3 py-1 flex items-center gap-1">
+                            <Badge className="bg-cyan-600 text-white border-cyan-700 text-sm px-3 py-1 flex items-center gap-1 rounded-sm">
                               <MonitorSmartphone className="h-3.5 w-3.5" />
                               FE
                             </Badge>
@@ -974,7 +974,7 @@ export const UserManagement = () => {
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
-                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1">
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1 rounded-sm">
                           All
                         </Badge>
                       ) : user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
@@ -995,12 +995,12 @@ export const UserManagement = () => {
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
-                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1">
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1 rounded-sm">
                           All
                         </Badge>
                       ) : user.roles.includes('editor') ? (
                         user.editorAccess === 'all' ? (
-                          <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1">
+                          <Badge className="bg-emerald-600 text-white border-emerald-700 text-sm px-3 py-1 rounded-sm">
                             All
                           </Badge>
                         ) : user.contentEditors && user.contentEditors.length > 0 ? (
@@ -1014,12 +1014,13 @@ export const UserManagement = () => {
                                 'events': 'bg-[hsl(var(--events-button))] border-[hsl(var(--events-button))]',
                                 'products': 'bg-[hsl(var(--accent-blue))] border-[hsl(var(--accent-blue))]',
                                 'downloads': 'bg-[hsl(180_60%_45%)] border-[hsl(180_60%_40%)]',
-                                'seo': 'bg-[hsl(var(--seo-button))] border-[hsl(var(--seo-button))]',
-                                'glossary': 'bg-[hsl(var(--accent-violet))] border-[hsl(var(--accent-violet))]',
-                                'version-history': 'bg-[hsl(280_60%_50%)] border-[hsl(280_60%_45%)]'
+                                'seo': 'bg-amber-600 border-amber-600',
+                                'glossary': 'bg-orange-700 border-orange-700',
+                                'version-history': 'bg-[hsl(280_60%_50%)] border-[hsl(280_60%_45%)]',
+                                'content-automation': 'bg-[#8B0000] border-[#8B0000]'
                               };
                               return (
-                                <Badge key={editorId} className={`${editorColors[editorId] || 'bg-zinc-600 border-zinc-700'} text-white text-sm px-3 py-1`}>
+                                <Badge key={editorId} className={`${editorColors[editorId] || 'bg-zinc-600 border-zinc-700'} text-white text-sm px-3 py-1 rounded-sm`}>
                                   {displayName}
                                 </Badge>
                               );

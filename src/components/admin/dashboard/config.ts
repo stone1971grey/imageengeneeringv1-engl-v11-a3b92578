@@ -83,7 +83,14 @@ export const SEGMENT_CONFIG: Record<SegmentType, {
   allowMultiple: boolean;
 }> = {
   'hero': {
-    label: 'Produkt Hero',
+    label: 'Product Hero',
+    shortCode: 'F',
+    category: 'hero',
+    allowMultiple: false,
+    description: 'Main product hero with image and CTA (legacy)'
+  },
+  'product-hero': {
+    label: 'Product Hero',
     shortCode: 'F',
     category: 'hero',
     allowMultiple: false,

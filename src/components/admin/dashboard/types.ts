@@ -39,7 +39,8 @@ export interface PageSegment {
 }
 
 export type SegmentType = 
-  | 'hero'
+  | 'hero'           // Legacy alias for product-hero
+  | 'product-hero'   // Standard product hero segment
   | 'full-hero'
   | 'action-hero'
   | 'product-hero-gallery'
