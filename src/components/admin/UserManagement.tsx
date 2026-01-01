@@ -538,11 +538,11 @@ export const UserManagement = () => {
   const getRoleBadgeVariant = (role: AppRole) => {
     switch (role) {
       case 'admin':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-600 text-white border-red-700';
       case 'editor':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-blue-600 text-white border-blue-700';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-zinc-600 text-white border-zinc-700';
     }
   };
 
@@ -816,42 +816,42 @@ export const UserManagement = () => {
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+        <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-red-500 flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-red-600 flex items-center justify-center">
               <Crown className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-red-600 font-medium">Admins</p>
-              <p className="text-2xl font-bold text-red-900">
+              <p className="text-sm text-zinc-400 font-medium">Admins</p>
+              <p className="text-2xl font-bold text-white">
                 {users.filter(u => u.roles.includes('admin')).length}
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-blue-500 flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center">
               <Pencil className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-blue-600 font-medium">Editors</p>
-              <p className="text-2xl font-bold text-blue-900">
+              <p className="text-sm text-zinc-400 font-medium">Editors</p>
+              <p className="text-2xl font-bold text-white">
                 {users.filter(u => u.roles.includes('editor')).length}
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-xl bg-green-500 flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center">
               <Users className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-green-600 font-medium">Total</p>
-              <p className="text-2xl font-bold text-green-900">{users.length}</p>
+              <p className="text-sm text-zinc-400 font-medium">Total</p>
+              <p className="text-2xl font-bold text-white">{users.length}</p>
             </div>
           </CardContent>
         </Card>
@@ -885,14 +885,15 @@ export const UserManagement = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50 border-b border-border">
-                  <TableHead className="font-semibold text-muted-foreground">User</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Email</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Role</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Languages</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Content Editors</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Created</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground text-right">Actions</TableHead>
+                <TableRow className="bg-zinc-100 border-b border-zinc-200">
+                  <TableHead className="font-semibold text-zinc-700">User</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Email</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Role</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Workflow</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Languages</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Content Editors</TableHead>
+                  <TableHead className="font-semibold text-zinc-700">Created</TableHead>
+                  <TableHead className="font-semibold text-zinc-700 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -934,52 +935,82 @@ export const UserManagement = () => {
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
-                        <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                          All languages
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-xs">
+                          Full Access
+                        </Badge>
+                      ) : user.roles.includes('editor') ? (
+                        <div className="flex flex-wrap gap-1">
+                          {user.canDraft && (
+                            <Badge className="bg-amber-600 text-white border-amber-700 text-xs">
+                              Draft
+                            </Badge>
+                          )}
+                          {user.canPublish && (
+                            <Badge className="bg-emerald-600 text-white border-emerald-700 text-xs">
+                              Publish
+                            </Badge>
+                          )}
+                          {user.frontendEditingEnabled && (
+                            <Badge className="bg-cyan-600 text-white border-cyan-700 text-xs flex items-center gap-1">
+                              <MonitorSmartphone className="h-3 w-3" />
+                              FE
+                            </Badge>
+                          )}
+                          {!user.canDraft && !user.canPublish && !user.frontendEditingEnabled && (
+                            <span className="text-zinc-500 text-sm">—</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-500 text-sm">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.roles.includes('admin') ? (
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-xs">
+                          All
                         </Badge>
                       ) : user.globalSegmentLanguages && user.globalSegmentLanguages.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
                           {user.globalSegmentLanguages.map(lang => {
                             const langInfo = AVAILABLE_LANGUAGES.find(l => l.code === lang);
                             return (
-                              <Badge key={lang} variant="outline" className="bg-purple-50 border-purple-300 text-purple-700 text-xs">
-                                {langInfo?.flag} {langInfo?.name || lang}
+                              <Badge key={lang} className="bg-violet-600 text-white border-violet-700 text-xs">
+                                {langInfo?.flag} {lang.toUpperCase()}
                               </Badge>
                             );
                           })}
                         </div>
                       ) : (
-                        <span className="text-gray-600 text-sm">None</span>
+                        <span className="text-zinc-500 text-sm">—</span>
                       )}
                     </TableCell>
                     <TableCell>
                       {user.roles.includes('admin') ? (
-                        <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                          All Editors
+                        <Badge className="bg-emerald-600 text-white border-emerald-700 text-xs">
+                          All
                         </Badge>
                       ) : user.roles.includes('editor') ? (
                         user.editorAccess === 'all' ? (
-                          <Badge variant="outline" className="bg-green-50 border-green-300 text-green-700 text-xs">
-                            All Editors
+                          <Badge className="bg-emerald-600 text-white border-emerald-700 text-xs">
+                            All
                           </Badge>
                         ) : user.contentEditors && user.contentEditors.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
                             {user.contentEditors.map(editorId => {
                               const editor = CONTENT_EDITORS.find(e => e.id === editorId);
-                              // Show editor name if found, otherwise show raw ID with capitalized first letter
-                              const displayName = editor?.name || editorId.charAt(0).toUpperCase() + editorId.slice(1);
+                              const displayName = editor?.name?.replace('Manage ', '') || editorId.charAt(0).toUpperCase() + editorId.slice(1);
                               return (
-                                <Badge key={editorId} variant="outline" className="bg-blue-50 border-blue-300 text-blue-700 text-xs">
+                                <Badge key={editorId} className="bg-zinc-700 text-white border-zinc-800 text-xs">
                                   {displayName}
                                 </Badge>
                               );
                             })}
                           </div>
                         ) : (
-                          <span className="text-gray-600 text-sm">None</span>
+                          <span className="text-zinc-500 text-sm">—</span>
                         )
                       ) : (
-                        <span className="text-gray-600 text-sm">—</span>
+                        <span className="text-zinc-500 text-sm">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-gray-900 text-sm">
@@ -1039,21 +1070,21 @@ export const UserManagement = () => {
       </Card>
 
       {/* Role Descriptions */}
-      <Card>
+      <Card className="bg-zinc-50 border-zinc-200">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
+          <CardTitle className="text-lg flex items-center gap-2 text-zinc-900">
             <ShieldCheck className="h-5 w-5" />
             Roles Overview
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+            <div className="p-4 rounded-lg bg-zinc-900 border border-zinc-800">
               <div className="flex items-center gap-2 mb-2">
-                <Crown className="h-5 w-5 text-red-600" />
-                <h4 className="font-semibold text-red-900">Admin</h4>
+                <Crown className="h-5 w-5 text-red-500" />
+                <h4 className="font-semibold text-white">Admin</h4>
               </div>
-              <ul className="text-sm text-red-700 space-y-1">
+              <ul className="text-sm text-zinc-300 space-y-1">
                 <li>• Full system access</li>
                 <li>• Manage users & roles</li>
                 <li>• Edit all pages & content</li>
@@ -1062,12 +1093,12 @@ export const UserManagement = () => {
               </ul>
             </div>
 
-            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+            <div className="p-4 rounded-lg bg-zinc-900 border border-zinc-800">
               <div className="flex items-center gap-2 mb-2">
-                <Pencil className="h-5 w-5 text-blue-600" />
-                <h4 className="font-semibold text-blue-900">Editor</h4>
+                <Pencil className="h-5 w-5 text-blue-500" />
+                <h4 className="font-semibold text-white">Editor</h4>
               </div>
-              <ul className="text-sm text-blue-700 space-y-1">
+              <ul className="text-sm text-zinc-300 space-y-1">
                 <li>• Edit assigned pages</li>
                 <li>• Create & update content</li>
                 <li>• Upload media files</li>
