@@ -372,11 +372,14 @@ export const AdminHeader = ({
             colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
             defaultOpen={false}
           >
-            {(isAdmin || isEditor) && selectedPage && (
+            {/* SEO Settings - Admin always, Editor only with selectedPage */}
+            {(isAdmin || (isEditor && selectedPage)) && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg"
-                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+                className={`flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg ${!selectedPage && isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => selectedPage && setIsSEOEditorOpen(!isSEOEditorOpen)}
+                disabled={!selectedPage}
+                title={!selectedPage ? 'Select a page first to edit SEO settings' : undefined}
               >
                 <Eye className="h-4 w-4" />
                 SEO Settings
@@ -392,6 +395,7 @@ export const AdminHeader = ({
                 Glossary
               </Button>
             )}
+            {/* Content Automation - Admin only */}
             {isAdmin && setIsContentAutomationOpen && (
               <Button
                 variant="decision"
