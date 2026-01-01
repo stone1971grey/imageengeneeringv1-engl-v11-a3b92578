@@ -5221,12 +5221,15 @@ export const SEOEditor = ({
                 )}
               </Button>
               
-              {/* Possible Internal Links Button (Blue) - for content suggestions */}
+              {/* Possible Internal Links Button (Blue) - AI gradient with animated shimmer */}
               <Button
                 onClick={handleGenerateContentLinks}
                 disabled={isGeneratingContentLinks}
-                variant="outline"
-                className="flex-1 h-11 border-blue-500/50 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500"
+                className="flex-1 h-12 relative overflow-hidden bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:from-blue-700 hover:via-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all duration-300"
+                style={{
+                  backgroundSize: '200% 100%',
+                  animation: isGeneratingContentLinks ? 'none' : 'shimmer 3s ease-in-out infinite',
+                }}
               >
                 {isGeneratingContentLinks ? (
                   <>
@@ -5867,11 +5870,15 @@ export const SEOEditor = ({
               </Badge>
             </div>
             
-            {/* Generate Button */}
+            {/* Generate Button - Green AI gradient with animated shimmer */}
             <Button
               onClick={handleGenerateExternalLinks}
               disabled={isGeneratingExternalLinks}
-              className="w-full mb-4 h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white"
+              className="w-full mb-4 h-12 relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-500 to-green-600 hover:from-emerald-700 hover:via-teal-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/20 transition-all duration-300"
+              style={{
+                backgroundSize: '200% 100%',
+                animation: isGeneratingExternalLinks ? 'none' : 'shimmer 3s ease-in-out infinite',
+              }}
             >
               {isGeneratingExternalLinks ? (
                 <>
@@ -5880,7 +5887,7 @@ export const SEOEditor = ({
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4 mr-2" />
+                  <GeminiIcon className="h-4 w-4 mr-2" />
                   Generate Smart External Links
                 </>
               )}

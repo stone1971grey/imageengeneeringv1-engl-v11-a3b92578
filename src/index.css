@@ -356,3 +356,16 @@ nav [data-radix-navigation-menu-list] > li:last-child [data-radix-navigation-men
 [data-theme="light"] .external-link:hover {
   color: hsl(160 70% 40%);
 }
+
+/* AI Button shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
