@@ -220,6 +220,7 @@ export const SEOEditor = ({
     targetTitle: string;
     segmentKey: string;
     segmentId?: number | null;
+    internalId?: string | null; // Internal ID for finding segment in page_segments array
     segmentType?: string;
     reason: string;
     sourceType: string;
@@ -1823,10 +1824,13 @@ export const SEOEditor = ({
       
       // STRATEGY 1: Try page_segments JSON first
       const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
-      if (pageSegmentsEntry && suggestion.segmentId) {
+      if (pageSegmentsEntry) {
         try {
           const segments = JSON.parse(pageSegmentsEntry.content_value);
-          const targetSegment = segments.find((s: any) => String(s.id) === String(suggestion.segmentId));
+          
+          // Use internalId if available (for finding in array), fallback to segmentKey parsing
+          const internalIdToFind = suggestion.internalId || suggestion.segmentKey?.replace('segment-', '');
+          const targetSegment = segments.find((s: any) => String(s.id) === String(internalIdToFind));
           
           if (targetSegment?.data) {
             const textFields = ['description', 'text', 'content', 'subtitle', 'introText'];
@@ -1852,7 +1856,7 @@ export const SEOEditor = ({
                   if (updateError) {
                     console.error('[SEO Editor] Error updating page_segments:', updateError);
                   } else {
-                    console.log('[SEO Editor] External link inserted into page_segments, segment:', suggestion.segmentId);
+                    console.log('[SEO Editor] External link inserted into page_segments, segment ID:', suggestion.segmentId, 'internal:', internalIdToFind);
                   }
                   break;
                 }
