@@ -4983,7 +4983,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateFocusKeywords}
                 disabled={isGeneratingKeywords}
-                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingKeywords ? (
                   <>
@@ -5116,7 +5116,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEOTitles}
                 disabled={isGeneratingTitle}
-                className="h-11 min-w-[140px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingTitle ? (
                   <>
@@ -5262,7 +5262,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateSEODescriptions}
                 disabled={isGeneratingDescription}
-                className="h-11 min-w-[140px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingDescription ? (
                   <>
@@ -5631,7 +5631,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateH1Headlines}
                 disabled={isGeneratingH1}
-                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingH1 ? (
                   <>
@@ -5906,7 +5906,7 @@ export const SEOEditor = ({
               <Button
                 onClick={handleGenerateIntroText}
                 disabled={isGeneratingIntro}
-                className="h-11 min-w-[180px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="h-11 w-[180px] shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 {isGeneratingIntro ? (
                   <>
