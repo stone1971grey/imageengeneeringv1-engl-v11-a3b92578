@@ -88,25 +88,36 @@ export const useAdminAuth = () => {
       const pages = pageAccessData.map(p => p.page_slug);
       console.log('[AdminDashboard] Editor allowedPages loaded:', pages);
       
-      // Get permissions from __global__ entry or any entry that has them set
+      // Get permissions - check __global__ first, then __all__, then aggregate from all entries
       const globalEntry = pageAccessData.find(p => p.page_slug === '__global__');
-      const entryWithPermissions = pageAccessData.find(p => 
-        p.can_publish !== null || p.can_draft !== null || p.frontend_editing_enabled !== null
-      );
+      const allPagesEntry = pageAccessData.find(p => p.page_slug === '__all__');
       
-      const permissionEntry = globalEntry || entryWithPermissions;
+      // Determine canPublish: true if ANY entry has can_publish = true
+      const hasCanPublish = pageAccessData.some(p => p.can_publish === true);
+      // Determine canDraft: true if ANY entry has can_draft = true (default true)
+      const hasCanDraft = pageAccessData.some(p => p.can_draft === true) || pageAccessData.every(p => p.can_draft === null);
+      // Determine frontendEditingEnabled: true if ANY entry has it enabled
+      const hasFrontendEditing = pageAccessData.some(p => p.frontend_editing_enabled === true);
+      
+      // Prefer explicit global/all entries, otherwise use aggregated permissions
+      const permissionEntry = globalEntry || allPagesEntry;
+      
+      const finalCanPublish = permissionEntry?.can_publish ?? hasCanPublish;
+      const finalCanDraft = permissionEntry?.can_draft ?? hasCanDraft;
+      const finalFrontendEditing = permissionEntry?.frontend_editing_enabled ?? hasFrontendEditing;
       
       setIsEditor(true);
       setIsAdmin(false);
       setAllowedPages(pages);
-      setCanPublish(permissionEntry?.can_publish ?? false);
-      setCanDraft(permissionEntry?.can_draft ?? true);
-      setFrontendEditingEnabled(permissionEntry?.frontend_editing_enabled ?? false);
+      setCanPublish(finalCanPublish);
+      setCanDraft(finalCanDraft);
+      setFrontendEditingEnabled(finalFrontendEditing);
       
       console.log('[AdminDashboard] Editor permissions:', {
-        canPublish: permissionEntry?.can_publish ?? false,
-        canDraft: permissionEntry?.can_draft ?? true,
-        frontendEditingEnabled: permissionEntry?.frontend_editing_enabled ?? false
+        canPublish: finalCanPublish,
+        canDraft: finalCanDraft,
+        frontendEditingEnabled: finalFrontendEditing,
+        pageAccessData: pageAccessData.map(p => ({ slug: p.page_slug, canPublish: p.can_publish }))
       });
       
       // For editors: don't redirect - let them see the Welcome page
