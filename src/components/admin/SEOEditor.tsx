@@ -1283,62 +1283,109 @@ export const SEOEditor = ({
 
   const handleApplyInternalLink = async (suggestion: typeof internalLinkSuggestions[0], index: number) => {
     try {
-      // Find the segment content
-      const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
-      if (!segmentEntry) {
-        toast.error(`Segment ${suggestion.segmentKey} nicht gefunden`);
-        return;
-      }
-
-      let updatedContent = segmentEntry.content_value;
-      let linkInserted = false;
-      
       // Build the link HTML
       const linkHtml = `<a href="/${editorLanguage}/${suggestion.targetSlug}" class="internal-link">${suggestion.anchorText}</a>`;
+      
+      let linkInserted = false;
+      let updatedEntry: any = null;
+      let updateId: string | null = null;
+      
+      // STRATEGY 1: Try page_segments JSON first (Content Automation stores data here)
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (pageSegmentsEntry && suggestion.segmentId) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          const segmentIndex = segments.findIndex((s: any) => String(s.id) === String(suggestion.segmentId));
+          
+          if (segmentIndex !== -1) {
+            const segment = segments[segmentIndex];
+            const textFields = ['introText', 'description', 'subtitle', 'headline', 'content', 'text'];
+            
+            for (const field of textFields) {
+              if (segment.data?.[field] && typeof segment.data[field] === 'string') {
+                if (segment.data[field].includes(suggestion.anchorText)) {
+                  segment.data[field] = segment.data[field].replace(suggestion.anchorText, linkHtml);
+                  segments[segmentIndex] = segment;
+                  linkInserted = true;
+                  updatedEntry = { content_value: JSON.stringify(segments) };
+                  updateId = pageSegmentsEntry.id;
+                  console.log('[SEO Editor] Link inserted in page_segments, segment:', suggestion.segmentId, 'field:', field);
+                  break;
+                }
+              }
+            }
+            
+            // Also check nested items array (for image-text segments)
+            if (!linkInserted && segment.data?.items && Array.isArray(segment.data.items)) {
+              for (let i = 0; i < segment.data.items.length; i++) {
+                const item = segment.data.items[i];
+                for (const field of ['description', 'text', 'content']) {
+                  if (item[field] && typeof item[field] === 'string' && item[field].includes(suggestion.anchorText)) {
+                    segment.data.items[i][field] = item[field].replace(suggestion.anchorText, linkHtml);
+                    segments[segmentIndex] = segment;
+                    linkInserted = true;
+                    updatedEntry = { content_value: JSON.stringify(segments) };
+                    updateId = pageSegmentsEntry.id;
+                    console.log('[SEO Editor] Link inserted in page_segments items array, segment:', suggestion.segmentId);
+                    break;
+                  }
+                }
+                if (linkInserted) break;
+              }
+            }
+          }
+        } catch (e) {
+          console.error('[SEO Editor] Error parsing page_segments:', e);
+        }
+      }
+      
+      // STRATEGY 2: Try individual section_key entry (legacy/direct storage)
+      if (!linkInserted) {
+        const segmentEntry = pageContent.find(item => item.section_key === suggestion.segmentKey);
+        if (segmentEntry) {
+          let updatedContent = segmentEntry.content_value;
+          
+          try {
+            const contentObj = JSON.parse(segmentEntry.content_value);
+            const textFields = ['introText', 'description', 'subtitle', 'headline', 'content', 'text', 'cta_description', 'button_text'];
 
-      // Try to parse as JSON first
-      try {
-        const contentObj = JSON.parse(segmentEntry.content_value);
-        
-        // Check different text fields where the anchor might be
-        const textFields = ['introText', 'description', 'subtitle', 'content', 'text', 'cta_description', 'button_text'];
-
-        for (const field of textFields) {
-          if (contentObj[field] && typeof contentObj[field] === 'string') {
-            if (contentObj[field].includes(suggestion.anchorText)) {
-              contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
+            for (const field of textFields) {
+              if (contentObj[field] && typeof contentObj[field] === 'string') {
+                if (contentObj[field].includes(suggestion.anchorText)) {
+                  contentObj[field] = contentObj[field].replace(suggestion.anchorText, linkHtml);
+                  linkInserted = true;
+                  updatedEntry = { content_value: JSON.stringify(contentObj) };
+                  updateId = segmentEntry.id;
+                  console.log('[SEO Editor] Link inserted in section_key entry:', suggestion.segmentKey, 'field:', field);
+                  break;
+                }
+              }
+            }
+          } catch {
+            // Not JSON - treat as plain text/HTML string
+            if (updatedContent.includes(suggestion.anchorText)) {
+              updatedContent = updatedContent.replace(suggestion.anchorText, linkHtml);
               linkInserted = true;
-              break;
+              updatedEntry = { content_value: updatedContent };
+              updateId = segmentEntry.id;
             }
           }
         }
-        
-        if (linkInserted) {
-          updatedContent = JSON.stringify(contentObj);
-        }
-      } catch {
-        // Not JSON - treat as plain text/HTML string
-        if (updatedContent.includes(suggestion.anchorText)) {
-          updatedContent = updatedContent.replace(suggestion.anchorText, linkHtml);
-          linkInserted = true;
-        }
       }
 
-      if (!linkInserted) {
-        toast.error(`Anchor-Text "${suggestion.anchorText}" nicht in Segment ${suggestion.segmentKey} gefunden`);
+      if (!linkInserted || !updatedEntry || !updateId) {
+        toast.error(`Anchor-Text "${suggestion.anchorText}" nicht in Segment ${suggestion.segmentKey || suggestion.segmentId} gefunden`);
         return;
       }
 
-      // Save to database
+      // Save to database using the correct ID
       const { error: saveError } = await supabase
         .from('page_content')
         .update({ 
-          content_value: updatedContent,
+          content_value: updatedEntry.content_value,
           updated_at: new Date().toISOString()
         })
-        .eq('page_slug', pageSlug)
-        .eq('section_key', suggestion.segmentKey)
-        .eq('language', editorLanguage);
+        .eq('id', updateId);
 
       if (saveError) {
         console.error('[SEO Editor] Error saving link:', saveError);
@@ -1353,8 +1400,8 @@ export const SEOEditor = ({
 
       // Update pageContent locally
       setPageContent(prev => prev.map(item => 
-        item.section_key === suggestion.segmentKey 
-          ? { ...item, content_value: updatedContent }
+        item.id === updateId 
+          ? { ...item, content_value: updatedEntry.content_value }
           : item
       ));
 
