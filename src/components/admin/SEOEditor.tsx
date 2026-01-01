@@ -1797,12 +1797,12 @@ export const SEOEditor = ({
         setShowExternalLinkSuggestions(true);
         
         if (result.suggestions.length === 0) {
-          toast.info(result.message || 'Keine geeigneten externen Link-Möglichkeiten gefunden');
+          toast.info(result.message || 'No suitable external link opportunities found');
         } else {
-          toast.success(`${result.suggestions.length} externe Link-Vorschläge generiert`);
+          toast.success(`${result.suggestions.length} external link suggestion(s) generated`);
         }
       } else {
-        toast.info(result?.message || 'Keine Vorschläge generiert');
+        toast.info(result?.message || 'No suggestions generated');
       }
     } catch (error) {
       console.error('[SEO Editor] Unexpected error:', error);
@@ -5861,9 +5861,9 @@ export const SEOEditor = ({
               </Label>
               <Badge 
                 variant="outline" 
-                className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+              className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
               >
-                {checks.hasExternalLinks ? 'Vorhanden' : 'Keine'}
+                {checks.hasExternalLinks ? 'Present' : 'None'}
               </Badge>
             </div>
             
@@ -5876,12 +5876,12 @@ export const SEOEditor = ({
               {isGeneratingExternalLinks ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analysiere...
+                  Analyzing...
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Smart External Links generieren
+                  Generate Smart External Links
                 </>
               )}
             </Button>
@@ -5890,7 +5890,7 @@ export const SEOEditor = ({
             {showExternalLinkSuggestions && externalLinkSuggestions.length > 0 && (
               <div className="space-y-3 mb-4">
                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-                  Vorschläge (nur neutrale, autoritative Quellen):
+                  Suggestions (neutral, authoritative sources only):
                 </p>
                 {externalLinkSuggestions.map((suggestion, idx) => (
                   <div 
@@ -5941,12 +5941,12 @@ export const SEOEditor = ({
                         {suggestion.applied ? (
                           <>
                             <Check className="h-4 w-4 mr-1" />
-                            Eingefügt
+                            Applied
                           </>
                         ) : (
                           <>
                             <Plus className="h-4 w-4 mr-1" />
-                            Einfügen
+                            Apply
                           </>
                         )}
                       </Button>
@@ -5959,15 +5959,15 @@ export const SEOEditor = ({
             {showExternalLinkSuggestions && externalLinkSuggestions.length === 0 && (
               <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground mb-4">
                 <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">Keine geeigneten externen Link-Möglichkeiten gefunden.</span>
+                <span className="text-sm">No suitable external link opportunities found.</span>
               </div>
             )}
 
             <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-md">
               <p className="text-xs text-emerald-300/80">
-                <strong>Sicherheitsregel:</strong> Es werden nur Links zu neutralen, autoritativen Quellen vorgeschlagen 
-                (Universitäten, Standards-Organisationen, Wikipedia, etc.). 
-                Links zu Wettbewerbern oder kommerziellen Anbietern sind ausgeschlossen.
+                <strong>Safety Rule:</strong> Only links to neutral, authoritative sources are suggested 
+                (universities, standards organizations, Wikipedia, etc.). 
+                Links to competitors or commercial providers are excluded.
               </p>
             </div>
           </div>
