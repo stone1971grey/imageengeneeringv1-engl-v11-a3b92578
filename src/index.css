@@ -310,3 +310,26 @@ nav [data-radix-navigation-menu-list] > li:last-child [data-radix-navigation-men
 .calendly-popup-content {
   top: 100px !important;
 }
+
+/* Internal links styling (SEO Suite) */
+.internal-link {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.internal-link:hover {
+  color: hsl(var(--primary-glow));
+  text-decoration-color: hsl(var(--primary-glow));
+}
+
+/* Light section internal links */
+.light-section .internal-link,
+[data-theme="light"] .internal-link {
+  color: hsl(var(--primary));
+}
+
+[data-theme="light"] .internal-link:hover {
+  color: hsl(211 77% 35%);
+}

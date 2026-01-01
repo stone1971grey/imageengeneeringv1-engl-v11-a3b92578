@@ -73,9 +73,10 @@ const Intro = ({
                 </h1>
               )}
               {description && (
-                <p className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line">
-                  {description}
-                </p>
+                <div 
+                  className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
               )}
             </>
           )}
