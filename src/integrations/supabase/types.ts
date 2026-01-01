@@ -737,6 +737,7 @@ export type Database = {
           flyout_description: string | null
           flyout_description_translations: Json | null
           flyout_image_url: string | null
+          frontend_editing_enabled: boolean
           id: number
           page_id: number
           page_slug: string
@@ -756,6 +757,7 @@ export type Database = {
           flyout_description?: string | null
           flyout_description_translations?: Json | null
           flyout_image_url?: string | null
+          frontend_editing_enabled?: boolean
           id?: number
           page_id: number
           page_slug: string
@@ -775,6 +777,7 @@ export type Database = {
           flyout_description?: string | null
           flyout_description_translations?: Json | null
           flyout_image_url?: string | null
+          frontend_editing_enabled?: boolean
           id?: number
           page_id?: number
           page_slug?: string
