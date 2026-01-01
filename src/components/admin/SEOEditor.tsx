@@ -969,13 +969,22 @@ export const SEOEditor = ({
     // Scan all page content for links
     pageContent.forEach(item => {
       const content = item.content_value || '';
-      // Check for internal links (relative paths or same domain)
-      if (content.includes('href="/') || content.includes('href="./') || content.includes('href="#')) {
+      // Check for internal links:
+      // 1. Relative paths (href="/...", href="./...", href="#...")
+      // 2. Smart Internal Links with class="internal-link"
+      // 3. Links to same domain (href="https://domain.com/...")
+      if (
+        content.includes('href="/') || 
+        content.includes('href="./') || 
+        content.includes('href="#') ||
+        content.includes('class="internal-link"') ||
+        content.includes("class='internal-link'")
+      ) {
         hasInternalLinks = true;
       }
-      // Check for external links (http/https)
+      // Check for external links (http/https) - but exclude internal-link class
       const externalLinkPattern = /href=["'](https?:\/\/(?!localhost)[^"']+)["']/gi;
-      if (externalLinkPattern.test(content)) {
+      if (externalLinkPattern.test(content) && !content.includes('internal-link')) {
         hasExternalLinks = true;
       }
     });
