@@ -117,6 +117,8 @@ interface UserWithRole {
   created_at: string;
   editorAccess?: 'all' | 'custom' | 'none';
   contentEditors?: string[];
+  canDraft?: boolean;  // Permission to save drafts
+  canPublish?: boolean; // Permission to publish content
 }
 
 export const UserManagement = () => {
@@ -153,6 +155,11 @@ export const UserManagement = () => {
   const [inviteEditorLanguages, setInviteEditorLanguages] = useState<Record<string, LanguageCode[]>>({});
   const [inviteGlobalSegmentLanguages, setInviteGlobalSegmentLanguages] = useState<LanguageCode[]>([]);
   const [editGlobalSegmentLanguages, setEditGlobalSegmentLanguages] = useState<LanguageCode[]>([]);
+  // Draft/Publish permissions
+  const [inviteCanDraft, setInviteCanDraft] = useState(true);
+  const [inviteCanPublish, setInviteCanPublish] = useState(false);
+  const [editCanDraft, setEditCanDraft] = useState(true);
+  const [editCanPublish, setEditCanPublish] = useState(false);
 
   // Check for existing user when username or email changes
   useEffect(() => {
@@ -190,10 +197,10 @@ export const UserManagement = () => {
 
       if (rolesError) throw rolesError;
 
-      // Fetch editor page access (now used for content editors) including language_code
+      // Fetch editor page access (now used for content editors) including language_code and permissions
       const { data: editorAccess, error: accessError } = await supabase
         .from('editor_page_access')
-        .select('user_id, page_slug, language_code');
+        .select('user_id, page_slug, language_code, can_draft, can_publish');
 
       if (accessError) throw accessError;
 
@@ -220,10 +227,21 @@ export const UserManagement = () => {
         const editorLanguageAccess: EditorLanguageAccess[] = [];
         const globalSegmentLanguages: LanguageCode[] = [];
         
+        // Extract draft/publish permissions (from global entry or first entry found)
+        let canDraft = true;  // Default: can draft
+        let canPublish = false; // Default: cannot publish
+        
         userEditorAccess.forEach(access => {
           // Collect global segment languages
           if (access.page_slug === '__global__' && access.language_code) {
             globalSegmentLanguages.push(access.language_code as LanguageCode);
+            // Get draft/publish permissions from global entry
+            if (access.can_draft !== null && access.can_draft !== undefined) {
+              canDraft = access.can_draft;
+            }
+            if (access.can_publish !== null && access.can_publish !== undefined) {
+              canPublish = access.can_publish;
+            }
           }
           // Collect editor-specific language access (legacy)
           else if (access.page_slug !== '__all__' && access.page_slug !== '__global__' && access.language_code) {
@@ -249,7 +267,9 @@ export const UserManagement = () => {
           editorAccess: accessType,
           contentEditors: userEditors.filter(p => p !== '__all__' && p !== '__global__'),
           editorLanguageAccess,
-          globalSegmentLanguages
+          globalSegmentLanguages,
+          canDraft,
+          canPublish
         };
       });
 
@@ -363,16 +383,29 @@ export const UserManagement = () => {
 
       // If editor, add permissions
       if (inviteRole === 'editor') {
-        const entries: { user_id: string; page_slug: string; language_code?: string | null }[] = [];
+        const entries: { user_id: string; page_slug: string; language_code?: string | null; can_draft?: boolean; can_publish?: boolean }[] = [];
         
         // Add global language permissions (applies to all: CMS segments + content editors)
+        // Include draft/publish permissions on the first global entry
         if (inviteGlobalSegmentLanguages.length > 0) {
-          inviteGlobalSegmentLanguages.forEach(lang => {
+          inviteGlobalSegmentLanguages.forEach((lang, index) => {
             entries.push({
               user_id: newUserId,
               page_slug: '__global__',
-              language_code: lang
+              language_code: lang,
+              // Set draft/publish permissions on first entry
+              can_draft: index === 0 ? inviteCanDraft : undefined,
+              can_publish: index === 0 ? inviteCanPublish : undefined
             });
+          });
+        } else {
+          // If no languages selected, still create a permission entry for draft/publish
+          entries.push({
+            user_id: newUserId,
+            page_slug: '__global__',
+            language_code: null,
+            can_draft: inviteCanDraft,
+            can_publish: inviteCanPublish
           });
         }
         
@@ -411,6 +444,8 @@ export const UserManagement = () => {
       setInviteSelectedEditors([]);
       setInviteEditorLanguages({});
       setInviteGlobalSegmentLanguages([]);
+      setInviteCanDraft(true);
+      setInviteCanPublish(false);
       loadUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
@@ -637,17 +672,30 @@ export const UserManagement = () => {
 
       // Add editor access if role is editor
       if (editUserRole === 'editor') {
-        const entries: { user_id: string; page_slug: string; language_code: string | null }[] = [];
+        const entries: { user_id: string; page_slug: string; language_code: string | null; can_draft?: boolean; can_publish?: boolean }[] = [];
         
         // Add global language permissions (applies to all: CMS segments + content editors)
+        // Include draft/publish permissions on the first global entry
         if (editGlobalSegmentLanguages.length > 0) {
           console.log('Inserting global languages:', editGlobalSegmentLanguages);
-          editGlobalSegmentLanguages.forEach(lang => {
+          editGlobalSegmentLanguages.forEach((lang, index) => {
             entries.push({
               user_id: selectedUser.id,
               page_slug: '__global__',
-              language_code: lang
+              language_code: lang,
+              // Set draft/publish permissions on first entry
+              can_draft: index === 0 ? editCanDraft : undefined,
+              can_publish: index === 0 ? editCanPublish : undefined
             });
+          });
+        } else {
+          // If no languages selected, still create a permission entry for draft/publish
+          entries.push({
+            user_id: selectedUser.id,
+            page_slug: '__global__',
+            language_code: null,
+            can_draft: editCanDraft,
+            can_publish: editCanPublish
           });
         }
         
@@ -940,6 +988,8 @@ export const UserManagement = () => {
                             setEditSelectedEditors(filteredEditors);
                             setEditEditorLanguages(languageMap);
                             setEditGlobalSegmentLanguages(user.globalSegmentLanguages || []);
+                            setEditCanDraft(user.canDraft ?? true);
+                            setEditCanPublish(user.canPublish ?? false);
                             setShowEditUserDialog(true);
                           }}
                           className="h-8 w-8 flex items-center justify-center text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors border border-gray-200 hover:border-yellow-300"
@@ -1227,6 +1277,89 @@ export const UserManagement = () => {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Draft/Publish Permissions - only shown when Editor is selected */}
+            {inviteRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Save className="h-5 w-5 text-orange-600" />
+                    Content Workflow Permissions
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Control whether the editor can save drafts and/or publish content directly.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div 
+                    className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                      inviteCanDraft 
+                        ? 'border-orange-500 bg-orange-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    onClick={() => setInviteCanDraft(!inviteCanDraft)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={inviteCanDraft} 
+                        onCheckedChange={(checked) => setInviteCanDraft(checked === true)}
+                        className="h-5 w-5"
+                      />
+                      <span className={`text-lg font-bold ${inviteCanDraft ? 'text-orange-900' : 'text-gray-900'}`}>
+                        Save Drafts
+                      </span>
+                    </div>
+                    <p className={`text-base mt-2 ${inviteCanDraft ? 'text-orange-600' : 'text-gray-600'}`}>
+                      Can save content as draft for review
+                    </p>
+                  </div>
+                  <div 
+                    className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                      inviteCanPublish 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    onClick={() => setInviteCanPublish(!inviteCanPublish)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={inviteCanPublish} 
+                        onCheckedChange={(checked) => setInviteCanPublish(checked === true)}
+                        className="h-5 w-5"
+                      />
+                      <span className={`text-lg font-bold ${inviteCanPublish ? 'text-green-900' : 'text-gray-900'}`}>
+                        Publish Content
+                      </span>
+                    </div>
+                    <p className={`text-base mt-2 ${inviteCanPublish ? 'text-green-600' : 'text-gray-600'}`}>
+                      Can publish content directly (live)
+                    </p>
+                  </div>
+                </div>
+                
+                <div className={`rounded-lg px-5 py-4 ${
+                  inviteCanPublish 
+                    ? 'bg-green-100 border-2 border-green-400' 
+                    : inviteCanDraft 
+                      ? 'bg-orange-100 border-2 border-orange-400'
+                      : 'bg-amber-50 border-2 border-amber-300'
+                }`}>
+                  <p className={`text-base font-semibold ${
+                    inviteCanPublish 
+                      ? 'text-green-800' 
+                      : inviteCanDraft 
+                        ? 'text-orange-800'
+                        : 'text-amber-800'
+                  }`}>
+                    {inviteCanPublish && inviteCanDraft && '✓ Editor can save drafts and publish content directly.'}
+                    {inviteCanPublish && !inviteCanDraft && '✓ Editor can only publish content (no drafts).'}
+                    {!inviteCanPublish && inviteCanDraft && '✓ Editor can save drafts (requires admin approval to publish).'}
+                    {!inviteCanPublish && !inviteCanDraft && '⚠️ Editor cannot save or publish any content.'}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -1664,6 +1797,89 @@ export const UserManagement = () => {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Draft/Publish Permissions - only for Editor role */}
+            {editUserRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-gray-200 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Save className="h-5 w-5 text-orange-600" />
+                    Content Workflow Permissions
+                  </Label>
+                  <p className="text-base text-gray-700 mt-2">
+                    Control whether the editor can save drafts and/or publish content directly.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div 
+                    className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                      editCanDraft 
+                        ? 'border-orange-500 bg-orange-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    onClick={() => setEditCanDraft(!editCanDraft)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={editCanDraft} 
+                        onCheckedChange={(checked) => setEditCanDraft(checked === true)}
+                        className="h-5 w-5"
+                      />
+                      <span className={`text-lg font-bold ${editCanDraft ? 'text-orange-900' : 'text-gray-900'}`}>
+                        Save Drafts
+                      </span>
+                    </div>
+                    <p className={`text-base mt-2 ${editCanDraft ? 'text-orange-600' : 'text-gray-600'}`}>
+                      Can save content as draft for review
+                    </p>
+                  </div>
+                  <div 
+                    className={`p-5 rounded-lg border-2 cursor-pointer transition-all ${
+                      editCanPublish 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'bg-white border-gray-200 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    onClick={() => setEditCanPublish(!editCanPublish)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={editCanPublish} 
+                        onCheckedChange={(checked) => setEditCanPublish(checked === true)}
+                        className="h-5 w-5"
+                      />
+                      <span className={`text-lg font-bold ${editCanPublish ? 'text-green-900' : 'text-gray-900'}`}>
+                        Publish Content
+                      </span>
+                    </div>
+                    <p className={`text-base mt-2 ${editCanPublish ? 'text-green-600' : 'text-gray-600'}`}>
+                      Can publish content directly (live)
+                    </p>
+                  </div>
+                </div>
+                
+                <div className={`rounded-lg px-5 py-4 ${
+                  editCanPublish 
+                    ? 'bg-green-100 border-2 border-green-400' 
+                    : editCanDraft 
+                      ? 'bg-orange-100 border-2 border-orange-400'
+                      : 'bg-amber-50 border-2 border-amber-300'
+                }`}>
+                  <p className={`text-base font-semibold ${
+                    editCanPublish 
+                      ? 'text-green-800' 
+                      : editCanDraft 
+                        ? 'text-orange-800'
+                        : 'text-amber-800'
+                  }`}>
+                    {editCanPublish && editCanDraft && '✓ Editor can save drafts and publish content directly.'}
+                    {editCanPublish && !editCanDraft && '✓ Editor can only publish content (no drafts).'}
+                    {!editCanPublish && editCanDraft && '✓ Editor can save drafts (requires admin approval to publish).'}
+                    {!editCanPublish && !editCanDraft && '⚠️ Editor cannot save or publish any content.'}
+                  </p>
+                </div>
               </div>
             )}
           </div>
