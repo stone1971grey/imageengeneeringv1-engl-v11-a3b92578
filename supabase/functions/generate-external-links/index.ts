@@ -194,7 +194,7 @@ ONLY suggest links to these types of sources:
    - Examples: W3C specs, IETF RFCs, open standards documentation
 
 === SEGMENTS AVAILABLE ===
-${textSegments.map(s => `- Key: "${s.key}" | Type: ${s.type} | Field: ${s.field} | Content: "${s.text.substring(0, 300)}..."`).join('\n')}
+${textSegments.map(s => `- Key: "${s.key}" | SegmentID: ${s.segmentId || 'N/A'} | Type: ${s.type} | Field: ${s.field} | Content: "${s.text.substring(0, 300)}..."`).join('\n')}
 
 === RESPONSE FORMAT ===
 Return ONLY a JSON array with suggestions:
@@ -339,12 +339,22 @@ REMEMBER: NEVER link to any commercial competitor or market rival. Only neutral,
       })
       .map((s: any) => {
         // Find the corresponding textSegment to get both real segmentId and internalId
-        const matchingTextSegment = textSegments.find(ts => ts.key === s.segmentKey);
-        return {
+        // First try by key match
+        let matchingTextSegment = textSegments.find(ts => ts.key === s.segmentKey);
+        
+        // If no match by key, try to find by anchor text content (AI might have returned wrong key)
+        if (!matchingTextSegment && s.anchorText) {
+          matchingTextSegment = textSegments.find(ts => ts.text.includes(s.anchorText));
+          if (matchingTextSegment) {
+            console.log('[External Links] Found segment by content match instead of key. AI key:', s.segmentKey, 'Actual key:', matchingTextSegment.key);
+          }
+        }
+        
+        const result = {
           anchorText: s.anchorText,
           targetUrl: s.targetUrl,
           targetTitle: s.targetTitle || s.targetUrl,
-          segmentKey: s.segmentKey,
+          segmentKey: matchingTextSegment?.key || s.segmentKey,
           segmentId: matchingTextSegment?.segmentId || segmentKeyToIdMap[s.segmentKey] || null,
           internalId: matchingTextSegment?.internalId || null, // For finding in page_segments array
           segmentType: s.segmentType || matchingTextSegment?.type || segmentKeyToTypeMap[s.segmentKey] || 'unknown',
@@ -352,6 +362,9 @@ REMEMBER: NEVER link to any commercial competitor or market rival. Only neutral,
           sourceType: s.sourceType || 'knowledge',
           priority: s.priority || 1
         };
+        
+        console.log('[External Links] Mapped suggestion:', { anchorText: s.anchorText, segmentId: result.segmentId, internalId: result.internalId });
+        return result;
       })
       .sort((a: any, b: any) => a.priority - b.priority)
       .slice(0, 3); // Maximum 3 suggestions
