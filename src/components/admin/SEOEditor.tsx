@@ -3269,9 +3269,17 @@ export const SEOEditor = ({
   const handleApplyH2Suggestion = async (suggestion: typeof h2Suggestions[0], index: number) => {
     setIsApplyingH2(index);
     
+    console.log('[SEO Editor] === APPLYING H2 SUGGESTION ===');
+    console.log('[SEO Editor] Suggestion:', {
+      originalText: suggestion.originalText,
+      suggestedText: suggestion.suggestedText,
+      segmentId: suggestion.segmentId,
+      segmentType: suggestion.segmentType
+    });
+    
     try {
       // Get current page_segments from database
-      const { data: contentData } = await supabase
+      const { data: contentData, error: fetchError } = await supabase
         .from('page_content')
         .select('*')
         .eq('page_slug', pageSlug)
@@ -3279,27 +3287,49 @@ export const SEOEditor = ({
         .eq('section_key', 'page_segments')
         .maybeSingle();
       
+      if (fetchError) {
+        console.error('[SEO Editor] Fetch error:', fetchError);
+        toast.error('Error fetching page segments: ' + fetchError.message);
+        return;
+      }
+      
       if (!contentData) {
+        console.error('[SEO Editor] No page segments found for:', { pageSlug, editorLanguage });
         toast.error('Page segments not found');
         return;
       }
       
+      console.log('[SEO Editor] Found page_content id:', contentData.id);
+      
       let segments = JSON.parse(contentData.content_value);
       let updated = false;
+      let matchDetails = { segmentFound: false, typeMatched: false, titleMatched: false };
       
       // Find and update the H2 in the correct segment - PRESERVE ALL EXISTING DATA
       segments = segments.map((seg: any) => {
-        if (String(seg.segmentId || seg.id) === String(suggestion.segmentId)) {
+        const segIdMatch = String(seg.segmentId || seg.id) === String(suggestion.segmentId);
+        
+        if (segIdMatch) {
+          matchDetails.segmentFound = true;
           const segType = seg.type || '';
+          console.log('[SEO Editor] Found matching segment:', { segId: seg.id, segType, segData: seg.data });
           
           // Handle image-text segments - update only the specific item title
           if (segType === 'image-text') {
+            matchDetails.typeMatched = true;
             const segData = seg.data ? { ...seg.data } : {};
             if (segData.items && Array.isArray(segData.items)) {
-              segData.items = segData.items.map((item: any) => {
-                if (item.title === suggestion.originalText) {
+              console.log('[SEO Editor] Checking', segData.items.length, 'items for title match');
+              segData.items = segData.items.map((item: any, idx: number) => {
+                // Use trimmed comparison for more robust matching
+                const itemTitle = (item.title || '').trim();
+                const originalTitle = (suggestion.originalText || '').trim();
+                console.log(`[SEO Editor] Item ${idx}: "${itemTitle}" === "${originalTitle}" ?`, itemTitle === originalTitle);
+                
+                if (itemTitle === originalTitle) {
+                  matchDetails.titleMatched = true;
                   updated = true;
-                  console.log('[SEO Editor] Updating H2 in image-text item:', {
+                  console.log('[SEO Editor] ✓ MATCH! Updating H2 in image-text item:', {
                     from: item.title,
                     to: suggestion.suggestedText,
                     segmentId: suggestion.segmentId
@@ -3316,28 +3346,60 @@ export const SEOEditor = ({
           
           // Handle segments with title field (feature-overview, tiles, table, faq)
           if (['feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+            matchDetails.typeMatched = true;
             const segData = seg.data ? { ...seg.data } : {};
-            if (segData.title === suggestion.originalText) {
-              console.log('[SEO Editor] Updating H2 title in segment:', {
+            
+            // First check segment-level title
+            const segTitle = (segData.title || '').trim();
+            const originalTitle = (suggestion.originalText || '').trim();
+            console.log('[SEO Editor] Checking segment title:', { segTitle, originalTitle, match: segTitle === originalTitle });
+            
+            if (segTitle === originalTitle) {
+              matchDetails.titleMatched = true;
+              console.log('[SEO Editor] ✓ MATCH! Updating segment title:', {
                 from: segData.title,
                 to: suggestion.suggestedText,
                 segmentId: suggestion.segmentId
               });
               segData.title = suggestion.suggestedText;
               updated = true;
+              return { ...seg, data: segData };
             }
+            
+            // Also check items array for tiles/faq (they may have H2 titles in items)
+            if (segData.items && Array.isArray(segData.items)) {
+              console.log('[SEO Editor] Also checking', segData.items.length, 'items in', segType);
+              segData.items = segData.items.map((item: any, idx: number) => {
+                const itemTitle = (item.title || '').trim();
+                if (itemTitle === originalTitle) {
+                  matchDetails.titleMatched = true;
+                  updated = true;
+                  console.log(`[SEO Editor] ✓ MATCH in ${segType} item ${idx}:`, {
+                    from: item.title,
+                    to: suggestion.suggestedText
+                  });
+                  return { ...item, title: suggestion.suggestedText };
+                }
+                return item;
+              });
+            }
+            
             return { ...seg, data: segData };
           }
         }
         return seg;
       });
       
+      console.log('[SEO Editor] Match details:', matchDetails);
+      
       if (!updated) {
-        toast.error('Could not find the H2 to update');
+        console.error('[SEO Editor] Could not find H2 to update. Details:', matchDetails);
+        toast.error(`Could not find H2 to update (Segment: ${matchDetails.segmentFound ? 'found' : 'NOT found'}, Type: ${matchDetails.typeMatched ? 'matched' : 'NOT matched'}, Title: ${matchDetails.titleMatched ? 'matched' : 'NOT matched'})`);
         return;
       }
       
       // Save back to database
+      console.log('[SEO Editor] Saving to database...');
       const { error: saveError } = await supabase
         .from('page_content')
         .update({
@@ -3347,9 +3409,12 @@ export const SEOEditor = ({
         .eq('id', contentData.id);
       
       if (saveError) {
+        console.error('[SEO Editor] Save error:', saveError);
         toast.error('Failed to save: ' + saveError.message);
         return;
       }
+      
+      console.log('[SEO Editor] ✓ Successfully saved H2 update to database');
       
       // Update suggestion state
       setH2Suggestions(prev => prev.map((s, i) => 
