@@ -2294,16 +2294,7 @@ export const SEOEditor = ({
     setIsApplyingIntro(true);
 
     try {
-      // Find the intro segment
-      const existingIntroRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro' && !seg.deleted);
-      
-      if (!existingIntroRegistry) {
-        toast.error('Kein Intro-Segment gefunden. Bitte zuerst ein Intro-Segment erstellen.', { duration: 5000 });
-        setIsApplyingIntro(false);
-        return;
-      }
-
-      // Load page_segments content
+      // Load page_segments content FIRST to find which intro segments actually exist
       const { data: pageSegmentsRow, error: loadError } = await supabase
         .from('page_content')
         .select('*')
@@ -2321,18 +2312,40 @@ export const SEOEditor = ({
 
       try {
         const segments = JSON.parse(pageSegmentsRow.content_value);
-        const introSegmentId = existingIntroRegistry.segment_id;
         
-        console.log('[SEO Editor] Looking for intro segment with ID:', introSegmentId);
+        // Find intro segments that actually exist in page_segments
+        const introSegmentsInPage = segments.filter((seg: any) => seg.type === 'intro');
         
-        // Find the intro segment by its ID
+        console.log('[SEO Editor] Found intro segments in page_segments:', introSegmentsInPage.map((s: any) => s.id));
+        
+        if (introSegmentsInPage.length === 0) {
+          toast.error('Kein Intro-Segment auf dieser Seite gefunden. Bitte zuerst ein Intro-Segment erstellen.', { duration: 5000 });
+          setIsApplyingIntro(false);
+          return;
+        }
+        
+        // Use the first intro segment found in page_segments (or use introSourceInfo if available)
+        let targetIntroId = introSegmentsInPage[0].id;
+        
+        // If we have introSourceInfo from detection, prefer that segment
+        if (introSourceInfo?.id) {
+          const matchingIntro = introSegmentsInPage.find((seg: any) => String(seg.id) === String(introSourceInfo.id));
+          if (matchingIntro) {
+            targetIntroId = matchingIntro.id;
+            console.log('[SEO Editor] Using detected intro segment:', targetIntroId);
+          }
+        }
+        
+        console.log('[SEO Editor] Target intro segment ID:', targetIntroId);
+        
+        // Find the intro segment index by its ID
         const introIndex = segments.findIndex((seg: any) => 
-          String(seg.id) === String(introSegmentId) && seg.type === 'intro'
+          String(seg.id) === String(targetIntroId) && seg.type === 'intro'
         );
         
         if (introIndex === -1) {
-          console.error('[SEO Editor] Intro segment not found in page_segments');
-          toast.error('Intro-Segment nicht in page_segments gefunden', { duration: 5000 });
+          console.error('[SEO Editor] Intro segment not found at expected index');
+          toast.error('Intro-Segment nicht gefunden', { duration: 5000 });
           setIsApplyingIntro(false);
           return;
         }
@@ -2363,7 +2376,7 @@ export const SEOEditor = ({
         
         console.log('[SEO Editor] Successfully saved Intro with new description');
         
-        toast.success(`Intro-Text erfolgreich in Segment ${introSegmentId} übernommen`);
+        toast.success(`Intro-Text erfolgreich in Segment ${targetIntroId} übernommen`);
         
         // Refresh page content
         const { data: refreshedContent } = await supabase
