@@ -3350,9 +3350,38 @@ export const SEOEditor = ({
       
       if (refreshedContent) {
         setPageContent(refreshedContent);
+        
+        // Recalculate FKW analysis with updated content
+        if (data.focusKeyword) {
+          const pageSegmentsEntry = refreshedContent.find((item: any) => item.section_key === 'page_segments');
+          if (pageSegmentsEntry) {
+            try {
+              const updatedSegments = JSON.parse(pageSegmentsEntry.content_value);
+              console.log('[SEO Editor] Recalculating FKW analysis after H2 update...');
+              const newAnalysis = await recalculateFkwAnalysis(updatedSegments, data.focusKeyword);
+              setFkwContentAnalysis(newAnalysis);
+              
+              // Recalculate score
+              let newScore = 0;
+              const actualH1HasFkw = data.h1 && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase());
+              if (actualH1HasFkw) newScore += 25;
+              if (newAnalysis.introHasFkw) newScore += 20;
+              if (newAnalysis.h2WithFkw > 0) newScore += 15;
+              if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw >= Math.ceil(newAnalysis.h2Count / 2)) newScore += 10;
+              if (newAnalysis.densityStatus === 'optimal') newScore += 20;
+              else if (newAnalysis.densityStatus === 'too_low' && newAnalysis.fkwDensity >= 0.3) newScore += 10;
+              if (newAnalysis.h3WithFkw > 0) newScore += 10;
+              setFkwContentScore(Math.min(100, newScore));
+              
+              console.log('[SEO Editor] Updated FKW score after H2:', newScore, 'H2 with FKW:', newAnalysis.h2WithFkw);
+            } catch (e) {
+              console.error('[SEO Editor] Error recalculating FKW analysis:', e);
+            }
+          }
+        }
       }
       
-      toast.success('H2 updated successfully!');
+      toast.success('H2 aktualisiert! Content Score wurde neu berechnet.');
     } catch (error) {
       console.error('[SEO Editor] Error applying H2:', error);
       toast.error('Failed to apply H2 suggestion');
@@ -6885,14 +6914,19 @@ export const SEOEditor = ({
                             
                             {/* Content */}
                             <div className="flex-1 min-w-0 space-y-2">
-                              {/* Type badge */}
-                              <div className="flex items-center gap-2">
+                              {/* Type badge with Segment ID */}
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30">
                                   H2 Heading
                                 </Badge>
                                 <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
                                   {suggestion.segmentType}
                                 </Badge>
+                                {suggestion.segmentId && (
+                                  <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 font-mono">
+                                    Segment ID: {suggestion.segmentId}
+                                  </Badge>
+                                )}
                               </div>
                               
                               {/* Original text */}
