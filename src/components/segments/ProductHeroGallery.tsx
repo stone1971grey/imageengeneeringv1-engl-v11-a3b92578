@@ -91,6 +91,7 @@ interface ProductImage {
 interface ProductHeroGalleryProps {
   id?: string;
   hasMetaNavigation?: boolean;
+  headingLevel?: 'h1' | 'h2';
   data: {
     title: string;
     subtitle: string;
@@ -116,7 +117,8 @@ interface ProductHeroGalleryProps {
 
 const ProductHeroGallery = ({ 
   id, 
-  hasMetaNavigation = false, 
+  hasMetaNavigation = false,
+  headingLevel = 'h1',
   data,
   segmentKey = '',
   pageSlug = '',
@@ -591,11 +593,16 @@ const ProductHeroGallery = ({
     }
   };
 
+  // Dynamic heading element based on headingLevel prop
+  const HeadingTag = headingLevel;
+  const headingLabel = headingLevel === 'h1' ? 'Title (H1)' : 'Title (H2)';
+  const subtitleLabel = headingLevel === 'h1' ? 'Subtitle (H1)' : 'Subtitle (H2)';
+
   const textContent = (
     <div className="space-y-8">
       <div>
         {/* Title and Subtitle - same structure in both modes for layout stability */}
-        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
+        <HeadingTag className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
           {isEditing ? (
             <EditableText
               value={data.title}
@@ -605,7 +612,7 @@ const ProductHeroGallery = ({
               className="font-light"
               as="span"
               onUpdate={onContentUpdate}
-              fieldLabel="Title (H1)"
+              fieldLabel={headingLabel}
             />
           ) : (
             data.title
@@ -620,12 +627,12 @@ const ProductHeroGallery = ({
               className="font-medium text-gray-900"
               as="span"
               onUpdate={onContentUpdate}
-              fieldLabel="Subtitle (H1)"
+              fieldLabel={subtitleLabel}
             />
           ) : (
             <span className="font-medium text-gray-900">{data.subtitle}</span>
           )}
-        </h1>
+        </HeadingTag>
         
         {/* Description - same container structure in both modes */}
         {isEditing ? (
