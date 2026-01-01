@@ -97,31 +97,51 @@ export const CTA_GROUP_OPTIONS = [
 ];
 
 // Helper: build label exactly like in the segment tab bar
+// IMPORTANT: All segment types MUST be listed here with their letter code
 export const buildSegmentLabel = (segType: string, displayNumber: number): string => {
-  if (segType === 'hero') return `Produkt Hero - F-${displayNumber}`;
-  if (segType === 'meta-navigation') return `Meta Navigation - E-${displayNumber}`;
-  if (segType === 'product-hero-gallery') return `Product Gallery - G-${displayNumber}`;
-  if (segType === 'tiles') return `Tiles - H-${displayNumber}`;
-  if (segType === 'banner') return `Banner - J-${displayNumber}`;
+  const segmentLabels: Record<string, string> = {
+    // Hero segments (F, G)
+    'product-hero': 'Product Hero - F',
+    'hero': 'Product Hero - F', // Legacy alias
+    'product-hero-gallery': 'Product Gallery - G',
+    
+    // Core content segments (A, B, C, D, E)
+    'full-hero': 'Full Hero - A',
+    'intro': 'Intro - B',
+    'industries': 'Industries - C',
+    'news': 'Latest News - D',
+    'meta-navigation': 'Meta Navigation - E',
+    
+    // Content segments (H, I, J, K, L, M, N, O)
+    'tiles': 'Tiles - H',
+    'image-text': 'Image & Text - I',
+    'banner': 'Banner - J',
+    'feature-overview': 'Features - K',
+    'table': 'Table - L',
+    'video': 'Video - M',
+    'specification': 'Specification - N',
+    'faq': 'FAQ - O',
+    
+    // Special templates (P, Q, R, S, T, U)
+    'news-list': 'News List - P',
+    'action-hero': 'Action Hero - Q',
+    'events': 'Events List - R',
+    'product-list': 'Product List - S',
+    'downloads': 'Downloads - T',
+    'mini-footer': 'Mini Footer - U',
+    
+    // Debug
+    'debug': 'Debug',
+  };
   
-  if (segType === 'image-text') return `Image & Text - I-${displayNumber}`;
-  if (segType === 'full-hero') return `Full Hero - A-${displayNumber}`;
-  if (segType === 'intro') return `Intro - B-${displayNumber}`;
-  if (segType === 'industries') return `Industries - C-${displayNumber}`;
-  if (segType === 'news') return `Latest News - D-${displayNumber}`;
-  if (segType === 'debug') return `Debug ${displayNumber}`;
-  if (segType === 'news-list') return `News List - P-${displayNumber}`;
-  if (segType === 'action-hero') return `Action Hero - Q-${displayNumber}`;
-  if (segType === 'events') return `Events List - R-${displayNumber}`;
-  if (segType === 'product-list') return `Product List - S-${displayNumber}`;
-  if (segType === 'downloads') return `Downloads - T-${displayNumber}`;
-  if (segType === 'mini-footer') return `Mini Footer - U-${displayNumber}`;
-  if (segType === 'feature-overview') return `Features - K-${displayNumber}`;
-  if (segType === 'table') return `Table - L-${displayNumber}`;
-  if (segType === 'faq') return `FAQ - O-${displayNumber}`;
-  if (segType === 'video') return `Video - M-${displayNumber}`;
-  if (segType === 'specification') return `Specification - N-${displayNumber}`;
-  return `${segType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - ${displayNumber}`;
+  const baseLabel = segmentLabels[segType];
+  if (baseLabel) {
+    return `${baseLabel}-${displayNumber}`;
+  }
+  
+  // Fallback for unknown segment types
+  const formattedType = segType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return `${formattedType} - ${displayNumber}`;
 };
 
 // Get segment type display name
