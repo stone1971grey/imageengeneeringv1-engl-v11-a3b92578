@@ -1071,11 +1071,29 @@ export const SEOEditor = ({
                 }
               }
             };
-            // Check common text fields
+            // Check common text fields - include all possible text fields
             if (seg.data) {
               checkField(seg.data.description, 'description');
               checkField(seg.data.text, 'text');
               checkField(seg.data.content, 'content');
+              checkField(seg.data.introText, 'introText');
+              checkField(seg.data.subtitle, 'subtitle');
+              checkField(seg.data.cta_description, 'cta_description');
+              checkField(seg.data.button_text, 'button_text');
+              // Check tiles array for links
+              if (Array.isArray(seg.data.tiles)) {
+                seg.data.tiles.forEach((tile: any, tileIdx: number) => {
+                  if (tile.description) checkField(tile.description, `tiles[${tileIdx}].description`);
+                  if (tile.text) checkField(tile.text, `tiles[${tileIdx}].text`);
+                });
+              }
+              // Check items array for links
+              if (Array.isArray(seg.data.items)) {
+                seg.data.items.forEach((item: any, itemIdx: number) => {
+                  if (item.description) checkField(item.description, `items[${itemIdx}].description`);
+                  if (item.text) checkField(item.text, `items[${itemIdx}].text`);
+                });
+              }
             }
           });
         } catch (e) {
@@ -3986,14 +4004,9 @@ export const SEOEditor = ({
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-medium text-foreground text-sm">"{link.anchorText}"</span>
                         <span className="text-muted-foreground text-xs">→</span>
-                        <a 
-                          href={link.targetUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 text-sm truncate max-w-[200px]"
-                        >
+                        <code className="text-blue-400 text-sm bg-muted/30 px-2 py-0.5 rounded break-all">
                           {link.targetUrl}
-                        </a>
+                        </code>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs bg-muted/30">
