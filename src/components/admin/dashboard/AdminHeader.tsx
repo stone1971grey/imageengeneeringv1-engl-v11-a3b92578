@@ -56,6 +56,7 @@ interface AdminHeaderProps {
   isAdmin: boolean;
   isEditor: boolean;
   allowedPages: string[];
+  canPublish?: boolean; // Editor permission to publish
   showUserManagement: boolean;
   setShowUserManagement: (show: boolean) => void;
   handleLogout: () => void;
@@ -83,6 +84,7 @@ export const AdminHeader = ({
   isAdmin,
   isEditor,
   allowedPages,
+  canPublish = false,
   showUserManagement,
   setShowUserManagement,
   handleLogout,
@@ -256,6 +258,7 @@ export const AdminHeader = ({
                     currentStatus={pageInfo.status || 'published'}
                     onStatusChange={(newStatus) => onPageStatusChange?.(newStatus)}
                     isAdmin={isAdmin}
+                    canPublish={canPublish}
                   />
                   <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
                   <span className="text-base text-gray-700 font-mono whitespace-nowrap">

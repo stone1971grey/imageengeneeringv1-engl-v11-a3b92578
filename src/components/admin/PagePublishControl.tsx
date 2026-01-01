@@ -22,6 +22,7 @@ interface PagePublishControlProps {
   currentStatus: 'draft' | 'published';
   onStatusChange: (newStatus: 'draft' | 'published') => void;
   isAdmin: boolean;
+  canPublish?: boolean; // Editor permission to publish
 }
 
 export const PagePublishControl = ({
@@ -30,14 +31,18 @@ export const PagePublishControl = ({
   currentStatus,
   onStatusChange,
   isAdmin,
+  canPublish = false,
 }: PagePublishControlProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showUnpublishDialog, setShowUnpublishDialog] = useState(false);
+  
+  // User can publish if they are admin OR have canPublish permission
+  const hasPublishPermission = isAdmin || canPublish;
 
   const handlePublish = async () => {
-    if (!isAdmin) {
-      toast.error('Only admins can publish pages');
+    if (!hasPublishPermission) {
+      toast.error('You do not have permission to publish pages');
       return;
     }
 
@@ -62,8 +67,8 @@ export const PagePublishControl = ({
   };
 
   const handleUnpublish = async () => {
-    if (!isAdmin) {
-      toast.error('Only admins can unpublish pages');
+    if (!hasPublishPermission) {
+      toast.error('You do not have permission to unpublish pages');
       return;
     }
 
@@ -87,8 +92,8 @@ export const PagePublishControl = ({
     }
   };
 
-  if (!isAdmin) {
-    // Editors can see status but not change it
+  if (!hasPublishPermission) {
+    // Users without publish permission can see status but not change it
     return (
       <Badge variant={currentStatus === 'published' ? 'default' : 'secondary'} className={currentStatus === 'draft' ? 'gap-1 bg-red-600 text-white border-red-600' : 'gap-1'}>
         {currentStatus === 'published' ? (
