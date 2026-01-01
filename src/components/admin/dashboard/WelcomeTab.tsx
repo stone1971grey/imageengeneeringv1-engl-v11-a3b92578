@@ -11,7 +11,7 @@ import {
   SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
   Search, FileCheck, Wand2, Clock, Copy, Database,
   ChevronDown, Flame, PenLine, Rocket, Package, Sliders,
-  HardDrive, GitBranch, Puzzle
+  HardDrive, GitBranch, Puzzle, BarChart3
 } from "lucide-react";
 import lovableIcon from "@/assets/lovable-icon.png";
 
@@ -173,15 +173,52 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
 
                   <VersionSection 
                     versionKey="v1.4"
-                    label="v1.4 – Multi-Tenancy Foundation"
+                    label="v1.4 – Template System"
                     isOpen={openVersions["v1.4"]}
                     onToggle={() => toggleVersion("v1.4")}
                     isPlanned
                   >
                     <FeatureItem icon={Package} label="Template/Boilerplate System" isPlanned />
-                    <FeatureItem icon={Sliders} label="Configuration Layer" isPlanned />
-                    <FeatureItem icon={HardDrive} label="Data Isolation" isPlanned />
-                    <FeatureItem icon={GitBranch} label="Deployment Pipeline" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
+                    versionKey="v1.5"
+                    label="v1.5 – Configuration Layer"
+                    isOpen={openVersions["v1.5"]}
+                    onToggle={() => toggleVersion("v1.5")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={Sliders} label="Tenant Configuration Layer" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
+                    versionKey="v1.6"
+                    label="v1.6 – Data Isolation"
+                    isOpen={openVersions["v1.6"]}
+                    onToggle={() => toggleVersion("v1.6")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={HardDrive} label="Multi-Tenant Data Isolation" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
+                    versionKey="v1.7"
+                    label="v1.7 – Deployment Pipeline"
+                    isOpen={openVersions["v1.7"]}
+                    onToggle={() => toggleVersion("v1.7")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={GitBranch} label="Automated Deployment Pipeline" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
+                    versionKey="v1.8"
+                    label="v1.8 – Mautic Vision"
+                    isOpen={openVersions["v1.8"]}
+                    onToggle={() => toggleVersion("v1.8")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={BarChart3} label="Marketing Automation KPIs" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
