@@ -128,7 +128,6 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
                 isCurrent
               >
                 <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
-                <FeatureItem icon={Wand2} label="AI SEO-Suite" />
                 <FeatureItem icon={Clock} label="Latest Edit" />
                 <FeatureItem icon={Copy} label="Copy Page" />
                 <FeatureItem icon={HistoryIcon} label="Version History" />
@@ -141,12 +140,12 @@ export const WelcomeTab = ({ version }: WelcomeTabProps) => {
                 
                 <VersionSection 
                   versionKey="v1.1"
-                  label="v1.1 – Advanced SEO Suite"
+                  label="v1.1 – Advanced AI SEO Suite"
                   isOpen={openVersions["v1.1"]}
                   onToggle={() => toggleVersion("v1.1")}
                   isPlanned
                 >
-                  <FeatureItem icon={Wand2} label="Advanced SEO Suite" isPlanned />
+                  <FeatureItem icon={Wand2} label="Advanced AI SEO Suite" isPlanned />
                 </VersionSection>
 
                 <VersionSection 
