@@ -513,12 +513,73 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
         console.error('=== Asset query error:', assetError);
       }
       
-      console.log(`=== Found ${existingAssets?.length || 0} existing assets in Media Management`);
+      console.log(`=== Found ${existingAssets?.length || 0} existing mapped assets in file_segment_mappings`);
       
-      if (existingAssets && existingAssets.length > 0) {
+      // ALSO check Storage directly for unmapped files
+      const { data: storageFiles, error: storageError } = await supabase.storage
+        .from('page-images')
+        .list(pageSlug, { limit: 100 });
+      
+      if (storageError) {
+        console.warn('=== Storage list error:', storageError);
+      }
+      
+      const unmappedStorageFiles = (storageFiles || []).filter(file => {
+        const fullPath = `${pageSlug}/${file.name}`;
+        return !existingAssets?.some(a => a.file_path === fullPath);
+      });
+      
+      console.log(`=== Found ${unmappedStorageFiles.length} unmapped files in Storage`);
+      
+      // Create mappings for unmapped storage files (images only for hero)
+      for (const file of unmappedStorageFiles) {
+        const fullPath = `${pageSlug}/${file.name}`;
+        const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file.name);
+        const isPdf = /\.pdf$/i.test(file.name);
+        
+        if (isImage || isPdf) {
+          const altText = file.name.replace(/\.[^.]+$/, '').replace(/[_-]/g, ' ');
+          // Use hero segment for images, downloads segment for PDFs
+          const segmentId = isImage ? String(productHeroSegmentId) : String(nextId + 4); // Downloads segment is typically +4 from hero
+          
+          console.log(`=== Creating mapping for unmapped file: ${fullPath} -> segment ${segmentId}`);
+          
+          await supabase
+            .from('file_segment_mappings')
+            .insert({
+              file_path: fullPath,
+              bucket_id: 'page-images',
+              segment_ids: [segmentId],
+              alt_text: altText,
+              visibility: 'public',
+            });
+          
+          // Add to existing assets for processing
+          if (!existingAssets) {
+            (existingAssets as any) = [];
+          }
+          (existingAssets as any).push({
+            id: null,
+            file_path: fullPath,
+            alt_text: altText,
+            segment_ids: [segmentId]
+          });
+        }
+      }
+      
+      // Refresh existingAssets after creating new mappings
+      const { data: refreshedAssets } = await supabase
+        .from('file_segment_mappings')
+        .select('id, file_path, alt_text, segment_ids')
+        .like('file_path', searchPattern);
+      
+      const allAssets = refreshedAssets || existingAssets || [];
+      console.log(`=== Total assets after mapping: ${allAssets.length}`);
+      
+      if (allAssets.length > 0) {
         // USE EXISTING ASSETS - no download needed
         // Filter to only image files (exclude PDFs)
-        const imageAssets = existingAssets.filter(a => 
+        const imageAssets = allAssets.filter(a => 
           /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(a.file_path)
         );
         console.log('=== Using existing Media Management assets (images only):', imageAssets.length);
@@ -541,7 +602,7 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
           // Update segment_ids to include new segment ID
           const currentIds = asset.segment_ids || [];
           const newSegmentIdStr = String(productHeroSegmentId);
-          if (!currentIds.includes(newSegmentIdStr)) {
+          if (!currentIds.includes(newSegmentIdStr) && asset.id) {
             const updatedIds = [...currentIds.filter((id: string) => id !== '578'), newSegmentIdStr]; // Remove old ID, add new
             await supabase
               .from('file_segment_mappings')
