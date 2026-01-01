@@ -87,13 +87,81 @@ serve(async (req) => {
 
     if (contentData) {
       for (const item of contentData) {
-        // Skip non-text content
-        if (item.section_key === 'page_segments' || item.section_key === 'seo') continue;
+        // CRITICAL: Parse page_segments JSON array to extract text from all segments
+        // This is where Content Automation stores segment data
+        if (item.section_key === 'page_segments') {
+          try {
+            const pageSegments = JSON.parse(item.content_value);
+            if (Array.isArray(pageSegments)) {
+              for (const seg of pageSegments) {
+                const segId = seg.id;
+                const segType = seg.type;
+                const segData = seg.data || {};
+                
+                // Extract text from different segment types within page_segments
+                if (segData.introText) {
+                  const cleanText = segData.introText.replace(/<[^>]*>/g, '');
+                  textSegments.push({ 
+                    key: `segment-${segId}`, 
+                    text: cleanText, 
+                    type: segType,
+                    field: 'introText',
+                    segmentId: parseInt(segId)
+                  });
+                  textContent += cleanText + '\n';
+                }
+                if (segData.description) {
+                  const cleanText = segData.description.replace(/<[^>]*>/g, '');
+                  textSegments.push({ 
+                    key: `segment-${segId}`, 
+                    text: cleanText, 
+                    type: segType,
+                    field: 'description',
+                    segmentId: parseInt(segId)
+                  });
+                  textContent += cleanText + '\n';
+                }
+                if (segData.subtitle) {
+                  textSegments.push({ 
+                    key: `segment-${segId}`, 
+                    text: segData.subtitle, 
+                    type: segType,
+                    field: 'subtitle',
+                    segmentId: parseInt(segId)
+                  });
+                  textContent += segData.subtitle + '\n';
+                }
+                // Also extract from image-text items
+                if (segData.items && Array.isArray(segData.items)) {
+                  for (const item of segData.items) {
+                    if (item.description) {
+                      const cleanText = item.description.replace(/<[^>]*>/g, '');
+                      textSegments.push({ 
+                        key: `segment-${segId}`, 
+                        text: cleanText, 
+                        type: segType,
+                        field: 'items.description',
+                        segmentId: parseInt(segId)
+                      });
+                      textContent += cleanText + '\n';
+                    }
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.error('[Internal Links] Error parsing page_segments:', e);
+          }
+          continue; // Skip further processing for this item
+        }
+        
+        // Skip seo and other non-content keys
+        if (item.section_key === 'seo' || item.section_key === 'seo_settings' || item.section_key === 'tab_order') continue;
 
         try {
           const parsed = JSON.parse(item.content_value);
           
-          // Extract text from different segment types
+          // Extract text from different segment types (legacy section_key based storage)
           if (parsed.introText) {
             textSegments.push({ 
               key: item.section_key, 
