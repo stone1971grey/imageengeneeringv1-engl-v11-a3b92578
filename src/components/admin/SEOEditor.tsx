@@ -5958,6 +5958,33 @@ export const SEOEditor = ({
             {/* Analysis Results */}
             {fkwContentAnalysis && (
               <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border/50">
+                {/* Score with explanation */}
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`text-3xl font-bold ${
+                      fkwContentScore >= 80 ? 'text-green-400' :
+                      fkwContentScore >= 50 ? 'text-yellow-400' :
+                      'text-red-400'
+                    }`}>
+                      {fkwContentScore}/100
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p className="font-medium">
+                        {fkwContentScore >= 80 ? 'Excellent' :
+                         fkwContentScore >= 50 ? 'Needs Improvement' :
+                         'Optimization Required'}
+                      </p>
+                      <p className="text-xs">
+                        {fkwContentScore < 80 && 'Check items marked with ✗ below'}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Score breakdown */}
+                  <div className="text-xs text-muted-foreground text-right">
+                    <p>H1 +25 | Intro +20 | H2 +25 | Density +20 | H3 +10</p>
+                  </div>
+                </div>
+                
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-base">
                   <div>
                     <span className="text-muted-foreground block text-sm">Word Count</span>
@@ -5976,6 +6003,7 @@ export const SEOEditor = ({
                     }`}>
                       {fkwContentAnalysis.fkwDensity.toFixed(2)}%
                     </span>
+                    <span className="text-xs text-muted-foreground block">(Ideal: 0.5% – 2.0%)</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground block text-sm">H2 with FKW</span>
@@ -5985,30 +6013,71 @@ export const SEOEditor = ({
                   </div>
                 </div>
                 
-                {/* Status Indicators */}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  <Badge className={`text-sm ${fkwContentAnalysis.h1HasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
-                    {fkwContentAnalysis.h1HasFkw ? '✓' : '✗'} H1
-                  </Badge>
-                  <Badge className={`text-sm ${fkwContentAnalysis.introHasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
-                    {fkwContentAnalysis.introHasFkw ? '✓' : '✗'} Intro
-                  </Badge>
-                  <Badge className={`text-sm ${fkwContentAnalysis.h2WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
-                    {fkwContentAnalysis.h2WithFkw > 0 ? '✓' : '○'} H2
-                  </Badge>
-                  <Badge className={`text-sm ${fkwContentAnalysis.h3WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
-                    {fkwContentAnalysis.h3WithFkw > 0 ? '✓' : '–'} H3
-                  </Badge>
-                </div>
+                {/* Status Indicators - use actual H1 from SEO data if available */}
+                {(() => {
+                  // Check if H1 from SEO data contains FKW (more accurate than segment detection)
+                  const actualH1HasFkw = data.h1 && data.focusKeyword 
+                    ? data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase())
+                    : fkwContentAnalysis.h1HasFkw;
+                  
+                  return (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <Badge className={`text-sm ${actualH1HasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                        {actualH1HasFkw ? '✓' : '✗'} H1 (+25)
+                      </Badge>
+                      <Badge className={`text-sm ${fkwContentAnalysis.introHasFkw ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                        {fkwContentAnalysis.introHasFkw ? '✓' : '✗'} Intro (+20)
+                      </Badge>
+                      <Badge className={`text-sm ${fkwContentAnalysis.h2WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                        {fkwContentAnalysis.h2WithFkw > 0 ? '✓' : '○'} H2 (+15/+25)
+                      </Badge>
+                      <Badge className={`text-sm ${fkwContentAnalysis.densityStatus === 'optimal' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                        {fkwContentAnalysis.densityStatus === 'optimal' ? '✓' : '○'} Density (+20)
+                      </Badge>
+                      <Badge className={`text-sm ${fkwContentAnalysis.h3WithFkw > 0 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
+                        {fkwContentAnalysis.h3WithFkw > 0 ? '✓' : '–'} H3 (+10)
+                      </Badge>
+                    </div>
+                  );
+                })()}
                 
-                {/* Recommendations */}
+                {/* Recommendations - filter out H1 warning if H1 actually has FKW */}
                 {fkwContentRecommendations.length > 0 && (
                   <div className="mt-3 space-y-1">
-                    {fkwContentRecommendations.map((rec, i) => (
-                      <p key={i} className={`text-sm ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
-                        {rec}
-                      </p>
-                    ))}
+                    {fkwContentRecommendations
+                      .filter(rec => {
+                        // Filter out H1 warning if actual H1 from SEO data has FKW
+                        if (rec.includes('H1') && data.h1 && data.focusKeyword) {
+                          const actualH1HasFkw = data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase());
+                          if (actualH1HasFkw) return false;
+                        }
+                        return true;
+                      })
+                      .map((rec, i) => (
+                        <p key={i} className={`text-sm ${rec.startsWith('✓') ? 'text-green-400' : 'text-muted-foreground'}`}>
+                          {rec}
+                        </p>
+                      ))}
+                  </div>
+                )}
+                
+                {/* Applied Suggestions Summary */}
+                {fkwContentSuggestions.filter(s => s.applied).length > 0 && (
+                  <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <p className="text-sm font-medium text-green-400 mb-2">
+                      ✓ Applied Optimizations ({fkwContentSuggestions.filter(s => s.applied).length})
+                    </p>
+                    <div className="space-y-2">
+                      {fkwContentSuggestions.filter(s => s.applied).map((s, i) => (
+                        <div key={i} className="text-xs text-green-400/80 flex items-start gap-2">
+                          <span className="shrink-0">•</span>
+                          <span>
+                            <span className="font-medium">{s.suggestionType === 'heading' ? s.headingLevel?.toUpperCase() : 'Body'}</span>
+                            {' in Segment '}{s.segmentId}: "{s.suggestedText.substring(0, 60)}{s.suggestedText.length > 60 ? '...' : ''}"
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
