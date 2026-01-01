@@ -167,7 +167,7 @@ import { TileItem, BannerImage, SolutionItem } from '@/components/admin/dashboar
 
 const AdminDashboard = () => {
   // Authentication state from hook
-  const { user, session, isAdmin, isEditor, allowedPages, loading, handleLogout, addAllowedPage } = useAdminAuth();
+  const { user, session, isAdmin, isEditor, allowedPages, canPublish, canDraft, frontendEditingEnabled, loading, handleLogout, addAllowedPage } = useAdminAuth();
   
   const [content, setContent] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -1422,6 +1422,7 @@ const AdminDashboard = () => {
           isAdmin={isAdmin}
           isEditor={isEditor}
           allowedPages={allowedPages}
+          canPublish={canPublish}
           showUserManagement={showUserManagement}
           setShowUserManagement={setShowUserManagement}
           handleLogout={handleLogout}

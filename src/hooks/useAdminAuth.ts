@@ -10,6 +10,9 @@ export interface AdminAuthState {
   isAdmin: boolean;
   isEditor: boolean;
   allowedPages: string[];
+  canPublish: boolean;
+  canDraft: boolean;
+  frontendEditingEnabled: boolean;
   loading: boolean;
 }
 
@@ -19,6 +22,9 @@ export const useAdminAuth = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditor, setIsEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
+  const [canPublish, setCanPublish] = useState(false);
+  const [canDraft, setCanDraft] = useState(true);
+  const [frontendEditingEnabled, setFrontendEditingEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -51,6 +57,9 @@ export const useAdminAuth = () => {
       setIsAdmin(true);
       setIsEditor(false);
       setAllowedPages([]); // Admins have access to all pages
+      setCanPublish(true); // Admins can always publish
+      setCanDraft(true); // Admins can always draft
+      setFrontendEditingEnabled(true); // Admins have full frontend editing
       setLoading(false);
       return;
     }
@@ -64,10 +73,10 @@ export const useAdminAuth = () => {
       .maybeSingle();
 
     if (editorData) {
-      // Get editor's allowed pages (content editors like 'news', 'products')
+      // Get editor's allowed pages and permissions
       const { data: pageAccessData, error: pageAccessError } = await supabase
         .from("editor_page_access")
-        .select("page_slug")
+        .select("page_slug, can_publish, can_draft, frontend_editing_enabled")
         .eq("user_id", user.id);
 
       if (pageAccessError || !pageAccessData || pageAccessData.length === 0) {
@@ -79,9 +88,26 @@ export const useAdminAuth = () => {
       const pages = pageAccessData.map(p => p.page_slug);
       console.log('[AdminDashboard] Editor allowedPages loaded:', pages);
       
+      // Get permissions from __global__ entry or any entry that has them set
+      const globalEntry = pageAccessData.find(p => p.page_slug === '__global__');
+      const entryWithPermissions = pageAccessData.find(p => 
+        p.can_publish !== null || p.can_draft !== null || p.frontend_editing_enabled !== null
+      );
+      
+      const permissionEntry = globalEntry || entryWithPermissions;
+      
       setIsEditor(true);
       setIsAdmin(false);
       setAllowedPages(pages);
+      setCanPublish(permissionEntry?.can_publish ?? false);
+      setCanDraft(permissionEntry?.can_draft ?? true);
+      setFrontendEditingEnabled(permissionEntry?.frontend_editing_enabled ?? false);
+      
+      console.log('[AdminDashboard] Editor permissions:', {
+        canPublish: permissionEntry?.can_publish ?? false,
+        canDraft: permissionEntry?.can_draft ?? true,
+        frontendEditingEnabled: permissionEntry?.frontend_editing_enabled ?? false
+      });
       
       // For editors: don't redirect - let them see the Welcome page
       // The Welcome page shows them which content editors (news, products, etc.) they can access
@@ -140,6 +166,9 @@ export const useAdminAuth = () => {
     isAdmin,
     isEditor,
     allowedPages,
+    canPublish,
+    canDraft,
+    frontendEditingEnabled,
     loading,
     handleLogout,
     addAllowedPage
