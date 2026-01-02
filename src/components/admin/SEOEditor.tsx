@@ -279,7 +279,28 @@ export const SEOEditor = ({
     loadFromDb();
   }, [pageSlug, editorLanguage]);
 
-  // Smart H1 Headline state
+  // CRITICAL: Defensive push to parent - if parent data is empty but we have local data,
+  // push our local data UP to prevent parent resets from wiping our values
+  useEffect(() => {
+    // Only run if we've loaded data and have local values
+    if (!isFocusKeywordLoaded) return;
+    
+    const localHasData = localFocusKeywordRef.current || localTitleRef.current || localMetaDescriptionRef.current;
+    const parentIsEmpty = !data.focusKeyword && !data.title && !data.metaDescription;
+    
+    if (localHasData && parentIsEmpty) {
+      console.log('[SEO Editor] DEFENSIVE PUSH: Parent is empty but we have local data - pushing up');
+      const updates: Partial<typeof data> = {};
+      if (localFocusKeywordRef.current && !data.focusKeyword) updates.focusKeyword = localFocusKeywordRef.current;
+      if (localTitleRef.current && !data.title) updates.title = localTitleRef.current;
+      if (localMetaDescriptionRef.current && !data.metaDescription) updates.metaDescription = localMetaDescriptionRef.current;
+      
+      if (Object.keys(updates).length > 0) {
+        onChange({ ...data, ...updates });
+      }
+    }
+  }, [data.focusKeyword, data.title, data.metaDescription, isFocusKeywordLoaded]);
+
   const [isGeneratingH1, setIsGeneratingH1] = useState(false);
   const [h1Suggestions, setH1Suggestions] = useState<Array<{
     headline: string;
