@@ -634,11 +634,16 @@ export const SEOEditor = ({
         }
       }
       
-      // Apply Focus Keyword IMMEDIATELY if found in DB - this is the priority source
-      if (focusKeywordFromDb && seoSettingsFromDb) {
+      // Apply SEO data from DB - but NEVER overwrite localFocusKeyword if it's already set
+      // The localFocusKeyword is managed by the dedicated FKW loading effect
+      if (seoSettingsFromDb) {
+        // CRITICAL: Preserve existing localFocusKeyword - it's the authoritative source
+        const preservedFkw = localFocusKeyword || focusKeywordFromDb || data.focusKeyword || '';
+        
         const mergedData = {
           ...data,
-          focusKeyword: focusKeywordFromDb,
+          // NEVER overwrite FKW with empty value - preserve what we have
+          focusKeyword: preservedFkw,
           h1: seoSettingsFromDb.h1 || data.h1 || '',
           h1Locked: seoSettingsFromDb.h1Locked ?? data.h1Locked ?? false,
           introduction: seoSettingsFromDb.introduction || data.introduction || '',
@@ -653,40 +658,25 @@ export const SEOEditor = ({
           ogImage: seoSettingsFromDb.ogImage || data.ogImage || '',
           twitterCard: seoSettingsFromDb.twitterCard || data.twitterCard || 'summary_large_image'
         };
+        
+        // Also update localFocusKeyword if DB has a value and local is empty
+        if (focusKeywordFromDb && !localFocusKeyword) {
+          setLocalFocusKeyword(focusKeywordFromDb);
+          localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, focusKeywordFromDb);
+        }
+        
         onChange(mergedData);
         
         // Cache to localStorage for faster loading next time
         localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
-          focusKeyword: mergedData.focusKeyword,
+          focusKeyword: preservedFkw,
           h1: mergedData.h1,
           h1Locked: mergedData.h1Locked,
           title: mergedData.title,
           metaDescription: mergedData.metaDescription,
           introduction: mergedData.introduction
         }));
-        console.log('[SEO Editor] Applied SEO data from DB immediately');
-      } else {
-        // Fallback: Try localStorage cache if DB has no data
-        const cachedSeoData = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
-        if (cachedSeoData && !data.focusKeyword) {
-          try {
-            const cached = JSON.parse(cachedSeoData);
-            if (cached.focusKeyword) {
-              console.log('[SEO Editor] Using cached Focus Keyword (DB was empty):', cached.focusKeyword);
-              onChange({
-                ...data,
-                focusKeyword: cached.focusKeyword || '',
-                h1: cached.h1 || data.h1 || '',
-                h1Locked: cached.h1Locked ?? data.h1Locked ?? false,
-                title: cached.title || data.title || '',
-                metaDescription: cached.metaDescription || data.metaDescription || '',
-                introduction: cached.introduction || data.introduction || ''
-              });
-            }
-          } catch (e) {
-            console.warn('[SEO Editor] Failed to parse cached SEO data');
-          }
-        }
+        console.log('[SEO Editor] Applied SEO data from DB, preserved FKW:', preservedFkw);
       }
       
       // Load FKW analysis from cache for instant display
