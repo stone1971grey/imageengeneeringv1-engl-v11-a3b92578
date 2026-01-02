@@ -92,9 +92,31 @@ export const SEOEditor = ({
   const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   const [introSourceInfo, setIntroSourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   
-  // CRITICAL FIX: Local state for Focus Keyword loaded directly from DB
-  // This ensures FKW is ALWAYS loaded from DB and not dependent on timing issues with parent component
-  const [localFocusKeyword, setLocalFocusKeyword] = useState<string>('');
+  // CRITICAL FIX: Focus Keyword loaded SYNCHRONOUSLY from localStorage first, then DB
+  // This ensures FKW is IMMEDIATELY available on first render - no waiting for async
+  const [localFocusKeyword, setLocalFocusKeyword] = useState<string>(() => {
+    // SYNCHRONOUS INIT: Check localStorage cache FIRST for instant availability
+    try {
+      const cached = localStorage.getItem(`seo-fkw-${pageSlug}-${editorLanguage}`);
+      if (cached) {
+        console.log('[SEO Editor] SYNC INIT: FKW from localStorage:', cached);
+        return cached;
+      }
+      // Also check the full SEO data cache
+      const fullCache = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
+      if (fullCache) {
+        const parsed = JSON.parse(fullCache);
+        if (parsed.focusKeyword) {
+          console.log('[SEO Editor] SYNC INIT: FKW from full cache:', parsed.focusKeyword);
+          return parsed.focusKeyword;
+        }
+      }
+    } catch (e) {
+      console.warn('[SEO Editor] Failed to read FKW from cache');
+    }
+    // Fallback to prop if available
+    return data.focusKeyword || '';
+  });
   const [isFocusKeywordLoaded, setIsFocusKeywordLoaded] = useState(false);
   
   // Smart Focus Keyword state
@@ -102,8 +124,7 @@ export const SEOEditor = ({
   const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
   const [showKeywordSuggestions, setShowKeywordSuggestions] = useState(false);
   
-  // EFFECTIVE Focus Keyword: Prioritize locally loaded from DB, fallback to prop
-  // This ensures the FKW is always available even if parent component has timing issues
+  // EFFECTIVE Focus Keyword: Prioritize locally loaded state
   const effectiveFocusKeyword = localFocusKeyword || data.focusKeyword || '';
 
   // Smart H1 Headline state
@@ -504,7 +525,12 @@ export const SEOEditor = ({
       }
       
       // Set local state - this is now the authoritative source
-      setLocalFocusKeyword(fkwFromDb);
+      if (fkwFromDb) {
+        setLocalFocusKeyword(fkwFromDb);
+        // CRITICAL: Cache FKW in dedicated key for INSTANT sync loading on next visit
+        localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwFromDb);
+        console.log('[SEO Editor] FKW cached for instant loading:', fkwFromDb);
+      }
       setIsFocusKeywordLoaded(true);
       
       // Also update parent if it has a different/empty value
@@ -522,13 +548,19 @@ export const SEOEditor = ({
     if (data.focusKeyword && data.focusKeyword !== localFocusKeyword && isFocusKeywordLoaded) {
       console.log('[SEO Editor] Parent FKW changed, updating local:', data.focusKeyword);
       setLocalFocusKeyword(data.focusKeyword);
+      // CRITICAL: Also update dedicated cache for instant sync loading
+      localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, data.focusKeyword);
     }
-  }, [data.focusKeyword, isFocusKeywordLoaded]);
+  }, [data.focusKeyword, isFocusKeywordLoaded, pageSlug, editorLanguage]);
 
   // Keep localStorage cache updated when data changes (for instant loading on next visit)
   // Use localFocusKeyword as the authoritative source
   useEffect(() => {
     const fkwToCache = localFocusKeyword || data.focusKeyword;
+    if (fkwToCache) {
+      // Update dedicated FKW cache
+      localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwToCache);
+    }
     if (fkwToCache || data.h1 || data.title || data.metaDescription) {
       localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
         focusKeyword: fkwToCache || '',
