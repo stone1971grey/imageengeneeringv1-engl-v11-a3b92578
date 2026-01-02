@@ -979,100 +979,6 @@ export const SEOEditor = ({
         localStorage.setItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`, JSON.stringify(cacheData));
         
         console.log('[SEO Editor] Auto-calculated FKW analysis:', newAnalysis, 'Score:', calculatedScore);
-        
-        // === AUTO-DETECT ALREADY OPTIMIZED H2s and H3s ===
-        // This ensures "Applied" headings are visible immediately without clicking the Generator button
-        const detectedH2s: typeof h2Suggestions = [];
-        const detectedH3s: typeof h3Suggestions = [];
-        const fkwLower = data.focusKeyword.toLowerCase();
-        
-        segments.forEach((seg: any) => {
-          const segData = seg.data || seg;
-          const segType = seg.type || '';
-          const segId = seg.id || seg.segmentId || '';
-          const segKey = seg.segmentKey || `segment-${segId}`;
-          
-          // Detect H2s with FKW (image-text.title, feature-overview.title, tiles.title, table.title, faq.title)
-          if (['image-text', 'feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
-            if (segData.title && segData.title.toLowerCase().includes(fkwLower)) {
-              detectedH2s.push({
-                originalText: segData.title,
-                suggestedText: segData.title,
-                segmentId: parseInt(segId) || null,
-                segmentType: segType,
-                segmentKey: segKey,
-                reason: 'Enthält bereits das Focus Keyword',
-                characterCount: segData.title.length,
-                priority: 99,
-                applied: true,
-                alreadyOptimized: true
-              } as any);
-            }
-          }
-          
-          // Detect H3s with FKW (image-text.items[].title, feature-overview.items[].title, tiles.items[].title, faq.items[].question)
-          if (['image-text', 'feature-overview', 'tiles'].includes(segType) && segData.items) {
-            segData.items.forEach((item: any, itemIndex: number) => {
-              if (item.title && item.title.toLowerCase().includes(fkwLower)) {
-                detectedH3s.push({
-                  originalText: item.title,
-                  suggestedText: item.title,
-                  segmentId: parseInt(segId) || null,
-                  segmentType: segType,
-                  segmentKey: segKey,
-                  itemIndex: itemIndex,
-                  reason: 'Enthält bereits das Focus Keyword',
-                  characterCount: item.title.length,
-                  priority: 99,
-                  applied: true,
-                  alreadyOptimized: true
-                });
-              }
-            });
-          }
-          
-          // FAQ questions are H3s
-          if (segType === 'faq' && segData.items) {
-            segData.items.forEach((item: any, itemIndex: number) => {
-              if (item.question && item.question.toLowerCase().includes(fkwLower)) {
-                detectedH3s.push({
-                  originalText: item.question,
-                  suggestedText: item.question,
-                  segmentId: parseInt(segId) || null,
-                  segmentType: segType,
-                  segmentKey: segKey,
-                  itemIndex: itemIndex,
-                  reason: 'Enthält bereits das Focus Keyword',
-                  characterCount: item.question.length,
-                  priority: 99,
-                  applied: true,
-                  alreadyOptimized: true
-                });
-              }
-            });
-          }
-        });
-        
-        // Set detected optimized H2s/H3s for persistent display
-        if (detectedH2s.length > 0) {
-          setH2Suggestions(prev => {
-            // Merge with existing, avoiding duplicates
-            const existing = prev.filter(p => !p.applied);
-            return [...existing, ...detectedH2s];
-          });
-          setShowH2Suggestions(true);
-          console.log('[SEO Editor] Auto-detected', detectedH2s.length, 'H2s with FKW');
-        }
-        
-        if (detectedH3s.length > 0) {
-          setH3Suggestions(prev => {
-            const existing = prev.filter(p => !p.applied);
-            return [...existing, ...detectedH3s];
-          });
-          setShowH3Suggestions(true);
-          console.log('[SEO Editor] Auto-detected', detectedH3s.length, 'H3s with FKW');
-        }
-        
       } catch (e) {
         console.error('[SEO Editor] Failed to auto-calculate FKW analysis:', e);
       }
@@ -1080,6 +986,118 @@ export const SEOEditor = ({
     
     autoCalculateFkwAnalysis();
   }, [data.focusKeyword, data.h1, pageContent, fkwContentAnalysis]);
+
+  // === SEPARATE EFFECT: Auto-detect already-optimized H2s and H3s ===
+  // This runs ALWAYS when focusKeyword and pageContent are available, regardless of fkwContentAnalysis
+  useEffect(() => {
+    if (!data.focusKeyword || !pageContent.length) return;
+    
+    const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+    if (!pageSegmentsEntry) return;
+    
+    try {
+      const segments = JSON.parse(pageSegmentsEntry.content_value);
+      if (!segments || segments.length === 0) return;
+      
+      const fkwLower = data.focusKeyword.toLowerCase();
+      const detectedH2s: typeof h2Suggestions = [];
+      const detectedH3s: typeof h3Suggestions = [];
+      
+      segments.forEach((seg: any) => {
+        const segData = seg.data || seg;
+        const segType = seg.type || '';
+        const segId = seg.id || seg.segmentId || '';
+        const segKey = seg.segmentKey || `segment-${segId}`;
+        
+        // Detect H2s with FKW
+        if (['image-text', 'feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+          if (segData.title && segData.title.toLowerCase().includes(fkwLower)) {
+            detectedH2s.push({
+              originalText: segData.title,
+              suggestedText: segData.title,
+              segmentId: parseInt(segId) || null,
+              segmentType: segType,
+              segmentKey: segKey,
+              reason: 'Enthält bereits das Focus Keyword',
+              characterCount: segData.title.length,
+              priority: 99,
+              applied: true,
+              alreadyOptimized: true
+            } as any);
+          }
+        }
+        
+        // Detect H3s with FKW
+        if (['image-text', 'feature-overview', 'tiles'].includes(segType) && segData.items) {
+          segData.items.forEach((item: any, itemIndex: number) => {
+            if (item.title && item.title.toLowerCase().includes(fkwLower)) {
+              detectedH3s.push({
+                originalText: item.title,
+                suggestedText: item.title,
+                segmentId: parseInt(segId) || null,
+                segmentType: segType,
+                segmentKey: segKey,
+                itemIndex: itemIndex,
+                reason: 'Enthält bereits das Focus Keyword',
+                characterCount: item.title.length,
+                priority: 99,
+                applied: true,
+                alreadyOptimized: true
+              });
+            }
+          });
+        }
+        
+        // FAQ questions are H3s
+        if (segType === 'faq' && segData.items) {
+          segData.items.forEach((item: any, itemIndex: number) => {
+            if (item.question && item.question.toLowerCase().includes(fkwLower)) {
+              detectedH3s.push({
+                originalText: item.question,
+                suggestedText: item.question,
+                segmentId: parseInt(segId) || null,
+                segmentType: segType,
+                segmentKey: segKey,
+                itemIndex: itemIndex,
+                reason: 'Enthält bereits das Focus Keyword',
+                characterCount: item.question.length,
+                priority: 99,
+                applied: true,
+                alreadyOptimized: true
+              });
+            }
+          });
+        }
+      });
+      
+      // Update H2 suggestions - preserve any non-applied suggestions and add/update detected ones
+      if (detectedH2s.length > 0 || h2Suggestions.some(s => s.applied || (s as any).alreadyOptimized)) {
+        setH2Suggestions(prev => {
+          const nonApplied = prev.filter(p => !p.applied && !(p as any).alreadyOptimized);
+          // Deduplicate by originalText
+          const uniqueDetected = detectedH2s.filter((d, idx) => 
+            detectedH2s.findIndex(x => x.originalText === d.originalText) === idx
+          );
+          return [...nonApplied, ...uniqueDetected];
+        });
+        console.log('[SEO Editor] Auto-detected', detectedH2s.length, 'H2s with FKW');
+      }
+      
+      if (detectedH3s.length > 0 || h3Suggestions.some(s => s.applied || s.alreadyOptimized)) {
+        setH3Suggestions(prev => {
+          const nonApplied = prev.filter(p => !p.applied && !p.alreadyOptimized);
+          const uniqueDetected = detectedH3s.filter((d, idx) => 
+            detectedH3s.findIndex(x => x.originalText === d.originalText && x.itemIndex === d.itemIndex) === idx
+          );
+          return [...nonApplied, ...uniqueDetected];
+        });
+        console.log('[SEO Editor] Auto-detected', detectedH3s.length, 'H3s with FKW');
+      }
+      
+    } catch (e) {
+      console.error('[SEO Editor] Failed to auto-detect H2/H3s:', e);
+    }
+  }, [data.focusKeyword, pageContent]);
 
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
@@ -7970,7 +7988,13 @@ export const SEOEditor = ({
             })()}
 
             {/* Smart H2 Generator - Show if H2s exist OR we have focus keyword */}
-            {(fkwContentAnalysis?.h2Count > 0 || data.focusKeyword) && (
+            {(fkwContentAnalysis?.h2Count > 0 || data.focusKeyword) && (() => {
+              // Calculate actual counts from detected H2s (more accurate than cached analysis)
+              const optimizedH2Count = h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).length;
+              const totalH2Count = fkwContentAnalysis?.h2Count || optimizedH2Count;
+              const displayH2WithFkw = optimizedH2Count > 0 ? optimizedH2Count : (fkwContentAnalysis?.h2WithFkw || 0);
+              
+              return (
               <div className="mb-4 p-4 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/30 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -7981,33 +8005,33 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  {/* Consistent Badge: Show green if all optimized, yellow if some missing */}
-                  {fkwContentAnalysis && fkwContentAnalysis.h2Count > 0 && (
-                    fkwContentAnalysis.h2WithFkw === fkwContentAnalysis.h2Count ? (
+                  {/* Consistent Badge: Use actual detected counts */}
+                  {totalH2Count > 0 && (
+                    displayH2WithFkw === totalH2Count ? (
                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                        ✓ {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count} H2s mit FKW
+                        ✓ {displayH2WithFkw}/{totalH2Count} H2s mit FKW
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                        {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count} H2s mit FKW
+                        {displayH2WithFkw}/{totalH2Count} H2s mit FKW
                       </Badge>
                     )
                   )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  {fkwContentAnalysis ? (
-                    fkwContentAnalysis.h2WithFkw === fkwContentAnalysis.h2Count 
-                      ? `Alle ${fkwContentAnalysis.h2Count} H2-Überschriften enthalten das Focus Keyword.`
-                      : `${fkwContentAnalysis.h2WithFkw}/${fkwContentAnalysis.h2Count} H2-Überschriften enthalten das Focus Keyword. Generiere optimierte H2-Vorschläge.`
+                  {totalH2Count > 0 ? (
+                    displayH2WithFkw === totalH2Count 
+                      ? `Alle ${totalH2Count} H2-Überschriften enthalten das Focus Keyword.`
+                      : `${displayH2WithFkw}/${totalH2Count} H2-Überschriften enthalten das Focus Keyword. Generiere optimierte H2-Vorschläge.`
                   ) : 'Analysiere H2-Überschriften...'}
                 </p>
                 
                 {/* Always show applied H2s if they exist */}
-                {h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).length > 0 && (
+                {optimizedH2Count > 0 && (
                   <div className="mb-4 space-y-2">
                     <p className="text-sm font-medium text-green-400 flex items-center gap-2">
-                      <span>✓</span> Optimierte H2-Überschriften:
+                      <span>✓</span> Optimierte H2-Überschriften ({optimizedH2Count}):
                     </p>
                     <div className="space-y-2">
                       {h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).map((suggestion, index) => (
@@ -8018,6 +8042,10 @@ export const SEOEditor = ({
                             </Badge>
                             <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono flex-shrink-0">
                               {suggestion.segmentType}
+                            </Badge>
+                            {/* MANDATORY: Segment ID */}
+                            <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 font-mono flex-shrink-0">
+                              ID: {suggestion.segmentId || 'N/A'}
                             </Badge>
                             <span className="text-sm text-foreground truncate">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
@@ -8165,7 +8193,8 @@ export const SEOEditor = ({
                   )}
                 </Button>
               </div>
-            )}
+              );
+            })()}
 
             {/* Smart H3 Generator - Show if there are H3s detected OR if we have focus keyword to analyze */}
             {(fkwContentAnalysis?.h3Count > 0 || data.focusKeyword) && (
