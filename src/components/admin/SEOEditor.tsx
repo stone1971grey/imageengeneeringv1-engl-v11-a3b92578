@@ -446,11 +446,48 @@ export const SEOEditor = ({
     }
   };
 
+  // Keep localStorage cache updated when data changes (for instant loading on next visit)
+  useEffect(() => {
+    if (data.focusKeyword || data.h1 || data.title || data.metaDescription) {
+      localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
+        focusKeyword: data.focusKeyword || '',
+        h1: data.h1 || '',
+        h1Locked: data.h1Locked ?? false,
+        title: data.title || '',
+        metaDescription: data.metaDescription || '',
+        introduction: data.introduction || ''
+      }));
+    }
+  }, [data.focusKeyword, data.h1, data.title, data.metaDescription, data.introduction, pageSlug, editorLanguage]);
+
   // Load page content and segment registry - OPTIMIZED WITH PARALLEL QUERIES
   useEffect(() => {
     const loadPageData = async () => {
       const startTime = performance.now();
       console.log('[SEO Editor] Loading page data for:', pageSlug, 'language:', editorLanguage);
+      
+      // FAST PATH: Load SEO data from localStorage cache FIRST for instant display
+      const cachedSeoData = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
+      if (cachedSeoData) {
+        try {
+          const cached = JSON.parse(cachedSeoData);
+          console.log('[SEO Editor] Loading SEO data from cache (instant):', cached.focusKeyword);
+          // Only apply cache if current data is empty (prevents overwriting fresher data)
+          if (!data.focusKeyword && cached.focusKeyword) {
+            onChange({
+              ...data,
+              focusKeyword: cached.focusKeyword || data.focusKeyword || '',
+              h1: cached.h1 || data.h1 || '',
+              h1Locked: cached.h1Locked ?? data.h1Locked ?? false,
+              title: cached.title || data.title || '',
+              metaDescription: cached.metaDescription || data.metaDescription || '',
+              introduction: cached.introduction || data.introduction || ''
+            });
+          }
+        } catch (e) {
+          console.warn('[SEO Editor] Failed to parse cached SEO data');
+        }
+      }
       
       // FAST PATH: Load FKW analysis from localStorage cache first for instant display
       const cachedFkwAnalysis = localStorage.getItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`);
@@ -574,7 +611,7 @@ export const SEOEditor = ({
             });
             
             // Merge DB values into data, DB values take priority for SEO fields
-            onChange({
+            const mergedData = {
               ...data,
               focusKeyword: getVal(savedSeoSettings.focusKeyword, data.focusKeyword, ''),
               h1: getVal(savedSeoSettings.h1, data.h1, ''),
@@ -590,7 +627,19 @@ export const SEOEditor = ({
               ogDescription: getVal(savedSeoSettings.ogDescription, data.ogDescription, ''),
               ogImage: getVal(savedSeoSettings.ogImage, data.ogImage, ''),
               twitterCard: getVal(savedSeoSettings.twitterCard, data.twitterCard, 'summary_large_image')
-            });
+            };
+            onChange(mergedData);
+            
+            // Cache critical SEO data to localStorage for instant loading on next visit
+            localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
+              focusKeyword: mergedData.focusKeyword,
+              h1: mergedData.h1,
+              h1Locked: mergedData.h1Locked,
+              title: mergedData.title,
+              metaDescription: mergedData.metaDescription,
+              introduction: mergedData.introduction
+            }));
+            console.log('[SEO Editor] Cached SEO data to localStorage');
           }
         } catch (e) {
           console.error('[SEO Editor] Failed to parse seo_settings:', e);
