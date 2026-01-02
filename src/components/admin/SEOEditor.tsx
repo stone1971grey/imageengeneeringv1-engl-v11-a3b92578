@@ -3182,20 +3182,21 @@ export const SEOEditor = ({
             const segId = seg.segmentId || seg.id || '';
             const segKey = seg.segmentKey || seg.id || '';
             
-            // Image-Text segments
+            // Image-Text segments: 
+            // - segment.data.title = H2 (Section Header)
+            // - segment.data.items[].title = H3 (Item Headers, NOT H2)
             if (segType === 'image-text') {
-              const items = segData.items || [];
-              items.forEach((item: any, itemIndex: number) => {
-                const headingLevel = item.headingLevel || 'h2';
-                if (headingLevel === 'h2' && item.title) {
-                  existingH2s.push({
-                    text: item.title,
-                    segmentType: segType,
-                    segmentId: segId,
-                    segmentKey: segKey
-                  });
-                }
-              });
+              // Section title is the H2
+              if (segData.title) {
+                existingH2s.push({
+                  text: segData.title,
+                  segmentType: segType,
+                  segmentId: segId,
+                  segmentKey: segKey
+                });
+              }
+              // Item titles are H3, NOT included in H2 list
+              // (They will be handled separately in H3 generation)
             }
             
             // Feature overview, tiles, table, faq - their titles are typically H2
@@ -3314,32 +3315,27 @@ export const SEOEditor = ({
           const segType = seg.type || '';
           console.log('[SEO Editor] Found matching segment:', { segId: seg.id, segType, segData: seg.data });
           
-          // Handle image-text segments - update only the specific item title
+          // Handle image-text segments - update the segment title (H2), NOT items (H3)
           if (segType === 'image-text') {
             matchDetails.typeMatched = true;
             const segData = seg.data ? { ...seg.data } : {};
-            if (segData.items && Array.isArray(segData.items)) {
-              console.log('[SEO Editor] Checking', segData.items.length, 'items for title match');
-              segData.items = segData.items.map((item: any, idx: number) => {
-                // Use trimmed comparison for more robust matching
-                const itemTitle = (item.title || '').trim();
-                const originalTitle = (suggestion.originalText || '').trim();
-                console.log(`[SEO Editor] Item ${idx}: "${itemTitle}" === "${originalTitle}" ?`, itemTitle === originalTitle);
-                
-                if (itemTitle === originalTitle) {
-                  matchDetails.titleMatched = true;
-                  updated = true;
-                  console.log('[SEO Editor] ✓ MATCH! Updating H2 in image-text item:', {
-                    from: item.title,
-                    to: suggestion.suggestedText,
-                    segmentId: suggestion.segmentId
-                  });
-                  // Preserve ALL item properties, only change title
-                  return { ...item, title: suggestion.suggestedText };
-                }
-                return item;
+            
+            // Check segment-level title (this is the H2)
+            const segTitle = (segData.title || '').trim();
+            const originalTitle = (suggestion.originalText || '').trim();
+            console.log('[SEO Editor] Checking image-text segment title:', { segTitle, originalTitle, match: segTitle === originalTitle });
+            
+            if (segTitle === originalTitle) {
+              matchDetails.titleMatched = true;
+              console.log('[SEO Editor] ✓ MATCH! Updating H2 in image-text segment title:', {
+                from: segData.title,
+                to: suggestion.suggestedText,
+                segmentId: suggestion.segmentId
               });
+              segData.title = suggestion.suggestedText;
+              updated = true;
             }
+            
             // Return segment with updated data, preserving everything else
             return { ...seg, data: segData };
           }
