@@ -446,17 +446,83 @@ export const SEOEditor = ({
     }
   };
 
-  // Load page content and segment registry
+  // Load page content and segment registry - OPTIMIZED WITH PARALLEL QUERIES
   useEffect(() => {
     const loadPageData = async () => {
+      const startTime = performance.now();
       console.log('[SEO Editor] Loading page data for:', pageSlug, 'language:', editorLanguage);
       
-      // Load page content - FILTER BY LANGUAGE
-      let { data: contentData, error: contentError } = await supabase
-        .from('page_content')
-        .select('*')
-        .eq('page_slug', pageSlug)
-        .eq('language', editorLanguage);
+      // FAST PATH: Load FKW analysis from localStorage cache first for instant display
+      const cachedFkwAnalysis = localStorage.getItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`);
+      if (cachedFkwAnalysis) {
+        try {
+          const cached = JSON.parse(cachedFkwAnalysis);
+          if (cached.analysis) setFkwContentAnalysis(cached.analysis);
+          if (cached.score !== undefined) setFkwContentScore(cached.score);
+          if (cached.recommendations) setFkwContentRecommendations(cached.recommendations);
+          console.log('[SEO Editor] Loaded FKW analysis from cache (instant)');
+        } catch (e) {
+          console.warn('[SEO Editor] Failed to parse cached FKW analysis');
+        }
+      }
+      
+      // PARALLEL QUERIES: Load all data simultaneously for faster loading
+      const [
+        contentResult,
+        registryResult,
+        appliedLinksResult,
+        appliedExternalLinksResult,
+        contentSuggestionsResult,
+        fkwContentResult
+      ] = await Promise.all([
+        // Main page content
+        supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('language', editorLanguage),
+        // Segment registry
+        supabase
+          .from('segment_registry')
+          .select('*')
+          .eq('page_slug', pageSlug),
+        // Applied internal links
+        supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_applied_internal_links')
+          .eq('language', editorLanguage)
+          .maybeSingle(),
+        // Applied external links
+        supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_applied_external_links')
+          .eq('language', editorLanguage)
+          .maybeSingle(),
+        // Content suggestions
+        supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_content_suggestions')
+          .eq('language', editorLanguage)
+          .maybeSingle(),
+        // FKW content analysis
+        supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'seo_fkw_content_analysis')
+          .eq('language', editorLanguage)
+          .maybeSingle()
+      ]);
+      
+      console.log('[SEO Editor] Parallel queries completed in', (performance.now() - startTime).toFixed(0), 'ms');
+      
+      let { data: contentData, error: contentError } = contentResult;
       
       console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items for language:', editorLanguage);
       
@@ -576,28 +642,15 @@ export const SEOEditor = ({
         }
       }
 
-      // Load segment registry to check for deleted segments
-      const { data: registryData, error: registryError } = await supabase
-        .from('segment_registry')
-        .select('*')
-        .eq('page_slug', pageSlug);
-      
-      if (!registryError && registryData) {
-        setSegmentRegistry(registryData);
+      // Process segment registry result
+      if (!registryResult.error && registryResult.data) {
+        setSegmentRegistry(registryResult.data);
       }
       
-      // Load persisted applied internal links
-      const { data: appliedLinksData, error: appliedLinksError } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'seo_applied_internal_links')
-        .eq('language', editorLanguage)
-        .single();
-      
-      if (!appliedLinksError && appliedLinksData) {
+      // Process applied internal links result
+      if (!appliedLinksResult.error && appliedLinksResult.data) {
         try {
-          const parsedLinks = JSON.parse(appliedLinksData.content_value);
+          const parsedLinks = JSON.parse(appliedLinksResult.data.content_value);
           if (Array.isArray(parsedLinks)) {
             setAppliedInternalLinks(parsedLinks);
             // Also set suggestions with applied status for display
@@ -616,18 +669,10 @@ export const SEOEditor = ({
         }
       }
 
-      // Load persisted applied external links
-      const { data: appliedExternalLinksData, error: appliedExternalLinksError } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'seo_applied_external_links')
-        .eq('language', editorLanguage)
-        .single();
-      
-      if (!appliedExternalLinksError && appliedExternalLinksData) {
+      // Process applied external links result
+      if (!appliedExternalLinksResult.error && appliedExternalLinksResult.data) {
         try {
-          const parsedLinks = JSON.parse(appliedExternalLinksData.content_value);
+          const parsedLinks = JSON.parse(appliedExternalLinksResult.data.content_value);
           if (Array.isArray(parsedLinks)) {
             // Set suggestions with applied status for display in Advanced tab
             setExternalLinkSuggestions(parsedLinks.map((link: any) => ({
@@ -642,18 +687,10 @@ export const SEOEditor = ({
         }
       }
 
-      // Load persisted content suggestions
-      const { data: contentSuggestionsData, error: contentSuggestionsError } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'seo_content_suggestions')
-        .eq('language', editorLanguage)
-        .single();
-      
-      if (!contentSuggestionsError && contentSuggestionsData) {
+      // Process content suggestions result
+      if (!contentSuggestionsResult.error && contentSuggestionsResult.data) {
         try {
-          const parsedSuggestions = JSON.parse(contentSuggestionsData.content_value);
+          const parsedSuggestions = JSON.parse(contentSuggestionsResult.data.content_value);
           if (Array.isArray(parsedSuggestions)) {
             setContentLinkSuggestions(parsedSuggestions);
             setShowContentLinkSuggestions(true);
@@ -664,18 +701,10 @@ export const SEOEditor = ({
         }
       }
 
-      // Load persisted FKW content suggestions and analysis
-      const { data: fkwContentData, error: fkwContentError } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'seo_fkw_content_analysis')
-        .eq('language', editorLanguage)
-        .single();
-      
-      if (!fkwContentError && fkwContentData) {
+      // Process FKW content analysis result
+      if (!fkwContentResult.error && fkwContentResult.data) {
         try {
-          const parsed = JSON.parse(fkwContentData.content_value);
+          const parsed = JSON.parse(fkwContentResult.data.content_value);
           const loadedSuggestions = parsed.suggestions || [];
           const focusKw = parsed.focusKeyword || '';
           
@@ -786,6 +815,8 @@ export const SEOEditor = ({
           
           if (parsed.analysis) {
             setFkwContentAnalysis(parsed.analysis);
+            // Update localStorage cache
+            localStorage.setItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`, JSON.stringify(parsed));
           }
           if (parsed.score !== undefined) {
             setFkwContentScore(parsed.score);
@@ -798,6 +829,8 @@ export const SEOEditor = ({
           console.error('[SEO Editor] Failed to parse FKW content analysis:', e);
         }
       }
+      
+      console.log('[SEO Editor] Total load time:', (performance.now() - startTime).toFixed(0), 'ms');
     };
     
     loadPageData();
@@ -894,6 +927,14 @@ export const SEOEditor = ({
         if (newAnalysis.h3WithFkw > 0) calculatedScore += 10;
         calculatedScore = Math.min(100, calculatedScore);
         setFkwContentScore(calculatedScore);
+        
+        // Cache to localStorage for instant loading on next page visit
+        const cacheData = {
+          analysis: newAnalysis,
+          score: calculatedScore,
+          recommendations: recommendations
+        };
+        localStorage.setItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`, JSON.stringify(cacheData));
         
         console.log('[SEO Editor] Auto-calculated FKW analysis:', newAnalysis, 'Score:', calculatedScore);
       } catch (e) {
