@@ -8161,15 +8161,14 @@ export const SEOEditor = ({
                         <div key={`applied-h2-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 flex-shrink-0">
-                              H2 ✓
+                              H2 Heading ✓
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono flex-shrink-0">
-                              {suggestion.segmentType}
+                            <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
+                              Segment: {suggestion.segmentId || 'N/A'}
                             </Badge>
-                            {/* MANDATORY: Segment ID */}
-                            <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 font-mono flex-shrink-0">
-                              ID: {suggestion.segmentId || 'N/A'}
-                            </Badge>
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              ({suggestion.segmentType})
+                            </span>
                             <span className="text-sm text-foreground truncate">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
@@ -8227,24 +8226,22 @@ export const SEOEditor = ({
                               
                               {/* Content */}
                               <div className="flex-1 min-w-0 space-y-2">
-                                {/* Type badge with Segment ID */}
+                                {/* Type badge with Segment ID - Standardized format */}
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30">
                                     H2 Heading
                                   </Badge>
-                                  <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
-                                    {suggestion.segmentType}
+                                  <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
+                                    Segment: {suggestion.segmentId || 'N/A'}
                                   </Badge>
-                                  {suggestion.segmentId && (
-                                    <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 font-mono">
-                                      Segment ID: {suggestion.segmentId}
-                                    </Badge>
-                                  )}
+                                  <span className="text-xs text-muted-foreground">
+                                    ({suggestion.segmentType})
+                                  </span>
                                 </div>
                                 
-                                {/* Original text */}
-                                <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
-                                  <span className="text-xs text-red-400 block mb-1">Original:</span>
+                                {/* Current text - show original text in amber/brown */}
+                                <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded">
+                                  <span className="text-xs text-amber-400 block mb-1">Current:</span>
                                   <p className="text-sm text-foreground/70 line-through">
                                     {suggestion.originalText}
                                   </p>
@@ -8252,14 +8249,14 @@ export const SEOEditor = ({
                                 
                                 {/* Suggested text */}
                                 <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
-                                  <span className="text-xs text-green-400 block mb-1">Optimiert:</span>
+                                  <span className="text-xs text-green-400 block mb-1">Optimized:</span>
                                   <p className="text-sm text-foreground font-medium">
                                     {data.focusKeyword 
                                       ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
                                       : suggestion.suggestedText}
                                   </p>
                                   <span className="text-xs text-muted-foreground mt-1 block">
-                                    {suggestion.characterCount} Zeichen
+                                    {suggestion.characterCount} characters
                                   </span>
                                 </div>
                                 
@@ -8370,15 +8367,14 @@ export const SEOEditor = ({
                         <div key={`applied-h3-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 flex-shrink-0">
-                              H3 ✓
+                              H3 Heading ✓
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono flex-shrink-0">
-                              {suggestion.segmentType}
+                            <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
+                              Segment: {suggestion.segmentId || 'N/A'}
                             </Badge>
-                            {/* MANDATORY: Segment ID */}
-                            <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 font-mono flex-shrink-0">
-                              ID: {suggestion.segmentId || 'N/A'}
-                            </Badge>
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              ({suggestion.segmentType})
+                            </span>
                             <span className="text-sm text-foreground truncate">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
@@ -8417,22 +8413,28 @@ export const SEOEditor = ({
                         const realIndex = h3Suggestions.indexOf(suggestion);
                         return (
                           <div key={idx} className="p-3 rounded-lg border bg-muted/30 border-border/50">
-                            <div className="flex items-start gap-2">
-                              <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs bg-violet-500/20 text-violet-400">
-                                {suggestion.priority}
-                              </div>
-                              <div className="flex-1 min-w-0 space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30">H3</Badge>
-                                  <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono">{suggestion.segmentType}</Badge>
-                                </div>
-                                <div className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs">
-                                  <span className="text-red-400">Original:</span> <span className="line-through">{suggestion.originalText}</span>
-                                </div>
-                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-xs">
-                                  <span className="text-green-400">Optimiert:</span> <span className="font-medium">{data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}</span>
-                                </div>
-                              </div>
+                                <div className="flex items-start gap-2">
+                                  <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs bg-violet-500/20 text-violet-400">
+                                    {suggestion.priority}
+                                  </div>
+                                  <div className="flex-1 min-w-0 space-y-1">
+                                    {/* Type badge with Segment ID - Standardized format */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30">H3 Heading</Badge>
+                                      <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
+                                        Segment: {suggestion.segmentId || 'N/A'}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground">
+                                        ({suggestion.segmentType})
+                                      </span>
+                                    </div>
+                                    <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs">
+                                      <span className="text-amber-400">Current:</span> <span className="line-through">{suggestion.originalText}</span>
+                                    </div>
+                                    <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-xs">
+                                      <span className="text-green-400">Optimized:</span> <span className="font-medium">{data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}</span>
+                                    </div>
+                                  </div>
                               <Button onClick={() => handleApplyH3Suggestion(suggestion, realIndex)} disabled={isApplyingH3 === realIndex} size="sm" className="h-7 px-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs">
                                 {isApplyingH3 === realIndex ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Check className="h-3 w-3 mr-1" />Apply</>}
                               </Button>
@@ -8459,9 +8461,14 @@ export const SEOEditor = ({
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
               <div className="mb-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-medium text-foreground">
-                    Optimization Suggestions:
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-base font-medium text-foreground">
+                      Smart Content Creator
+                    </p>
+                    <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
+                      AI-Powered
+                    </Badge>
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -8494,8 +8501,8 @@ export const SEOEditor = ({
                         
                         {/* Content */}
                         <div className="flex-1 min-w-0 space-y-2">
-                          {/* Type badge */}
-                          <div className="flex items-center gap-2">
+                          {/* Type badge - Standardized format */}
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Badge variant="outline" className={`text-sm ${
                               suggestion.suggestionType === 'heading' 
                                 ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
@@ -8505,17 +8512,17 @@ export const SEOEditor = ({
                                 ? `${suggestion.headingLevel?.toUpperCase()} Heading` 
                                 : 'Body Text'}
                             </Badge>
-                            <Badge variant="outline" className="text-sm bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
-                              Segment {suggestion.segmentId}
+                            <Badge variant="outline" className="text-sm bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
+                              Segment: {suggestion.segmentId}
                             </Badge>
                             <span className="text-sm text-muted-foreground">
                               ({suggestion.segmentType})
                             </span>
                           </div>
                           
-                          {/* Current text */}
-                          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded">
-                            <span className="text-sm text-red-400 block mb-1">Current:</span>
+                          {/* Current text - show original text in amber/brown */}
+                          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded">
+                            <span className="text-sm text-amber-400 block mb-1">Current:</span>
                             <p className="text-base text-foreground/70 line-through">
                               {suggestion.currentText.length > 150 
                                 ? suggestion.currentText.substring(0, 150) + '...' 
@@ -8525,7 +8532,7 @@ export const SEOEditor = ({
                           
                           {/* Suggested text */}
                           <div className="p-3 bg-green-500/10 border border-green-500/20 rounded">
-                            <span className="text-sm text-green-400 block mb-1">Suggested:</span>
+                            <span className="text-sm text-green-400 block mb-1">Optimized:</span>
                             <p className="text-base text-foreground font-medium">
                               {data.focusKeyword 
                                 ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
