@@ -1915,9 +1915,9 @@ export const SEOEditor = ({
     let autoH1 = '';
     let h1Source: { type: string; key: string; id: string | number; label: string } | null = null;
     
-    // 1. Check Intro segment first (highest priority) - ONLY if headingLevel is 'h1'
+    // 1. Check Intro segment first (HIGHEST PRIORITY - Intro ALWAYS takes precedence for H1)
     // IMPORTANT: Intro segments are stored INSIDE page_segments JSON array, NOT as separate section_keys
-    // CRITICAL: Search ALL intro segments in registry and find matching one in page_segments with h1
+    // CRITICAL: Intro ALWAYS provides H1 regardless of headingLevel setting - this is an architectural rule
     const allIntroRegistries = segmentRegistry.filter(seg => seg.segment_type === 'intro' && !seg.deleted);
     
     if (allIntroRegistries.length > 0) {
@@ -1926,19 +1926,19 @@ export const SEOEditor = ({
         try {
           const segments = JSON.parse(pageSegmentsEntry.content_value);
           
-          // Search for ANY intro in page_segments that matches ANY registry entry AND has headingLevel 'h1'
+          // Search for ANY intro in page_segments that matches ANY registry entry
+          // Intro ALWAYS provides H1 - this is the architectural rule
           for (const registryEntry of allIntroRegistries) {
             const introSegment = segments.find((seg: any) => 
               seg.type === 'intro' && String(seg.id) === String(registryEntry.segment_id)
             );
             
             if (introSegment?.data) {
-              // Support both field variants: title (standard) and headline (Content Automation)
-              const introTitle = introSegment.data.title || introSegment.data.headline || '';
-              const introHeadingLevel = introSegment.data.headingLevel || 'h2';
+              // Support both field variants: headline (Content Automation standard) and title (legacy)
+              const introTitle = introSegment.data.headline || introSegment.data.title || '';
               
-              // ONLY use Intro as H1 source if it has headingLevel: 'h1'
-              if (introTitle && introHeadingLevel === 'h1') {
+              // Intro ALWAYS provides H1 when it has a headline/title - NO headingLevel check needed
+              if (introTitle) {
                 autoH1 = introTitle;
                 h1Source = {
                   type: 'intro',
@@ -1946,10 +1946,8 @@ export const SEOEditor = ({
                   id: registryEntry.segment_id,
                   label: 'Intro'
                 };
-                console.log('[SEO Editor] H1 from Intro title (headingLevel=h1):', autoH1, '(segment_id:', registryEntry.segment_id, ')');
+                console.log('[SEO Editor] H1 from Intro (PRIORITY RULE):', autoH1, '(segment_id:', registryEntry.segment_id, ')');
                 break; // Found a valid H1, stop searching
-              } else {
-                console.log('[SEO Editor] Intro segment', registryEntry.segment_id, 'has headingLevel:', introHeadingLevel, '- skipping for H1');
               }
             }
           }
@@ -7388,35 +7386,25 @@ export const SEOEditor = ({
         </TabsList>
 
         {/* Basics Tab */}
-        <TabsContent value="basics" className="space-y-4">
+        <TabsContent value="basics" className="space-y-3">
 
-          {/* SEO Title */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label htmlFor="seo-title" className="text-base font-semibold text-foreground">
+          {/* SEO Title - COMPACT */}
+          <div className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="seo-title" className="text-sm font-semibold text-foreground">
                 SEO Title
               </Label>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
-                {isAdvancedMode && data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
-                )}
-              </div>
+              <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
             </div>
             <Input
               id="seo-title"
               value={data.title || ''}
               onChange={(e) => handleChange('title', e.target.value)}
               placeholder="e.g. Professional Camera Testing Solutions | Image Engineering"
-              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+              className="h-10 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
             />
-            {isAdvancedMode && data.focusKeyword && data.title && (
-              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
-                {highlightKeyword(data.title, data.focusKeyword)}
-              </div>
-            )}
-            <div className="flex items-center justify-between mt-3">
-              <span className={`text-xs font-medium px-2 py-1 rounded ${
+            <div className="flex items-center justify-between mt-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                 (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
                   ? 'bg-green-500/20 text-green-400'
                   : (data.title?.length || 0) > 60
@@ -7428,39 +7416,29 @@ export const SEOEditor = ({
                 {data.title?.length || 0}/60 chars
               </span>
               <span className="text-xs text-muted-foreground">
-                Optimal: 50-60 characters
+                Optimal: 50-60
               </span>
             </div>
           </div>
 
-          {/* Meta Description */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label htmlFor="meta-description" className="text-base font-semibold text-foreground">
+          {/* Meta Description - COMPACT */}
+          <div className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="meta-description" className="text-sm font-semibold text-foreground">
                 Meta Description
               </Label>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
-                {isAdvancedMode && data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
-                )}
-              </div>
+              <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
             </div>
             <Textarea
               id="meta-description"
               value={data.metaDescription || ''}
               onChange={(e) => handleChange('metaDescription', e.target.value)}
               placeholder="Describe your page in 120-160 characters..."
-              className="min-h-[100px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
-              rows={3}
+              className="min-h-[70px] bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20 resize-none"
+              rows={2}
             />
-            {isAdvancedMode && data.focusKeyword && data.metaDescription && (
-              <div className="mt-3 px-3 py-2 bg-muted/20 border border-border/50 rounded text-sm">
-                {highlightKeyword(data.metaDescription, data.focusKeyword)}
-              </div>
-            )}
-            <div className="flex items-center justify-between mt-3">
-              <span className={`text-xs font-medium px-2 py-1 rounded ${
+            <div className="flex items-center justify-between mt-2">
+              <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                 (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
                   ? 'bg-green-500/20 text-green-400'
                   : (data.metaDescription?.length || 0) > 160
@@ -7472,97 +7450,47 @@ export const SEOEditor = ({
                 {data.metaDescription?.length || 0}/160 chars
               </span>
               <span className="text-xs text-muted-foreground">
-                Optimal: 120-160 characters
+                Optimal: 120-160
               </span>
             </div>
           </div>
 
-          {/* URL Slug */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label htmlFor="slug" className="text-base font-semibold text-foreground">
-                URL Slug
-              </Label>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs bg-muted/50">Required</Badge>
-                {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center">
-              <span className="px-3 py-2.5 bg-muted/50 rounded-l-md border border-r-0 border-border text-sm text-muted-foreground">
-                /
-              </span>
-              <Input
-                id="slug"
-                value={data.slug || ''}
-                onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
-                placeholder={pageSlug}
-                className="rounded-l-none h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
-              />
-            </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              Only lowercase letters, numbers and hyphens
-            </p>
-          </div>
-
-          {/* H1 Heading */}
-          <div className={`p-5 rounded-lg ${data.h1 ? 'bg-zinc-800/50 border border-zinc-700' : 'bg-red-500/10 border border-red-500/30'}`}>
-            <div className="flex items-center justify-between mb-3">
-              <Label className="text-lg font-semibold text-foreground">
+          {/* H1 Heading - COMPACT */}
+          <div className={`p-3 rounded-lg ${data.h1 ? 'bg-zinc-800/50 border border-zinc-700' : 'bg-red-500/10 border border-red-500/30'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-semibold text-foreground">
                 H1 Heading
               </Label>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
-                {isAdvancedMode && data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
-                )}
-              </div>
+              <Badge variant="outline" className="text-xs bg-[#f9dc24]/10 text-[#f9dc24] border-[#f9dc24]/30">Auto-detect</Badge>
             </div>
             
-            {/* H1 Value Display */}
-            <div className={`px-4 py-4 rounded-md ${data.h1 ? 'bg-muted/20 border border-border/50' : 'bg-red-500/20 border border-red-500/30'}`}>
+            <div className={`px-3 py-2 rounded-md ${data.h1 ? 'bg-muted/20 border border-border/50' : 'bg-red-500/20 border border-red-500/30'}`}>
               {data.h1 ? (
-                <div className="space-y-3">
-                  {/* H1 Text - larger */}
-                  <p className="text-lg font-medium text-foreground">{data.h1}</p>
-                  
-                  {/* Source Badge - simplified */}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-foreground truncate">{data.h1}</p>
                   {h1SourceInfo && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Source:</span>
-                      <Badge className="bg-[#f9dc24] text-black font-medium text-sm px-3 py-1">
-                        {h1SourceInfo.label} ({h1SourceInfo.id})
-                      </Badge>
-                    </div>
+                    <Badge className="bg-[#f9dc24] text-black font-medium text-xs px-2 py-0.5 shrink-0">
+                      {h1SourceInfo.label}: {h1SourceInfo.id}
+                    </Badge>
                   )}
                 </div>
               ) : (
-                <span className="flex items-center gap-2 text-red-400 text-base">
-                  <AlertCircle className="h-5 w-5" />
-                  No H1 found – please add an Intro, Hero or Product Hero Gallery segment
+                <span className="flex items-center gap-2 text-red-400 text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  No H1 found – add Intro or Hero segment
                 </span>
               )}
             </div>
             
-            {/* FKW Highlight */}
-            {data.h1 && data.focusKeyword && (
-              <div className="mt-3 px-4 py-3 bg-muted/20 border border-border/50 rounded text-base">
-                {highlightKeyword(data.h1, data.focusKeyword)}
-              </div>
-            )}
-            
-            {/* Priority Explanation */}
-            <p className="text-sm text-muted-foreground mt-3">
-              <span className="font-medium">Auto-detect Priority:</span> Intro → Full Hero → Product Hero Gallery → Product Hero → Action Hero
+            <p className="text-xs text-muted-foreground mt-2">
+              Priority: Intro → Full Hero → Product Hero Gallery → Product Hero
             </p>
           </div>
 
-          {/* Internal Links Overview */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+          {/* Internal Links Overview - COMPACT */}
+          <div className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Link2 className="h-4 w-4" />
                 Internal Links
               </Label>
@@ -7570,51 +7498,37 @@ export const SEOEditor = ({
                 variant="outline" 
                 className={`text-xs ${extractedInternalLinks.length > 0 ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}
               >
-                {extractedInternalLinks.length} {extractedInternalLinks.length === 1 ? 'Link' : 'Links'}
+                {extractedInternalLinks.length} Links
               </Badge>
             </div>
             
             {extractedInternalLinks.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
                 {extractedInternalLinks.map((link, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/20 border border-border/50 rounded-md">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-foreground text-sm">"{link.anchorText}"</span>
-                        <span className="text-muted-foreground text-xs">→</span>
-                        <code className="text-blue-400 text-sm bg-muted/30 px-2 py-0.5 rounded break-all">
-                          {link.targetUrl}
-                        </code>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs bg-muted/30">
-                          {link.segmentType}
-                        </Badge>
-                        {link.segmentId && (
-                          <span className="text-xs text-muted-foreground">
-                            Segment {link.segmentId}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-muted/20 border border-border/50 rounded text-sm">
+                    <span className="font-medium text-foreground truncate max-w-[120px]">"{link.anchorText}"</span>
+                    <span className="text-muted-foreground text-xs">→</span>
+                    <code className="text-blue-400 text-xs bg-muted/30 px-1.5 py-0.5 rounded truncate flex-1">
+                      {link.targetUrl}
+                    </code>
+                    <Badge variant="outline" className="text-xs bg-muted/30 shrink-0">
+                      {link.segmentId || link.segmentType}
+                    </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">No internal links found on this page.</span>
+              <div className="flex items-center gap-2 p-2 bg-muted/20 border border-border/50 rounded text-muted-foreground text-sm">
+                <AlertCircle className="h-3.5 w-3.5" />
+                No internal links found
               </div>
             )}
-            <p className="text-sm text-muted-foreground mt-3">
-              Shows all internal links on this page with anchor text, target, and segment position.
-            </p>
           </div>
 
-          {/* External Links Overview */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label className="text-base font-semibold text-foreground flex items-center gap-2">
+          {/* External Links Overview - COMPACT */}
+          <div className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <ExternalLink className="h-4 w-4" />
                 External Links
               </Label>
@@ -7622,56 +7536,31 @@ export const SEOEditor = ({
                 variant="outline" 
                 className={`text-xs ${extractedExternalLinks.length > 0 ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
               >
-                {extractedExternalLinks.length} {extractedExternalLinks.length === 1 ? 'Link' : 'Links'}
+                {extractedExternalLinks.length} Links
               </Badge>
             </div>
             
             {extractedExternalLinks.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
                 {extractedExternalLinks.map((link, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/20 border border-border/50 rounded-md">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-foreground text-sm">"{link.anchorText}"</span>
-                        <span className="text-muted-foreground text-xs">→</span>
-                        <a 
-                          href={link.targetUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-emerald-400 hover:text-emerald-300 text-sm break-all flex items-center gap-1"
-                        >
-                          {link.targetUrl.length > 60 ? link.targetUrl.substring(0, 60) + '...' : link.targetUrl}
-                          <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <Badge variant="outline" className="text-xs bg-muted/30">
-                          {link.segmentType}
-                        </Badge>
-                        {link.segmentId && (
-                          <span className="text-xs text-muted-foreground">
-                            Segment {link.segmentId}
-                          </span>
-                        )}
-                        {link.targetTitle && (
-                          <span className="text-xs text-emerald-400/70">
-                            ({link.targetTitle})
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-muted/20 border border-border/50 rounded text-sm">
+                    <span className="font-medium text-foreground truncate max-w-[120px]">"{link.anchorText}"</span>
+                    <span className="text-muted-foreground text-xs">→</span>
+                    <code className="text-emerald-400 text-xs bg-muted/30 px-1.5 py-0.5 rounded truncate flex-1">
+                      {link.targetUrl.length > 40 ? link.targetUrl.substring(0, 40) + '...' : link.targetUrl}
+                    </code>
+                    <Badge variant="outline" className="text-xs bg-muted/30 shrink-0">
+                      {link.segmentId || link.segmentType}
+                    </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2 p-4 bg-muted/20 border border-border/50 rounded-md text-muted-foreground">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">No external links found on this page.</span>
+              <div className="flex items-center gap-2 p-2 bg-muted/20 border border-border/50 rounded text-muted-foreground text-sm">
+                <AlertCircle className="h-3.5 w-3.5" />
+                No external links found
               </div>
             )}
-            <p className="text-sm text-muted-foreground mt-3">
-              Shows all external links on this page with anchor text, target URL, and segment position.
-            </p>
           </div>
 
         </TabsContent>
@@ -7962,6 +7851,36 @@ export const SEOEditor = ({
             
             <p className="text-sm text-muted-foreground mt-3">
               Main keyword for this page – should appear in Title, Description, and Slug
+            </p>
+          </div>
+
+          {/* URL Slug - MOVED FROM BASICS */}
+          <div className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="slug" className="text-sm font-semibold text-foreground">
+                URL Slug
+              </Label>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-muted/50">Info</Badge>
+                {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">✓ FKW</Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="px-3 py-2 bg-muted/50 rounded-l-md border border-r-0 border-border text-sm text-muted-foreground">
+                /
+              </span>
+              <Input
+                id="slug"
+                value={data.slug || ''}
+                onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
+                placeholder={pageSlug}
+                className="rounded-l-none h-10 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Only lowercase letters, numbers and hyphens. FKW in URL helps SEO.
             </p>
           </div>
 
