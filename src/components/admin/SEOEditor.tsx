@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -676,6 +676,50 @@ export const SEOEditor = ({
     tabPosition?: number;
     oldH1?: { text: string; segment: { key: string; label: string }; action: string };
   } | null>(null);
+
+  // ============ READABILITY TAB STATE ============
+  // Sentence Length Analyzer
+  const [isSentenceLengthOpen, setIsSentenceLengthOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-readability-sentence-length-open');
+    return saved !== null ? saved === 'true' : true; // Default: open
+  });
+  const [sentenceAnalysis, setSentenceAnalysis] = useState<Array<{
+    segmentId: number;
+    segmentType: string;
+    segmentKey: string;
+    fieldPath: string;
+    text: string;
+    sentences: Array<{ text: string; wordCount: number; isLong: boolean }>;
+    longSentenceCount: number;
+    averageLength: number;
+  }>>([]);
+  const [isOptimizingSentences, setIsOptimizingSentences] = useState<number | null>(null);
+  const [sentenceOptimizations, setSentenceOptimizations] = useState<Record<number, { original: string; optimized: string; applied?: boolean }>>({});
+  
+  // Paragraph Length Analyzer
+  const [isParagraphLengthOpen, setIsParagraphLengthOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-readability-paragraph-length-open');
+    return saved !== null ? saved === 'true' : true; // Default: open
+  });
+  const [paragraphAnalysis, setParagraphAnalysis] = useState<Array<{
+    segmentId: number;
+    segmentType: string;
+    segmentKey: string;
+    fieldPath: string;
+    text: string;
+    paragraphs: Array<{ text: string; sentenceCount: number; wordCount: number; isLong: boolean }>;
+    longParagraphCount: number;
+  }>>([]);
+  const [isOptimizingParagraphs, setIsOptimizingParagraphs] = useState<number | null>(null);
+  const [paragraphOptimizations, setParagraphOptimizations] = useState<Record<number, { original: string; optimized: string; applied?: boolean }>>({});
+  
+  // Persist Readability collapsible states
+  useEffect(() => {
+    localStorage.setItem('seo-readability-sentence-length-open', String(isSentenceLengthOpen));
+  }, [isSentenceLengthOpen]);
+  useEffect(() => {
+    localStorage.setItem('seo-readability-paragraph-length-open', String(isParagraphLengthOpen));
+  }, [isParagraphLengthOpen]);
 
   /**
    * Helper function for consistent character/word count display
@@ -1385,7 +1429,114 @@ export const SEOEditor = ({
     loadRedirects();
   }, [pageSlug, editorLanguage, isRedirectManagerOpen]);
 
-  // NOTE: The old AUTO-CALCULATE FKW ANALYSIS hook was removed because it only ran once 
+  // ============ READABILITY ANALYSIS EFFECT ============
+  // Analyzes sentence and paragraph lengths when pageContent changes
+  useEffect(() => {
+    const analyzeReadability = () => {
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (!pageSegmentsEntry) return;
+      
+      try {
+        const segments = JSON.parse(pageSegmentsEntry.content_value);
+        const sentenceResults: typeof sentenceAnalysis = [];
+        const paragraphResults: typeof paragraphAnalysis = [];
+        
+        // Text fields to analyze in different segment types
+        const textFields = ['description', 'introText', 'body', 'text', 'content'];
+        
+        for (const segment of segments) {
+          const segId = parseInt(segment.id);
+          const segType = segment.type || 'unknown';
+          const segKey = `segment-${segId}`;
+          const segData = segment.data || segment;
+          
+          // Find text content in segment
+          for (const field of textFields) {
+            const rawText = segData[field];
+            if (!rawText || typeof rawText !== 'string' || rawText.length < 50) continue;
+            
+            // Strip HTML tags for analysis
+            const text = rawText.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (text.length < 50) continue;
+            
+            // === SENTENCE ANALYSIS ===
+            // Split by sentence-ending punctuation
+            const sentenceDelimiters = /[.!?]+[\s"')\]]*(?=[A-Z]|$)/g;
+            const rawSentences = text.split(sentenceDelimiters).filter(s => s.trim().length > 0);
+            
+            const sentences = rawSentences.map(s => {
+              const trimmed = s.trim();
+              const wordCount = trimmed.split(/\s+/).length;
+              return {
+                text: trimmed,
+                wordCount,
+                isLong: wordCount > 25
+              };
+            });
+            
+            const longSentenceCount = sentences.filter(s => s.isLong).length;
+            const avgLength = sentences.length > 0 
+              ? Math.round(sentences.reduce((sum, s) => sum + s.wordCount, 0) / sentences.length)
+              : 0;
+            
+            if (sentences.length > 0) {
+              sentenceResults.push({
+                segmentId: segId,
+                segmentType: segType,
+                segmentKey: segKey,
+                fieldPath: field,
+                text: rawText,
+                sentences,
+                longSentenceCount,
+                averageLength: avgLength
+              });
+            }
+            
+            // === PARAGRAPH ANALYSIS ===
+            // Split by double line breaks or <p> tags
+            const paragraphDelimiters = /(?:<\/p>\s*<p[^>]*>|\n\n+|<br\s*\/?>\s*<br\s*\/?>)/gi;
+            const rawParagraphs = text.split(paragraphDelimiters).filter(p => p.trim().length > 0);
+            
+            const paragraphs = rawParagraphs.map(p => {
+              const trimmed = p.trim();
+              const pSentences = trimmed.split(/[.!?]+[\s"')\]]*(?=[A-Z]|$)/).filter(s => s.trim().length > 0);
+              const wordCount = trimmed.split(/\s+/).length;
+              return {
+                text: trimmed,
+                sentenceCount: pSentences.length,
+                wordCount,
+                isLong: pSentences.length > 5 || wordCount > 150
+              };
+            });
+            
+            const longParagraphCount = paragraphs.filter(p => p.isLong).length;
+            
+            if (paragraphs.length > 0) {
+              paragraphResults.push({
+                segmentId: segId,
+                segmentType: segType,
+                segmentKey: segKey,
+                fieldPath: field,
+                text: rawText,
+                paragraphs,
+                longParagraphCount
+              });
+            }
+          }
+        }
+        
+        setSentenceAnalysis(sentenceResults);
+        setParagraphAnalysis(paragraphResults);
+        console.log('[SEO Editor] Readability analysis:', sentenceResults.length, 'sentence segments,', paragraphResults.length, 'paragraph segments');
+      } catch (e) {
+        console.error('[SEO Editor] Readability analysis failed:', e);
+      }
+    };
+    
+    analyzeReadability();
+  }, [pageContent]);
+
+  // NOTE: The old AUTO-CALCULATE FKW ANALYSIS hook was removed because it only ran once
   // (when fkwContentAnalysis was null) and then never updated. The new combined effect 
   // below handles both H2/H3 auto-detection AND analysis calculation, ensuring counts 
   // are always accurate.
@@ -7219,14 +7370,20 @@ export const SEOEditor = ({
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
-        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-3' : 'grid-cols-2'}`}>
+        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-4' : 'grid-cols-2'}`}>
           <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
           <TabsTrigger value="social" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
           {isAdvancedMode && (
-            <TabsTrigger value="advanced" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
-              Advanced
-              <GeminiIcon className="h-4 w-4" />
-            </TabsTrigger>
+            <>
+              <TabsTrigger value="advanced" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
+                Advanced
+                <GeminiIcon className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="readability" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
+                Readability
+                <GeminiIcon className="h-4 w-4" />
+              </TabsTrigger>
+            </>
           )}
         </TabsList>
 
@@ -10786,6 +10943,402 @@ export const SEOEditor = ({
         </TabsContent>
         )}
 
+        {/* Readability Tab - Only rendered in Advanced mode */}
+        {isAdvancedMode && (
+        <TabsContent value="readability" className="space-y-4">
+          
+          {/* Readability Introduction */}
+          <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="h-5 w-5 text-cyan-400" />
+              <h3 className="text-base font-semibold text-foreground">Content Readability Analysis</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Analyze sentence and paragraph lengths across your page content. 
+              Use AI to automatically optimize long sentences and paragraphs for better readability.
+            </p>
+          </div>
+
+          {/* Sentence Length Section - Collapsible */}
+          <Collapsible open={isSentenceLengthOpen} onOpenChange={setIsSentenceLengthOpen}>
+            <div className="rounded-lg overflow-hidden border border-amber-500/20">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left p-4 bg-amber-500/10 hover:bg-amber-500/15 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Type className="h-5 w-5 text-amber-400" />
+                    <h3 className="text-base font-semibold">Sentence Length</h3>
+                    {sentenceAnalysis.length > 0 && (
+                      <Badge className={`text-xs ${
+                        sentenceAnalysis.reduce((sum, s) => sum + s.longSentenceCount, 0) === 0
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                          : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                      }`}>
+                        {sentenceAnalysis.reduce((sum, s) => sum + s.longSentenceCount, 0)} long sentences
+                      </Badge>
+                    )}
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isSentenceLengthOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 bg-background border-t border-border space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Ideal sentence length: <strong className="text-foreground">15-20 words</strong>. Sentences over 25 words are flagged as too long.
+                </p>
+                
+                {sentenceAnalysis.length === 0 ? (
+                  <div className="p-4 bg-muted/20 border border-border rounded-md text-center">
+                    <p className="text-sm text-muted-foreground">No text content found to analyze.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {sentenceAnalysis.filter(s => s.longSentenceCount > 0).length === 0 ? (
+                      <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-md text-center">
+                        <CheckCircle2 className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-green-400">All sentences are within optimal length!</p>
+                      </div>
+                    ) : (
+                      sentenceAnalysis.filter(s => s.longSentenceCount > 0).map((segment, idx) => (
+                        <div key={idx} className="p-4 bg-muted/20 border border-border rounded-lg space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">
+                              Segment: {segment.segmentId} ({segment.segmentType})
+                            </span>
+                            <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">
+                              {segment.longSentenceCount} long sentence{segment.longSentenceCount > 1 ? 's' : ''}
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            {segment.sentences.filter(s => s.isLong).map((sentence, sIdx) => (
+                              <div key={sIdx} className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-sm">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className="text-foreground/90 flex-1">{sentence.text}</p>
+                                  <Badge variant="outline" className="text-xs shrink-0 bg-amber-500/10 text-amber-400 border-amber-500/30">
+                                    {sentence.wordCount} words
+                                  </Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* AI Optimize Button */}
+                          {sentenceOptimizations[segment.segmentId]?.applied ? (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              ✓ Optimized
+                            </Badge>
+                          ) : sentenceOptimizations[segment.segmentId]?.optimized ? (
+                            <div className="space-y-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                              <p className="text-xs font-medium text-green-400">AI Suggestion:</p>
+                              <p className="text-sm text-foreground/90">{sentenceOptimizations[segment.segmentId].optimized}</p>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={async () => {
+                                    // Apply the optimization to the segment
+                                    const opt = sentenceOptimizations[segment.segmentId];
+                                    if (!opt) return;
+                                    
+                                    try {
+                                      // Find and update the segment in page_segments
+                                      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+                                      if (pageSegmentsEntry) {
+                                        const segments = JSON.parse(pageSegmentsEntry.content_value);
+                                        const segIdx = segments.findIndex((s: any) => String(s.id) === String(segment.segmentId));
+                                        if (segIdx !== -1) {
+                                          // Update the field based on fieldPath
+                                          const field = segment.fieldPath;
+                                          if (segments[segIdx].data && segments[segIdx].data[field] !== undefined) {
+                                            segments[segIdx].data[field] = opt.optimized;
+                                          } else if (segments[segIdx][field] !== undefined) {
+                                            segments[segIdx][field] = opt.optimized;
+                                          }
+                                          
+                                          const { error } = await supabase
+                                            .from('page_content')
+                                            .update({ content_value: JSON.stringify(segments), updated_at: new Date().toISOString() })
+                                            .eq('id', pageSegmentsEntry.id);
+                                          
+                                          if (!error) {
+                                            setSentenceOptimizations(prev => ({
+                                              ...prev,
+                                              [segment.segmentId]: { ...opt, applied: true }
+                                            }));
+                                            toast.success('Sentence optimization applied!');
+                                          }
+                                        }
+                                      }
+                                    } catch (e) {
+                                      console.error('Failed to apply optimization:', e);
+                                      toast.error('Failed to apply optimization');
+                                    }
+                                  }}
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                  Apply
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSentenceOptimizations(prev => {
+                                      const newOpts = { ...prev };
+                                      delete newOpts[segment.segmentId];
+                                      return newOpts;
+                                    });
+                                  }}
+                                >
+                                  Dismiss
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={async () => {
+                                setIsOptimizingSentences(segment.segmentId);
+                                try {
+                                  const { data, error } = await supabase.functions.invoke('optimize-readability', {
+                                    body: {
+                                      text: segment.text,
+                                      segmentType: segment.segmentType,
+                                      optimizationType: 'sentence_length',
+                                      language: 'en'
+                                    }
+                                  });
+                                  
+                                  if (error) throw error;
+                                  if (data?.optimizedText) {
+                                    setSentenceOptimizations(prev => ({
+                                      ...prev,
+                                      [segment.segmentId]: {
+                                        original: segment.text,
+                                        optimized: data.optimizedText
+                                      }
+                                    }));
+                                  }
+                                } catch (e) {
+                                  console.error('Optimization failed:', e);
+                                  toast.error('Failed to generate optimization');
+                                } finally {
+                                  setIsOptimizingSentences(null);
+                                }
+                              }}
+                              disabled={isOptimizingSentences === segment.segmentId}
+                              className="w-full h-10 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                            >
+                              {isOptimizingSentences === segment.segmentId ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Optimizing...
+                                </>
+                              ) : (
+                                <>
+                                  <GeminiIcon className="h-4 w-4 mr-2" />
+                                  AI: Optimize Sentences
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+
+          {/* Paragraph Length Section - Collapsible */}
+          <Collapsible open={isParagraphLengthOpen} onOpenChange={setIsParagraphLengthOpen}>
+            <div className="rounded-lg overflow-hidden border border-purple-500/20">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left p-4 bg-purple-500/10 hover:bg-purple-500/15 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <AlignLeft className="h-5 w-5 text-purple-400" />
+                    <h3 className="text-base font-semibold">Paragraph Length</h3>
+                    {paragraphAnalysis.length > 0 && (
+                      <Badge className={`text-xs ${
+                        paragraphAnalysis.reduce((sum, p) => sum + p.longParagraphCount, 0) === 0
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                          : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                      }`}>
+                        {paragraphAnalysis.reduce((sum, p) => sum + p.longParagraphCount, 0)} long paragraphs
+                      </Badge>
+                    )}
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isParagraphLengthOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 bg-background border-t border-border space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Ideal paragraph: <strong className="text-foreground">2-4 sentences</strong> or <strong className="text-foreground">~75-100 words</strong>. Paragraphs over 5 sentences or 150 words are flagged.
+                </p>
+                
+                {paragraphAnalysis.length === 0 ? (
+                  <div className="p-4 bg-muted/20 border border-border rounded-md text-center">
+                    <p className="text-sm text-muted-foreground">No text content found to analyze.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {paragraphAnalysis.filter(p => p.longParagraphCount > 0).length === 0 ? (
+                      <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-md text-center">
+                        <CheckCircle2 className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-green-400">All paragraphs are within optimal length!</p>
+                      </div>
+                    ) : (
+                      paragraphAnalysis.filter(p => p.longParagraphCount > 0).map((segment, idx) => (
+                        <div key={idx} className="p-4 bg-muted/20 border border-border rounded-lg space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">
+                              Segment: {segment.segmentId} ({segment.segmentType})
+                            </span>
+                            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
+                              {segment.longParagraphCount} long paragraph{segment.longParagraphCount > 1 ? 's' : ''}
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            {segment.paragraphs.filter(p => p.isLong).map((para, pIdx) => (
+                              <div key={pIdx} className="p-2 bg-purple-500/10 border border-purple-500/20 rounded text-sm">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className="text-foreground/90 flex-1 line-clamp-3">{para.text}</p>
+                                  <div className="flex flex-col gap-1 shrink-0">
+                                    <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
+                                      {para.sentenceCount} sentences
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
+                                      {para.wordCount} words
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* AI Optimize Button */}
+                          {paragraphOptimizations[segment.segmentId]?.applied ? (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              ✓ Optimized
+                            </Badge>
+                          ) : paragraphOptimizations[segment.segmentId]?.optimized ? (
+                            <div className="space-y-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                              <p className="text-xs font-medium text-green-400">AI Suggestion:</p>
+                              <p className="text-sm text-foreground/90 whitespace-pre-line">{paragraphOptimizations[segment.segmentId].optimized}</p>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={async () => {
+                                    const opt = paragraphOptimizations[segment.segmentId];
+                                    if (!opt) return;
+                                    
+                                    try {
+                                      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+                                      if (pageSegmentsEntry) {
+                                        const segments = JSON.parse(pageSegmentsEntry.content_value);
+                                        const segIdx = segments.findIndex((s: any) => String(s.id) === String(segment.segmentId));
+                                        if (segIdx !== -1) {
+                                          const field = segment.fieldPath;
+                                          if (segments[segIdx].data && segments[segIdx].data[field] !== undefined) {
+                                            segments[segIdx].data[field] = opt.optimized;
+                                          } else if (segments[segIdx][field] !== undefined) {
+                                            segments[segIdx][field] = opt.optimized;
+                                          }
+                                          
+                                          const { error } = await supabase
+                                            .from('page_content')
+                                            .update({ content_value: JSON.stringify(segments), updated_at: new Date().toISOString() })
+                                            .eq('id', pageSegmentsEntry.id);
+                                          
+                                          if (!error) {
+                                            setParagraphOptimizations(prev => ({
+                                              ...prev,
+                                              [segment.segmentId]: { ...opt, applied: true }
+                                            }));
+                                            toast.success('Paragraph optimization applied!');
+                                          }
+                                        }
+                                      }
+                                    } catch (e) {
+                                      console.error('Failed to apply optimization:', e);
+                                      toast.error('Failed to apply optimization');
+                                    }
+                                  }}
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                  Apply
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setParagraphOptimizations(prev => {
+                                      const newOpts = { ...prev };
+                                      delete newOpts[segment.segmentId];
+                                      return newOpts;
+                                    });
+                                  }}
+                                >
+                                  Dismiss
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={async () => {
+                                setIsOptimizingParagraphs(segment.segmentId);
+                                try {
+                                  const { data, error } = await supabase.functions.invoke('optimize-readability', {
+                                    body: {
+                                      text: segment.text,
+                                      segmentType: segment.segmentType,
+                                      optimizationType: 'paragraph_length',
+                                      language: 'en'
+                                    }
+                                  });
+                                  
+                                  if (error) throw error;
+                                  if (data?.optimizedText) {
+                                    setParagraphOptimizations(prev => ({
+                                      ...prev,
+                                      [segment.segmentId]: {
+                                        original: segment.text,
+                                        optimized: data.optimizedText
+                                      }
+                                    }));
+                                  }
+                                } catch (e) {
+                                  console.error('Optimization failed:', e);
+                                  toast.error('Failed to generate optimization');
+                                } finally {
+                                  setIsOptimizingParagraphs(null);
+                                }
+                              }}
+                              disabled={isOptimizingParagraphs === segment.segmentId}
+                              className="w-full h-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                            >
+                              {isOptimizingParagraphs === segment.segmentId ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Optimizing...
+                                </>
+                              ) : (
+                                <>
+                                  <GeminiIcon className="h-4 w-4 mr-2" />
+                                  AI: Optimize Paragraphs
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+
+        </TabsContent>
+        )}
         {/* Redirect Manager Dialog */}
         <RedirectManager 
           isOpen={isRedirectManagerOpen} 
