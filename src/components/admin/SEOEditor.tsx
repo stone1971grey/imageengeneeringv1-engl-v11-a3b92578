@@ -8627,24 +8627,20 @@ export const SEOEditor = ({
                             </span>
                           </div>
                           
-                          {/* Current text - show original text in amber/brown */}
-                          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded">
-                            <span className="text-sm text-amber-400 block mb-1">Current:</span>
-                            <p className="text-base text-foreground/70 line-through">
-                              {suggestion.currentText.length > 150 
-                                ? suggestion.currentText.substring(0, 150) + '...' 
+                          {/* Previous and Optimized in single line format like H2/H3 */}
+                          <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-base">
+                            <span className="text-amber-400 font-medium">Previous:</span>
+                            <span className="text-foreground/60 line-through">
+                              {suggestion.currentText.length > 120 
+                                ? suggestion.currentText.substring(0, 120) + '...' 
                                 : suggestion.currentText}
-                            </p>
-                          </div>
-                          
-                          {/* Suggested text */}
-                          <div className="p-3 bg-green-500/10 border border-green-500/20 rounded">
-                            <span className="text-sm text-green-400 block mb-1">Optimized:</span>
-                            <p className="text-base text-foreground font-medium">
+                            </span>
+                            <span className="text-green-400 font-medium">Optimized:</span>
+                            <span className="text-foreground font-medium">
                               {data.focusKeyword 
                                 ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
                                 : suggestion.suggestedText}
-                            </p>
+                            </span>
                           </div>
                           
                           {/* Reason */}
