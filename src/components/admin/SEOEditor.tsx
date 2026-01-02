@@ -348,6 +348,24 @@ export const SEOEditor = ({
   const [showH2Suggestions, setShowH2Suggestions] = useState(false);
   const [isApplyingH2, setIsApplyingH2] = useState<number | null>(null);
   
+  // Smart H3 Generator state
+  const [isGeneratingH3, setIsGeneratingH3] = useState(false);
+  const [h3Suggestions, setH3Suggestions] = useState<Array<{
+    originalText: string;
+    suggestedText: string;
+    segmentId: number | null;
+    segmentType: string;
+    segmentKey: string | null;
+    itemIndex?: number;
+    reason: string;
+    characterCount: number;
+    priority: number;
+    applied?: boolean;
+    alreadyOptimized?: boolean;
+  }>>([]);
+  const [showH3Suggestions, setShowH3Suggestions] = useState(false);
+  const [isApplyingH3, setIsApplyingH3] = useState<number | null>(null);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -3580,6 +3598,328 @@ export const SEOEditor = ({
     }
   };
 
+  // Generate Smart H3 Headlines using AI
+  const handleGenerateH3Headlines = async () => {
+    setIsGeneratingH3(true);
+    setH3Suggestions([]);
+    setShowH3Suggestions(false);
+
+    if (!data.focusKeyword) {
+      toast.error('Please define a Focus Keyword first');
+      setIsGeneratingH3(false);
+      return;
+    }
+
+    try {
+      // Get existing H3 headings from page segments
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      let existingH3s: Array<{ text: string; segmentType: string; segmentId: number | string; segmentKey: string; itemIndex: number }> = [];
+      let availableSegments: Array<{ type: string; key: string; id: string | number }> = [];
+      
+      if (pageSegmentsEntry) {
+        try {
+          const segments = JSON.parse(pageSegmentsEntry.content_value);
+          availableSegments = segments.map((seg: any) => ({
+            type: seg.type || seg.segmentType || 'unknown',
+            key: seg.segmentKey || seg.id || '',
+            id: seg.segmentId || seg.id || seg.segmentKey || ''
+          }));
+          
+          // Extract H3 headings from each segment type
+          segments.forEach((seg: any) => {
+            const segData = seg.data || seg;
+            const segType = seg.type || '';
+            const segId = seg.segmentId || seg.id || '';
+            const segKey = seg.segmentKey || seg.id || '';
+            
+            // Image-Text segments: items[].title is H3
+            if (segType === 'image-text' && segData.items && Array.isArray(segData.items)) {
+              segData.items.forEach((item: any, idx: number) => {
+                if (item.title) {
+                  existingH3s.push({
+                    text: item.title,
+                    segmentType: segType,
+                    segmentId: segId,
+                    segmentKey: segKey,
+                    itemIndex: idx
+                  });
+                }
+              });
+            }
+            
+            // Feature overview, tiles, faq - their items[].title are H3
+            if (['feature-overview', 'tiles', 'faq'].includes(segType)) {
+              const items = segData.items || [];
+              items.forEach((item: any, idx: number) => {
+                const title = item.title || item.question || '';
+                if (title) {
+                  existingH3s.push({
+                    text: title,
+                    segmentType: segType,
+                    segmentId: segId,
+                    segmentKey: segKey,
+                    itemIndex: idx
+                  });
+                }
+              });
+            }
+          });
+          
+          console.log('[SEO Editor] Extracted H3 headings:', existingH3s);
+        } catch (parseError) {
+          console.error('[SEO Editor] Failed to parse page_segments:', parseError);
+        }
+      }
+
+      const pageData = {
+        title: data.title,
+        metaDescription: data.metaDescription,
+        h1: data.h1,
+        introduction: data.introduction,
+        slug: data.slug,
+        pageSlug: pageSlug,
+      };
+
+      console.log('[SEO Editor] Generating H3 headlines with data:', { pageData, existingH3s: existingH3s.length });
+
+      const { data: result, error } = await supabase.functions.invoke('generate-h3-headlines', {
+        body: { 
+          pageData,
+          focusKeyword: data.focusKeyword,
+          existingH3s,
+          segments: availableSegments
+        }
+      });
+
+      if (error) {
+        console.error('[SEO Editor] Error generating H3:', error);
+        toast.error('Error generating H3: ' + error.message);
+        return;
+      }
+
+      if (result?.error) {
+        console.error('[SEO Editor] API error:', result.error);
+        toast.error(result.error);
+        return;
+      }
+
+      if (result?.suggestions && Array.isArray(result.suggestions)) {
+        console.log('[SEO Editor] Generated H3 suggestions:', result.suggestions);
+        
+        // Mark already-optimized H3s (those that already contain FKW) as pre-applied
+        const suggestionsWithStatus = result.suggestions.map((s: any) => {
+          const alreadyHasFkw = s.originalText && data.focusKeyword &&
+            s.originalText.toLowerCase().includes(data.focusKeyword.toLowerCase());
+          return {
+            ...s,
+            applied: alreadyHasFkw,
+            alreadyOptimized: alreadyHasFkw
+          };
+        });
+        
+        // Also add H3s that are already optimized (contain FKW) but weren't suggested
+        const suggestedOriginals = suggestionsWithStatus.map((s: any) => s.originalText?.toLowerCase());
+        const alreadyOptimizedH3s = existingH3s
+          .filter((h3: any) => {
+            const hasFkw = h3.text && data.focusKeyword &&
+              h3.text.toLowerCase().includes(data.focusKeyword.toLowerCase());
+            const notAlreadySuggested = !suggestedOriginals.includes(h3.text.toLowerCase());
+            return hasFkw && notAlreadySuggested;
+          })
+          .map((h3: any) => ({
+            originalText: h3.text,
+            suggestedText: h3.text,
+            segmentId: h3.segmentId,
+            segmentType: h3.segmentType,
+            segmentKey: h3.segmentKey,
+            itemIndex: h3.itemIndex,
+            reason: 'Already contains Focus Keyword - no changes needed',
+            characterCount: h3.text.length,
+            priority: 99,
+            applied: true,
+            alreadyOptimized: true
+          }));
+        
+        const allSuggestions = [...suggestionsWithStatus, ...alreadyOptimizedH3s]
+          .sort((a, b) => {
+            if (a.applied && !b.applied) return 1;
+            if (!a.applied && b.applied) return -1;
+            return (a.priority || 99) - (b.priority || 99);
+          });
+        
+        setH3Suggestions(allSuggestions);
+        setShowH3Suggestions(true);
+        
+        const needsOptimization = allSuggestions.filter((s: any) => !s.alreadyOptimized).length;
+        const alreadyOptimized = allSuggestions.filter((s: any) => s.alreadyOptimized).length;
+        toast.success(`${needsOptimization} H3s to optimize, ${alreadyOptimized} already contain FKW`);
+      } else {
+        toast.error('No H3 suggestions generated');
+      }
+    } catch (error) {
+      console.error('[SEO Editor] Unexpected error:', error);
+      toast.error('Unexpected error generating H3');
+    } finally {
+      setIsGeneratingH3(false);
+    }
+  };
+
+  // Apply Smart H3 suggestion to segment
+  const handleApplyH3Suggestion = async (suggestion: typeof h3Suggestions[0], index: number) => {
+    setIsApplyingH3(index);
+    
+    console.log('[SEO Editor] === APPLYING H3 SUGGESTION ===');
+    console.log('[SEO Editor] Suggestion:', {
+      originalText: suggestion.originalText,
+      suggestedText: suggestion.suggestedText,
+      segmentId: suggestion.segmentId,
+      segmentType: suggestion.segmentType,
+      itemIndex: suggestion.itemIndex
+    });
+    
+    try {
+      // Get current page_segments from database
+      const { data: contentData, error: fetchError } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (fetchError) {
+        console.error('[SEO Editor] Fetch error:', fetchError);
+        toast.error('Error fetching page segments: ' + fetchError.message);
+        return;
+      }
+      
+      if (!contentData) {
+        console.error('[SEO Editor] No page segments found for:', { pageSlug, editorLanguage });
+        toast.error('Page segments not found');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      let updated = false;
+      
+      // Find and update the H3 in the correct segment
+      segments = segments.map((seg: any) => {
+        const segIdMatch = String(seg.segmentId || seg.id) === String(suggestion.segmentId);
+        
+        if (segIdMatch) {
+          const segType = seg.type || '';
+          const segData = seg.data ? { ...seg.data } : {};
+          
+          // For all segment types with items array
+          if (segData.items && Array.isArray(segData.items)) {
+            segData.items = segData.items.map((item: any, idx: number) => {
+              // Match by item index if provided, otherwise by title
+              const matchByIndex = suggestion.itemIndex !== undefined && suggestion.itemIndex !== null && idx === suggestion.itemIndex;
+              const itemTitle = (item.title || item.question || '').trim();
+              const originalTitle = (suggestion.originalText || '').trim();
+              const matchByTitle = itemTitle === originalTitle;
+              
+              if (matchByIndex || matchByTitle) {
+                console.log(`[SEO Editor] ✓ MATCH in ${segType} item ${idx}:`, {
+                  from: item.title || item.question,
+                  to: suggestion.suggestedText
+                });
+                updated = true;
+                
+                // Handle FAQ questions vs regular titles
+                if (segType === 'faq' && item.question) {
+                  return { ...item, question: suggestion.suggestedText };
+                }
+                return { ...item, title: suggestion.suggestedText };
+              }
+              return item;
+            });
+          }
+          
+          return { ...seg, data: segData };
+        }
+        return seg;
+      });
+      
+      if (!updated) {
+        console.error('[SEO Editor] Could not find H3 to update');
+        toast.error('Could not find H3 to update');
+        return;
+      }
+      
+      // Save back to database
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (saveError) {
+        console.error('[SEO Editor] Save error:', saveError);
+        toast.error('Failed to save: ' + saveError.message);
+        return;
+      }
+      
+      console.log('[SEO Editor] ✓ Successfully saved H3 update to database');
+      
+      // Update suggestion state
+      setH3Suggestions(prev => prev.map((s, i) => 
+        i === index ? { ...s, applied: true } : s
+      ));
+      
+      // Refresh page content and recalculate FKW analysis
+      const { data: refreshedContent } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
+      
+      if (refreshedContent) {
+        setPageContent(refreshedContent);
+        
+        if (data.focusKeyword) {
+          const pageSegmentsEntry = refreshedContent.find((item: any) => item.section_key === 'page_segments');
+          if (pageSegmentsEntry) {
+            try {
+              const updatedSegments = JSON.parse(pageSegmentsEntry.content_value);
+              const newAnalysis = await recalculateFkwAnalysis(updatedSegments, data.focusKeyword);
+              setFkwContentAnalysis(newAnalysis);
+              
+              // Recalculate score
+              let newScore = 0;
+              const actualH1HasFkw = data.h1 && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase());
+              if (actualH1HasFkw) newScore += 25;
+              if (newAnalysis.introHasFkw) newScore += 20;
+              if (newAnalysis.h2WithFkw > 0) newScore += 15;
+              if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw >= Math.ceil(newAnalysis.h2Count / 2)) newScore += 10;
+              if (newAnalysis.densityStatus === 'optimal') newScore += 20;
+              else if (newAnalysis.densityStatus === 'too_low' && newAnalysis.fkwDensity >= 0.3) newScore += 10;
+              if (newAnalysis.h3WithFkw > 0) newScore += 10;
+              setFkwContentScore(Math.min(100, newScore));
+              
+              console.log('[SEO Editor] Updated after H3 apply:', {
+                score: newScore,
+                h3WithFkw: newAnalysis.h3WithFkw,
+                h3Count: newAnalysis.h3Count
+              });
+            } catch (e) {
+              console.error('[SEO Editor] Error recalculating FKW analysis:', e);
+            }
+          }
+        }
+      }
+      
+      toast.success('H3 aktualisiert! Content Score wurde neu berechnet.');
+    } catch (error) {
+      console.error('[SEO Editor] Error applying H3:', error);
+      toast.error('Failed to apply H3 suggestion');
+    } finally {
+      setIsApplyingH3(null);
+    }
+  };
+
   // Generate Smart Intro Text using AI
   const handleGenerateIntroText = async () => {
     setIsGeneratingIntro(true);
@@ -4932,11 +5272,17 @@ export const SEOEditor = ({
       }
       
       // Image-Text segments
+      // segment.data.title = H2 (Section Header)
+      // segment.data.items[].title = H3 (Item Headers)
       if (segType === 'image-text') {
+        // Section title is H2
+        if (segData.title) {
+          analyzeText(segData.title, false, true, false);
+        }
+        // Item titles are H3
         const items = segData.items || [];
         items.forEach((item: any) => {
-          const headingLevel = item.headingLevel || 'h2';
-          analyzeText(item.title || '', false, headingLevel === 'h2', headingLevel === 'h3');
+          analyzeText(item.title || '', false, false, true);
           analyzeText(item.description || '');
         });
       }
@@ -7214,6 +7560,86 @@ export const SEOEditor = ({
                       Smart H2 Generator
                     </>
                   )}
+                </Button>
+              </div>
+            )}
+
+            {/* Smart H3 Generator */}
+            {fkwContentAnalysis && fkwContentAnalysis.h3Count > 0 && (
+              <div className="mb-4 p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-base font-semibold text-foreground">
+                      Smart H3 Generator
+                    </Label>
+                    <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30">
+                      AI-Powered
+                    </Badge>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-zinc-700/50 text-zinc-300 border-zinc-600">
+                    {fkwContentAnalysis.h3WithFkw}/{fkwContentAnalysis.h3Count} H3s mit FKW
+                  </Badge>
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-4">
+                  Optimiere H3-Überschriften (Item-Titel) mit dem Focus Keyword. 2-3 H3s mit FKW sind ideal.
+                </p>
+                
+                {/* H3 Suggestions List */}
+                {showH3Suggestions && h3Suggestions.length > 0 && (
+                  <div className="mb-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground">H3 Optimization:</p>
+                      <Button variant="ghost" size="sm" onClick={() => setShowH3Suggestions(false)} className="h-6 w-6 p-0">
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {h3Suggestions.map((suggestion, index) => (
+                        <div key={index} className={`p-3 rounded-lg border ${suggestion.applied ? 'bg-green-500/10 border-green-500/30' : 'bg-muted/30 border-border/50'}`}>
+                          <div className="flex items-start gap-2">
+                            <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs ${suggestion.applied ? 'bg-green-500/20 text-green-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                              {suggestion.applied ? '✓' : suggestion.priority}
+                            </div>
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30">H3</Badge>
+                                <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono">{suggestion.segmentType}</Badge>
+                              </div>
+                              {(suggestion as any).alreadyOptimized ? (
+                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-sm">
+                                  <span className="text-xs text-green-400">✓ Bereits optimiert:</span>
+                                  <p className="text-foreground">{data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}</p>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs">
+                                    <span className="text-red-400">Original:</span> <span className="line-through">{suggestion.originalText}</span>
+                                  </div>
+                                  <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-xs">
+                                    <span className="text-green-400">Optimiert:</span> <span className="font-medium">{data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            {!suggestion.applied && (
+                              <Button onClick={() => handleApplyH3Suggestion(suggestion, index)} disabled={isApplyingH3 === index} size="sm" className="h-7 px-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs">
+                                {isApplyingH3 === index ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Check className="h-3 w-3 mr-1" />Apply</>}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <Button
+                  onClick={handleGenerateH3Headlines}
+                  disabled={isGeneratingH3 || !data.focusKeyword}
+                  className="w-full h-10 bg-gradient-to-r from-violet-600 via-purple-500 to-violet-600 hover:from-violet-700 hover:via-purple-600 hover:to-violet-700 text-white shadow-lg shadow-violet-500/20"
+                >
+                  {isGeneratingH3 ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Analyzing H3s...</> : <><GeminiIcon className="h-4 w-4 mr-2" />Smart H3 Generator</>}
                 </Button>
               </div>
             )}
