@@ -7007,12 +7007,26 @@ export const SEOEditor = ({
 
   // Calculate basic and advanced check counts
   const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
-  // Advanced includes focusKeyword defined + all the FKW position checks
-  const advancedChecks = [!!data.focusKeyword, checks.keywordInTitle, checks.keywordInDescription, checks.keywordInSlug, checks.keywordInH1, checks.keywordInIntroduction];
+  // Calculate FKW Content Optimization score for inclusion in advanced checks
+  const fkwContentOptimizationPassed = fkwContentAnalysis ? (() => {
+    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+    let calculatedScore = 0;
+    if (actualH1ContainsFkw) calculatedScore += 25;
+    if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+    if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+    if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+    if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+    else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+    if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+    return calculatedScore >= 80;
+  })() : false;
+  
+  // Advanced includes focusKeyword defined + all the FKW position checks + FKW Content Optimization
+  const advancedChecks = [!!data.focusKeyword, checks.keywordInTitle, checks.keywordInDescription, checks.keywordInSlug, checks.keywordInH1, checks.keywordInIntroduction, fkwContentOptimizationPassed];
   const basicPassedCount = basicChecks.filter(Boolean).length;
   const advancedPassedCount = advancedChecks.filter(Boolean).length;
   const totalPassedCount = basicPassedCount + advancedPassedCount;
-  const totalChecks = basicChecks.length + advancedChecks.length; // 5 + 6 = 11
+  const totalChecks = basicChecks.length + advancedChecks.length; // 5 + 7 = 12
 
   return (
     <div className="space-y-6">
@@ -7087,18 +7101,7 @@ export const SEOEditor = ({
               {/* Advanced Health Check - Only visible in Advanced mode */}
               {isAdvancedMode && (
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount + (fkwContentAnalysis && (() => {
-                    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
-                    let calculatedScore = 0;
-                    if (actualH1ContainsFkw) calculatedScore += 25;
-                    if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
-                    if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
-                    if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
-                    if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
-                    else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
-                    if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
-                    return calculatedScore >= 80 ? 1 : 0;
-                  })() || 0)}/7)</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount}/7)</h4>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                     data.focusKeyword ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
                   }`}>
