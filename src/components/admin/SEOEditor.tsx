@@ -538,7 +538,7 @@ export const SEOEditor = ({
   const [isGeneratingFkwContent, setIsGeneratingFkwContent] = useState(false);
   const [fkwContentSuggestions, setFkwContentSuggestions] = useState<Array<{
     suggestionType: 'heading' | 'body';
-    headingLevel?: 'h2' | 'h3';
+    headingLevel?: 'h1' | 'h2' | 'h3'; // FIXED: Include h1 for proper filtering
     currentText: string;
     suggestedText: string;
     segmentKey: string;
@@ -8928,9 +8928,16 @@ export const SEOEditor = ({
 
             {/* Smart Content Creator - v2.0 */}
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (() => {
-              // Calculate actual counts - only count what we're displaying
-              const appliedContent = fkwContentSuggestions.filter(s => s.applied && !s.rejected);
-              const pendingContent = fkwContentSuggestions.filter(s => !s.applied && !s.rejected);
+              // CRITICAL: Filter out H1 headings - they belong to Smart H1, not Smart Content Creator
+              const contentSuggestionsNoH1 = fkwContentSuggestions.filter(s => 
+                !(s.suggestionType === 'heading' && s.headingLevel === 'h1')
+              );
+              
+              if (contentSuggestionsNoH1.length === 0) return null;
+              
+              // Calculate actual counts - only count what we're displaying (excluding H1)
+              const appliedContent = contentSuggestionsNoH1.filter(s => s.applied && !s.rejected);
+              const pendingContent = contentSuggestionsNoH1.filter(s => !s.applied && !s.rejected);
               const appliedCount = appliedContent.length;
               const totalDisplayedCount = appliedCount + pendingContent.length;
               
@@ -8968,7 +8975,7 @@ export const SEOEditor = ({
                 </div>
                 
                 <div className="space-y-3">
-                  {fkwContentSuggestions.filter(s => !s.rejected).map((suggestion, index) => (
+                  {contentSuggestionsNoH1.filter(s => !s.rejected).map((suggestion, index) => (
                     <div
                       key={index}
                       className={`p-4 rounded-lg border transition-all ${
@@ -9082,12 +9089,12 @@ export const SEOEditor = ({
                 </div>
                 
                 {/* Summary after processing */}
-                {fkwContentSuggestions.every(s => s.applied || s.rejected) && fkwContentSuggestions.length > 0 && (
+                {contentSuggestionsNoH1.every(s => s.applied || s.rejected) && contentSuggestionsNoH1.length > 0 && (
                   <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
                     <p className="text-base text-green-400 font-medium">
                       ✓ All suggestions processed! 
-                      {fkwContentSuggestions.filter(s => s.applied).length} applied, 
-                      {fkwContentSuggestions.filter(s => s.rejected).length} rejected.
+                      {contentSuggestionsNoH1.filter(s => s.applied).length} applied, 
+                      {contentSuggestionsNoH1.filter(s => s.rejected).length} rejected.
                     </p>
                   </div>
                 )}
