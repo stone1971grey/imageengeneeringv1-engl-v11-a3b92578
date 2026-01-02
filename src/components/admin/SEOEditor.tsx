@@ -1227,13 +1227,31 @@ export const SEOEditor = ({
               arr.findIndex(x => x.segmentId === s.segmentId && x.fieldPath === s.fieldPath) === idx
             );
             
-            // Enrich suggestions with actual currentText from segments if missing or "(detected)"
+            // Enrich suggestions with actual currentText from segments AND correct headingLevel
             const enrichedSuggestions = uniqueLoaded.map((suggestion: any) => {
+              const seg = pageSegments.find((s: any) => parseInt(s.id) === suggestion.segmentId);
+              const segData = seg?.data || {};
+              const segType = seg?.type || suggestion.segmentType;
+              
+              // CRITICAL: Correct headingLevel based on fieldPath and segmentType
+              if (suggestion.suggestionType === 'heading') {
+                // Intro headline = H1
+                if (segType === 'intro' && suggestion.fieldPath === 'headline') {
+                  suggestion.headingLevel = 'h1';
+                }
+                // Main titles = H2 (image-text, tiles, product-hero, full-hero, footer, faq, table, feature-overview)
+                else if (suggestion.fieldPath === 'title' || suggestion.fieldPath === 'ctaTitle') {
+                  suggestion.headingLevel = 'h2';
+                }
+                // Item titles = H3 (items[x].title, items[x].question)
+                else if (suggestion.fieldPath?.startsWith('items[')) {
+                  suggestion.headingLevel = 'h3';
+                }
+              }
+              
               // If currentText is missing or is "(detected)", try to get actual text from segment
               if (!suggestion.currentText || suggestion.currentText === '(detected)') {
-                const seg = pageSegments.find((s: any) => parseInt(s.id) === suggestion.segmentId);
                 if (seg) {
-                  const segData = seg.data || {};
                   // Find actual text based on fieldPath
                   if (suggestion.fieldPath === 'headline') {
                     suggestion.currentText = segData.headline || suggestion.suggestedText;
