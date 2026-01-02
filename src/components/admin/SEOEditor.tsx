@@ -826,6 +826,84 @@ export const SEOEditor = ({
     loadRedirects();
   }, [pageSlug, editorLanguage, isRedirectManagerOpen]);
 
+  // AUTO-CALCULATE FKW ANALYSIS on page load if focusKeyword exists but no analysis data
+  // This ensures the FKW Content Optimizer overview is always displayed after reload
+  useEffect(() => {
+    const autoCalculateFkwAnalysis = async () => {
+      // Only run if we have a focus keyword but no analysis yet
+      if (!data.focusKeyword || fkwContentAnalysis) return;
+      
+      // Get page_segments from pageContent
+      const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
+      if (!pageSegmentsEntry) return;
+      
+      try {
+        const segments = JSON.parse(pageSegmentsEntry.content_value);
+        if (!segments || segments.length === 0) return;
+        
+        console.log('[SEO Editor] Auto-calculating FKW analysis on page load...');
+        const newAnalysis = await recalculateFkwAnalysis(segments, data.focusKeyword);
+        setFkwContentAnalysis(newAnalysis);
+        
+        // Generate recommendations based on analysis
+        const recommendations: string[] = [];
+        const actualH1HasFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+        
+        if (actualH1HasFkw) {
+          recommendations.push('✓ H1 enthält das Focus Keyword');
+        } else {
+          recommendations.push('✗ H1: Füge das Focus Keyword zur H1-Überschrift hinzu (+25 Punkte)');
+        }
+        
+        if (newAnalysis.introHasFkw) {
+          recommendations.push('✓ Introduction enthält das Focus Keyword');
+        } else {
+          recommendations.push('✗ Introduction: Platziere das Focus Keyword im ersten Absatz (+20 Punkte)');
+        }
+        
+        if (newAnalysis.h2WithFkw > 0) {
+          recommendations.push(`✓ ${newAnalysis.h2WithFkw}/${newAnalysis.h2Count} H2-Überschriften enthalten das FKW`);
+        } else if (newAnalysis.h2Count > 0) {
+          recommendations.push(`○ H2: Integriere das FKW in mindestens eine H2-Überschrift (+15 Punkte)`);
+        }
+        
+        if (newAnalysis.densityStatus === 'optimal') {
+          recommendations.push(`✓ Keyword-Dichte optimal: ${newAnalysis.fkwDensity.toFixed(2)}%`);
+        } else if (newAnalysis.densityStatus === 'too_low') {
+          recommendations.push(`○ Keyword-Dichte zu niedrig: ${newAnalysis.fkwDensity.toFixed(2)}% (Ideal: 0.5% – 2.0%)`);
+        } else {
+          recommendations.push(`✗ Keyword-Dichte zu hoch: ${newAnalysis.fkwDensity.toFixed(2)}% (Ideal: 0.5% – 2.0%) – Entferne einige Keywords`);
+        }
+        
+        if (newAnalysis.h3WithFkw > 0) {
+          recommendations.push(`✓ ${newAnalysis.h3WithFkw}/${newAnalysis.h3Count} H3-Überschriften enthalten das FKW`);
+        } else if (newAnalysis.h3Count > 0) {
+          recommendations.push(`– H3: Optional - integriere das FKW in H3-Überschriften (+10 Punkte)`);
+        }
+        
+        setFkwContentRecommendations(recommendations);
+        
+        // Calculate score
+        let calculatedScore = 0;
+        if (actualH1HasFkw) calculatedScore += 25;
+        if (newAnalysis.introHasFkw) calculatedScore += 20;
+        if (newAnalysis.h2WithFkw > 0) calculatedScore += 15;
+        if (newAnalysis.h2Count > 0 && newAnalysis.h2WithFkw >= Math.ceil(newAnalysis.h2Count / 2)) calculatedScore += 10;
+        if (newAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+        else if (newAnalysis.densityStatus === 'too_low' && newAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+        if (newAnalysis.h3WithFkw > 0) calculatedScore += 10;
+        calculatedScore = Math.min(100, calculatedScore);
+        setFkwContentScore(calculatedScore);
+        
+        console.log('[SEO Editor] Auto-calculated FKW analysis:', newAnalysis, 'Score:', calculatedScore);
+      } catch (e) {
+        console.error('[SEO Editor] Failed to auto-calculate FKW analysis:', e);
+      }
+    };
+    
+    autoCalculateFkwAnalysis();
+  }, [data.focusKeyword, data.h1, pageContent, fkwContentAnalysis]);
+
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
     const descriptionLength = (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160;
