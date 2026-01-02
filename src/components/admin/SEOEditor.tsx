@@ -8219,10 +8219,14 @@ export const SEOEditor = ({
 
             {/* Smart H2 Generator - Show if H2s exist OR we have focus keyword */}
             {(fkwContentAnalysis?.h2Count > 0 || data.focusKeyword) && (() => {
-              // Calculate actual counts from detected H2s (more accurate than cached analysis)
-              const optimizedH2Count = h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).length;
-              const totalH2Count = fkwContentAnalysis?.h2Count || optimizedH2Count;
-              const displayH2WithFkw = optimizedH2Count > 0 ? optimizedH2Count : (fkwContentAnalysis?.h2WithFkw || 0);
+              // Calculate actual counts - only count what we're displaying (applied/optimized H2s)
+              const appliedH2s = h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized);
+              const optimizedH2Count = appliedH2s.length;
+              // Total = applied + pending suggestions (what's actually visible)
+              const pendingH2Count = h2Suggestions.filter(s => !s.applied && !(s as any).alreadyOptimized).length;
+              const totalDisplayedH2Count = optimizedH2Count + pendingH2Count;
+              // If no suggestions loaded yet, fall back to analysis count
+              const displayTotal = totalDisplayedH2Count > 0 ? totalDisplayedH2Count : (fkwContentAnalysis?.h2Count || 0);
               
               return (
               <div className="mb-4 p-4 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/30 rounded-lg">
@@ -8235,26 +8239,26 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  {/* Consistent Badge: Use actual detected counts */}
-                  {totalH2Count > 0 && (
-                    displayH2WithFkw === totalH2Count ? (
+                  {/* Consistent Badge: Show applied/total count */}
+                  {displayTotal > 0 && (
+                    optimizedH2Count === displayTotal ? (
                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                        ✓ {displayH2WithFkw}/{totalH2Count} H2s mit FKW
+                        ✓ {optimizedH2Count}/{displayTotal} Applied
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                        {displayH2WithFkw}/{totalH2Count} H2s mit FKW
+                        {optimizedH2Count}/{displayTotal} Applied
                       </Badge>
                     )
                   )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  {totalH2Count > 0 ? (
-                    displayH2WithFkw === totalH2Count 
-                      ? `Alle ${totalH2Count} H2-Überschriften enthalten das Focus Keyword.`
-                      : `${displayH2WithFkw}/${totalH2Count} H2-Überschriften enthalten das Focus Keyword. Generiere optimierte H2-Vorschläge.`
-                  ) : 'Analysiere H2-Überschriften...'}
+                  {displayTotal > 0 ? (
+                    optimizedH2Count === displayTotal 
+                      ? `All ${displayTotal} H2 headings are optimized with Focus Keyword.`
+                      : `${optimizedH2Count}/${displayTotal} H2 headings optimized. Generate suggestions for remaining.`
+                  ) : 'Analyzing H2 headings...'}
                 </p>
                 
                 {/* Always show applied H2s if they exist */}
@@ -8267,8 +8271,8 @@ export const SEOEditor = ({
                       {h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).map((suggestion, index) => (
                         <div key={`applied-h2-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 flex-shrink-0">
-                              H2 Heading ✓
+                            <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 flex-shrink-0">
+                              H2 Heading
                             </Badge>
                             <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
                               Segment: {suggestion.segmentId || 'N/A'}
@@ -8276,6 +8280,9 @@ export const SEOEditor = ({
                             <span className="text-xs text-muted-foreground flex-shrink-0">
                               ({suggestion.segmentType})
                             </span>
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
+                              Applied ✓
+                            </Badge>
                             <span className="text-sm text-foreground truncate">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
@@ -8346,24 +8353,13 @@ export const SEOEditor = ({
                                   </span>
                                 </div>
                                 
-                                {/* Current text - show original text in amber/brown */}
-                                <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded">
-                                  <span className="text-xs text-amber-400 block mb-1">Current:</span>
-                                  <p className="text-sm text-foreground/70 line-through">
-                                    {suggestion.originalText}
-                                  </p>
-                                </div>
-                                
-                                {/* Suggested text */}
-                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
-                                  <span className="text-xs text-green-400 block mb-1">Optimized:</span>
-                                  <p className="text-sm text-foreground font-medium">
-                                    {data.focusKeyword 
-                                      ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
-                                      : suggestion.suggestedText}
-                                  </p>
-                                  <span className="text-xs text-muted-foreground mt-1 block">
-                                    {suggestion.characterCount} characters
+                                {/* Previous and Optimized in single line format */}
+                                <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                                  <span className="text-amber-400 font-medium">Previous:</span>
+                                  <span className="text-foreground/60 line-through">{suggestion.originalText}</span>
+                                  <span className="text-green-400 font-medium">Optimized:</span>
+                                  <span className="text-foreground font-medium">
+                                    {data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}
                                   </span>
                                 </div>
                                 
@@ -8425,10 +8421,14 @@ export const SEOEditor = ({
 
             {/* Smart H3 Generator - Show if there are H3s detected OR if we have focus keyword to analyze */}
             {(fkwContentAnalysis?.h3Count > 0 || data.focusKeyword) && (() => {
-              // Calculate actual counts from detected H3s (more accurate than cached analysis)
-              const optimizedH3Count = h3Suggestions.filter(s => s.applied || s.alreadyOptimized).length;
-              const totalH3Count = fkwContentAnalysis?.h3Count || optimizedH3Count;
-              const displayH3WithFkw = optimizedH3Count > 0 ? optimizedH3Count : (fkwContentAnalysis?.h3WithFkw || 0);
+              // Calculate actual counts - only count what we're displaying (applied/optimized H3s)
+              const appliedH3s = h3Suggestions.filter(s => s.applied || s.alreadyOptimized);
+              const optimizedH3Count = appliedH3s.length;
+              // Total = applied + pending suggestions (what's actually visible)
+              const pendingH3Count = h3Suggestions.filter(s => !s.applied && !s.alreadyOptimized).length;
+              const totalDisplayedH3Count = optimizedH3Count + pendingH3Count;
+              // If no suggestions loaded yet, fall back to analysis count
+              const displayTotal = totalDisplayedH3Count > 0 ? totalDisplayedH3Count : (fkwContentAnalysis?.h3Count || 0);
               
               return (
               <div className="mb-4 p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/30 rounded-lg">
@@ -8441,26 +8441,26 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  {/* Consistent Badge: Use actual detected counts */}
-                  {totalH3Count > 0 && (
-                    displayH3WithFkw >= 2 ? (
+                  {/* Consistent Badge: Show applied/total count */}
+                  {displayTotal > 0 && (
+                    optimizedH3Count === displayTotal ? (
                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                        ✓ {displayH3WithFkw}/{totalH3Count} H3s mit FKW
+                        ✓ {optimizedH3Count}/{displayTotal} Applied
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                        {displayH3WithFkw}/{totalH3Count} H3s mit FKW
+                        {optimizedH3Count}/{displayTotal} Applied
                       </Badge>
                     )
                   )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  {totalH3Count > 0 ? (
-                    displayH3WithFkw >= 2 
-                      ? `${displayH3WithFkw}/${totalH3Count} H3-Überschriften enthalten das Focus Keyword. (2-3 empfohlen)`
-                      : `${displayH3WithFkw}/${totalH3Count} H3-Überschriften enthalten das Focus Keyword. 2-3 H3s mit FKW sind ideal.`
-                  ) : 'Analysiere H3-Überschriften...'}
+                  {displayTotal > 0 ? (
+                    optimizedH3Count === displayTotal 
+                      ? `All ${displayTotal} H3 headings are optimized with Focus Keyword.`
+                      : `${optimizedH3Count}/${displayTotal} H3 headings optimized. 2-3 H3s with FKW are ideal.`
+                  ) : 'Analyzing H3 headings...'}
                 </p>
                 
                 {/* Always show applied H3s if they exist */}
@@ -8473,8 +8473,8 @@ export const SEOEditor = ({
                       {h3Suggestions.filter(s => s.applied || s.alreadyOptimized).map((suggestion, index) => (
                         <div key={`applied-h3-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 flex-shrink-0">
-                              H3 Heading ✓
+                            <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30 flex-shrink-0">
+                              H3 Heading
                             </Badge>
                             <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
                               Segment: {suggestion.segmentId || 'N/A'}
@@ -8482,6 +8482,9 @@ export const SEOEditor = ({
                             <span className="text-xs text-muted-foreground flex-shrink-0">
                               ({suggestion.segmentType})
                             </span>
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
+                              Applied ✓
+                            </Badge>
                             <span className="text-sm text-foreground truncate">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
@@ -8535,11 +8538,14 @@ export const SEOEditor = ({
                                         ({suggestion.segmentType})
                                       </span>
                                     </div>
-                                    <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs">
-                                      <span className="text-amber-400">Current:</span> <span className="line-through">{suggestion.originalText}</span>
-                                    </div>
-                                    <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-xs">
-                                      <span className="text-green-400">Optimized:</span> <span className="font-medium">{data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}</span>
+                                    {/* Previous and Optimized in single line format */}
+                                    <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                                      <span className="text-amber-400 font-medium">Previous:</span>
+                                      <span className="text-foreground/60 line-through">{suggestion.originalText}</span>
+                                      <span className="text-green-400 font-medium">Optimized:</span>
+                                      <span className="text-foreground font-medium">
+                                        {data.focusKeyword ? highlightKeyword(suggestion.suggestedText, data.focusKeyword) : suggestion.suggestedText}
+                                      </span>
                                     </div>
                                   </div>
                               <Button onClick={() => handleApplyH3Suggestion(suggestion, realIndex)} disabled={isApplyingH3 === realIndex} size="sm" className="h-7 px-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs">
@@ -8564,8 +8570,15 @@ export const SEOEditor = ({
               );
             })()}
 
-            {/* Single Suggestions List - v2.0 */}
-            {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (
+            {/* Smart Content Creator - v2.0 */}
+            {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (() => {
+              // Calculate actual counts - only count what we're displaying
+              const appliedContent = fkwContentSuggestions.filter(s => s.applied && !s.rejected);
+              const pendingContent = fkwContentSuggestions.filter(s => !s.applied && !s.rejected);
+              const appliedCount = appliedContent.length;
+              const totalDisplayedCount = appliedCount + pendingContent.length;
+              
+              return (
               <div className="mb-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -8575,6 +8588,18 @@ export const SEOEditor = ({
                     <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
                       AI-Powered
                     </Badge>
+                    {/* Consistent Badge: Show applied/total count */}
+                    {totalDisplayedCount > 0 && (
+                      appliedCount === totalDisplayedCount ? (
+                        <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                          ✓ {appliedCount}/{totalDisplayedCount} Applied
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
+                          {appliedCount}/{totalDisplayedCount} Applied
+                        </Badge>
+                      )
+                    )}
                   </div>
                   <Button
                     variant="ghost"
@@ -8711,7 +8736,8 @@ export const SEOEditor = ({
                   </div>
                 )}
               </div>
-            )}
+              );
+            })()}
 
             {/* Generate Button */}
             <Button
