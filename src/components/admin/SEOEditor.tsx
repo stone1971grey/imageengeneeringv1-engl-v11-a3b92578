@@ -8441,7 +8441,7 @@ export const SEOEditor = ({
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-base">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-base">
                   <div>
                     <span className="text-muted-foreground block text-sm">Word Count</span>
                     <span className="font-semibold text-foreground text-lg">{fkwContentAnalysis.totalWords}</span>
@@ -8465,6 +8465,12 @@ export const SEOEditor = ({
                     <span className="text-muted-foreground block text-sm">H2 with FKW</span>
                     <span className="font-semibold text-foreground text-lg">
                       {fkwContentAnalysis.h2WithFkw}/{fkwContentAnalysis.h2Count}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block text-sm">H3 with FKW</span>
+                    <span className="font-semibold text-foreground text-lg">
+                      {fkwContentAnalysis.h3WithFkw}/{fkwContentAnalysis.h3Count}
                     </span>
                   </div>
                 </div>
@@ -9205,35 +9211,6 @@ export const SEOEditor = ({
                 </div>
               )}
             </div>
-
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerateFkwContentSuggestions}
-              disabled={isGeneratingFkwContent || !data.focusKeyword}
-              className="w-full h-12 relative overflow-hidden bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 hover:from-orange-700 hover:via-amber-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/20 transition-all duration-300 disabled:opacity-50"
-              style={{
-                backgroundSize: '200% 100%',
-                animation: isGeneratingFkwContent ? 'none' : 'shimmer 3s ease-in-out infinite',
-              }}
-            >
-              {isGeneratingFkwContent ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing Content...
-                </>
-              ) : (
-                <>
-                  <GeminiIcon className="h-4 w-4 mr-2" />
-                  Analyze & Optimize Content
-                </>
-              )}
-            </Button>
-            
-            {!data.focusKeyword && (
-              <p className="text-xs text-amber-400 mt-2 text-center">
-                ⚠️ Please define a Focus Keyword first
-              </p>
-            )}
           </div>
 
             </CollapsibleContent>
