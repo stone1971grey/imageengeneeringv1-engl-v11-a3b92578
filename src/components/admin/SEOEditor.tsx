@@ -456,34 +456,42 @@ export const SEOEditor = ({
           console.log('[SEO Editor] Found seo_settings in DB:', savedSeoSettings);
           
           // ALWAYS merge DB values if they exist - don't rely on "missing" checks only
-          // This fixes the issue where saved SEO data wasn't displaying
-          const hasDbData = savedSeoSettings.focusKeyword || savedSeoSettings.h1 || 
-                           savedSeoSettings.title || savedSeoSettings.metaDescription;
+          // STABILITY FIX: Use explicit undefined checks instead of || to preserve values correctly
+          const getVal = (dbVal: any, propVal: any, defaultVal: any) => {
+            if (dbVal !== undefined && dbVal !== null) return dbVal;
+            if (propVal !== undefined && propVal !== null) return propVal;
+            return defaultVal;
+          };
+          
+          const hasDbData = savedSeoSettings.focusKeyword !== undefined || 
+                           savedSeoSettings.h1 !== undefined || 
+                           savedSeoSettings.title !== undefined || 
+                           savedSeoSettings.metaDescription !== undefined;
           
           if (hasDbData) {
-            console.log('[SEO Editor] Merging SEO data from DB:', {
+            console.log('[SEO Editor] Merging SEO data from DB with stable values:', {
               focusKeyword: savedSeoSettings.focusKeyword,
               h1: savedSeoSettings.h1,
-              title: savedSeoSettings.title?.substring(0, 30) + '...'
+              title: savedSeoSettings.title?.substring(0, 30)
             });
             
             // Merge DB values into data, DB values take priority for SEO fields
             onChange({
               ...data,
-              focusKeyword: savedSeoSettings.focusKeyword || data.focusKeyword || '',
-              h1: savedSeoSettings.h1 || data.h1 || '',
-              h1Locked: savedSeoSettings.h1Locked ?? data.h1Locked ?? false,
-              introduction: savedSeoSettings.introduction || data.introduction || '',
-              title: savedSeoSettings.title || data.title || '',
-              metaDescription: savedSeoSettings.metaDescription || data.metaDescription || '',
-              slug: savedSeoSettings.slug || data.slug || pageSlug,
-              canonical: savedSeoSettings.canonical || data.canonical || '',
-              robotsIndex: savedSeoSettings.robotsIndex || data.robotsIndex || 'index',
-              robotsFollow: savedSeoSettings.robotsFollow || data.robotsFollow || 'follow',
-              ogTitle: savedSeoSettings.ogTitle || data.ogTitle || '',
-              ogDescription: savedSeoSettings.ogDescription || data.ogDescription || '',
-              ogImage: savedSeoSettings.ogImage || data.ogImage || '',
-              twitterCard: savedSeoSettings.twitterCard || data.twitterCard || 'summary_large_image'
+              focusKeyword: getVal(savedSeoSettings.focusKeyword, data.focusKeyword, ''),
+              h1: getVal(savedSeoSettings.h1, data.h1, ''),
+              h1Locked: savedSeoSettings.h1Locked !== undefined ? savedSeoSettings.h1Locked : (data.h1Locked ?? false),
+              introduction: getVal(savedSeoSettings.introduction, data.introduction, ''),
+              title: getVal(savedSeoSettings.title, data.title, ''),
+              metaDescription: getVal(savedSeoSettings.metaDescription, data.metaDescription, ''),
+              slug: getVal(savedSeoSettings.slug, data.slug, pageSlug),
+              canonical: getVal(savedSeoSettings.canonical, data.canonical, ''),
+              robotsIndex: getVal(savedSeoSettings.robotsIndex, data.robotsIndex, 'index'),
+              robotsFollow: getVal(savedSeoSettings.robotsFollow, data.robotsFollow, 'follow'),
+              ogTitle: getVal(savedSeoSettings.ogTitle, data.ogTitle, ''),
+              ogDescription: getVal(savedSeoSettings.ogDescription, data.ogDescription, ''),
+              ogImage: getVal(savedSeoSettings.ogImage, data.ogImage, ''),
+              twitterCard: getVal(savedSeoSettings.twitterCard, data.twitterCard, 'summary_large_image')
             });
           }
         } catch (e) {
