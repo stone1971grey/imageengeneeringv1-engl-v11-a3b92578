@@ -1038,19 +1038,19 @@ export const SEOEditor = ({
               const segType = seg.type;
               const segData = seg.data || {};
               
-              // Check intro segment
+              // Check intro segment - INTRO HEADLINE IS THE H1!
               if (segType === 'intro') {
                 if (segData.headline && segData.headline.toLowerCase().includes(fkwLower)) {
                   detectedApplied.push({
                     suggestionType: 'heading',
-                    headingLevel: 'h2',
-                    currentText: segData.headline, // FIXED: Use actual text instead of '(detected)'
+                    headingLevel: 'h1', // FIXED: Intro headline is H1, not H2
+                    currentText: segData.headline,
                     suggestedText: segData.headline,
                     segmentKey: `segment-${segId}`,
                     segmentId: segId,
                     segmentType: segType,
                     fieldPath: 'headline',
-                    reason: 'Focus keyword detected in H2 headline',
+                    reason: 'Focus keyword detected in H1 headline',
                     priority: 1,
                     applied: true
                   });
