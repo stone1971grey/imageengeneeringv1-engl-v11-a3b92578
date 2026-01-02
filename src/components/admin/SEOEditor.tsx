@@ -1222,11 +1222,53 @@ export const SEOEditor = ({
               setShowFkwContentSuggestions(true);
             }
           } else if (loadedSuggestions.length > 0) {
-            // De-duplicate loaded suggestions as well
+            // De-duplicate loaded suggestions and fix missing currentText
             const uniqueLoaded = loadedSuggestions.filter((s: any, idx: number, arr: any[]) => 
               arr.findIndex(x => x.segmentId === s.segmentId && x.fieldPath === s.fieldPath) === idx
             );
-            setFkwContentSuggestions(uniqueLoaded);
+            
+            // Enrich suggestions with actual currentText from segments if missing or "(detected)"
+            const enrichedSuggestions = uniqueLoaded.map((suggestion: any) => {
+              // If currentText is missing or is "(detected)", try to get actual text from segment
+              if (!suggestion.currentText || suggestion.currentText === '(detected)') {
+                const seg = pageSegments.find((s: any) => parseInt(s.id) === suggestion.segmentId);
+                if (seg) {
+                  const segData = seg.data || {};
+                  // Find actual text based on fieldPath
+                  if (suggestion.fieldPath === 'headline') {
+                    suggestion.currentText = segData.headline || suggestion.suggestedText;
+                  } else if (suggestion.fieldPath === 'title') {
+                    suggestion.currentText = segData.title || suggestion.suggestedText;
+                  } else if (suggestion.fieldPath === 'ctaTitle') {
+                    suggestion.currentText = segData.ctaTitle || suggestion.suggestedText;
+                  } else if (suggestion.fieldPath === 'introText') {
+                    const cleanText = (segData.introText || '').replace(/<[^>]*>/g, '');
+                    suggestion.currentText = cleanText || suggestion.suggestedText;
+                  } else if (suggestion.fieldPath?.startsWith('items[')) {
+                    // Extract item index from fieldPath like "items[0].title"
+                    const match = suggestion.fieldPath.match(/items\[(\d+)\]\.(\w+)/);
+                    if (match && segData.items) {
+                      const itemIndex = parseInt(match[1]);
+                      const fieldName = match[2];
+                      const item = segData.items[itemIndex];
+                      if (item) {
+                        if (fieldName === 'title') {
+                          suggestion.currentText = item.title || suggestion.suggestedText;
+                        } else if (fieldName === 'description') {
+                          const cleanDesc = (item.description || '').replace(/<[^>]*>/g, '');
+                          suggestion.currentText = cleanDesc || suggestion.suggestedText;
+                        } else if (fieldName === 'question') {
+                          suggestion.currentText = item.question || suggestion.suggestedText;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              return suggestion;
+            });
+            
+            setFkwContentSuggestions(enrichedSuggestions);
             setShowFkwContentSuggestions(true);
           }
           
@@ -1296,6 +1338,35 @@ export const SEOEditor = ({
       try {
         const segments = JSON.parse(pageSegmentsEntry.content_value);
         if (!segments || segments.length === 0) return;
+        
+        // CRITICAL: Also load footer data separately - it's stored under footer-{id} section keys
+        // Footer is often not included in page_segments array but stored separately
+        const footerEntries = pageContent.filter(item => 
+          item.section_key.startsWith('footer-') && item.content_type === 'json'
+        );
+        
+        // Add footer segments to the segments array for H2 detection
+        for (const footerEntry of footerEntries) {
+          try {
+            const footerData = JSON.parse(footerEntry.content_value);
+            const footerId = footerEntry.section_key.replace('footer-', '');
+            // Check if footer segment is already in segments array
+            const existingFooter = segments.find((s: any) => 
+              (s.type === 'footer' && String(s.id) === String(footerId)) ||
+              s.segmentKey === `footer-${footerId}`
+            );
+            if (!existingFooter && footerData) {
+              segments.push({
+                type: 'footer',
+                id: footerId,
+                segmentKey: `footer-${footerId}`,
+                data: footerData
+              });
+            }
+          } catch (e) {
+            console.warn('[SEO Editor] Failed to parse footer data:', e);
+          }
+        }
         
         const fkwLower = effectiveFocusKeyword.toLowerCase();
         const detectedH2s: typeof h2Suggestions = [];
