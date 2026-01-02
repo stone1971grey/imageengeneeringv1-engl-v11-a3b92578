@@ -92,10 +92,19 @@ export const SEOEditor = ({
   const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   const [introSourceInfo, setIntroSourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   
+  // CRITICAL FIX: Local state for Focus Keyword loaded directly from DB
+  // This ensures FKW is ALWAYS loaded from DB and not dependent on timing issues with parent component
+  const [localFocusKeyword, setLocalFocusKeyword] = useState<string>('');
+  const [isFocusKeywordLoaded, setIsFocusKeywordLoaded] = useState(false);
+  
   // Smart Focus Keyword state
   const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
   const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
   const [showKeywordSuggestions, setShowKeywordSuggestions] = useState(false);
+  
+  // EFFECTIVE Focus Keyword: Prioritize locally loaded from DB, fallback to prop
+  // This ensures the FKW is always available even if parent component has timing issues
+  const effectiveFocusKeyword = localFocusKeyword || data.focusKeyword || '';
 
   // Smart H1 Headline state
   const [isGeneratingH1, setIsGeneratingH1] = useState(false);
@@ -446,11 +455,83 @@ export const SEOEditor = ({
     }
   };
 
-  // Keep localStorage cache updated when data changes (for instant loading on next visit)
+  // CRITICAL: Load Focus Keyword DIRECTLY from DB on mount - this is the single source of truth
+  // This runs independently of parent component timing issues
   useEffect(() => {
-    if (data.focusKeyword || data.h1 || data.title || data.metaDescription) {
+    const loadFocusKeywordFromDb = async () => {
+      console.log('[SEO Editor] Loading Focus Keyword directly from DB for:', pageSlug);
+      setIsFocusKeywordLoaded(false);
+      
+      // Try current language first
+      const { data: seoData } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'seo_settings')
+        .maybeSingle();
+      
+      let fkwFromDb = '';
+      if (seoData) {
+        try {
+          const parsed = JSON.parse(seoData.content_value);
+          fkwFromDb = parsed.focusKeyword || '';
+          console.log('[SEO Editor] FKW from DB (current lang):', fkwFromDb);
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse seo_settings:', e);
+        }
+      }
+      
+      // Fallback to EN if no FKW found
+      if (!fkwFromDb && editorLanguage !== 'en') {
+        const { data: enData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('language', 'en')
+          .eq('section_key', 'seo_settings')
+          .maybeSingle();
+        
+        if (enData) {
+          try {
+            const parsed = JSON.parse(enData.content_value);
+            fkwFromDb = parsed.focusKeyword || '';
+            console.log('[SEO Editor] FKW from DB (EN fallback):', fkwFromDb);
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse EN seo_settings:', e);
+          }
+        }
+      }
+      
+      // Set local state - this is now the authoritative source
+      setLocalFocusKeyword(fkwFromDb);
+      setIsFocusKeywordLoaded(true);
+      
+      // Also update parent if it has a different/empty value
+      if (fkwFromDb && fkwFromDb !== data.focusKeyword) {
+        console.log('[SEO Editor] Syncing FKW to parent:', fkwFromDb);
+        onChange({ ...data, focusKeyword: fkwFromDb });
+      }
+    };
+    
+    loadFocusKeywordFromDb();
+  }, [pageSlug, editorLanguage]);
+  
+  // Sync localFocusKeyword when data.focusKeyword changes (e.g., user selects a new FKW)
+  useEffect(() => {
+    if (data.focusKeyword && data.focusKeyword !== localFocusKeyword && isFocusKeywordLoaded) {
+      console.log('[SEO Editor] Parent FKW changed, updating local:', data.focusKeyword);
+      setLocalFocusKeyword(data.focusKeyword);
+    }
+  }, [data.focusKeyword, isFocusKeywordLoaded]);
+
+  // Keep localStorage cache updated when data changes (for instant loading on next visit)
+  // Use localFocusKeyword as the authoritative source
+  useEffect(() => {
+    const fkwToCache = localFocusKeyword || data.focusKeyword;
+    if (fkwToCache || data.h1 || data.title || data.metaDescription) {
       localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
-        focusKeyword: data.focusKeyword || '',
+        focusKeyword: fkwToCache || '',
         h1: data.h1 || '',
         h1Locked: data.h1Locked ?? false,
         title: data.title || '',
@@ -458,7 +539,7 @@ export const SEOEditor = ({
         introduction: data.introduction || ''
       }));
     }
-  }, [data.focusKeyword, data.h1, data.title, data.metaDescription, data.introduction, pageSlug, editorLanguage]);
+  }, [localFocusKeyword, data.focusKeyword, data.h1, data.title, data.metaDescription, data.introduction, pageSlug, editorLanguage]);
 
   // Load page content and segment registry - OPTIMIZED WITH PARALLEL QUERIES
   useEffect(() => {
@@ -909,9 +990,11 @@ export const SEOEditor = ({
   // === SEPARATE EFFECT: Auto-detect already-optimized H2s and H3s ===
   // This runs ALWAYS when focusKeyword and pageContent are available
   // CRITICAL: Also updates fkwContentAnalysis with CORRECT counts from actual content
+  // Uses effectiveFocusKeyword (local DB-loaded) instead of data.focusKeyword (parent prop)
   useEffect(() => {
     const detectAndUpdateAnalysis = async () => {
-      if (!data.focusKeyword || !pageContent.length) return;
+      // Use effectiveFocusKeyword which is loaded directly from DB
+      if (!effectiveFocusKeyword || !pageContent.length) return;
       
       const pageSegmentsEntry = pageContent.find(item => item.section_key === 'page_segments');
       if (!pageSegmentsEntry) return;
@@ -920,7 +1003,7 @@ export const SEOEditor = ({
         const segments = JSON.parse(pageSegmentsEntry.content_value);
         if (!segments || segments.length === 0) return;
         
-        const fkwLower = data.focusKeyword.toLowerCase();
+        const fkwLower = effectiveFocusKeyword.toLowerCase();
         const detectedH2s: typeof h2Suggestions = [];
         const detectedH3s: typeof h3Suggestions = [];
         
@@ -1026,15 +1109,16 @@ export const SEOEditor = ({
           h2WithFkw: detectedH2s.length,
           h2Total: allH2Count,
           h3WithFkw: detectedH3s.length,
-          h3Total: allH3Count
+          h3Total: allH3Count,
+          effectiveFocusKeyword
         });
         
         // CRITICAL: Run full analysis and update fkwContentAnalysis with correct counts
-        const newAnalysis = await recalculateFkwAnalysis(segments, data.focusKeyword);
+        const newAnalysis = await recalculateFkwAnalysis(segments, effectiveFocusKeyword);
         setFkwContentAnalysis(newAnalysis);
         
         // Calculate and update score
-        const actualH1HasFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+        const actualH1HasFkw = !!(data.h1 && effectiveFocusKeyword && data.h1.toLowerCase().includes(effectiveFocusKeyword.toLowerCase()));
         let calculatedScore = 0;
         if (actualH1HasFkw) calculatedScore += 25;
         if (newAnalysis.introHasFkw) calculatedScore += 20;
@@ -1085,7 +1169,7 @@ export const SEOEditor = ({
     };
     
     detectAndUpdateAnalysis();
-  }, [data.focusKeyword, data.h1, pageContent]);
+  }, [effectiveFocusKeyword, localFocusKeyword, data.h1, pageContent]);
 
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
