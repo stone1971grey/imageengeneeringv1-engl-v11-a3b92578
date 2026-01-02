@@ -7087,7 +7087,18 @@ export const SEOEditor = ({
               {/* Advanced Health Check - Only visible in Advanced mode */}
               {isAdvancedMode && (
                 <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount}/6)</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount + (fkwContentAnalysis && (() => {
+                    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+                    let calculatedScore = 0;
+                    if (actualH1ContainsFkw) calculatedScore += 25;
+                    if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+                    if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+                    if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+                    if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+                    else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+                    if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+                    return calculatedScore >= 80 ? 1 : 0;
+                  })() || 0)}/7)</h4>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
                     data.focusKeyword ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
                   }`}>
@@ -7123,6 +7134,36 @@ export const SEOEditor = ({
                     {getStatusIcon(checks.keywordInIntroduction)}
                     <span className="text-sm font-medium">FKW in Introduction</span>
                   </div>
+                  {/* FKW Content Optimization Check */}
+                  {fkwContentAnalysis && (() => {
+                    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+                    let calculatedScore = 0;
+                    if (actualH1ContainsFkw) calculatedScore += 25;
+                    if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+                    if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+                    if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+                    if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+                    else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+                    if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+                    calculatedScore = Math.min(100, calculatedScore);
+                    const scoreLabel = calculatedScore === 100 ? 'Excellent' :
+                      calculatedScore >= 90 ? 'Very Good' :
+                      calculatedScore >= 80 ? 'Good' :
+                      calculatedScore >= 70 ? 'Fair' :
+                      calculatedScore >= 60 ? 'Needs Work' : 'Poor';
+                    const isPassing = calculatedScore >= 80;
+                    return (
+                      <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
+                        isPassing ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'
+                      }`}>
+                        {getStatusIcon(isPassing)}
+                        <span className="text-sm font-medium">FKW Content Optimization</span>
+                        <span className={`text-xs ml-auto ${isPassing ? 'text-green-400' : 'text-red-400'}`}>
+                          {calculatedScore}/100 ({scoreLabel})
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -8643,13 +8684,18 @@ export const SEOEditor = ({
                   else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
                   if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
                   calculatedScore = Math.min(100, calculatedScore);
+                  const scoreLabel = calculatedScore === 100 ? 'Excellent' :
+                    calculatedScore >= 90 ? 'Very Good' :
+                    calculatedScore >= 80 ? 'Good' :
+                    calculatedScore >= 70 ? 'Fair' :
+                    calculatedScore >= 60 ? 'Needs Work' : 'Poor';
                   return (
                     <Badge className={`text-sm ${
                       calculatedScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
                       calculatedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
                       'bg-red-500/20 text-red-400 border-red-500/30'
                     }`}>
-                      Score: {calculatedScore}/100
+                      {calculatedScore}/100 – {scoreLabel}
                     </Badge>
                   );
                 })()}
@@ -8686,6 +8732,12 @@ export const SEOEditor = ({
                 
                 console.log('[FKW Score v2.0] H1:', data.h1, 'FKW:', data.focusKeyword, 'H1hasFKW:', actualH1ContainsFkw, 'Score:', calculatedScore);
                 
+                const scoreLabel = calculatedScore === 100 ? 'Excellent' :
+                  calculatedScore >= 90 ? 'Very Good' :
+                  calculatedScore >= 80 ? 'Good' :
+                  calculatedScore >= 70 ? 'Fair' :
+                  calculatedScore >= 60 ? 'Needs Work' : 'Poor';
+                
                 return (
                   <div className="flex items-center gap-2">
                     <Badge className={`text-sm ${
@@ -8693,7 +8745,7 @@ export const SEOEditor = ({
                       calculatedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
                       'bg-red-500/20 text-red-400 border-red-500/30'
                     }`}>
-                      Score: {calculatedScore}/100
+                      {calculatedScore}/100 – {scoreLabel}
                     </Badge>
                   </div>
                 );
@@ -8735,9 +8787,12 @@ export const SEOEditor = ({
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <p className="font-medium">
-                        {calculatedScore >= 80 ? 'Excellent' :
-                         calculatedScore >= 50 ? 'Needs Improvement' :
-                         'Optimization Required'}
+                        {calculatedScore === 100 ? 'Excellent' :
+                         calculatedScore >= 90 ? 'Very Good' :
+                         calculatedScore >= 80 ? 'Good' :
+                         calculatedScore >= 70 ? 'Fair' :
+                         calculatedScore >= 60 ? 'Needs Work' :
+                         'Poor'}
                       </p>
                       <p className="text-xs">
                         {calculatedScore < 80 && 'Check items marked with ✗ below'}
@@ -9691,8 +9746,8 @@ export const SEOEditor = ({
                           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
                             <p className="text-base text-green-400 font-medium">
                               ✓ All body text suggestions processed! 
-                              {bodyTextSuggestions.filter(s => s.applied).length} applied, 
-                              {bodyTextSuggestions.filter(s => s.rejected).length} rejected.
+                              {bodyTextSuggestions.filter(s => s.applied === true).length} applied, 
+                              {bodyTextSuggestions.filter(s => s.rejected === true).length} rejected.
                             </p>
                           </div>
                         )}
