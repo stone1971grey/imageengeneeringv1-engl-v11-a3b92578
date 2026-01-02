@@ -3252,9 +3252,55 @@ export const SEOEditor = ({
 
       if (result?.suggestions && Array.isArray(result.suggestions)) {
         console.log('[SEO Editor] Generated H2 suggestions:', result.suggestions);
-        setH2Suggestions(result.suggestions);
+        
+        // Mark already-optimized H2s (those that already contain FKW) as pre-applied
+        // These will be shown with "Applied ✓" badge, not as suggestions
+        const suggestionsWithStatus = result.suggestions.map((s: any) => {
+          const alreadyHasFkw = s.originalText && data.focusKeyword &&
+            s.originalText.toLowerCase().includes(data.focusKeyword.toLowerCase());
+          return {
+            ...s,
+            applied: alreadyHasFkw, // Pre-mark as applied if already optimized
+            alreadyOptimized: alreadyHasFkw
+          };
+        });
+        
+        // Also add H2s that are already optimized (contain FKW) but weren't suggested
+        const suggestedOriginals = suggestionsWithStatus.map((s: any) => s.originalText?.toLowerCase());
+        const alreadyOptimizedH2s = existingH2s
+          .filter((h2: any) => {
+            const hasFkw = h2.text && data.focusKeyword &&
+              h2.text.toLowerCase().includes(data.focusKeyword.toLowerCase());
+            const notAlreadySuggested = !suggestedOriginals.includes(h2.text.toLowerCase());
+            return hasFkw && notAlreadySuggested;
+          })
+          .map((h2: any) => ({
+            originalText: h2.text,
+            suggestedText: h2.text, // Same text - already optimized
+            segmentId: h2.segmentId,
+            segmentType: h2.segmentType,
+            segmentKey: h2.segmentKey,
+            reason: 'Already contains Focus Keyword - no changes needed',
+            characterCount: h2.text.length,
+            priority: 99, // Low priority - show at end
+            applied: true,
+            alreadyOptimized: true
+          }));
+        
+        const allSuggestions = [...suggestionsWithStatus, ...alreadyOptimizedH2s]
+          .sort((a, b) => {
+            // Sort: unapplied first (by priority), then applied
+            if (a.applied && !b.applied) return 1;
+            if (!a.applied && b.applied) return -1;
+            return (a.priority || 99) - (b.priority || 99);
+          });
+        
+        setH2Suggestions(allSuggestions);
         setShowH2Suggestions(true);
-        toast.success(`${result.suggestions.length} H2 suggestions generated`);
+        
+        const needsOptimization = allSuggestions.filter((s: any) => !s.alreadyOptimized).length;
+        const alreadyOptimized = allSuggestions.filter((s: any) => s.alreadyOptimized).length;
+        toast.success(`${needsOptimization} H2s to optimize, ${alreadyOptimized} already contain FKW`);
       } else {
         toast.error('No H2 suggestions generated');
       }
@@ -7073,26 +7119,43 @@ export const SEOEditor = ({
                                 )}
                               </div>
                               
-                              {/* Original text */}
-                              <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
-                                <span className="text-xs text-red-400 block mb-1">Original:</span>
-                                <p className="text-sm text-foreground/70 line-through">
-                                  {suggestion.originalText}
-                                </p>
-                              </div>
-                              
-                              {/* Suggested text */}
-                              <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
-                                <span className="text-xs text-green-400 block mb-1">Optimiert:</span>
-                                <p className="text-sm text-foreground font-medium">
-                                  {data.focusKeyword 
-                                    ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
-                                    : suggestion.suggestedText}
-                                </p>
-                                <span className="text-xs text-muted-foreground mt-1 block">
-                                  {suggestion.characterCount} Zeichen
-                                </span>
-                              </div>
+                              {/* For already-optimized H2s: show single green box */}
+                              {(suggestion as any).alreadyOptimized ? (
+                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
+                                  <span className="text-xs text-green-400 block mb-1">✓ Bereits optimiert:</span>
+                                  <p className="text-sm text-foreground font-medium">
+                                    {data.focusKeyword 
+                                      ? highlightKeyword(suggestion.originalText, data.focusKeyword)
+                                      : suggestion.originalText}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground mt-1 block">
+                                    Enthält bereits das Focus Keyword
+                                  </span>
+                                </div>
+                              ) : (
+                                <>
+                                  {/* Original text */}
+                                  <div className="p-2 bg-red-500/10 border border-red-500/20 rounded">
+                                    <span className="text-xs text-red-400 block mb-1">Original:</span>
+                                    <p className="text-sm text-foreground/70 line-through">
+                                      {suggestion.originalText}
+                                    </p>
+                                  </div>
+                                  
+                                  {/* Suggested text */}
+                                  <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
+                                    <span className="text-xs text-green-400 block mb-1">Optimiert:</span>
+                                    <p className="text-sm text-foreground font-medium">
+                                      {data.focusKeyword 
+                                        ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
+                                        : suggestion.suggestedText}
+                                    </p>
+                                    <span className="text-xs text-muted-foreground mt-1 block">
+                                      {suggestion.characterCount} Zeichen
+                                    </span>
+                                  </div>
+                                </>
+                              )}
                               
                               {/* Reason */}
                               <p className="text-xs text-muted-foreground">
