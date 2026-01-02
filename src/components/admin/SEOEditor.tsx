@@ -556,14 +556,22 @@ export const SEOEditor = ({
   // that triggers on pageSlug change - no separate effect needed
   
   // Sync localFocusKeyword when data.focusKeyword changes (e.g., user selects a new FKW)
+  // CRITICAL: Only sync if parent has a NON-EMPTY value - never let empty overwrite our local value
   useEffect(() => {
+    // Only update if parent has a value AND it's different from what we have
+    // NEVER allow empty parent value to clear our local value
     if (data.focusKeyword && data.focusKeyword !== localFocusKeyword && isFocusKeywordLoaded) {
-      console.log('[SEO Editor] Parent FKW changed, updating local:', data.focusKeyword);
+      console.log('[SEO Editor] Parent FKW changed to non-empty, updating local:', data.focusKeyword);
       setLocalFocusKeyword(data.focusKeyword);
       // CRITICAL: Also update dedicated cache for instant sync loading
       localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, data.focusKeyword);
     }
-  }, [data.focusKeyword, isFocusKeywordLoaded, pageSlug, editorLanguage]);
+    // If parent is empty but we have a local value, PUSH our value to parent
+    else if (!data.focusKeyword && localFocusKeyword && isFocusKeywordLoaded) {
+      console.log('[SEO Editor] Parent FKW is empty, pushing local value:', localFocusKeyword);
+      onChange({ ...data, focusKeyword: localFocusKeyword });
+    }
+  }, [data.focusKeyword, localFocusKeyword, isFocusKeywordLoaded, pageSlug, editorLanguage]);
 
   // Keep localStorage cache updated when data changes (for instant loading on next visit)
   // Use localFocusKeyword as the authoritative source
