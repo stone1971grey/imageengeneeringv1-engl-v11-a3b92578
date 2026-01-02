@@ -299,6 +299,38 @@ export const SEOEditor = ({
     localStorage.setItem('seo-serp-preview-open', String(isSerpPreviewOpen));
   }, [isSerpPreviewOpen]);
   
+  // Advanced Tab Collapsible states - with localStorage persistence
+  const [isMetaHeadlinesOpen, setIsMetaHeadlinesOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-meta-headlines-open');
+    return saved !== null ? saved === 'true' : true; // Default: open
+  });
+  const [isFkwOptimizerOpen, setIsFkwOptimizerOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-fkw-optimizer-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  const [isInternalLinksOpen, setIsInternalLinksOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-internal-links-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  const [isExternalLinksOpen, setIsExternalLinksOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-external-links-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  
+  // Persist Advanced Tab collapsible states
+  useEffect(() => {
+    localStorage.setItem('seo-advanced-meta-headlines-open', String(isMetaHeadlinesOpen));
+  }, [isMetaHeadlinesOpen]);
+  useEffect(() => {
+    localStorage.setItem('seo-advanced-fkw-optimizer-open', String(isFkwOptimizerOpen));
+  }, [isFkwOptimizerOpen]);
+  useEffect(() => {
+    localStorage.setItem('seo-advanced-internal-links-open', String(isInternalLinksOpen));
+  }, [isInternalLinksOpen]);
+  useEffect(() => {
+    localStorage.setItem('seo-advanced-external-links-open', String(isExternalLinksOpen));
+  }, [isExternalLinksOpen]);
+  
   // FKW Content Optimizer state
   const [isGeneratingFkwContent, setIsGeneratingFkwContent] = useState(false);
   const [fkwContentSuggestions, setFkwContentSuggestions] = useState<Array<{
@@ -6351,6 +6383,24 @@ export const SEOEditor = ({
             </p>
           </div>
 
+          {/* ===== META & HEADLINES COLLAPSIBLE SECTION ===== */}
+          <Collapsible open={isMetaHeadlinesOpen} onOpenChange={setIsMetaHeadlinesOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 bg-zinc-800/70 hover:bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer transition-colors">
+                <div className="flex items-center gap-3">
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isMetaHeadlinesOpen ? 'rotate-180' : ''}`} />
+                  <span className="text-base font-semibold text-foreground">Meta & Headlines</span>
+                  <span className="text-sm text-muted-foreground">(Title, Description, H1, Intro)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {data.title && data.metaDescription && data.h1 && (
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">Complete</Badge>
+                  )}
+                </div>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 mt-4">
+          
           {/* Smart Title Optimization */}
           <div className={`p-5 border rounded-lg transition-colors ${
             data.title && data.title.length >= 50 && data.title.length <= 60 && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase())
@@ -7204,6 +7254,43 @@ export const SEOEditor = ({
             </p>
           </div>
 
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* ===== FKW CONTENT OPTIMIZER COLLAPSIBLE SECTION ===== */}
+          <Collapsible open={isFkwOptimizerOpen} onOpenChange={setIsFkwOptimizerOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-br from-orange-500/10 to-amber-500/10 hover:from-orange-500/15 hover:to-amber-500/15 border border-orange-500/30 rounded-lg cursor-pointer transition-colors">
+                <div className="flex items-center gap-3">
+                  <ChevronDown className={`h-5 w-5 text-orange-400 transition-transform duration-200 ${isFkwOptimizerOpen ? 'rotate-180' : ''}`} />
+                  <span className="text-base font-semibold text-foreground">FKW Content Optimizer</span>
+                  <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">AI-Powered</Badge>
+                </div>
+                {fkwContentAnalysis && (() => {
+                  const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+                  let calculatedScore = 0;
+                  if (actualH1ContainsFkw) calculatedScore += 25;
+                  if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
+                  if (fkwContentAnalysis.h2WithFkw > 0) calculatedScore += 15;
+                  if (fkwContentAnalysis.h2Count > 0 && fkwContentAnalysis.h2WithFkw >= Math.ceil(fkwContentAnalysis.h2Count / 2)) calculatedScore += 10;
+                  if (fkwContentAnalysis.densityStatus === 'optimal') calculatedScore += 20;
+                  else if (fkwContentAnalysis.densityStatus === 'too_low' && fkwContentAnalysis.fkwDensity >= 0.3) calculatedScore += 10;
+                  if (fkwContentAnalysis.h3WithFkw > 0) calculatedScore += 10;
+                  calculatedScore = Math.min(100, calculatedScore);
+                  return (
+                    <Badge className={`text-sm ${
+                      calculatedScore >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                      calculatedScore >= 50 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                      'bg-red-500/20 text-red-400 border-red-500/30'
+                    }`}>
+                      Score: {calculatedScore}/100
+                    </Badge>
+                  );
+                })()}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4">
+          
           {/* FKW Content Optimizer - Smart content optimization */}
           <div className="p-5 bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-lg">
             <div className="flex items-center justify-between mb-3">
@@ -7829,6 +7916,28 @@ export const SEOEditor = ({
               </p>
             )}
           </div>
+
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* ===== INTERNAL LINKS COLLAPSIBLE SECTION ===== */}
+          <Collapsible open={isInternalLinksOpen} onOpenChange={setIsInternalLinksOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 bg-zinc-800/70 hover:bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer transition-colors">
+                <div className="flex items-center gap-3">
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isInternalLinksOpen ? 'rotate-180' : ''}`} />
+                  <span className="text-base font-semibold text-foreground">Internal Links</span>
+                  <Badge variant="outline" className="text-xs bg-pink-500/10 text-pink-400 border-pink-500/30">AI-Powered</Badge>
+                </div>
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${checks.hasInternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+                >
+                  {checks.hasInternalLinks ? 'Present' : 'None'}
+                </Badge>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4">
 
           {/* Smart Internal Links */}
           <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
@@ -8504,6 +8613,28 @@ export const SEOEditor = ({
             )}
           </div>
 
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* ===== EXTERNAL LINKS COLLAPSIBLE SECTION ===== */}
+          <Collapsible open={isExternalLinksOpen} onOpenChange={setIsExternalLinksOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 bg-zinc-800/70 hover:bg-zinc-800 border border-zinc-700 rounded-lg cursor-pointer transition-colors">
+                <div className="flex items-center gap-3">
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isExternalLinksOpen ? 'rotate-180' : ''}`} />
+                  <span className="text-base font-semibold text-foreground">External Links</span>
+                  <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">AI-Powered</Badge>
+                </div>
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${checks.hasExternalLinks ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'}`}
+                >
+                  {checks.hasExternalLinks ? 'Present' : 'None'}
+                </Badge>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4">
+
           {/* External Links - Smart Suggestions (Advanced Feature) */}
           <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
             <div className="flex items-center justify-between mb-3">
@@ -8714,6 +8845,9 @@ export const SEOEditor = ({
               </p>
             </div>
           </div>
+
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Canonical URL */}
           <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
