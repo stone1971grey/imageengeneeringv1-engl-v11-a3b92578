@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft, Building2 } from "lucide-react";
+import { SistrixEnterpriseTab } from "./seo/SistrixEnterpriseTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -7368,7 +7369,7 @@ export const SEOEditor = ({
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="basics" className="w-full">
-        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-4' : 'grid-cols-2'}`}>
+        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-5' : 'grid-cols-2'}`}>
           <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
           <TabsTrigger value="social" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
           {isAdvancedMode && (
@@ -7380,6 +7381,10 @@ export const SEOEditor = ({
               <TabsTrigger value="readability" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
                 Readability
                 <GeminiIcon className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="enterprise" className="text-base font-medium py-3 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white flex items-center gap-2">
+                Enterprise
+                <Building2 className="h-4 w-4" />
               </TabsTrigger>
             </>
           )}
@@ -11258,6 +11263,17 @@ export const SEOEditor = ({
 
         </TabsContent>
         )}
+        
+        {/* Enterprise Tab - SISTRIX Integration */}
+        {isAdvancedMode && (
+        <TabsContent value="enterprise" className="space-y-4">
+          <SistrixEnterpriseTab 
+            pageSlug={pageSlug}
+            editorLanguage={editorLanguage}
+          />
+        </TabsContent>
+        )}
+        
         {/* Redirect Manager Dialog */}
         <RedirectManager 
           isOpen={isRedirectManagerOpen} 
