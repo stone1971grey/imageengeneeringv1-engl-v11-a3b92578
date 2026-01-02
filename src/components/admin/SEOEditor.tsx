@@ -601,6 +601,23 @@ export const SEOEditor = ({
   const [showH3Suggestions, setShowH3Suggestions] = useState(false);
   const [isApplyingH3, setIsApplyingH3] = useState<number | null>(null);
   
+  // State for ALL H2s and H3s on the page (for transparency)
+  const [allPageH2s, setAllPageH2s] = useState<Array<{
+    text: string;
+    segmentId: number | null;
+    segmentType: string;
+    segmentKey: string;
+    hasFkw: boolean;
+  }>>([]);
+  const [allPageH3s, setAllPageH3s] = useState<Array<{
+    text: string;
+    segmentId: number | null;
+    segmentType: string;
+    segmentKey: string;
+    itemIndex?: number;
+    hasFkw: boolean;
+  }>>([]);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -1027,7 +1044,7 @@ export const SEOEditor = ({
                   detectedApplied.push({
                     suggestionType: 'heading',
                     headingLevel: 'h2',
-                    currentText: '(detected)',
+                    currentText: segData.headline, // FIXED: Use actual text instead of '(detected)'
                     suggestedText: segData.headline,
                     segmentKey: `segment-${segId}`,
                     segmentId: segId,
@@ -1043,7 +1060,7 @@ export const SEOEditor = ({
                   if (cleanText.toLowerCase().includes(fkwLower)) {
                     detectedApplied.push({
                       suggestionType: 'body',
-                      currentText: '(detected)',
+                      currentText: cleanText, // FIXED: Use actual text
                       suggestedText: cleanText.substring(0, 150) + (cleanText.length > 150 ? '...' : ''),
                       segmentKey: `segment-${segId}`,
                       segmentId: segId,
@@ -1058,41 +1075,139 @@ export const SEOEditor = ({
               }
               
               // Check image-text segments
-              if (segType === 'image-text' && segData.items) {
-                for (let i = 0; i < segData.items.length; i++) {
-                  const item = segData.items[i];
-                  if (item.title && item.title.toLowerCase().includes(fkwLower)) {
-                    detectedApplied.push({
-                      suggestionType: 'heading',
-                      headingLevel: 'h2',
-                      currentText: '(detected)',
-                      suggestedText: item.title,
-                      segmentKey: `segment-${segId}`,
-                      segmentId: segId,
-                      segmentType: segType,
-                      fieldPath: `items[${i}].title`,
-                      reason: 'Focus keyword detected in image-text title',
-                      priority: 3,
-                      applied: true
-                    });
-                  }
-                  if (item.description) {
-                    const cleanDesc = item.description.replace(/<[^>]*>/g, '');
-                    if (cleanDesc.toLowerCase().includes(fkwLower)) {
+              if (segType === 'image-text') {
+                // Main title (H2)
+                if (segData.title && segData.title.toLowerCase().includes(fkwLower)) {
+                  detectedApplied.push({
+                    suggestionType: 'heading',
+                    headingLevel: 'h2',
+                    currentText: segData.title, // FIXED: Use actual text
+                    suggestedText: segData.title,
+                    segmentKey: `segment-${segId}`,
+                    segmentId: segId,
+                    segmentType: segType,
+                    fieldPath: 'title',
+                    reason: 'Focus keyword detected in image-text H2 title',
+                    priority: 3,
+                    applied: true
+                  });
+                }
+                // Items (H3)
+                if (segData.items) {
+                  for (let i = 0; i < segData.items.length; i++) {
+                    const item = segData.items[i];
+                    if (item.title && item.title.toLowerCase().includes(fkwLower)) {
                       detectedApplied.push({
-                        suggestionType: 'body',
-                        currentText: '(detected)',
-                        suggestedText: cleanDesc.substring(0, 150) + (cleanDesc.length > 150 ? '...' : ''),
+                        suggestionType: 'heading',
+                        headingLevel: 'h3',
+                        currentText: item.title, // FIXED: Use actual text
+                        suggestedText: item.title,
                         segmentKey: `segment-${segId}`,
                         segmentId: segId,
                         segmentType: segType,
-                        fieldPath: `items[${i}].description`,
-                        reason: 'Focus keyword detected in description',
+                        fieldPath: `items[${i}].title`,
+                        reason: 'Focus keyword detected in image-text item H3',
+                        priority: 4,
+                        applied: true
+                      });
+                    }
+                    if (item.description) {
+                      const cleanDesc = item.description.replace(/<[^>]*>/g, '');
+                      if (cleanDesc.toLowerCase().includes(fkwLower)) {
+                        detectedApplied.push({
+                          suggestionType: 'body',
+                          currentText: cleanDesc, // FIXED: Use actual text
+                          suggestedText: cleanDesc.substring(0, 150) + (cleanDesc.length > 150 ? '...' : ''),
+                          segmentKey: `segment-${segId}`,
+                          segmentId: segId,
+                          segmentType: segType,
+                          fieldPath: `items[${i}].description`,
+                          reason: 'Focus keyword detected in description',
+                          priority: 5,
+                          applied: true
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+              
+              // Check tiles segments
+              if (segType === 'tiles') {
+                // Main title (H2)
+                if (segData.title && segData.title.toLowerCase().includes(fkwLower)) {
+                  detectedApplied.push({
+                    suggestionType: 'heading',
+                    headingLevel: 'h2',
+                    currentText: segData.title,
+                    suggestedText: segData.title,
+                    segmentKey: `segment-${segId}`,
+                    segmentId: segId,
+                    segmentType: segType,
+                    fieldPath: 'title',
+                    reason: 'Focus keyword detected in tiles H2 title',
+                    priority: 3,
+                    applied: true
+                  });
+                }
+                // Items (H3)
+                if (segData.items) {
+                  for (let i = 0; i < segData.items.length; i++) {
+                    const item = segData.items[i];
+                    if (item.title && item.title.toLowerCase().includes(fkwLower)) {
+                      detectedApplied.push({
+                        suggestionType: 'heading',
+                        headingLevel: 'h3',
+                        currentText: item.title,
+                        suggestedText: item.title,
+                        segmentKey: `segment-${segId}`,
+                        segmentId: segId,
+                        segmentType: segType,
+                        fieldPath: `items[${i}].title`,
+                        reason: 'Focus keyword detected in tiles item H3',
                         priority: 4,
                         applied: true
                       });
                     }
                   }
+                }
+              }
+              
+              // Check product-hero segments (H2 when Intro exists)
+              if (segType === 'product-hero' || segType === 'product-hero-gallery') {
+                if (segData.title && segData.title.toLowerCase().includes(fkwLower)) {
+                  detectedApplied.push({
+                    suggestionType: 'heading',
+                    headingLevel: 'h2',
+                    currentText: segData.title,
+                    suggestedText: segData.title,
+                    segmentKey: `segment-${segId}`,
+                    segmentId: segId,
+                    segmentType: segType,
+                    fieldPath: 'title',
+                    reason: 'Focus keyword detected in product hero H2',
+                    priority: 2,
+                    applied: true
+                  });
+                }
+              }
+              
+              // Check footer segments (H2)
+              if (segType === 'footer') {
+                if (segData.ctaTitle && segData.ctaTitle.toLowerCase().includes(fkwLower)) {
+                  detectedApplied.push({
+                    suggestionType: 'heading',
+                    headingLevel: 'h2',
+                    currentText: segData.ctaTitle,
+                    suggestedText: segData.ctaTitle,
+                    segmentKey: `segment-${segId}`,
+                    segmentId: segId,
+                    segmentType: segType,
+                    fieldPath: 'ctaTitle',
+                    reason: 'Focus keyword detected in footer CTA H2',
+                    priority: 6,
+                    applied: true
+                  });
                 }
               }
             }
@@ -1186,9 +1301,9 @@ export const SEOEditor = ({
         const detectedH2s: typeof h2Suggestions = [];
         const detectedH3s: typeof h3Suggestions = [];
         
-        // Count ALL H2s and H3s (not just those with FKW)
-        let allH2Count = 0;
-        let allH3Count = 0;
+        // Collect ALL H2s and H3s for full transparency
+        const collectedH2s: typeof allPageH2s = [];
+        const collectedH3s: typeof allPageH3s = [];
         
         segments.forEach((seg: any) => {
           const segData = seg.data || seg;
@@ -1196,11 +1311,20 @@ export const SEOEditor = ({
           const segId = seg.id || seg.segmentId || '';
           const segKey = seg.segmentKey || `segment-${segId}`;
           
-          // Count and detect H2s
-          if (['image-text', 'feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+          // === H2 Detection ===
+          
+          // Product Hero / Full Hero / Product Hero Gallery title is H2 (when Intro exists with H1)
+          if (['product-hero', 'product-hero-gallery', 'full-hero'].includes(segType)) {
             if (segData.title) {
-              allH2Count++;
-              if (segData.title.toLowerCase().includes(fkwLower)) {
+              const hasFkw = segData.title.toLowerCase().includes(fkwLower);
+              collectedH2s.push({
+                text: segData.title,
+                segmentId: parseInt(segId) || null,
+                segmentType: segType,
+                segmentKey: segKey,
+                hasFkw
+              });
+              if (hasFkw) {
                 detectedH2s.push({
                   originalText: segData.title,
                   suggestedText: segData.title,
@@ -1217,12 +1341,78 @@ export const SEOEditor = ({
             }
           }
           
-          // Count and detect H3s
+          // Image-Text, Feature-Overview, Tiles, Table, FAQ main titles are H2
+          if (['image-text', 'feature-overview', 'tiles', 'table', 'faq'].includes(segType)) {
+            if (segData.title) {
+              const hasFkw = segData.title.toLowerCase().includes(fkwLower);
+              collectedH2s.push({
+                text: segData.title,
+                segmentId: parseInt(segId) || null,
+                segmentType: segType,
+                segmentKey: segKey,
+                hasFkw
+              });
+              if (hasFkw) {
+                detectedH2s.push({
+                  originalText: segData.title,
+                  suggestedText: segData.title,
+                  segmentId: parseInt(segId) || null,
+                  segmentType: segType,
+                  segmentKey: segKey,
+                  reason: 'Enthält bereits das Focus Keyword',
+                  characterCount: segData.title.length,
+                  priority: 99,
+                  applied: true,
+                  alreadyOptimized: true
+                } as any);
+              }
+            }
+          }
+          
+          // Footer CTA title is H2
+          if (segType === 'footer') {
+            if (segData.ctaTitle) {
+              const hasFkw = segData.ctaTitle.toLowerCase().includes(fkwLower);
+              collectedH2s.push({
+                text: segData.ctaTitle,
+                segmentId: parseInt(segId) || null,
+                segmentType: segType,
+                segmentKey: segKey,
+                hasFkw
+              });
+              if (hasFkw) {
+                detectedH2s.push({
+                  originalText: segData.ctaTitle,
+                  suggestedText: segData.ctaTitle,
+                  segmentId: parseInt(segId) || null,
+                  segmentType: segType,
+                  segmentKey: segKey,
+                  reason: 'Enthält bereits das Focus Keyword',
+                  characterCount: segData.ctaTitle.length,
+                  priority: 99,
+                  applied: true,
+                  alreadyOptimized: true
+                } as any);
+              }
+            }
+          }
+          
+          // === H3 Detection ===
+          
+          // Image-Text, Feature-Overview, Tiles items are H3
           if (['image-text', 'feature-overview', 'tiles'].includes(segType) && segData.items) {
             segData.items.forEach((item: any, itemIndex: number) => {
               if (item.title) {
-                allH3Count++;
-                if (item.title.toLowerCase().includes(fkwLower)) {
+                const hasFkw = item.title.toLowerCase().includes(fkwLower);
+                collectedH3s.push({
+                  text: item.title,
+                  segmentId: parseInt(segId) || null,
+                  segmentType: segType,
+                  segmentKey: segKey,
+                  itemIndex,
+                  hasFkw
+                });
+                if (hasFkw) {
                   detectedH3s.push({
                     originalText: item.title,
                     suggestedText: item.title,
@@ -1245,8 +1435,16 @@ export const SEOEditor = ({
           if (segType === 'faq' && segData.items) {
             segData.items.forEach((item: any, itemIndex: number) => {
               if (item.question) {
-                allH3Count++;
-                if (item.question.toLowerCase().includes(fkwLower)) {
+                const hasFkw = item.question.toLowerCase().includes(fkwLower);
+                collectedH3s.push({
+                  text: item.question,
+                  segmentId: parseInt(segId) || null,
+                  segmentType: segType,
+                  segmentKey: segKey,
+                  itemIndex,
+                  hasFkw
+                });
+                if (hasFkw) {
                   detectedH3s.push({
                     originalText: item.question,
                     suggestedText: item.question,
@@ -1265,6 +1463,10 @@ export const SEOEditor = ({
             });
           }
         });
+        
+        // Store ALL H2s and H3s for full transparency display
+        setAllPageH2s(collectedH2s);
+        setAllPageH3s(collectedH3s);
         
         // Update H2 suggestions
         setH2Suggestions(prev => {
@@ -1286,9 +1488,9 @@ export const SEOEditor = ({
         
         console.log('[SEO Editor] Auto-detected:', {
           h2WithFkw: detectedH2s.length,
-          h2Total: allH2Count,
+          h2Total: collectedH2s.length,
           h3WithFkw: detectedH3s.length,
-          h3Total: allH3Count,
+          h3Total: collectedH3s.length,
           effectiveFocusKeyword
         });
         
@@ -8334,6 +8536,31 @@ export const SEOEditor = ({
                   </div>
                 )}
                 
+                {/* All H2s Overview - Show ALL H2s on page for full transparency */}
+                {allPageH2s.length > 0 && (
+                  <div className="mb-4 p-3 bg-zinc-800/50 border border-zinc-700/50 rounded-lg">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">
+                      Alle H2-Überschriften auf der Seite ({allPageH2s.length}):
+                    </p>
+                    <div className="space-y-1">
+                      {allPageH2s.map((h2, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs">
+                          <span className={`w-4 text-center ${h2.hasFkw ? 'text-green-400' : 'text-zinc-500'}`}>
+                            {h2.hasFkw ? '✓' : '○'}
+                          </span>
+                          <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono py-0">
+                            {h2.segmentId}
+                          </Badge>
+                          <span className="text-zinc-500">({h2.segmentType})</span>
+                          <span className={`truncate ${h2.hasFkw ? 'text-green-400' : 'text-foreground/70'}`}>
+                            {h2.text.length > 50 ? h2.text.substring(0, 50) + '...' : h2.text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 {/* H2 Suggestions List - Only show non-applied suggestions */}
                 {showH2Suggestions && h2Suggestions.filter(s => !s.applied && !(s as any).alreadyOptimized).length > 0 && (
                   <div className="mb-4 space-y-3">
@@ -8536,6 +8763,31 @@ export const SEOEditor = ({
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* All H3s Overview - Show ALL H3s on page for full transparency */}
+                {allPageH3s.length > 0 && (
+                  <div className="mb-4 p-3 bg-zinc-800/50 border border-zinc-700/50 rounded-lg">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">
+                      Alle H3-Überschriften auf der Seite ({allPageH3s.length}):
+                    </p>
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                      {allPageH3s.map((h3, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs">
+                          <span className={`w-4 text-center ${h3.hasFkw ? 'text-green-400' : 'text-zinc-500'}`}>
+                            {h3.hasFkw ? '✓' : '○'}
+                          </span>
+                          <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono py-0">
+                            {h3.segmentId}
+                          </Badge>
+                          <span className="text-zinc-500">({h3.segmentType})</span>
+                          <span className={`truncate ${h3.hasFkw ? 'text-green-400' : 'text-foreground/70'}`}>
+                            {h3.text.length > 40 ? h3.text.substring(0, 40) + '...' : h3.text}
+                          </span>
                         </div>
                       ))}
                     </div>
