@@ -9028,7 +9028,7 @@ export const SEOEditor = ({
                       ) : (
                         <>
                           <GeminiIcon className="h-4 w-4 mr-2" />
-                          Smart Optimize Density
+                          Smart Density Optimization
                         </>
                       )}
                     </Button>
