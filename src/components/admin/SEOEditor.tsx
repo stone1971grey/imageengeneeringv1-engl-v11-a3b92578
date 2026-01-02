@@ -100,6 +100,12 @@ export const SEOEditor = ({
   // REF for immediate access to FKW value across effects - avoids race conditions
   const localFocusKeywordRef = useRef<string>('');
   
+  // CRITICAL FIX: Title and MetaDescription local state - similar pattern to FKW
+  const [localTitle, setLocalTitle] = useState<string>('');
+  const [localMetaDescription, setLocalMetaDescription] = useState<string>('');
+  const localTitleRef = useRef<string>('');
+  const localMetaDescriptionRef = useRef<string>('');
+  
   // Smart Focus Keyword state
   const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
   const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
@@ -108,43 +114,72 @@ export const SEOEditor = ({
   // EFFECTIVE Focus Keyword: Prioritize locally loaded state
   const effectiveFocusKeyword = localFocusKeyword || data.focusKeyword || '';
   
-  // CRITICAL: Load FKW IMMEDIATELY when pageSlug changes - sync from cache, then verify from DB
+  // EFFECTIVE Title/Description: Prioritize locally loaded state
+  const effectiveTitle = localTitle || data.title || '';
+  const effectiveMetaDescription = localMetaDescription || data.metaDescription || '';
+  
+  // CRITICAL: Load FKW, Title, Description IMMEDIATELY when pageSlug changes - sync from cache, then verify from DB
   useEffect(() => {
     if (!pageSlug || pageSlug === lastLoadedPageSlug) return;
     
-    console.log('[SEO Editor] PAGE CHANGED - Loading FKW for:', pageSlug);
+    console.log('[SEO Editor] PAGE CHANGED - Loading SEO data for:', pageSlug);
     setLastLoadedPageSlug(pageSlug);
     setIsFocusKeywordLoaded(false);
     
     // STEP 1: Try to load from localStorage IMMEDIATELY (sync)
     let cachedFkw = '';
+    let cachedTitle = '';
+    let cachedDescription = '';
     try {
       const cached = localStorage.getItem(`seo-fkw-${pageSlug}-${editorLanguage}`);
       if (cached) {
         cachedFkw = cached;
         console.log('[SEO Editor] INSTANT: FKW from dedicated cache:', cachedFkw);
-      } else {
-        const fullCache = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
-        if (fullCache) {
-          const parsed = JSON.parse(fullCache);
-          if (parsed.focusKeyword) {
-            cachedFkw = parsed.focusKeyword;
-            console.log('[SEO Editor] INSTANT: FKW from full cache:', cachedFkw);
-          }
+      }
+      
+      const fullCache = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
+      if (fullCache) {
+        const parsed = JSON.parse(fullCache);
+        if (parsed.focusKeyword && !cachedFkw) {
+          cachedFkw = parsed.focusKeyword;
+          console.log('[SEO Editor] INSTANT: FKW from full cache:', cachedFkw);
+        }
+        if (parsed.title) {
+          cachedTitle = parsed.title;
+          console.log('[SEO Editor] INSTANT: Title from cache:', cachedTitle.substring(0, 30) + '...');
+        }
+        if (parsed.metaDescription) {
+          cachedDescription = parsed.metaDescription;
+          console.log('[SEO Editor] INSTANT: Description from cache:', cachedDescription.substring(0, 30) + '...');
         }
       }
     } catch (e) {
-      console.warn('[SEO Editor] Failed to read FKW from cache');
+      console.warn('[SEO Editor] Failed to read SEO data from cache');
     }
     
-    // Set cached value IMMEDIATELY if available
+    // Set cached values IMMEDIATELY if available
     if (cachedFkw) {
       setLocalFocusKeyword(cachedFkw);
-      localFocusKeywordRef.current = cachedFkw; // SYNC REF immediately
+      localFocusKeywordRef.current = cachedFkw;
       setIsFocusKeywordLoaded(true);
-      // Also sync to parent
-      if (cachedFkw !== data.focusKeyword) {
-        onChange({ ...data, focusKeyword: cachedFkw });
+    }
+    if (cachedTitle) {
+      setLocalTitle(cachedTitle);
+      localTitleRef.current = cachedTitle;
+    }
+    if (cachedDescription) {
+      setLocalMetaDescription(cachedDescription);
+      localMetaDescriptionRef.current = cachedDescription;
+    }
+    
+    // Sync cached values to parent if different
+    if (cachedFkw || cachedTitle || cachedDescription) {
+      const updates: Partial<typeof data> = {};
+      if (cachedFkw && cachedFkw !== data.focusKeyword) updates.focusKeyword = cachedFkw;
+      if (cachedTitle && cachedTitle !== data.title) updates.title = cachedTitle;
+      if (cachedDescription && cachedDescription !== data.metaDescription) updates.metaDescription = cachedDescription;
+      if (Object.keys(updates).length > 0) {
+        onChange({ ...data, ...updates });
       }
     }
     
@@ -159,18 +194,27 @@ export const SEOEditor = ({
         .maybeSingle();
       
       let fkwFromDb = '';
+      let titleFromDb = '';
+      let descriptionFromDb = '';
+      
       if (seoData) {
         try {
           const parsed = JSON.parse(seoData.content_value);
           fkwFromDb = parsed.focusKeyword || '';
-          console.log('[SEO Editor] DB: FKW loaded:', fkwFromDb);
+          titleFromDb = parsed.title || '';
+          descriptionFromDb = parsed.metaDescription || '';
+          console.log('[SEO Editor] DB: SEO data loaded:', { 
+            fkw: fkwFromDb, 
+            title: titleFromDb?.substring(0, 30), 
+            desc: descriptionFromDb?.substring(0, 30) 
+          });
         } catch (e) {
           console.error('[SEO Editor] Failed to parse seo_settings:', e);
         }
       }
       
-      // Fallback to EN if no FKW found in current language
-      if (!fkwFromDb && editorLanguage !== 'en') {
+      // Fallback to EN if no data found in current language
+      if ((!fkwFromDb && !titleFromDb && !descriptionFromDb) && editorLanguage !== 'en') {
         const { data: enData } = await supabase
           .from('page_content')
           .select('content_value')
@@ -182,24 +226,51 @@ export const SEOEditor = ({
         if (enData) {
           try {
             const parsed = JSON.parse(enData.content_value);
-            fkwFromDb = parsed.focusKeyword || '';
-            console.log('[SEO Editor] DB: FKW from EN fallback:', fkwFromDb);
+            fkwFromDb = fkwFromDb || parsed.focusKeyword || '';
+            titleFromDb = titleFromDb || parsed.title || '';
+            descriptionFromDb = descriptionFromDb || parsed.metaDescription || '';
+            console.log('[SEO Editor] DB: SEO data from EN fallback');
           } catch (e) {
             console.error('[SEO Editor] Failed to parse EN seo_settings:', e);
           }
         }
       }
       
-      // Update state if DB has a value (authoritative)
+      // Update state if DB has values (authoritative)
       if (fkwFromDb) {
         setLocalFocusKeyword(fkwFromDb);
-        localFocusKeywordRef.current = fkwFromDb; // SYNC REF immediately
-        // Cache for next time
+        localFocusKeywordRef.current = fkwFromDb;
         localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwFromDb);
-        // Sync to parent
-        if (fkwFromDb !== data.focusKeyword) {
-          onChange({ ...data, focusKeyword: fkwFromDb });
-        }
+      }
+      if (titleFromDb) {
+        setLocalTitle(titleFromDb);
+        localTitleRef.current = titleFromDb;
+      }
+      if (descriptionFromDb) {
+        setLocalMetaDescription(descriptionFromDb);
+        localMetaDescriptionRef.current = descriptionFromDb;
+      }
+      
+      // Cache full SEO data for next time
+      if (fkwFromDb || titleFromDb || descriptionFromDb) {
+        localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
+          focusKeyword: fkwFromDb || localFocusKeywordRef.current || '',
+          title: titleFromDb || localTitleRef.current || '',
+          metaDescription: descriptionFromDb || localMetaDescriptionRef.current || '',
+          h1: '',
+          h1Locked: false,
+          introduction: ''
+        }));
+      }
+      
+      // Sync to parent
+      const parentUpdates: Partial<typeof data> = {};
+      if (fkwFromDb && fkwFromDb !== data.focusKeyword) parentUpdates.focusKeyword = fkwFromDb;
+      if (titleFromDb && titleFromDb !== data.title) parentUpdates.title = titleFromDb;
+      if (descriptionFromDb && descriptionFromDb !== data.metaDescription) parentUpdates.metaDescription = descriptionFromDb;
+      
+      if (Object.keys(parentUpdates).length > 0) {
+        onChange({ ...data, ...parentUpdates });
       }
       
       setIsFocusKeywordLoaded(true);
@@ -557,48 +628,75 @@ export const SEOEditor = ({
     }
   };
 
-  // NOTE: FKW loading is now handled in the main useEffect above (lines ~107-193)
+  // NOTE: SEO data loading is now handled in the main useEffect above
   // that triggers on pageSlug change - no separate effect needed
   
-  // Sync localFocusKeyword when data.focusKeyword changes (e.g., user selects a new FKW)
+  // Sync local SEO values when data props change (e.g., user makes edits)
   // CRITICAL: Only sync if parent has a NON-EMPTY value - never let empty overwrite our local value
   useEffect(() => {
-    // Only update if parent has a value AND it's different from what we have
-    // NEVER allow empty parent value to clear our local value
+    // FKW sync
     if (data.focusKeyword && data.focusKeyword !== localFocusKeyword && isFocusKeywordLoaded) {
       console.log('[SEO Editor] Parent FKW changed to non-empty, updating local:', data.focusKeyword);
       setLocalFocusKeyword(data.focusKeyword);
-      localFocusKeywordRef.current = data.focusKeyword; // SYNC REF
-      // CRITICAL: Also update dedicated cache for instant sync loading
+      localFocusKeywordRef.current = data.focusKeyword;
       localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, data.focusKeyword);
     }
-    // If parent is empty but we have a local value (from ref for immediate access), PUSH our value to parent
+    // If parent is empty but we have a local value, PUSH our value to parent
     else if (!data.focusKeyword && (localFocusKeywordRef.current || localFocusKeyword) && isFocusKeywordLoaded) {
       const fkwToPush = localFocusKeywordRef.current || localFocusKeyword;
       console.log('[SEO Editor] Parent FKW is empty, pushing local value:', fkwToPush);
       onChange({ ...data, focusKeyword: fkwToPush });
     }
   }, [data.focusKeyword, localFocusKeyword, isFocusKeywordLoaded, pageSlug, editorLanguage]);
+  
+  // Sync Title when parent changes
+  useEffect(() => {
+    if (data.title && data.title !== localTitle) {
+      setLocalTitle(data.title);
+      localTitleRef.current = data.title;
+    }
+    // If parent is empty but we have a local value, PUSH our value to parent
+    else if (!data.title && (localTitleRef.current || localTitle)) {
+      const titleToPush = localTitleRef.current || localTitle;
+      console.log('[SEO Editor] Parent Title is empty, pushing local value');
+      onChange({ ...data, title: titleToPush });
+    }
+  }, [data.title, localTitle]);
+  
+  // Sync MetaDescription when parent changes
+  useEffect(() => {
+    if (data.metaDescription && data.metaDescription !== localMetaDescription) {
+      setLocalMetaDescription(data.metaDescription);
+      localMetaDescriptionRef.current = data.metaDescription;
+    }
+    // If parent is empty but we have a local value, PUSH our value to parent
+    else if (!data.metaDescription && (localMetaDescriptionRef.current || localMetaDescription)) {
+      const descToPush = localMetaDescriptionRef.current || localMetaDescription;
+      console.log('[SEO Editor] Parent Description is empty, pushing local value');
+      onChange({ ...data, metaDescription: descToPush });
+    }
+  }, [data.metaDescription, localMetaDescription]);
 
   // Keep localStorage cache updated when data changes (for instant loading on next visit)
-  // Use localFocusKeyword as the authoritative source
   useEffect(() => {
     const fkwToCache = localFocusKeyword || data.focusKeyword;
+    const titleToCache = localTitle || data.title;
+    const descToCache = localMetaDescription || data.metaDescription;
+    
     if (fkwToCache) {
-      // Update dedicated FKW cache
       localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwToCache);
     }
-    if (fkwToCache || data.h1 || data.title || data.metaDescription) {
+    if (fkwToCache || titleToCache || descToCache || data.h1) {
       localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
         focusKeyword: fkwToCache || '',
         h1: data.h1 || '',
         h1Locked: data.h1Locked ?? false,
-        title: data.title || '',
-        metaDescription: data.metaDescription || '',
+        title: titleToCache || '',
+        metaDescription: descToCache || '',
         introduction: data.introduction || ''
       }));
     }
-  }, [localFocusKeyword, data.focusKeyword, data.h1, data.title, data.metaDescription, data.introduction, pageSlug, editorLanguage]);
+  }, [localFocusKeyword, localTitle, localMetaDescription, data.focusKeyword, data.h1, data.title, data.metaDescription, data.introduction, pageSlug, editorLanguage]);
 
   // Load page content and segment registry - OPTIMIZED WITH PARALLEL QUERIES
   useEffect(() => {
@@ -649,22 +747,23 @@ export const SEOEditor = ({
         }
       }
       
-      // Apply SEO data from DB - but NEVER overwrite localFocusKeyword if it's already set
-      // The localFocusKeyword is managed by the dedicated FKW loading effect
+      // Apply SEO data from DB - but NEVER overwrite local values if already set
       // USE REF for immediate access - state might not be updated yet due to async timing
       if (seoSettingsFromDb) {
         // CRITICAL: Use REF for immediate value - it's always current
         const preservedFkw = localFocusKeywordRef.current || localFocusKeyword || focusKeywordFromDb || data.focusKeyword || '';
+        const preservedTitle = localTitleRef.current || localTitle || seoSettingsFromDb.title || data.title || '';
+        const preservedDescription = localMetaDescriptionRef.current || localMetaDescription || seoSettingsFromDb.metaDescription || data.metaDescription || '';
         
         const mergedData = {
           ...data,
-          // NEVER overwrite FKW with empty value - preserve what we have
+          // NEVER overwrite with empty value - preserve what we have
           focusKeyword: preservedFkw,
+          title: preservedTitle,
+          metaDescription: preservedDescription,
           h1: seoSettingsFromDb.h1 || data.h1 || '',
           h1Locked: seoSettingsFromDb.h1Locked ?? data.h1Locked ?? false,
           introduction: seoSettingsFromDb.introduction || data.introduction || '',
-          title: seoSettingsFromDb.title || data.title || '',
-          metaDescription: seoSettingsFromDb.metaDescription || data.metaDescription || '',
           slug: seoSettingsFromDb.slug || data.slug || pageSlug,
           canonical: seoSettingsFromDb.canonical || data.canonical || '',
           robotsIndex: seoSettingsFromDb.robotsIndex || data.robotsIndex || 'index',
@@ -675,11 +774,19 @@ export const SEOEditor = ({
           twitterCard: seoSettingsFromDb.twitterCard || data.twitterCard || 'summary_large_image'
         };
         
-        // Also update localFocusKeyword if DB has a value and local is empty
+        // Also update local state if DB has values and local is empty
         if (focusKeywordFromDb && !localFocusKeywordRef.current) {
           setLocalFocusKeyword(focusKeywordFromDb);
           localFocusKeywordRef.current = focusKeywordFromDb;
           localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, focusKeywordFromDb);
+        }
+        if (seoSettingsFromDb.title && !localTitleRef.current) {
+          setLocalTitle(seoSettingsFromDb.title);
+          localTitleRef.current = seoSettingsFromDb.title;
+        }
+        if (seoSettingsFromDb.metaDescription && !localMetaDescriptionRef.current) {
+          setLocalMetaDescription(seoSettingsFromDb.metaDescription);
+          localMetaDescriptionRef.current = seoSettingsFromDb.metaDescription;
         }
         
         onChange(mergedData);
@@ -689,11 +796,11 @@ export const SEOEditor = ({
           focusKeyword: preservedFkw,
           h1: mergedData.h1,
           h1Locked: mergedData.h1Locked,
-          title: mergedData.title,
-          metaDescription: mergedData.metaDescription,
+          title: preservedTitle,
+          metaDescription: preservedDescription,
           introduction: mergedData.introduction
         }));
-        console.log('[SEO Editor] Applied SEO data from DB, preserved FKW:', preservedFkw);
+        console.log('[SEO Editor] Applied SEO data from DB, preserved FKW:', preservedFkw, 'Title:', preservedTitle?.substring(0, 20));
       }
       
       // Load FKW analysis from cache for instant display
