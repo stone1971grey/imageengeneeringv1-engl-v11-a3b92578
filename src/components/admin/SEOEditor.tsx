@@ -3638,6 +3638,236 @@ export const SEOEditor = ({
     }
   };
 
+  // Remove FKW from H2 headline (revert to simple headline without keyword)
+  const handleRemoveH2Optimization = async (suggestion: typeof h2Suggestions[0], index: number) => {
+    setIsApplyingH2(index);
+    
+    console.log('[SEO Editor] === REMOVING H2 OPTIMIZATION ===');
+    console.log('[SEO Editor] Removing FKW from:', suggestion.originalText);
+    
+    try {
+      // Get current page_segments from database
+      const { data: contentData, error: fetchError } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (fetchError || !contentData) {
+        toast.error('Error fetching page segments');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      let updated = false;
+      const fkw = data.focusKeyword || '';
+      
+      // Find and remove FKW from the H2
+      segments = segments.map((seg: any) => {
+        const segIdMatch = String(seg.segmentId || seg.id) === String(suggestion.segmentId);
+        
+        if (segIdMatch) {
+          const segType = seg.type || '';
+          const segData = seg.data ? { ...seg.data } : {};
+          
+          // Handle image-text segments
+          if (segType === 'image-text' && segData.title) {
+            const currentTitle = segData.title;
+            // Remove FKW variations (case-insensitive, with possible surrounding spaces/punctuation)
+            const regex = new RegExp(`\\s*[-–—:]?\\s*${fkw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'gi');
+            const newTitle = currentTitle.replace(regex, ' ').trim().replace(/\s+/g, ' ');
+            
+            if (newTitle !== currentTitle) {
+              console.log('[SEO Editor] Removing FKW from H2:', { from: currentTitle, to: newTitle });
+              segData.title = newTitle;
+              updated = true;
+            }
+            return { ...seg, data: segData };
+          }
+          
+          // Handle other segment types with title field
+          if (['feature-overview', 'tiles', 'table', 'faq'].includes(segType) && segData.title) {
+            const currentTitle = segData.title;
+            const regex = new RegExp(`\\s*[-–—:]?\\s*${fkw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'gi');
+            const newTitle = currentTitle.replace(regex, ' ').trim().replace(/\s+/g, ' ');
+            
+            if (newTitle !== currentTitle) {
+              segData.title = newTitle;
+              updated = true;
+            }
+            return { ...seg, data: segData };
+          }
+        }
+        return seg;
+      });
+      
+      if (!updated) {
+        toast.info('Keine FKW-Optimierung gefunden, die entfernt werden könnte');
+        return;
+      }
+      
+      // Save back to database
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (saveError) {
+        toast.error('Failed to save: ' + saveError.message);
+        return;
+      }
+      
+      // Remove from suggestions list
+      setH2Suggestions(prev => prev.filter((_, i) => i !== index));
+      
+      // Refresh and recalculate
+      const { data: refreshedContent } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
+      
+      if (refreshedContent) {
+        setPageContent(refreshedContent);
+        
+        if (data.focusKeyword) {
+          const pageSegmentsEntry = refreshedContent.find((item: any) => item.section_key === 'page_segments');
+          if (pageSegmentsEntry) {
+            const updatedSegments = JSON.parse(pageSegmentsEntry.content_value);
+            const newAnalysis = await recalculateFkwAnalysis(updatedSegments, data.focusKeyword);
+            setFkwContentAnalysis(newAnalysis);
+          }
+        }
+      }
+      
+      toast.success('H2-Optimierung entfernt');
+    } catch (error) {
+      console.error('[SEO Editor] Error removing H2 optimization:', error);
+      toast.error('Fehler beim Entfernen der H2-Optimierung');
+    } finally {
+      setIsApplyingH2(null);
+    }
+  };
+
+  // Remove FKW from H3 headline
+  const handleRemoveH3Optimization = async (suggestion: typeof h3Suggestions[0], index: number) => {
+    setIsApplyingH3(index);
+    
+    console.log('[SEO Editor] === REMOVING H3 OPTIMIZATION ===');
+    
+    try {
+      const { data: contentData, error: fetchError } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+      
+      if (fetchError || !contentData) {
+        toast.error('Error fetching page segments');
+        return;
+      }
+      
+      let segments = JSON.parse(contentData.content_value);
+      let updated = false;
+      const fkw = data.focusKeyword || '';
+      
+      segments = segments.map((seg: any) => {
+        const segIdMatch = String(seg.segmentId || seg.id) === String(suggestion.segmentId);
+        
+        if (segIdMatch) {
+          const segType = seg.type || '';
+          const segData = seg.data ? { ...seg.data } : {};
+          
+          // Handle image-text segments - items[].title is H3
+          if (segType === 'image-text' && segData.items && Array.isArray(segData.items)) {
+            const itemIdx = suggestion.itemIndex ?? -1;
+            if (itemIdx >= 0 && segData.items[itemIdx]) {
+              const currentTitle = segData.items[itemIdx].title || '';
+              const regex = new RegExp(`\\s*[-–—:]?\\s*${fkw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'gi');
+              const newTitle = currentTitle.replace(regex, ' ').trim().replace(/\s+/g, ' ');
+              
+              if (newTitle !== currentTitle) {
+                segData.items[itemIdx] = { ...segData.items[itemIdx], title: newTitle };
+                updated = true;
+              }
+            }
+            return { ...seg, data: segData };
+          }
+          
+          // Handle feature-overview - items[].title is H3
+          if (segType === 'feature-overview' && segData.items && Array.isArray(segData.items)) {
+            const itemIdx = suggestion.itemIndex ?? -1;
+            if (itemIdx >= 0 && segData.items[itemIdx]) {
+              const currentTitle = segData.items[itemIdx].title || '';
+              const regex = new RegExp(`\\s*[-–—:]?\\s*${fkw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:]?\\s*`, 'gi');
+              const newTitle = currentTitle.replace(regex, ' ').trim().replace(/\s+/g, ' ');
+              
+              if (newTitle !== currentTitle) {
+                segData.items[itemIdx] = { ...segData.items[itemIdx], title: newTitle };
+                updated = true;
+              }
+            }
+            return { ...seg, data: segData };
+          }
+        }
+        return seg;
+      });
+      
+      if (!updated) {
+        toast.info('Keine FKW-Optimierung gefunden');
+        return;
+      }
+      
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+      
+      if (saveError) {
+        toast.error('Failed to save: ' + saveError.message);
+        return;
+      }
+      
+      setH3Suggestions(prev => prev.filter((_, i) => i !== index));
+      
+      const { data: refreshedContent } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage);
+      
+      if (refreshedContent) {
+        setPageContent(refreshedContent);
+        
+        if (data.focusKeyword) {
+          const pageSegmentsEntry = refreshedContent.find((item: any) => item.section_key === 'page_segments');
+          if (pageSegmentsEntry) {
+            const updatedSegments = JSON.parse(pageSegmentsEntry.content_value);
+            const newAnalysis = await recalculateFkwAnalysis(updatedSegments, data.focusKeyword);
+            setFkwContentAnalysis(newAnalysis);
+          }
+        }
+      }
+      
+      toast.success('H3-Optimierung entfernt');
+    } catch (error) {
+      console.error('[SEO Editor] Error removing H3 optimization:', error);
+      toast.error('Fehler beim Entfernen der H3-Optimierung');
+    } finally {
+      setIsApplyingH3(null);
+    }
+  };
+
   // Generate Smart H3 Headlines using AI
   const handleGenerateH3Headlines = async () => {
     setIsGeneratingH3(true);
@@ -7560,18 +7790,34 @@ export const SEOEditor = ({
                                 )}
                               </div>
                               
-                              {/* For already-optimized H2s: show single green box */}
+                              {/* For already-optimized H2s: show single green box with trash button */}
                               {(suggestion as any).alreadyOptimized ? (
-                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded">
-                                  <span className="text-xs text-green-400 block mb-1">✓ Bereits optimiert:</span>
-                                  <p className="text-sm text-foreground font-medium">
-                                    {data.focusKeyword 
-                                      ? highlightKeyword(suggestion.originalText, data.focusKeyword)
-                                      : suggestion.originalText}
-                                  </p>
-                                  <span className="text-xs text-muted-foreground mt-1 block">
-                                    Enthält bereits das Focus Keyword
-                                  </span>
+                                <div className="flex items-start gap-2">
+                                  <div className="flex-1 p-2 bg-green-500/10 border border-green-500/20 rounded">
+                                    <span className="text-xs text-green-400 block mb-1">✓ Bereits optimiert:</span>
+                                    <p className="text-sm text-foreground font-medium">
+                                      {data.focusKeyword 
+                                        ? highlightKeyword(suggestion.originalText, data.focusKeyword)
+                                        : suggestion.originalText}
+                                    </p>
+                                    <span className="text-xs text-muted-foreground mt-1 block">
+                                      Enthält bereits das Focus Keyword
+                                    </span>
+                                  </div>
+                                  <Button
+                                    onClick={() => handleRemoveH2Optimization(suggestion, index)}
+                                    disabled={isApplyingH2 === index}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                                    title="FKW aus H2 entfernen"
+                                  >
+                                    {isApplyingH2 === index ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="h-4 w-4" />
+                                    )}
+                                  </Button>
                                 </div>
                               ) : (
                                 <>
@@ -7702,9 +7948,25 @@ export const SEOEditor = ({
                                 <Badge variant="outline" className="text-xs bg-zinc-700/50 text-cyan-400 font-mono">{suggestion.segmentType}</Badge>
                               </div>
                               {(suggestion as any).alreadyOptimized ? (
-                                <div className="p-2 bg-green-500/10 border border-green-500/20 rounded text-sm">
-                                  <span className="text-xs text-green-400">✓ Bereits optimiert:</span>
-                                  <p className="text-foreground">{data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}</p>
+                                <div className="flex items-start gap-2">
+                                  <div className="flex-1 p-2 bg-green-500/10 border border-green-500/20 rounded text-sm">
+                                    <span className="text-xs text-green-400">✓ Bereits optimiert:</span>
+                                    <p className="text-foreground">{data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}</p>
+                                  </div>
+                                  <Button
+                                    onClick={() => handleRemoveH3Optimization(suggestion, index)}
+                                    disabled={isApplyingH3 === index}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                                    title="FKW aus H3 entfernen"
+                                  >
+                                    {isApplyingH3 === index ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="h-3 w-3" />
+                                    )}
+                                  </Button>
                                 </div>
                               ) : (
                                 <>
@@ -7717,7 +7979,7 @@ export const SEOEditor = ({
                                 </>
                               )}
                             </div>
-                            {!suggestion.applied && (
+                            {!suggestion.applied && !(suggestion as any).alreadyOptimized && (
                               <Button onClick={() => handleApplyH3Suggestion(suggestion, index)} disabled={isApplyingH3 === index} size="sm" className="h-7 px-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs">
                                 {isApplyingH3 === index ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Check className="h-3 w-3 mr-1" />Apply</>}
                               </Button>
