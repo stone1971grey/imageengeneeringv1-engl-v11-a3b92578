@@ -8073,8 +8073,8 @@ export const SEOEditor = ({
               </div>
             )}
 
-            {/* Smart H3 Generator */}
-            {fkwContentAnalysis && fkwContentAnalysis.h3Count > 0 && (
+            {/* Smart H3 Generator - Show if there are H3s detected OR if we have focus keyword to analyze */}
+            {(fkwContentAnalysis?.h3Count > 0 || data.focusKeyword) && (
               <div className="mb-4 p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/30 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -8085,9 +8085,15 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  <Badge variant="outline" className="text-xs bg-zinc-700/50 text-zinc-300 border-zinc-600">
-                    {fkwContentAnalysis.h3WithFkw}/{fkwContentAnalysis.h3Count} H3s mit FKW
-                  </Badge>
+                  {fkwContentAnalysis && fkwContentAnalysis.h3Count > 0 ? (
+                    <Badge variant="outline" className="text-xs bg-zinc-700/50 text-zinc-300 border-zinc-600">
+                      {fkwContentAnalysis.h3WithFkw}/{fkwContentAnalysis.h3Count} H3s mit FKW
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs bg-zinc-700/50 text-zinc-300 border-zinc-600">
+                      Analysiere H3s
+                    </Badge>
+                  )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
