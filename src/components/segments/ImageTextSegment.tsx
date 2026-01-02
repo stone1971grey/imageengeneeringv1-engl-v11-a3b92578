@@ -296,7 +296,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 className="text-4xl font-bold text-gray-900 mb-4"
                 as="h2"
                 onUpdate={onContentUpdate}
-                fieldLabel="Section Title"
+                fieldLabel="Section Title (H2)"
               />
             ) : (
               title && <h2 className="text-4xl font-bold text-gray-900 mb-4">{title}</h2>
@@ -463,13 +463,16 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 <div className="p-8">
                   {isEditing ? (
                     <>
-                      <input
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => handleItemChange(idx, 'title', e.target.value)}
-                        className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 mb-4 hover:bg-[#f9dc24]/10 transition-colors"
-                        placeholder="Item title..."
-                      />
+                      <div className="mb-4">
+                        <label className="text-xs text-gray-500 mb-1 block">Item Title (H3)</label>
+                        <input
+                          type="text"
+                          value={item.title}
+                          onChange={(e) => handleItemChange(idx, 'title', e.target.value)}
+                          className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 hover:bg-[#f9dc24]/10 transition-colors"
+                          placeholder="Item title..."
+                        />
+                      </div>
                       <FrontendRichTextEditor
                         value={item.description || ''}
                         onChange={(newValue) => handleItemChange(idx, 'description', newValue)}
