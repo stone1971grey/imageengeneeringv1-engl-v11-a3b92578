@@ -9908,10 +9908,6 @@ export const SEOEditor = ({
                             )}
                             
                             <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <span className="text-sm text-muted-foreground">Segment:</span>
-                              <code className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-foreground">
-                                {suggestion.segmentKey}
-                              </code>
                               {(() => {
                                 // For footer fields, get the actual footer segment ID from registry
                                 let displaySegmentId = suggestion.segmentId;
@@ -9927,21 +9923,12 @@ export const SEOEditor = ({
                                   }
                                 }
                                 
-                                return displaySegmentId ? (
-                                  <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 font-mono">
-                                    ID {displaySegmentId}: {displaySegmentType}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-400 border-amber-500/30 font-mono">
-                                    ID -: {displaySegmentType}
-                                  </Badge>
+                                return (
+                                  <span className="text-sm text-muted-foreground">
+                                    Segment: {displaySegmentId || '-'} ({displaySegmentType})
+                                  </span>
                                 );
                               })()}
-                              {suggestion.segmentType && suggestion.segmentType !== 'text' && (
-                                <Badge variant="outline" className="text-xs bg-zinc-500/10 text-zinc-400 border-zinc-500/30">
-                                  {suggestion.segmentType}
-                                </Badge>
-                              )}
                               {suggestion.segmentField && suggestion.segmentField !== 'raw' && (
                                 <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
                                   Feld: {suggestion.segmentField}
@@ -10561,14 +10548,9 @@ export const SEOEditor = ({
                         <div className="flex-1 min-w-0">
                           {/* Source segment info */}
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-xs bg-zinc-700/50 border-zinc-600 text-cyan-400 font-mono">
-                              Segment {suggestion.segmentId || suggestion.internalId || suggestion.segmentKey?.replace('segment-', '') || '?'}
-                            </Badge>
-                            {suggestion.segmentType && suggestion.segmentType !== 'unknown' && (
-                              <span className="text-xs text-muted-foreground">
-                                ({suggestion.segmentType})
-                              </span>
-                            )}
+                            <span className="text-sm text-muted-foreground">
+                              Segment: {suggestion.segmentId || suggestion.internalId || suggestion.segmentKey?.replace('segment-', '') || '-'} ({suggestion.segmentType && suggestion.segmentType !== 'unknown' ? suggestion.segmentType : 'segment'})
+                            </span>
                           </div>
 
                           {/* Anchor text */}
