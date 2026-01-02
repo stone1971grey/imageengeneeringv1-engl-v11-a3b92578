@@ -630,6 +630,28 @@ export const SEOEditor = ({
     hasFkw: boolean;
   }>>([]);
   
+  // Smart Density Optimizer state
+  const [isOptimizingDensity, setIsOptimizingDensity] = useState(false);
+  const [densitySuggestions, setDensitySuggestions] = useState<Array<{
+    occurrence: {
+      text: string;
+      segmentId: number;
+      segmentType: string;
+      segmentKey: string;
+      fieldPath: string;
+      position: 'h1' | 'h2' | 'h3' | 'intro' | 'body';
+      priority: number;
+      context: string;
+    };
+    suggestedReplacement: string;
+    reason: string;
+    keepScore: number;
+    applied?: boolean;
+    rejected?: boolean;
+  }>>([]);
+  const [showDensitySuggestions, setShowDensitySuggestions] = useState(false);
+  const [isApplyingDensitySuggestion, setIsApplyingDensitySuggestion] = useState<number | null>(null);
+  
   // H1 Change Log - documentation of what was changed
   const [h1ChangeLog, setH1ChangeLog] = useState<{
     timestamp: string;
@@ -6298,6 +6320,293 @@ export const SEOEditor = ({
     toast.info('Suggestion rejected');
   };
 
+  // Smart Density Optimizer - Generate suggestions for reducing keyword density
+  const handleOptimizeDensity = async () => {
+    if (!data.focusKeyword || !fkwContentAnalysis) {
+      toast.error('Focus Keyword and analysis required');
+      return;
+    }
+
+    if (fkwContentAnalysis.densityStatus !== 'too_high') {
+      toast.info('Keyword density is not too high - no optimization needed');
+      return;
+    }
+
+    setIsOptimizingDensity(true);
+    setShowDensitySuggestions(false);
+
+    try {
+      // Collect all FKW occurrences with their locations and context
+      const { data: segments } = await supabase
+        .from('segment_registry')
+        .select('segment_id, segment_key, segment_type')
+        .eq('page_slug', pageSlug)
+        .eq('deleted', false);
+
+      if (!segments) {
+        throw new Error('Could not load segments');
+      }
+
+      const occurrences: Array<{
+        text: string;
+        segmentId: number;
+        segmentType: string;
+        segmentKey: string;
+        fieldPath: string;
+        position: 'h1' | 'h2' | 'h3' | 'intro' | 'body';
+        priority: number;
+        context: string;
+      }> = [];
+
+      const focusKeywordLower = data.focusKeyword.toLowerCase();
+
+      // Analyze each segment for FKW occurrences
+      for (const segment of segments) {
+        const { data: contentData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', segment.segment_key)
+          .eq('language', editorLanguage)
+          .maybeSingle();
+
+        if (!contentData?.content_value) continue;
+
+        try {
+          const segData = JSON.parse(contentData.content_value);
+          const segType = segment.segment_type;
+
+          // Helper to check and add occurrence
+          const checkAndAdd = (
+            text: string | undefined,
+            fieldPath: string,
+            position: 'h1' | 'h2' | 'h3' | 'intro' | 'body',
+            priority: number
+          ) => {
+            if (!text || typeof text !== 'string') return;
+            if (text.toLowerCase().includes(focusKeywordLower)) {
+              occurrences.push({
+                text,
+                segmentId: segment.segment_id,
+                segmentType: segType,
+                segmentKey: segment.segment_key,
+                fieldPath,
+                position,
+                priority,
+                context: text.substring(0, 200) // First 200 chars as context
+              });
+            }
+          };
+
+          // Check different segment types
+          if (segType.includes('hero') || segType === 'product-hero-gallery') {
+            checkAndAdd(segData.title || segData.hero_title, 'title', 'h1', 100);
+            checkAndAdd(segData.subtitle || segData.hero_subtitle, 'subtitle', 'body', 30);
+            checkAndAdd(segData.description, 'description', 'body', 25);
+          }
+
+          if (segType === 'intro') {
+            checkAndAdd(segData.headline || segData.title, 'headline', 'h1', 95);
+            checkAndAdd(segData.introText || segData.description, 'introText', 'intro', 85);
+          }
+
+          if (segType === 'image-text') {
+            checkAndAdd(segData.title, 'title', 'h2', 70);
+            const items = segData.items || [];
+            items.forEach((item: any, idx: number) => {
+              checkAndAdd(item.title, `items[${idx}].title`, 'h3', 55);
+              checkAndAdd(item.description, `items[${idx}].description`, 'body', 35);
+            });
+          }
+
+          if (segType === 'feature-overview') {
+            checkAndAdd(segData.title, 'title', 'h2', 70);
+            const items = segData.items || [];
+            items.forEach((item: any, idx: number) => {
+              checkAndAdd(item.title, `items[${idx}].title`, 'h3', 55);
+              checkAndAdd(item.description, `items[${idx}].description`, 'body', 35);
+            });
+          }
+
+          if (segType === 'tiles') {
+            checkAndAdd(segData.title, 'title', 'h2', 70);
+            checkAndAdd(segData.description, 'description', 'body', 40);
+            const items = segData.items || [];
+            items.forEach((item: any, idx: number) => {
+              checkAndAdd(item.title, `items[${idx}].title`, 'h3', 55);
+              checkAndAdd(item.description, `items[${idx}].description`, 'body', 35);
+            });
+          }
+
+          if (segType === 'faq') {
+            checkAndAdd(segData.title, 'title', 'h2', 70);
+            const items = segData.items || [];
+            items.forEach((item: any, idx: number) => {
+              checkAndAdd(item.question, `items[${idx}].question`, 'h3', 55);
+              checkAndAdd(item.answer, `items[${idx}].answer`, 'body', 35);
+            });
+          }
+
+          if (segType === 'footer-cta') {
+            checkAndAdd(segData.title, 'title', 'h2', 65);
+            checkAndAdd(segData.description, 'description', 'body', 30);
+          }
+
+        } catch (parseError) {
+          console.error('Error parsing segment:', parseError);
+        }
+      }
+
+      if (occurrences.length === 0) {
+        toast.info('No Focus Keyword occurrences found to optimize');
+        setIsOptimizingDensity(false);
+        return;
+      }
+
+      // Call edge function to get AI suggestions
+      const { data: result, error } = await supabase.functions.invoke('optimize-keyword-density', {
+        body: {
+          occurrences,
+          focusKeyword: data.focusKeyword,
+          targetDensity: 2.0,
+          currentDensity: fkwContentAnalysis.fkwDensity
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (result?.suggestions && result.suggestions.length > 0) {
+        setDensitySuggestions(result.suggestions);
+        setShowDensitySuggestions(true);
+        toast.success(`${result.suggestions.length} Optimierungsvorschläge generiert`);
+      } else {
+        toast.info('Keine Optimierungsvorschläge gefunden');
+      }
+
+    } catch (error) {
+      console.error('Error optimizing density:', error);
+      toast.error('Fehler bei der Density-Optimierung');
+    } finally {
+      setIsOptimizingDensity(false);
+    }
+  };
+
+  // Apply a single density optimization suggestion
+  const handleApplyDensitySuggestion = async (suggestion: typeof densitySuggestions[0], index: number) => {
+    setIsApplyingDensitySuggestion(index);
+
+    try {
+      const { occurrence, suggestedReplacement } = suggestion;
+
+      // Load current segment content
+      const { data: contentData } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', occurrence.segmentKey)
+        .eq('language', editorLanguage)
+        .maybeSingle();
+
+      if (!contentData) {
+        throw new Error('Segment content not found');
+      }
+
+      const segData = JSON.parse(contentData.content_value);
+      const focusKeywordLower = data.focusKeyword!.toLowerCase();
+
+      // Navigate to the field and replace the FKW with synonym
+      const pathParts = occurrence.fieldPath.split('.');
+      let current: any = segData;
+      
+      for (let i = 0; i < pathParts.length - 1; i++) {
+        const part = pathParts[i];
+        const arrayMatch = part.match(/(\w+)\[(\d+)\]/);
+        if (arrayMatch) {
+          current = current[arrayMatch[1]][parseInt(arrayMatch[2])];
+        } else {
+          current = current[part];
+        }
+      }
+
+      const lastPart = pathParts[pathParts.length - 1];
+      const arrayMatch = lastPart.match(/(\w+)\[(\d+)\]/);
+      let fieldKey: string;
+      
+      if (arrayMatch) {
+        fieldKey = arrayMatch[1];
+        const arrIndex = parseInt(arrayMatch[2]);
+        const originalText = current[fieldKey][arrIndex];
+        // Replace FKW with synonym (case-insensitive)
+        const regex = new RegExp(data.focusKeyword!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        current[fieldKey][arrIndex] = originalText.replace(regex, suggestedReplacement);
+      } else {
+        const originalText = current[lastPart];
+        const regex = new RegExp(data.focusKeyword!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        current[lastPart] = originalText.replace(regex, suggestedReplacement);
+      }
+
+      // Save updated content
+      await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segData),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contentData.id);
+
+      // Mark suggestion as applied
+      const updatedSuggestions = [...densitySuggestions];
+      updatedSuggestions[index] = { ...suggestion, applied: true };
+      setDensitySuggestions(updatedSuggestions);
+
+      // Recalculate analysis
+      const { data: allSegments } = await supabase
+        .from('segment_registry')
+        .select('segment_id, segment_key, segment_type')
+        .eq('page_slug', pageSlug)
+        .eq('deleted', false);
+
+      if (allSegments && data.focusKeyword) {
+        const segmentContents = await Promise.all(
+          allSegments.map(async (seg) => {
+            const { data: content } = await supabase
+              .from('page_content')
+              .select('content_value')
+              .eq('page_slug', pageSlug)
+              .eq('section_key', seg.segment_key)
+              .eq('language', editorLanguage)
+              .maybeSingle();
+            return {
+              ...seg,
+              data: content?.content_value ? JSON.parse(content.content_value) : {}
+            };
+          })
+        );
+
+        const newAnalysis = await recalculateFkwAnalysis(segmentContents, data.focusKeyword);
+        setFkwContentAnalysis(newAnalysis);
+      }
+
+      toast.success(`"${data.focusKeyword}" → "${suggestedReplacement}" ersetzt`);
+
+    } catch (error) {
+      console.error('Error applying density suggestion:', error);
+      toast.error('Fehler beim Anwenden der Optimierung');
+    } finally {
+      setIsApplyingDensitySuggestion(null);
+    }
+  };
+
+  // Reject a density suggestion
+  const handleRejectDensitySuggestion = (index: number) => {
+    const updatedSuggestions = [...densitySuggestions];
+    updatedSuggestions[index] = { ...updatedSuggestions[index], rejected: true };
+    setDensitySuggestions(updatedSuggestions);
+    toast.info('Vorschlag abgelehnt');
+  };
+
   // Helper function to recalculate FKW analysis from current page content
   const recalculateFkwAnalysis = async (segments: any[], focusKeyword: string): Promise<{
     totalWords: number;
@@ -8541,6 +8850,188 @@ export const SEOEditor = ({
                           </div>
                         );
                       })}
+                  </div>
+                )}
+                
+                {/* Smart Density Optimizer - Only show when density is too high */}
+                {fkwContentAnalysis?.densityStatus === 'too_high' && (
+                  <div className="mt-4 p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-base font-semibold text-foreground">
+                          Smart Density Optimizer
+                        </Label>
+                        <Badge variant="outline" className="text-xs bg-red-500/10 text-red-400 border-red-500/30">
+                          AI-Powered
+                        </Badge>
+                      </div>
+                      {densitySuggestions.filter(s => s.applied).length > 0 && (
+                        <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                          {densitySuggestions.filter(s => s.applied).length} Applied
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-4">
+                      AI analysiert alle FKW-Vorkommen und schlägt vor, welche durch Synonyme ersetzt werden können, 
+                      um die Keyword-Dichte zu optimieren. Wichtige Positionen (H1, Intro, erste H2s) werden beibehalten.
+                    </p>
+                    
+                    {/* Density Suggestions List */}
+                    {showDensitySuggestions && densitySuggestions.length > 0 && (
+                      <div className="mb-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-foreground">
+                            Optimierungsvorschläge ({densitySuggestions.filter(s => !s.rejected).length}):
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowDensitySuggestions(false)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        
+                        {densitySuggestions.filter(s => !s.rejected).map((suggestion, idx) => (
+                          <div
+                            key={idx}
+                            className={`p-4 rounded-lg border transition-all ${
+                              suggestion.applied 
+                                ? 'bg-green-500/10 border-green-500/30' 
+                                : 'bg-muted/30 border-border/50 hover:border-red-500/30'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {/* Priority/Keep Score indicator */}
+                              <div className={`flex-shrink-0 w-10 h-10 rounded-full flex flex-col items-center justify-center text-xs font-semibold ${
+                                suggestion.applied 
+                                  ? 'bg-green-500/20 text-green-400' 
+                                  : suggestion.keepScore > 70
+                                    ? 'bg-yellow-500/20 text-yellow-400'
+                                    : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {suggestion.applied ? '✓' : (
+                                  <>
+                                    <span>{suggestion.keepScore}</span>
+                                    <span className="text-[8px]">keep</span>
+                                  </>
+                                )}
+                              </div>
+                              
+                              {/* Content */}
+                              <div className="flex-1 min-w-0 space-y-2">
+                                {/* Location badge */}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Badge variant="outline" className={`text-xs ${
+                                    suggestion.occurrence.position === 'h1' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
+                                    suggestion.occurrence.position === 'h2' ? 'bg-teal-500/10 text-teal-400 border-teal-500/30' :
+                                    suggestion.occurrence.position === 'h3' ? 'bg-violet-500/10 text-violet-400 border-violet-500/30' :
+                                    suggestion.occurrence.position === 'intro' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
+                                    'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'
+                                  }`}>
+                                    {suggestion.occurrence.position.toUpperCase()}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
+                                    Segment: {suggestion.occurrence.segmentId}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    ({suggestion.occurrence.segmentType})
+                                  </span>
+                                </div>
+                                
+                                {/* Before/After */}
+                                <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                                  <span className="text-amber-400 font-medium">Aktuell:</span>
+                                  <span className="text-foreground/60">
+                                    ...{suggestion.occurrence.context.substring(0, 80)}...
+                                  </span>
+                                  <span className="text-green-400 font-medium">Ersetzung:</span>
+                                  <span className="text-foreground font-medium">
+                                    "{data.focusKeyword}" → "{suggestion.suggestedReplacement}"
+                                  </span>
+                                </div>
+                                
+                                {/* Reason */}
+                                <p className="text-xs text-muted-foreground">
+                                  {suggestion.reason}
+                                </p>
+                              </div>
+                              
+                              {/* Action buttons */}
+                              {!suggestion.applied && (
+                                <div className="flex flex-col gap-2">
+                                  <Button
+                                    onClick={() => handleApplyDensitySuggestion(suggestion, idx)}
+                                    disabled={isApplyingDensitySuggestion === idx}
+                                    size="sm"
+                                    className="h-8 px-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                                  >
+                                    {isApplyingDensitySuggestion === idx ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <>
+                                        <Check className="h-3 w-3 mr-1" />
+                                        Apply
+                                      </>
+                                    )}
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleRejectDensitySuggestion(idx)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                  >
+                                    <X className="h-3 w-3 mr-1" />
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
+                              {suggestion.applied && (
+                                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                  Applied ✓
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {/* Summary */}
+                        {densitySuggestions.every(s => s.applied || s.rejected) && densitySuggestions.length > 0 && (
+                          <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
+                            <p className="text-sm text-green-400 font-medium">
+                              ✓ Alle Vorschläge bearbeitet! 
+                              {densitySuggestions.filter(s => s.applied).length} angewendet, 
+                              {densitySuggestions.filter(s => s.rejected).length} abgelehnt.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Generate Button */}
+                    <Button
+                      onClick={handleOptimizeDensity}
+                      disabled={isOptimizingDensity}
+                      className="w-full h-10 relative overflow-hidden bg-gradient-to-r from-red-600 via-orange-500 to-red-600 hover:from-red-700 hover:via-orange-600 hover:to-red-700 text-white shadow-lg shadow-red-500/20 transition-all duration-300"
+                      style={{
+                        backgroundSize: '200% 100%',
+                        animation: isOptimizingDensity ? 'none' : 'shimmer 3s ease-in-out infinite',
+                      }}
+                    >
+                      {isOptimizingDensity ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Analyzing FKW Occurrences...
+                        </>
+                      ) : (
+                        <>
+                          <GeminiIcon className="h-4 w-4 mr-2" />
+                          Smart Optimize Density
+                        </>
+                      )}
+                    </Button>
                   </div>
                 )}
               </div>
