@@ -466,30 +466,105 @@ export const SEOEditor = ({
       const startTime = performance.now();
       console.log('[SEO Editor] Loading page data for:', pageSlug, 'language:', editorLanguage);
       
-      // FAST PATH: Load SEO data from localStorage cache FIRST for instant display
-      const cachedSeoData = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
-      if (cachedSeoData) {
+      // CRITICAL FIX: Load focus keyword from DB FIRST as the priority source
+      // Focus Keyword is the core data point - everything else derives from it
+      const { data: seoSettingsData } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'seo_settings')
+        .maybeSingle();
+      
+      // If not found, try EN fallback
+      let focusKeywordFromDb = '';
+      let seoSettingsFromDb: any = null;
+      
+      if (seoSettingsData) {
         try {
-          const cached = JSON.parse(cachedSeoData);
-          console.log('[SEO Editor] Loading SEO data from cache (instant):', cached.focusKeyword);
-          // Only apply cache if current data is empty (prevents overwriting fresher data)
-          if (!data.focusKeyword && cached.focusKeyword) {
-            onChange({
-              ...data,
-              focusKeyword: cached.focusKeyword || data.focusKeyword || '',
-              h1: cached.h1 || data.h1 || '',
-              h1Locked: cached.h1Locked ?? data.h1Locked ?? false,
-              title: cached.title || data.title || '',
-              metaDescription: cached.metaDescription || data.metaDescription || '',
-              introduction: cached.introduction || data.introduction || ''
-            });
-          }
+          seoSettingsFromDb = JSON.parse(seoSettingsData.content_value);
+          focusKeywordFromDb = seoSettingsFromDb.focusKeyword || '';
+          console.log('[SEO Editor] PRIORITY: Focus Keyword from DB:', focusKeywordFromDb);
         } catch (e) {
-          console.warn('[SEO Editor] Failed to parse cached SEO data');
+          console.error('[SEO Editor] Failed to parse seo_settings:', e);
+        }
+      } else {
+        // Try EN fallback
+        const { data: enFallback } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('language', 'en')
+          .eq('section_key', 'seo_settings')
+          .maybeSingle();
+        
+        if (enFallback) {
+          try {
+            seoSettingsFromDb = JSON.parse(enFallback.content_value);
+            focusKeywordFromDb = seoSettingsFromDb.focusKeyword || '';
+            console.log('[SEO Editor] PRIORITY: Focus Keyword from EN fallback:', focusKeywordFromDb);
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse EN fallback seo_settings:', e);
+          }
         }
       }
       
-      // FAST PATH: Load FKW analysis from localStorage cache first for instant display
+      // Apply Focus Keyword IMMEDIATELY if found in DB - this is the priority source
+      if (focusKeywordFromDb && seoSettingsFromDb) {
+        const mergedData = {
+          ...data,
+          focusKeyword: focusKeywordFromDb,
+          h1: seoSettingsFromDb.h1 || data.h1 || '',
+          h1Locked: seoSettingsFromDb.h1Locked ?? data.h1Locked ?? false,
+          introduction: seoSettingsFromDb.introduction || data.introduction || '',
+          title: seoSettingsFromDb.title || data.title || '',
+          metaDescription: seoSettingsFromDb.metaDescription || data.metaDescription || '',
+          slug: seoSettingsFromDb.slug || data.slug || pageSlug,
+          canonical: seoSettingsFromDb.canonical || data.canonical || '',
+          robotsIndex: seoSettingsFromDb.robotsIndex || data.robotsIndex || 'index',
+          robotsFollow: seoSettingsFromDb.robotsFollow || data.robotsFollow || 'follow',
+          ogTitle: seoSettingsFromDb.ogTitle || data.ogTitle || '',
+          ogDescription: seoSettingsFromDb.ogDescription || data.ogDescription || '',
+          ogImage: seoSettingsFromDb.ogImage || data.ogImage || '',
+          twitterCard: seoSettingsFromDb.twitterCard || data.twitterCard || 'summary_large_image'
+        };
+        onChange(mergedData);
+        
+        // Cache to localStorage for faster loading next time
+        localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
+          focusKeyword: mergedData.focusKeyword,
+          h1: mergedData.h1,
+          h1Locked: mergedData.h1Locked,
+          title: mergedData.title,
+          metaDescription: mergedData.metaDescription,
+          introduction: mergedData.introduction
+        }));
+        console.log('[SEO Editor] Applied SEO data from DB immediately');
+      } else {
+        // Fallback: Try localStorage cache if DB has no data
+        const cachedSeoData = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
+        if (cachedSeoData && !data.focusKeyword) {
+          try {
+            const cached = JSON.parse(cachedSeoData);
+            if (cached.focusKeyword) {
+              console.log('[SEO Editor] Using cached Focus Keyword (DB was empty):', cached.focusKeyword);
+              onChange({
+                ...data,
+                focusKeyword: cached.focusKeyword || '',
+                h1: cached.h1 || data.h1 || '',
+                h1Locked: cached.h1Locked ?? data.h1Locked ?? false,
+                title: cached.title || data.title || '',
+                metaDescription: cached.metaDescription || data.metaDescription || '',
+                introduction: cached.introduction || data.introduction || ''
+              });
+            }
+          } catch (e) {
+            console.warn('[SEO Editor] Failed to parse cached SEO data');
+          }
+        }
+      }
+      
+      // Load FKW analysis from cache for instant display
       const cachedFkwAnalysis = localStorage.getItem(`seo-fkw-analysis-${pageSlug}-${editorLanguage}`);
       if (cachedFkwAnalysis) {
         try {
@@ -497,7 +572,7 @@ export const SEOEditor = ({
           if (cached.analysis) setFkwContentAnalysis(cached.analysis);
           if (cached.score !== undefined) setFkwContentScore(cached.score);
           if (cached.recommendations) setFkwContentRecommendations(cached.recommendations);
-          console.log('[SEO Editor] Loaded FKW analysis from cache (instant)');
+          console.log('[SEO Editor] Loaded FKW analysis from cache');
         } catch (e) {
           console.warn('[SEO Editor] Failed to parse cached FKW analysis');
         }
@@ -563,90 +638,8 @@ export const SEOEditor = ({
       
       console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items for language:', editorLanguage);
       
-      // CRITICAL FIX: If seo_settings not found in current language, load from EN fallback
-      // SEO settings are typically stored in EN only
-      const hasSeoInCurrentLang = contentData?.some(item => item.section_key === 'seo_settings');
-      if (!hasSeoInCurrentLang && editorLanguage !== 'en') {
-        console.log('[SEO Editor] SEO settings not found in current language, loading EN fallback');
-        const { data: seoFallback } = await supabase
-          .from('page_content')
-          .select('*')
-          .eq('page_slug', pageSlug)
-          .eq('section_key', 'seo_settings')
-          .eq('language', 'en')
-          .maybeSingle();
-        
-        if (seoFallback) {
-          contentData = [...(contentData || []), seoFallback];
-          console.log('[SEO Editor] SEO settings loaded from EN fallback');
-        }
-      }
-      
-      // CRITICAL: Also load seo_settings directly and merge with data prop if missing
-      // This ensures Advanced SEO features are always loaded even if parent component fails
-      const seoSettingsEntry = contentData?.find(item => item.section_key === 'seo_settings');
-      if (seoSettingsEntry) {
-        try {
-          const savedSeoSettings = JSON.parse(seoSettingsEntry.content_value);
-          console.log('[SEO Editor] Found seo_settings in DB:', savedSeoSettings);
-          
-          // ALWAYS merge DB values if they exist - don't rely on "missing" checks only
-          // STABILITY FIX: Use explicit undefined checks instead of || to preserve values correctly
-          const getVal = (dbVal: any, propVal: any, defaultVal: any) => {
-            if (dbVal !== undefined && dbVal !== null) return dbVal;
-            if (propVal !== undefined && propVal !== null) return propVal;
-            return defaultVal;
-          };
-          
-          const hasDbData = savedSeoSettings.focusKeyword !== undefined || 
-                           savedSeoSettings.h1 !== undefined || 
-                           savedSeoSettings.title !== undefined || 
-                           savedSeoSettings.metaDescription !== undefined;
-          
-          if (hasDbData) {
-            console.log('[SEO Editor] Merging SEO data from DB with stable values:', {
-              focusKeyword: savedSeoSettings.focusKeyword,
-              h1: savedSeoSettings.h1,
-              title: savedSeoSettings.title?.substring(0, 30)
-            });
-            
-            // Merge DB values into data, DB values take priority for SEO fields
-            const mergedData = {
-              ...data,
-              focusKeyword: getVal(savedSeoSettings.focusKeyword, data.focusKeyword, ''),
-              h1: getVal(savedSeoSettings.h1, data.h1, ''),
-              h1Locked: savedSeoSettings.h1Locked !== undefined ? savedSeoSettings.h1Locked : (data.h1Locked ?? false),
-              introduction: getVal(savedSeoSettings.introduction, data.introduction, ''),
-              title: getVal(savedSeoSettings.title, data.title, ''),
-              metaDescription: getVal(savedSeoSettings.metaDescription, data.metaDescription, ''),
-              slug: getVal(savedSeoSettings.slug, data.slug, pageSlug),
-              canonical: getVal(savedSeoSettings.canonical, data.canonical, ''),
-              robotsIndex: getVal(savedSeoSettings.robotsIndex, data.robotsIndex, 'index'),
-              robotsFollow: getVal(savedSeoSettings.robotsFollow, data.robotsFollow, 'follow'),
-              ogTitle: getVal(savedSeoSettings.ogTitle, data.ogTitle, ''),
-              ogDescription: getVal(savedSeoSettings.ogDescription, data.ogDescription, ''),
-              ogImage: getVal(savedSeoSettings.ogImage, data.ogImage, ''),
-              twitterCard: getVal(savedSeoSettings.twitterCard, data.twitterCard, 'summary_large_image')
-            };
-            onChange(mergedData);
-            
-            // Cache critical SEO data to localStorage for instant loading on next visit
-            localStorage.setItem(`seo-data-${pageSlug}-${editorLanguage}`, JSON.stringify({
-              focusKeyword: mergedData.focusKeyword,
-              h1: mergedData.h1,
-              h1Locked: mergedData.h1Locked,
-              title: mergedData.title,
-              metaDescription: mergedData.metaDescription,
-              introduction: mergedData.introduction
-            }));
-            console.log('[SEO Editor] Cached SEO data to localStorage');
-          }
-        } catch (e) {
-          console.error('[SEO Editor] Failed to parse seo_settings:', e);
-        }
-      } else {
-        console.log('[SEO Editor] No seo_settings found in DB for this page/language');
-      }
+      // Note: seo_settings already loaded and applied at the start of this function
+      // The parallel queries above are for other data types only
       
       if (!contentError && contentData) {
         setPageContent(contentData);
