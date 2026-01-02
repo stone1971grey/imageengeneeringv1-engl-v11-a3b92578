@@ -551,6 +551,10 @@ export const SEOEditor = ({
     rejected?: boolean;
   }>>([]);
   const [showFkwContentSuggestions, setShowFkwContentSuggestions] = useState(false);
+  const [isSmartContentCreatorOpen, setIsSmartContentCreatorOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-smart-content-creator-open');
+    return saved ? JSON.parse(saved) : true;
+  });
   const [fkwContentAnalysis, setFkwContentAnalysis] = useState<{
     totalWords: number;
     fkwOccurrences: number;
@@ -8944,30 +8948,39 @@ export const SEOEditor = ({
               );
             })()}
 
-            {/* Smart Content Creator - v2.0 */}
+            {/* Smart Content Creator - v2.1: Only Body Text (no Headings) + Collapsible */}
             {showFkwContentSuggestions && fkwContentSuggestions.length > 0 && (() => {
-              // CRITICAL: Filter out H1 headings - they belong to Smart H1, not Smart Content Creator
-              const contentSuggestionsNoH1 = fkwContentSuggestions.filter(s => 
-                !(s.suggestionType === 'heading' && s.headingLevel === 'h1')
+              // CRITICAL: Filter out ALL headings - H2/H3 are handled by Smart H2/H3 Generators
+              const bodyTextSuggestions = fkwContentSuggestions.filter(s => 
+                s.suggestionType === 'body'
               );
               
-              if (contentSuggestionsNoH1.length === 0) return null;
+              if (bodyTextSuggestions.length === 0) return null;
               
-              // Calculate actual counts - only count what we're displaying (excluding H1)
-              const appliedContent = contentSuggestionsNoH1.filter(s => s.applied && !s.rejected);
-              const pendingContent = contentSuggestionsNoH1.filter(s => !s.applied && !s.rejected);
+              // Calculate actual counts - only count body text
+              const appliedContent = bodyTextSuggestions.filter(s => s.applied && !s.rejected);
+              const pendingContent = bodyTextSuggestions.filter(s => !s.applied && !s.rejected);
               const appliedCount = appliedContent.length;
               const totalDisplayedCount = appliedCount + pendingContent.length;
               
               return (
-              <div className="mb-4 space-y-3">
-                <div className="flex items-center justify-between">
+              <div className="mb-4">
+                {/* Collapsible Header */}
+                <div 
+                  className="flex items-center justify-between p-3 bg-zinc-800/70 hover:bg-zinc-700/70 rounded-lg cursor-pointer transition-colors"
+                  onClick={() => {
+                    const newState = !isSmartContentCreatorOpen;
+                    setIsSmartContentCreatorOpen(newState);
+                    localStorage.setItem('seo-smart-content-creator-open', JSON.stringify(newState));
+                  }}
+                >
                   <div className="flex items-center gap-2">
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isSmartContentCreatorOpen ? '' : '-rotate-90'}`} />
                     <p className="text-base font-medium text-foreground">
                       Smart Content Creator
                     </p>
                     <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/30">
-                      AI-Powered
+                      Body Text
                     </Badge>
                     {/* Consistent Badge: Show applied/total count */}
                     {totalDisplayedCount > 0 && (
@@ -8985,135 +8998,135 @@ export const SEOEditor = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowFkwContentSuggestions(false)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFkwContentSuggestions(false);
+                    }}
                     className="h-6 w-6 p-0"
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
                 
-                <div className="space-y-3">
-                  {contentSuggestionsNoH1.filter(s => !s.rejected).map((suggestion, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg border transition-all ${
-                        suggestion.applied 
-                          ? 'bg-green-500/10 border-green-500/30' 
-                          : 'bg-muted/30 border-border/50 hover:border-orange-500/30'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Priority indicator */}
-                        <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                {/* Collapsible Content */}
+                {isSmartContentCreatorOpen && (
+                  <div className="mt-3 space-y-3">
+                    {bodyTextSuggestions.filter(s => !s.rejected).map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg border transition-all ${
                           suggestion.applied 
-                            ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-400'
-                        }`}>
-                          {suggestion.applied ? '✓' : suggestion.priority}
-                        </div>
-                        
-                        {/* Content */}
-                        <div className="flex-1 min-w-0 space-y-2">
-                          {/* Type badge - Standardized format */}
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Badge variant="outline" className={`text-sm ${
-                              suggestion.suggestionType === 'heading' 
-                                ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
-                                : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                            }`}>
-                              {suggestion.suggestionType === 'heading' 
-                                ? `${suggestion.headingLevel?.toUpperCase()} Heading` 
-                                : 'Body Text'}
-                            </Badge>
-                            <Badge variant="outline" className="text-sm bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
-                              Segment: {suggestion.segmentId}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              ({suggestion.segmentType})
-                            </span>
+                            ? 'bg-green-500/10 border-green-500/30' 
+                            : 'bg-muted/30 border-border/50 hover:border-orange-500/30'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Priority indicator */}
+                          <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+                            suggestion.applied 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-400'
+                          }`}>
+                            {suggestion.applied ? '✓' : suggestion.priority}
                           </div>
                           
-                          {/* Previous and Optimized in single line format like H2/H3 */}
-                          <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-base">
-                            <span className="text-amber-400 font-medium">Previous:</span>
-                            <span className="text-foreground/60 line-through">
-                              {suggestion.currentText.length > 120 
-                                ? suggestion.currentText.substring(0, 120) + '...' 
-                                : suggestion.currentText}
-                            </span>
-                            <span className="text-green-400 font-medium">Optimized:</span>
-                            <span className="text-foreground font-medium">
-                              {data.focusKeyword 
-                                ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
-                                : suggestion.suggestedText}
-                            </span>
+                          {/* Content */}
+                          <div className="flex-1 min-w-0 space-y-2">
+                            {/* Type badge - Standardized format */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="text-sm bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                Body Text
+                              </Badge>
+                              <Badge variant="outline" className="text-sm bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono">
+                                Segment: {suggestion.segmentId}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground">
+                                ({suggestion.segmentType})
+                              </span>
+                            </div>
+                            
+                            {/* Previous and Optimized in single line format */}
+                            <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-base">
+                              <span className="text-amber-400 font-medium">Previous:</span>
+                              <span className="text-foreground/60 line-through">
+                                {suggestion.currentText.length > 120 
+                                  ? suggestion.currentText.substring(0, 120) + '...' 
+                                  : suggestion.currentText}
+                              </span>
+                              <span className="text-green-400 font-medium">Optimized:</span>
+                              <span className="text-foreground font-medium">
+                                {data.focusKeyword 
+                                  ? highlightKeyword(suggestion.suggestedText, data.focusKeyword)
+                                  : suggestion.suggestedText}
+                              </span>
+                            </div>
+                            
+                            {/* Reason */}
+                            <p className="text-sm text-muted-foreground mt-2">
+                              {suggestion.reason}
+                            </p>
                           </div>
                           
-                          {/* Reason */}
-                          <p className="text-sm text-muted-foreground mt-2">
-                            {suggestion.reason}
-                          </p>
+                          {/* Action buttons */}
+                          {!suggestion.applied && (
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                onClick={() => handleApplyFkwContentSuggestion(suggestion, index)}
+                                disabled={isApplyingFkwContent === index}
+                                size="sm"
+                                className="h-8 px-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                              >
+                                {isApplyingFkwContent === index ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1" />
+                                    Apply
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                onClick={() => handleRejectFkwContentSuggestion(index)}
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              >
+                                <X className="h-3 w-3 mr-1" />
+                                Reject
+                              </Button>
+                            </div>
+                          )}
+                          {suggestion.applied && (
+                            <div className="flex flex-col items-end gap-2">
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                Applied ✓
+                              </Badge>
+                              <Button
+                                onClick={() => handleRemoveFkwContentSuggestion(suggestion, fkwContentSuggestions.findIndex(s => s === suggestion))}
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                title="Revert to original text"
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                <span className="text-xs">Revert</span>
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                        
-                        {/* Action buttons */}
-                        {!suggestion.applied && (
-                          <div className="flex flex-col gap-2">
-                            <Button
-                              onClick={() => handleApplyFkwContentSuggestion(suggestion, index)}
-                              disabled={isApplyingFkwContent === index}
-                              size="sm"
-                              className="h-8 px-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                            >
-                              {isApplyingFkwContent === index ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <>
-                                  <Check className="h-3 w-3 mr-1" />
-                                  Apply
-                                </>
-                              )}
-                            </Button>
-                            <Button
-                              onClick={() => handleRejectFkwContentSuggestion(index)}
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                            >
-                              <X className="h-3 w-3 mr-1" />
-                              Reject
-                            </Button>
-                          </div>
-                        )}
-                        {suggestion.applied && (
-                          <div className="flex flex-col items-end gap-2">
-                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                              Applied ✓
-                            </Badge>
-                            <Button
-                              onClick={() => handleRemoveFkwContentSuggestion(suggestion, fkwContentSuggestions.findIndex(s => s === suggestion))}
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                              title="Revert to original text"
-                            >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              <span className="text-xs">Revert</span>
-                            </Button>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Summary after processing */}
-                {contentSuggestionsNoH1.every(s => s.applied || s.rejected) && contentSuggestionsNoH1.length > 0 && (
-                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
-                    <p className="text-base text-green-400 font-medium">
-                      ✓ All suggestions processed! 
-                      {contentSuggestionsNoH1.filter(s => s.applied).length} applied, 
-                      {contentSuggestionsNoH1.filter(s => s.rejected).length} rejected.
-                    </p>
+                    ))}
+                    
+                    {/* Summary after processing */}
+                    {bodyTextSuggestions.every(s => s.applied || s.rejected) && bodyTextSuggestions.length > 0 && (
+                      <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
+                        <p className="text-base text-green-400 font-medium">
+                          ✓ All body text suggestions processed! 
+                          {bodyTextSuggestions.filter(s => s.applied).length} applied, 
+                          {bodyTextSuggestions.filter(s => s.rejected).length} rejected.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
