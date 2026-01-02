@@ -8219,14 +8219,11 @@ export const SEOEditor = ({
 
             {/* Smart H2 Generator - Show if H2s exist OR we have focus keyword */}
             {(fkwContentAnalysis?.h2Count > 0 || data.focusKeyword) && (() => {
-              // Calculate actual counts - only count what we're displaying (applied/optimized H2s)
+              // Calculate applied H2s (those with FKW)
               const appliedH2s = h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized);
               const optimizedH2Count = appliedH2s.length;
-              // Total = applied + pending suggestions (what's actually visible)
-              const pendingH2Count = h2Suggestions.filter(s => !s.applied && !(s as any).alreadyOptimized).length;
-              const totalDisplayedH2Count = optimizedH2Count + pendingH2Count;
-              // If no suggestions loaded yet, fall back to analysis count
-              const displayTotal = totalDisplayedH2Count > 0 ? totalDisplayedH2Count : (fkwContentAnalysis?.h2Count || 0);
+              // Total H2s = use the analysis count which reflects ALL H2s on the page
+              const totalH2Count = fkwContentAnalysis?.h2Count || 0;
               
               return (
               <div className="mb-4 p-4 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border border-teal-500/30 rounded-lg">
@@ -8239,68 +8236,77 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  {/* Consistent Badge: Show applied/total count */}
-                  {displayTotal > 0 && (
-                    optimizedH2Count === displayTotal ? (
+                  {/* Consistent Badge: Show applied/total count based on ACTUAL page H2s */}
+                  {totalH2Count > 0 && (
+                    optimizedH2Count >= totalH2Count ? (
                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                        ✓ {optimizedH2Count}/{displayTotal} Applied
+                        ✓ {optimizedH2Count}/{totalH2Count} Applied
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                        {optimizedH2Count}/{displayTotal} Applied
+                        {optimizedH2Count}/{totalH2Count} Applied
                       </Badge>
                     )
                   )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  {displayTotal > 0 ? (
-                    optimizedH2Count === displayTotal 
-                      ? `All ${displayTotal} H2 headings are optimized with Focus Keyword.`
-                      : `${optimizedH2Count}/${displayTotal} H2 headings optimized. Generate suggestions for remaining.`
+                  {totalH2Count > 0 ? (
+                    optimizedH2Count >= totalH2Count 
+                      ? `All ${totalH2Count} H2 headings are optimized with Focus Keyword.`
+                      : `${optimizedH2Count}/${totalH2Count} H2 headings optimized. Generate suggestions for remaining.`
                   ) : 'Analyzing H2 headings...'}
                 </p>
                 
-                {/* Always show applied H2s if they exist */}
+                {/* Always show applied H2s if they exist - with Previous/Optimized format */}
                 {optimizedH2Count > 0 && (
                   <div className="mb-4 space-y-2">
                     <p className="text-sm font-medium text-green-400 flex items-center gap-2">
                       <span>✓</span> Optimierte H2-Überschriften ({optimizedH2Count}):
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {h2Suggestions.filter(s => s.applied || (s as any).alreadyOptimized).map((suggestion, index) => (
-                        <div key={`applied-h2-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 flex-shrink-0">
-                              H2 Heading
-                            </Badge>
-                            <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
-                              Segment: {suggestion.segmentId || 'N/A'}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground flex-shrink-0">
-                              ({suggestion.segmentType})
-                            </span>
-                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
-                              Applied ✓
-                            </Badge>
-                            <span className="text-sm text-foreground truncate">
+                        <div key={`applied-h2-${index}`} className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                          <div className="flex items-start gap-3">
+                            {/* Badges row */}
+                            <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                              <Badge variant="outline" className="text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 flex-shrink-0">
+                                H2 Heading
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
+                                Segment: {suggestion.segmentId || 'N/A'}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
+                                ({suggestion.segmentType})
+                              </span>
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
+                                Applied ✓
+                              </Badge>
+                            </div>
+                            <Button
+                              onClick={() => handleRemoveH2Optimization(suggestion, h2Suggestions.indexOf(suggestion))}
+                              disabled={isApplyingH2 === h2Suggestions.indexOf(suggestion)}
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                              title="FKW aus H2 entfernen"
+                            >
+                              {isApplyingH2 === h2Suggestions.indexOf(suggestion) ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                          {/* Previous/Optimized in single line format */}
+                          <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm mt-2">
+                            <span className="text-amber-400 font-medium">Previous:</span>
+                            <span className="text-foreground/60 line-through">{suggestion.suggestedText || suggestion.originalText}</span>
+                            <span className="text-green-400 font-medium">Optimized:</span>
+                            <span className="text-foreground font-medium">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
                           </div>
-                          <Button
-                            onClick={() => handleRemoveH2Optimization(suggestion, h2Suggestions.indexOf(suggestion))}
-                            disabled={isApplyingH2 === h2Suggestions.indexOf(suggestion)}
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
-                            title="FKW aus H2 entfernen"
-                          >
-                            {isApplyingH2 === h2Suggestions.indexOf(suggestion) ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-3 w-3" />
-                            )}
-                          </Button>
                         </div>
                       ))}
                     </div>
@@ -8421,14 +8427,11 @@ export const SEOEditor = ({
 
             {/* Smart H3 Generator - Show if there are H3s detected OR if we have focus keyword to analyze */}
             {(fkwContentAnalysis?.h3Count > 0 || data.focusKeyword) && (() => {
-              // Calculate actual counts - only count what we're displaying (applied/optimized H3s)
+              // Calculate applied H3s (those with FKW)
               const appliedH3s = h3Suggestions.filter(s => s.applied || s.alreadyOptimized);
               const optimizedH3Count = appliedH3s.length;
-              // Total = applied + pending suggestions (what's actually visible)
-              const pendingH3Count = h3Suggestions.filter(s => !s.applied && !s.alreadyOptimized).length;
-              const totalDisplayedH3Count = optimizedH3Count + pendingH3Count;
-              // If no suggestions loaded yet, fall back to analysis count
-              const displayTotal = totalDisplayedH3Count > 0 ? totalDisplayedH3Count : (fkwContentAnalysis?.h3Count || 0);
+              // Total H3s = use the analysis count which reflects ALL H3s on the page
+              const totalH3Count = fkwContentAnalysis?.h3Count || 0;
               
               return (
               <div className="mb-4 p-4 bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/30 rounded-lg">
@@ -8441,68 +8444,77 @@ export const SEOEditor = ({
                       AI-Powered
                     </Badge>
                   </div>
-                  {/* Consistent Badge: Show applied/total count */}
-                  {displayTotal > 0 && (
-                    optimizedH3Count === displayTotal ? (
+                  {/* Consistent Badge: Show applied/total count based on ACTUAL page H3s */}
+                  {totalH3Count > 0 && (
+                    optimizedH3Count >= totalH3Count ? (
                       <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                        ✓ {optimizedH3Count}/{displayTotal} Applied
+                        ✓ {optimizedH3Count}/{totalH3Count} Applied
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                        {optimizedH3Count}/{displayTotal} Applied
+                        {optimizedH3Count}/{totalH3Count} Applied
                       </Badge>
                     )
                   )}
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  {displayTotal > 0 ? (
-                    optimizedH3Count === displayTotal 
-                      ? `All ${displayTotal} H3 headings are optimized with Focus Keyword.`
-                      : `${optimizedH3Count}/${displayTotal} H3 headings optimized. 2-3 H3s with FKW are ideal.`
+                  {totalH3Count > 0 ? (
+                    optimizedH3Count >= totalH3Count 
+                      ? `All ${totalH3Count} H3 headings are optimized with Focus Keyword.`
+                      : `${optimizedH3Count}/${totalH3Count} H3 headings optimized. 2-3 H3s with FKW are ideal.`
                   ) : 'Analyzing H3 headings...'}
                 </p>
                 
-                {/* Always show applied H3s if they exist */}
+                {/* Always show applied H3s if they exist - with Previous/Optimized format */}
                 {optimizedH3Count > 0 && (
                   <div className="mb-4 space-y-2">
                     <p className="text-sm font-medium text-green-400 flex items-center gap-2">
                       <span>✓</span> Optimierte H3-Überschriften ({optimizedH3Count}):
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {h3Suggestions.filter(s => s.applied || s.alreadyOptimized).map((suggestion, index) => (
-                        <div key={`applied-h3-${index}`} className="p-2 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30 flex-shrink-0">
-                              H3 Heading
-                            </Badge>
-                            <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
-                              Segment: {suggestion.segmentId || 'N/A'}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground flex-shrink-0">
-                              ({suggestion.segmentType})
-                            </span>
-                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
-                              Applied ✓
-                            </Badge>
-                            <span className="text-sm text-foreground truncate">
+                        <div key={`applied-h3-${index}`} className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                          <div className="flex items-start gap-3">
+                            {/* Badges row */}
+                            <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                              <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-400 border-violet-500/30 flex-shrink-0">
+                                H3 Heading
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-400 font-mono flex-shrink-0">
+                                Segment: {suggestion.segmentId || 'N/A'}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
+                                ({suggestion.segmentType})
+                              </span>
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs flex-shrink-0">
+                                Applied ✓
+                              </Badge>
+                            </div>
+                            <Button
+                              onClick={() => handleRemoveH3Optimization(suggestion, h3Suggestions.indexOf(suggestion))}
+                              disabled={isApplyingH3 === h3Suggestions.indexOf(suggestion)}
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                              title="FKW aus H3 entfernen"
+                            >
+                              {isApplyingH3 === h3Suggestions.indexOf(suggestion) ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                          {/* Previous/Optimized in single line format */}
+                          <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm mt-2">
+                            <span className="text-amber-400 font-medium">Previous:</span>
+                            <span className="text-foreground/60 line-through">{suggestion.suggestedText || suggestion.originalText}</span>
+                            <span className="text-green-400 font-medium">Optimized:</span>
+                            <span className="text-foreground font-medium">
                               {data.focusKeyword ? highlightKeyword(suggestion.originalText, data.focusKeyword) : suggestion.originalText}
                             </span>
                           </div>
-                          <Button
-                            onClick={() => handleRemoveH3Optimization(suggestion, h3Suggestions.indexOf(suggestion))}
-                            disabled={isApplyingH3 === h3Suggestions.indexOf(suggestion)}
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
-                            title="FKW aus H3 entfernen"
-                          >
-                            {isApplyingH3 === h3Suggestions.indexOf(suggestion) ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-3 w-3" />
-                            )}
-                          </Button>
                         </div>
                       ))}
                     </div>
