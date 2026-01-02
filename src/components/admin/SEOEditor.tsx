@@ -92,32 +92,10 @@ export const SEOEditor = ({
   const [h1SourceInfo, setH1SourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   const [introSourceInfo, setIntroSourceInfo] = useState<{ type: string; key: string; id: string | number; label: string } | null>(null);
   
-  // CRITICAL FIX: Focus Keyword loaded SYNCHRONOUSLY from localStorage first, then DB
-  // This ensures FKW is IMMEDIATELY available on first render - no waiting for async
-  const [localFocusKeyword, setLocalFocusKeyword] = useState<string>(() => {
-    // SYNCHRONOUS INIT: Check localStorage cache FIRST for instant availability
-    try {
-      const cached = localStorage.getItem(`seo-fkw-${pageSlug}-${editorLanguage}`);
-      if (cached) {
-        console.log('[SEO Editor] SYNC INIT: FKW from localStorage:', cached);
-        return cached;
-      }
-      // Also check the full SEO data cache
-      const fullCache = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
-      if (fullCache) {
-        const parsed = JSON.parse(fullCache);
-        if (parsed.focusKeyword) {
-          console.log('[SEO Editor] SYNC INIT: FKW from full cache:', parsed.focusKeyword);
-          return parsed.focusKeyword;
-        }
-      }
-    } catch (e) {
-      console.warn('[SEO Editor] Failed to read FKW from cache');
-    }
-    // Fallback to prop if available
-    return data.focusKeyword || '';
-  });
+  // CRITICAL FIX: Focus Keyword state - will be loaded from DB/cache on pageSlug change
+  const [localFocusKeyword, setLocalFocusKeyword] = useState<string>('');
   const [isFocusKeywordLoaded, setIsFocusKeywordLoaded] = useState(false);
+  const [lastLoadedPageSlug, setLastLoadedPageSlug] = useState<string>('');
   
   // Smart Focus Keyword state
   const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
@@ -126,6 +104,104 @@ export const SEOEditor = ({
   
   // EFFECTIVE Focus Keyword: Prioritize locally loaded state
   const effectiveFocusKeyword = localFocusKeyword || data.focusKeyword || '';
+  
+  // CRITICAL: Load FKW IMMEDIATELY when pageSlug changes - sync from cache, then verify from DB
+  useEffect(() => {
+    if (!pageSlug || pageSlug === lastLoadedPageSlug) return;
+    
+    console.log('[SEO Editor] PAGE CHANGED - Loading FKW for:', pageSlug);
+    setLastLoadedPageSlug(pageSlug);
+    setIsFocusKeywordLoaded(false);
+    
+    // STEP 1: Try to load from localStorage IMMEDIATELY (sync)
+    let cachedFkw = '';
+    try {
+      const cached = localStorage.getItem(`seo-fkw-${pageSlug}-${editorLanguage}`);
+      if (cached) {
+        cachedFkw = cached;
+        console.log('[SEO Editor] INSTANT: FKW from dedicated cache:', cachedFkw);
+      } else {
+        const fullCache = localStorage.getItem(`seo-data-${pageSlug}-${editorLanguage}`);
+        if (fullCache) {
+          const parsed = JSON.parse(fullCache);
+          if (parsed.focusKeyword) {
+            cachedFkw = parsed.focusKeyword;
+            console.log('[SEO Editor] INSTANT: FKW from full cache:', cachedFkw);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[SEO Editor] Failed to read FKW from cache');
+    }
+    
+    // Set cached value IMMEDIATELY if available
+    if (cachedFkw) {
+      setLocalFocusKeyword(cachedFkw);
+      setIsFocusKeywordLoaded(true);
+      // Also sync to parent
+      if (cachedFkw !== data.focusKeyword) {
+        onChange({ ...data, focusKeyword: cachedFkw });
+      }
+    }
+    
+    // STEP 2: Verify/load from DB (async) - this is the authoritative source
+    const loadFromDb = async () => {
+      const { data: seoData } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('language', editorLanguage)
+        .eq('section_key', 'seo_settings')
+        .maybeSingle();
+      
+      let fkwFromDb = '';
+      if (seoData) {
+        try {
+          const parsed = JSON.parse(seoData.content_value);
+          fkwFromDb = parsed.focusKeyword || '';
+          console.log('[SEO Editor] DB: FKW loaded:', fkwFromDb);
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse seo_settings:', e);
+        }
+      }
+      
+      // Fallback to EN if no FKW found in current language
+      if (!fkwFromDb && editorLanguage !== 'en') {
+        const { data: enData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('language', 'en')
+          .eq('section_key', 'seo_settings')
+          .maybeSingle();
+        
+        if (enData) {
+          try {
+            const parsed = JSON.parse(enData.content_value);
+            fkwFromDb = parsed.focusKeyword || '';
+            console.log('[SEO Editor] DB: FKW from EN fallback:', fkwFromDb);
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse EN seo_settings:', e);
+          }
+        }
+      }
+      
+      // Update state if DB has a value (authoritative)
+      if (fkwFromDb) {
+        setLocalFocusKeyword(fkwFromDb);
+        // Cache for next time
+        localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwFromDb);
+        // Sync to parent
+        if (fkwFromDb !== data.focusKeyword) {
+          onChange({ ...data, focusKeyword: fkwFromDb });
+        }
+      }
+      
+      setIsFocusKeywordLoaded(true);
+    };
+    
+    loadFromDb();
+  }, [pageSlug, editorLanguage]);
 
   // Smart H1 Headline state
   const [isGeneratingH1, setIsGeneratingH1] = useState(false);
@@ -476,72 +552,8 @@ export const SEOEditor = ({
     }
   };
 
-  // CRITICAL: Load Focus Keyword DIRECTLY from DB on mount - this is the single source of truth
-  // This runs independently of parent component timing issues
-  useEffect(() => {
-    const loadFocusKeywordFromDb = async () => {
-      console.log('[SEO Editor] Loading Focus Keyword directly from DB for:', pageSlug);
-      setIsFocusKeywordLoaded(false);
-      
-      // Try current language first
-      const { data: seoData } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('language', editorLanguage)
-        .eq('section_key', 'seo_settings')
-        .maybeSingle();
-      
-      let fkwFromDb = '';
-      if (seoData) {
-        try {
-          const parsed = JSON.parse(seoData.content_value);
-          fkwFromDb = parsed.focusKeyword || '';
-          console.log('[SEO Editor] FKW from DB (current lang):', fkwFromDb);
-        } catch (e) {
-          console.error('[SEO Editor] Failed to parse seo_settings:', e);
-        }
-      }
-      
-      // Fallback to EN if no FKW found
-      if (!fkwFromDb && editorLanguage !== 'en') {
-        const { data: enData } = await supabase
-          .from('page_content')
-          .select('content_value')
-          .eq('page_slug', pageSlug)
-          .eq('language', 'en')
-          .eq('section_key', 'seo_settings')
-          .maybeSingle();
-        
-        if (enData) {
-          try {
-            const parsed = JSON.parse(enData.content_value);
-            fkwFromDb = parsed.focusKeyword || '';
-            console.log('[SEO Editor] FKW from DB (EN fallback):', fkwFromDb);
-          } catch (e) {
-            console.error('[SEO Editor] Failed to parse EN seo_settings:', e);
-          }
-        }
-      }
-      
-      // Set local state - this is now the authoritative source
-      if (fkwFromDb) {
-        setLocalFocusKeyword(fkwFromDb);
-        // CRITICAL: Cache FKW in dedicated key for INSTANT sync loading on next visit
-        localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwFromDb);
-        console.log('[SEO Editor] FKW cached for instant loading:', fkwFromDb);
-      }
-      setIsFocusKeywordLoaded(true);
-      
-      // Also update parent if it has a different/empty value
-      if (fkwFromDb && fkwFromDb !== data.focusKeyword) {
-        console.log('[SEO Editor] Syncing FKW to parent:', fkwFromDb);
-        onChange({ ...data, focusKeyword: fkwFromDb });
-      }
-    };
-    
-    loadFocusKeywordFromDb();
-  }, [pageSlug, editorLanguage]);
+  // NOTE: FKW loading is now handled in the main useEffect above (lines ~107-193)
+  // that triggers on pageSlug change - no separate effect needed
   
   // Sync localFocusKeyword when data.focusKeyword changes (e.g., user selects a new FKW)
   useEffect(() => {
