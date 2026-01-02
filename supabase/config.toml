@@ -71,3 +71,6 @@ verify_jwt = true
 
 [functions.generate-h2-headlines]
 verify_jwt = true
+
+[functions.generate-h3-headlines]
+verify_jwt = true
