@@ -147,32 +147,52 @@ export function parseContentItems(
     if (item.section_key === "seo_settings") {
       try {
         dbSeoSettings = JSON.parse(item.content_value);
-        console.log('[contentLoadingUtils] PRE-SCAN: Found seo_settings in DB:', dbSeoSettings);
+        console.log('[contentLoadingUtils] PRE-SCAN: Found seo_settings in DB:', {
+          focusKeyword: dbSeoSettings?.focusKeyword,
+          h1: dbSeoSettings?.h1,
+          title: dbSeoSettings?.title?.substring(0, 30)
+        });
       } catch (e) {
         console.error('[contentLoadingUtils] PRE-SCAN: Error parsing seo_settings:', e);
       }
     }
   });
 
+  // STABILITY FIX: Use explicit undefined checks instead of || to preserve empty strings correctly
+  // This prevents losing focusKeyword when it exists in DB but existingSeoData was reset
+  const getStableValue = (dbVal: any, existingVal: any, defaultVal: any) => {
+    // DB value takes priority if it exists and is not undefined
+    if (dbVal !== undefined && dbVal !== null) return dbVal;
+    // Then existing value if not undefined
+    if (existingVal !== undefined && existingVal !== null) return existingVal;
+    // Finally default
+    return defaultVal;
+  };
+
   // Initialize seoData: prioritize DB values, then existingSeoData, then defaults
   // This ensures saved focusKeyword, h1, etc. are never lost during page switch
   let seoData = {
-    title: dbSeoSettings?.title || existingSeoData?.title || '',
-    metaDescription: dbSeoSettings?.metaDescription || existingSeoData?.metaDescription || '',
-    slug: dbSeoSettings?.slug || existingSeoData?.slug || selectedPage,
-    canonical: dbSeoSettings?.canonical || existingSeoData?.canonical || '',
-    robotsIndex: dbSeoSettings?.robotsIndex || existingSeoData?.robotsIndex || 'index',
-    robotsFollow: dbSeoSettings?.robotsFollow || existingSeoData?.robotsFollow || 'follow',
-    focusKeyword: dbSeoSettings?.focusKeyword || existingSeoData?.focusKeyword || '',
-    ogTitle: dbSeoSettings?.ogTitle || existingSeoData?.ogTitle || '',
-    ogDescription: dbSeoSettings?.ogDescription || existingSeoData?.ogDescription || '',
-    ogImage: dbSeoSettings?.ogImage || existingSeoData?.ogImage || '',
-    twitterCard: dbSeoSettings?.twitterCard || existingSeoData?.twitterCard || 'summary_large_image',
-    h1: dbSeoSettings?.h1 || existingSeoData?.h1 || '',
-    h1Locked: dbSeoSettings?.h1Locked ?? existingSeoData?.h1Locked ?? false,
-    introduction: dbSeoSettings?.introduction || existingSeoData?.introduction || ''
+    title: getStableValue(dbSeoSettings?.title, existingSeoData?.title, ''),
+    metaDescription: getStableValue(dbSeoSettings?.metaDescription, existingSeoData?.metaDescription, ''),
+    slug: getStableValue(dbSeoSettings?.slug, existingSeoData?.slug, selectedPage),
+    canonical: getStableValue(dbSeoSettings?.canonical, existingSeoData?.canonical, ''),
+    robotsIndex: getStableValue(dbSeoSettings?.robotsIndex, existingSeoData?.robotsIndex, 'index'),
+    robotsFollow: getStableValue(dbSeoSettings?.robotsFollow, existingSeoData?.robotsFollow, 'follow'),
+    focusKeyword: getStableValue(dbSeoSettings?.focusKeyword, existingSeoData?.focusKeyword, ''),
+    ogTitle: getStableValue(dbSeoSettings?.ogTitle, existingSeoData?.ogTitle, ''),
+    ogDescription: getStableValue(dbSeoSettings?.ogDescription, existingSeoData?.ogDescription, ''),
+    ogImage: getStableValue(dbSeoSettings?.ogImage, existingSeoData?.ogImage, ''),
+    twitterCard: getStableValue(dbSeoSettings?.twitterCard, existingSeoData?.twitterCard, 'summary_large_image'),
+    h1: getStableValue(dbSeoSettings?.h1, existingSeoData?.h1, ''),
+    h1Locked: dbSeoSettings?.h1Locked !== undefined ? dbSeoSettings.h1Locked : (existingSeoData?.h1Locked ?? false),
+    introduction: getStableValue(dbSeoSettings?.introduction, existingSeoData?.introduction, '')
   };
-  console.log('[contentLoadingUtils] Initialized seoData with DB priority:', seoData);
+  console.log('[contentLoadingUtils] FINAL seoData after stable merge:', {
+    focusKeyword: seoData.focusKeyword,
+    h1: seoData.h1,
+    dbHadFocusKeyword: dbSeoSettings?.focusKeyword !== undefined,
+    existingHadFocusKeyword: existingSeoData?.focusKeyword !== undefined
+  });
   let needsSegmentUpdate = false;
   let segmentsWithIds: any[] = [];
 
