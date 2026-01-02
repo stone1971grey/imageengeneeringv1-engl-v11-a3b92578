@@ -519,6 +519,14 @@ export const SEOEditor = ({
     const saved = localStorage.getItem('seo-advanced-external-links-open');
     return saved !== null ? saved === 'true' : false; // Default: collapsed
   });
+  const [isCanonicalOpen, setIsCanonicalOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-canonical-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
+  const [isRedirectsOpen, setIsRedirectsOpen] = useState(() => {
+    const saved = localStorage.getItem('seo-advanced-redirects-open');
+    return saved !== null ? saved === 'true' : false; // Default: collapsed
+  });
   
   // Persist Advanced Tab collapsible states
   useEffect(() => {
@@ -533,6 +541,13 @@ export const SEOEditor = ({
   useEffect(() => {
     localStorage.setItem('seo-advanced-external-links-open', String(isExternalLinksOpen));
   }, [isExternalLinksOpen]);
+  useEffect(() => {
+    localStorage.setItem('seo-advanced-canonical-open', String(isCanonicalOpen));
+  }, [isCanonicalOpen]);
+  useEffect(() => {
+    localStorage.getItem('seo-advanced-redirects-open');
+    localStorage.setItem('seo-advanced-redirects-open', String(isRedirectsOpen));
+  }, [isRedirectsOpen]);
   
   // FKW Content Optimizer state
   const [isGeneratingFkwContent, setIsGeneratingFkwContent] = useState(false);
@@ -10676,78 +10691,98 @@ export const SEOEditor = ({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Canonical URL */}
-          <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <Label htmlFor="canonical" className="text-base font-semibold text-foreground">
-                Canonical URL
-              </Label>
-              <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
-            </div>
-            <Input
-              id="canonical"
-              value={data.canonical || ''}
-              onChange={(e) => handleChange('canonical', e.target.value)}
-              placeholder="https://www.image-engineering.de/your-page"
-              className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
-            />
-            <p className="text-sm text-muted-foreground mt-3">
-              Only needed if this page is a duplicate of another
-            </p>
-          </div>
-
-          {/* Redirect Manager Section */}
-          <div className="p-5 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-base font-semibold text-foreground flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-blue-400" />
-                  URL Redirects
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Manage 301/302 redirects for site migrations and SEO
+          {/* Canonical URL - Collapsible */}
+          <Collapsible open={isCanonicalOpen} onOpenChange={setIsCanonicalOpen}>
+            <div className="rounded-lg overflow-hidden border border-zinc-700">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left p-4 bg-zinc-800/70 hover:bg-zinc-800 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Link2 className="h-5 w-5 text-zinc-400" />
+                    <h3 className="text-base font-semibold">Canonical URL</h3>
+                    <Badge variant="outline" className="text-xs bg-muted/50">Optional</Badge>
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isCanonicalOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 bg-background border-t border-border">
+                <Input
+                  id="canonical"
+                  value={data.canonical || ''}
+                  onChange={(e) => handleChange('canonical', e.target.value)}
+                  placeholder="https://www.image-engineering.de/your-page"
+                  className="h-11 bg-muted/30 border-border focus:border-[#f9dc24] focus:ring-[#f9dc24]/20"
+                />
+                <p className="text-sm text-muted-foreground mt-3">
+                  Only needed if this page is a duplicate of another
                 </p>
-              </div>
-              <Button
-                onClick={() => setIsRedirectManagerOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              >
-                <Link2 className="h-4 w-4 mr-2" />
-                Open Redirect Manager
-              </Button>
+              </CollapsibleContent>
             </div>
-            
-            {/* Display existing redirects for this page */}
-            {pageRedirects.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <Label className="text-sm font-medium text-muted-foreground">
-                  Redirects pointing to this page:
-                </Label>
-                <div className="space-y-2">
-                  {pageRedirects.map((redirect) => (
-                    <div 
-                      key={redirect.id}
-                      className="flex items-center gap-3 p-3 bg-background/50 rounded-lg border border-border"
-                    >
-                      <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
-                        {redirect.redirect_type}
+          </Collapsible>
+
+          {/* URL Redirects - Collapsible */}
+          <Collapsible open={isRedirectsOpen} onOpenChange={setIsRedirectsOpen}>
+            <div className="rounded-lg overflow-hidden border border-blue-500/20">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left p-4 bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/15 hover:to-purple-500/15 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Link2 className="h-5 w-5 text-blue-400" />
+                    <h3 className="text-base font-semibold">URL Redirects</h3>
+                    {pageRedirects.length > 0 && (
+                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                        {pageRedirects.length} active
                       </Badge>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="font-mono text-foreground truncate">{redirect.source_url}</span>
-                          <span className="text-muted-foreground">→</span>
-                          <span className="font-mono text-blue-400 truncate">{redirect.target_url}</span>
-                        </div>
-                        {redirect.notes && (
-                          <p className="text-xs text-muted-foreground mt-1 truncate">{redirect.notes}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isRedirectsOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 bg-background border-t border-border space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Manage 301/302 redirects for site migrations and SEO
+                  </p>
+                  <Button
+                    onClick={() => setIsRedirectManagerOpen(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    <Link2 className="h-4 w-4 mr-2" />
+                    Open Redirect Manager
+                  </Button>
                 </div>
-              </div>
-            )}
-          </div>
+                
+                {/* Display existing redirects for this page */}
+                {pageRedirects.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Redirects pointing to this page:
+                    </Label>
+                    <div className="space-y-2">
+                      {pageRedirects.map((redirect) => (
+                        <div 
+                          key={redirect.id}
+                          className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg border border-border"
+                        >
+                          <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                            {redirect.redirect_type}
+                          </Badge>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="font-mono text-foreground truncate">{redirect.source_url}</span>
+                              <span className="text-muted-foreground">→</span>
+                              <span className="font-mono text-blue-400 truncate">{redirect.target_url}</span>
+                            </div>
+                            {redirect.notes && (
+                              <p className="text-xs text-muted-foreground mt-1 truncate">{redirect.notes}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
         </TabsContent>
         )}
 
