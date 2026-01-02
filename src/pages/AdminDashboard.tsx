@@ -604,22 +604,13 @@ const AdminDashboard = () => {
       setFooterTeamTitle("");
       setFooterButtonText("");
       setContent({});
-      setSeoData({
-        title: '',
-        metaDescription: '',
-        slug: selectedPage,
-        canonical: '',
-        robotsIndex: 'index',
-        robotsFollow: 'follow',
-        focusKeyword: '',
-        ogTitle: '',
-        ogDescription: '',
-        ogImage: '',
-        twitterCard: 'summary_large_image',
-        h1: '',
-        h1Locked: false,
-        introduction: ''
-      });
+      // CRITICAL FIX: Do NOT reset seoData to empty values here!
+      // This causes race conditions with SEO Editor's local state management.
+      // Only update the slug - actual data will be loaded from DB by parseContentItems
+      setSeoData(prev => ({
+        ...prev,
+        slug: selectedPage
+      }));
       
       // Comprehensive error handler for page loading
       const loadPageWithErrorHandling = async () => {
