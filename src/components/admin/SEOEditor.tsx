@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { RedirectManager } from "./RedirectManager";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,6 +97,9 @@ export const SEOEditor = ({
   const [isFocusKeywordLoaded, setIsFocusKeywordLoaded] = useState(false);
   const [lastLoadedPageSlug, setLastLoadedPageSlug] = useState<string>('');
   
+  // REF for immediate access to FKW value across effects - avoids race conditions
+  const localFocusKeywordRef = useRef<string>('');
+  
   // Smart Focus Keyword state
   const [isGeneratingKeywords, setIsGeneratingKeywords] = useState(false);
   const [keywordSuggestions, setKeywordSuggestions] = useState<Array<{ keyword: string; reason: string; priority: number }>>([]);
@@ -137,6 +140,7 @@ export const SEOEditor = ({
     // Set cached value IMMEDIATELY if available
     if (cachedFkw) {
       setLocalFocusKeyword(cachedFkw);
+      localFocusKeywordRef.current = cachedFkw; // SYNC REF immediately
       setIsFocusKeywordLoaded(true);
       // Also sync to parent
       if (cachedFkw !== data.focusKeyword) {
@@ -189,6 +193,7 @@ export const SEOEditor = ({
       // Update state if DB has a value (authoritative)
       if (fkwFromDb) {
         setLocalFocusKeyword(fkwFromDb);
+        localFocusKeywordRef.current = fkwFromDb; // SYNC REF immediately
         // Cache for next time
         localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, fkwFromDb);
         // Sync to parent
@@ -563,13 +568,15 @@ export const SEOEditor = ({
     if (data.focusKeyword && data.focusKeyword !== localFocusKeyword && isFocusKeywordLoaded) {
       console.log('[SEO Editor] Parent FKW changed to non-empty, updating local:', data.focusKeyword);
       setLocalFocusKeyword(data.focusKeyword);
+      localFocusKeywordRef.current = data.focusKeyword; // SYNC REF
       // CRITICAL: Also update dedicated cache for instant sync loading
       localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, data.focusKeyword);
     }
-    // If parent is empty but we have a local value, PUSH our value to parent
-    else if (!data.focusKeyword && localFocusKeyword && isFocusKeywordLoaded) {
-      console.log('[SEO Editor] Parent FKW is empty, pushing local value:', localFocusKeyword);
-      onChange({ ...data, focusKeyword: localFocusKeyword });
+    // If parent is empty but we have a local value (from ref for immediate access), PUSH our value to parent
+    else if (!data.focusKeyword && (localFocusKeywordRef.current || localFocusKeyword) && isFocusKeywordLoaded) {
+      const fkwToPush = localFocusKeywordRef.current || localFocusKeyword;
+      console.log('[SEO Editor] Parent FKW is empty, pushing local value:', fkwToPush);
+      onChange({ ...data, focusKeyword: fkwToPush });
     }
   }, [data.focusKeyword, localFocusKeyword, isFocusKeywordLoaded, pageSlug, editorLanguage]);
 
@@ -644,9 +651,10 @@ export const SEOEditor = ({
       
       // Apply SEO data from DB - but NEVER overwrite localFocusKeyword if it's already set
       // The localFocusKeyword is managed by the dedicated FKW loading effect
+      // USE REF for immediate access - state might not be updated yet due to async timing
       if (seoSettingsFromDb) {
-        // CRITICAL: Preserve existing localFocusKeyword - it's the authoritative source
-        const preservedFkw = localFocusKeyword || focusKeywordFromDb || data.focusKeyword || '';
+        // CRITICAL: Use REF for immediate value - it's always current
+        const preservedFkw = localFocusKeywordRef.current || localFocusKeyword || focusKeywordFromDb || data.focusKeyword || '';
         
         const mergedData = {
           ...data,
@@ -668,8 +676,9 @@ export const SEOEditor = ({
         };
         
         // Also update localFocusKeyword if DB has a value and local is empty
-        if (focusKeywordFromDb && !localFocusKeyword) {
+        if (focusKeywordFromDb && !localFocusKeywordRef.current) {
           setLocalFocusKeyword(focusKeywordFromDb);
+          localFocusKeywordRef.current = focusKeywordFromDb;
           localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, focusKeywordFromDb);
         }
         
