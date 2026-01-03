@@ -145,15 +145,16 @@ serve(async (req) => {
         params.append('country', country);
         break;
 
-      case 'domain.ranking':
-        // Get all ranking keywords for domain - CORE FOR RELAUNCH DASHBOARD
+      case 'domain.urls':
+        // Get top ranking URLs for domain - CORE FOR RELAUNCH DASHBOARD
+        // Returns URLs with top10/top100 keyword counts and visibility share
         if (!domain) {
           return new Response(
-            JSON.stringify({ error: 'Domain is required for domain.ranking' }),
+            JSON.stringify({ error: 'Domain is required for domain.urls' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        endpoint = '/domain.ranking';
+        endpoint = '/domain.urls';
         params.append('domain', domain);
         params.append('country', country);
         if (limit) params.append('limit', String(limit));
