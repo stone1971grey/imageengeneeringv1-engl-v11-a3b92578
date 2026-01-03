@@ -487,7 +487,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       }
       
       // Step 3: Transform and calculate trends
-      const mappingsToInsert = keywordData.map((r: any) => {
+      const allMappings = keywordData.map((r: any) => {
         const keyword = r.kw || r.keyword || '';
         const url = r.url || '';
         const currentPosition = parseInt(r.position) || null;
@@ -528,6 +528,20 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           has_ai_overview: hasAIO
         };
       });
+      
+      // CRITICAL FIX: Deduplicate by domain+old_url+snapshot_date to avoid PostgreSQL 
+      // "ON CONFLICT DO UPDATE command cannot affect row a second time" error.
+      // Keep the entry with highest traffic for each unique URL.
+      const dedupeMap = new Map<string, typeof allMappings[0]>();
+      for (const mapping of allMappings) {
+        const dedupeKey = `${mapping.domain}|${mapping.old_url}|${mapping.snapshot_date}`;
+        const existing = dedupeMap.get(dedupeKey);
+        if (!existing || (mapping.traffic_estimate || 0) > (existing.traffic_estimate || 0)) {
+          dedupeMap.set(dedupeKey, mapping);
+        }
+      }
+      const mappingsToInsert = Array.from(dedupeMap.values());
+      console.log(`[Relaunch] Deduplicated ${allMappings.length} entries to ${mappingsToInsert.length} unique URLs`);
       
       // Upsert to database (update if exists for same domain/url/date)
       const { error: insertError } = await supabase
