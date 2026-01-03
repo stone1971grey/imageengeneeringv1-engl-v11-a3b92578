@@ -151,6 +151,63 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     loadPageRegistry();
   }, []);
   
+  // Sync redirect status with redirects table
+  const syncRedirectStatus = useCallback(async (mappingsData: MappingRow[]) => {
+    // Get all existing redirects
+    const { data: redirects, error: redirectError } = await supabase
+      .from('redirects')
+      .select('source_url, target_url, is_active')
+      .eq('is_active', true);
+      
+    if (redirectError || !redirects) {
+      console.error('[Relaunch] Error loading redirects:', redirectError);
+      return mappingsData;
+    }
+    
+    // Create a map of source URLs to target URLs
+    const redirectMap = new Map<string, string>();
+    for (const r of redirects) {
+      // Normalize source URL (remove domain if present)
+      const normalizedSource = r.source_url.replace(/^https?:\/\/[^/]+/, '');
+      redirectMap.set(normalizedSource, r.target_url);
+    }
+    
+    // Check each mapping for existing redirects
+    const updatedMappings: MappingRow[] = [];
+    
+    for (const mapping of mappingsData) {
+      // Extract path from old_url
+      const oldPath = mapping.old_url.replace(/^https?:\/\/[^/]+/, '');
+      const existingTarget = redirectMap.get(oldPath);
+      
+      if (existingTarget && !mapping.redirect_created) {
+        // Redirect exists but not marked - update it
+        console.log('[Relaunch] Syncing redirect for:', oldPath, '->', existingTarget);
+        // Fire and forget update
+        supabase
+          .from('relaunch_url_mappings')
+          .update({ 
+            redirect_created: true, 
+            approval_status: 'approved',
+            new_url: existingTarget 
+          })
+          .eq('id', mapping.id)
+          .then(() => console.log('[Relaunch] Synced:', mapping.id));
+          
+        updatedMappings.push({
+          ...mapping,
+          redirect_created: true,
+          approval_status: 'approved' as const,
+          new_url: existingTarget
+        });
+      } else {
+        updatedMappings.push(mapping);
+      }
+    }
+    
+    return updatedMappings;
+  }, []);
+
   // Load existing mappings from database
   const loadMappings = useCallback(async () => {
     if (!domain) return;
@@ -167,11 +224,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
     
     if (data) {
-      // Type assertion since we know the structure
-      setMappings(data as unknown as MappingRow[]);
-      updateStats(data as unknown as MappingRow[]);
+      // Sync with redirects table
+      const syncedData = await syncRedirectStatus(data as unknown as MappingRow[]);
+      setMappings(syncedData);
+      updateStats(syncedData);
     }
-  }, [domain]);
+  }, [domain, syncRedirectStatus]);
   
   useEffect(() => {
     if (domain) {
