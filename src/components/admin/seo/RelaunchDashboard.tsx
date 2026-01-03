@@ -183,11 +183,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       
       if (error) throw error;
       
-      // keyword.domain.seo returns array with: kw, position, competition, traffic, url
-      const keywordData = data?.answer?.[0]?.['keyword.domain.seo'] || data?.answer || [];
-      console.log('[Relaunch] Fetched keyword data:', keywordData.length);
+      // keyword.domain.seo returns data in answer[0].result array with: kw, position, competition, traffic, url
+      const keywordData = data?.answer?.[0]?.result || data?.answer?.[0]?.['keyword.domain.seo'] || [];
+      console.log('[Relaunch] Fetched keyword data:', keywordData.length, 'Raw structure:', JSON.stringify(Object.keys(data || {})));
       
       if (keywordData.length === 0) {
+        console.error('[Relaunch] No keyword data found. Full response:', JSON.stringify(data));
         toast.warning('No ranking keywords found for this domain');
         setIsLoading(false);
         return;

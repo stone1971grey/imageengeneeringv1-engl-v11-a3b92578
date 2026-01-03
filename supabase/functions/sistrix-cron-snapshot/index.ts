@@ -85,8 +85,8 @@ serve(async (req) => {
       );
     }
 
-    // keyword.domain.seo returns array with: kw, position, competition, traffic, url
-    const keywordData: KeywordData[] = sistrixData.answer?.[0]?.['keyword.domain.seo'] || sistrixData.answer || [];
+    // keyword.domain.seo returns data in answer[0].result array with: kw, position, competition, traffic, url
+    const keywordData: KeywordData[] = sistrixData.answer?.[0]?.result || sistrixData.answer?.[0]?.['keyword.domain.seo'] || [];
     console.log(`Fetched ${keywordData.length} keywords from SISTRIX`);
 
     // Step 2: Get previous snapshot data to compare
@@ -149,7 +149,8 @@ serve(async (req) => {
           trend = 'up';
         }
       } else {
-        trend = 'new';
+        // New keywords get 'stable' since 'new' is not allowed in DB
+        trend = 'stable';
       }
 
       // Prepare new mapping entry
