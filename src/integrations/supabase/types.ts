@@ -954,6 +954,7 @@ export type Database = {
           approval_status: string
           approved_at: string | null
           approved_by: string | null
+          clicks: number | null
           competition: number | null
           cpc: number | null
           created_at: string
@@ -962,6 +963,7 @@ export type Database = {
           domain: string
           focus_keyword: string | null
           id: string
+          intent: string | null
           new_url: string | null
           new_url_suggestion: string | null
           notes: string | null
@@ -977,6 +979,7 @@ export type Database = {
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          clicks?: number | null
           competition?: number | null
           cpc?: number | null
           created_at?: string
@@ -985,6 +988,7 @@ export type Database = {
           domain: string
           focus_keyword?: string | null
           id?: string
+          intent?: string | null
           new_url?: string | null
           new_url_suggestion?: string | null
           notes?: string | null
@@ -1000,6 +1004,7 @@ export type Database = {
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          clicks?: number | null
           competition?: number | null
           cpc?: number | null
           created_at?: string
@@ -1008,6 +1013,7 @@ export type Database = {
           domain?: string
           focus_keyword?: string | null
           id?: string
+          intent?: string | null
           new_url?: string | null
           new_url_suggestion?: string | null
           notes?: string | null

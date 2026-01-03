@@ -65,7 +65,9 @@ interface MappingRow {
   previous_position: number | null;
   previous_snapshot_date: string | null;
   search_volume: number | null;
+  clicks: number | null;
   competition: number | null;
+  intent: string | null;
   cpc: number | null;
   traffic_estimate: number | null;
   new_url: string | null;
@@ -306,11 +308,19 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     });
   };
   
-  // Fetch search volume metrics for keywords
-  const fetchSearchVolumeForKeywords = async (keywords: string[]): Promise<Map<string, number>> => {
-    const searchVolumeMap = new Map<string, number>();
+  // Keyword metrics type for enhanced data
+  interface KeywordMetrics {
+    searchVolume: number;
+    clicks: number;
+    competition: number;
+    intent: string;
+  }
+  
+  // Fetch keyword metrics (search volume, clicks, competition, intent) for keywords
+  const fetchKeywordMetrics = async (keywords: string[]): Promise<Map<string, KeywordMetrics>> => {
+    const metricsMap = new Map<string, KeywordMetrics>();
     
-    if (keywords.length === 0) return searchVolumeMap;
+    if (keywords.length === 0) return metricsMap;
     
     // SISTRIX costs 5 credits per keyword for metrics, so batch in chunks of 50
     const BATCH_SIZE = 50;
@@ -320,7 +330,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       batches.push(keywords.slice(i, i + BATCH_SIZE));
     }
     
-    console.log(`[Relaunch] Fetching search volume for ${keywords.length} keywords in ${batches.length} batches`);
+    console.log(`[Relaunch] Fetching metrics for ${keywords.length} keywords in ${batches.length} batches`);
     
     for (const batch of batches) {
       try {
@@ -337,13 +347,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           continue;
         }
         
-        // keyword.seo.metrics returns: kw, competition, cpc, traffic (=search volume), clicks
+        // keyword.seo.metrics returns: kw, competition, cpc, traffic (=search volume), clicks, intent
         const metricsData = data?.answer?.[0]?.result || data?.answer || [];
-        console.log('[Relaunch] Metrics batch result:', metricsData.length);
+        console.log('[Relaunch] Metrics batch result:', metricsData.length, 'Sample:', metricsData[0]);
         
         for (const item of metricsData) {
-          if (item.kw && item.traffic) {
-            searchVolumeMap.set(item.kw.toLowerCase(), parseInt(item.traffic) || 0);
+          if (item.kw) {
+            metricsMap.set(item.kw.toLowerCase(), {
+              searchVolume: parseInt(item.traffic) || 0,
+              clicks: parseInt(item.clicks) || 0,
+              competition: parseFloat(item.competition) || 0,
+              intent: item.intent || null
+            });
           }
         }
       } catch (e) {
@@ -351,7 +366,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       }
     }
     
-    return searchVolumeMap;
+    return metricsMap;
   };
 
   // Fetch rankings from SISTRIX and save to database
@@ -411,16 +426,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return;
       }
       
-      // Step 2: Optionally fetch search volume (costs 5 credits per keyword)
-      let searchVolumeMap = new Map<string, number>();
+      // Step 2: Optionally fetch keyword metrics (costs 5 credits per keyword)
+      let metricsMap = new Map<string, { searchVolume: number; clicks: number; competition: number; intent: string }>();
       
       if (includeSearchVolume) {
         const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
-        toast.info(`Fetching search volume for ${uniqueKeywords.length} keywords (5 credits each)...`);
-        searchVolumeMap = await fetchSearchVolumeForKeywords(uniqueKeywords);
-        console.log('[Relaunch] Search volume data retrieved for', searchVolumeMap.size, 'keywords');
+        toast.info(`Fetching metrics for ${uniqueKeywords.length} keywords (5 credits each)...`);
+        metricsMap = await fetchKeywordMetrics(uniqueKeywords);
+        console.log('[Relaunch] Metrics data retrieved for', metricsMap.size, 'keywords');
       } else {
-        console.log('[Relaunch] Skipping search volume fetch (user opted out)');
+        console.log('[Relaunch] Skipping metrics fetch (user opted out)');
       }
       
       // Step 3: Transform and calculate trends
@@ -442,13 +457,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           }
         }
         
+        // Get enriched metrics data
+        const metrics = metricsMap.get(keyword.toLowerCase());
+        
         return {
           domain,
           old_url: url,
           focus_keyword: keyword || null,
           current_position: currentPosition,
-          search_volume: searchVolumeMap.get(keyword.toLowerCase()) || null,
-          competition: parseFloat(r.competition) || null,
+          search_volume: metrics?.searchVolume || null,
+          clicks: metrics?.clicks || null,
+          competition: metrics?.competition || parseFloat(r.competition) || null,
+          intent: metrics?.intent || null,
           cpc: null,
           traffic_estimate: parseInt(r.traffic) || null,
           new_url_suggestion: suggestNewUrl(url, keyword),
@@ -1136,6 +1156,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
+                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Klicks</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Geschätzte monatliche Klicks für dieses Keyword (aus SISTRIX Metrics)
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
                         <th 
                           className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('traffic')}
@@ -1146,14 +1174,30 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               <SortIcon field="traffic" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten. Klicken zum Sortieren.
+                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
+                        <th className="text-center p-3 font-medium w-16 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Wettb.</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Wettbewerbsintensität (0-100). Höher = mehr Konkurrenz
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
+                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Intent</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Suchintention: Informational, Navigational, Commercial, Transactional
                             </TooltipContent>
                           </Tooltip>
                         </th>
                         <th className="text-center p-3 font-medium w-20 bg-muted/50">
                           <Tooltip>
                             <TooltipTrigger className="cursor-help underline decoration-dotted">Trend</TooltipTrigger>
-                            <TooltipContent>Position trend vs. previous snapshot</TooltipContent>
+                            <TooltipContent>Positionsänderung vs. letzter Snapshot</TooltipContent>
                           </Tooltip>
                         </th>
                         <th className="text-left p-3 font-medium min-w-[280px] bg-muted/50">New URL</th>
@@ -1215,15 +1259,42 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             )}
                           </td>
                           <td className="p-3 text-center">
+                            {mapping.clicks ? (
+                              <span className="font-medium text-muted-foreground">{mapping.clicks.toLocaleString()}</span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
                             {mapping.traffic_estimate ? (
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <span className="font-medium">{mapping.traffic_estimate.toLocaleString()}</span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  Geschätzter monatlicher Traffic basierend auf Position & Keyword-Daten
-                                </TooltipContent>
-                              </Tooltip>
+                              <span className="font-medium">{mapping.traffic_estimate.toLocaleString()}</span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            {mapping.competition ? (
+                              <Badge variant="outline" className={`text-xs ${
+                                mapping.competition >= 70 ? 'border-red-500/50 text-red-400' :
+                                mapping.competition >= 40 ? 'border-amber-500/50 text-amber-400' :
+                                'border-green-500/50 text-green-400'
+                              }`}>
+                                {Math.round(mapping.competition)}
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            {mapping.intent ? (
+                              <Badge variant="outline" className={`text-xs ${
+                                mapping.intent.toLowerCase().includes('trans') ? 'border-purple-500/50 text-purple-400' :
+                                mapping.intent.toLowerCase().includes('comm') ? 'border-orange-500/50 text-orange-400' :
+                                mapping.intent.toLowerCase().includes('nav') ? 'border-blue-500/50 text-blue-400' :
+                                'border-zinc-500/50 text-zinc-400'
+                              }`}>
+                                {mapping.intent.substring(0, 4)}
+                              </Badge>
                             ) : (
                               <span className="text-muted-foreground">-</span>
                             )}
