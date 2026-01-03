@@ -112,7 +112,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -722,12 +722,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for others
+      setSortDirection((field === 'keyword' || field === 'oldUrl') ? 'asc' : 'desc'); // A-Z default for text fields, high-to-low for others
     }
   };
   
@@ -749,7 +749,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     // Apply sorting
     if (sortField) {
       result = [...result].sort((a, b) => {
-        if (sortField === 'keyword') {
+        if (sortField === 'oldUrl') {
+          const aVal = (a.old_url || '').toLowerCase();
+          const bVal = (b.old_url || '').toLowerCase();
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal, 'de') 
+            : bVal.localeCompare(aVal, 'de');
+        } else if (sortField === 'keyword') {
           const aVal = (a.focus_keyword || '').toLowerCase();
           const bVal = (b.focus_keyword || '').toLowerCase();
           if (!aVal && !bVal) return 0;
@@ -900,7 +906,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -1188,7 +1194,15 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             title="Alle auf dieser Seite auswählen"
                           />
                         </th>
-                        <th className="text-left p-3 font-medium min-w-[300px] bg-muted/50">Old URL</th>
+                        <th 
+                          className="text-left p-3 font-medium min-w-[300px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('oldUrl')}
+                        >
+                          <span className="flex items-center">
+                            Old URL
+                            <SortIcon field="oldUrl" />
+                          </span>
+                        </th>
                         <th 
                           className="text-left p-3 font-medium min-w-[150px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('keyword')}
