@@ -112,7 +112,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -722,7 +722,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -778,6 +778,29 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           // Sort by AI Overview: true first (desc) or false first (asc)
           const aVal = a.has_ai_overview === true ? 1 : 0;
           const bVal = b.has_ai_overview === true ? 1 : 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'clicks') {
+          const aVal = a.clicks ?? 0;
+          const bVal = b.clicks ?? 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'competition') {
+          const aVal = a.competition ?? 0;
+          const bVal = b.competition ?? 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'intent') {
+          const aVal = (a.intent || '').toLowerCase();
+          const bVal = (b.intent || '').toLowerCase();
+          if (!aVal && !bVal) return 0;
+          if (!aVal) return 1;
+          if (!bVal) return -1;
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal) 
+            : bVal.localeCompare(aVal);
+        } else if (sortField === 'trend') {
+          // Sort order: up > stable > down
+          const trendOrder = { up: 3, stable: 2, down: 1 };
+          const aVal = trendOrder[a.trend] ?? 2;
+          const bVal = trendOrder[b.trend] ?? 2;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
         return 0;
@@ -877,7 +900,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -1198,11 +1221,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('clicks')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Klicks</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">Klicks</span>
+                              <SortIcon field="clicks" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Geschätzte monatliche Klicks für dieses Keyword (aus SISTRIX Metrics)
+                              Geschätzte monatliche Klicks für dieses Keyword (aus SISTRIX Metrics). Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
@@ -1220,19 +1249,31 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-16 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('competition')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Wettb.</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">Wettb.</span>
+                              <SortIcon field="competition" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Wettbewerbsintensität (0-100). Höher = mehr Konkurrenz
+                              Wettbewerbsintensität (0-100%). Höher = mehr Konkurrenz. Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('intent')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Intent</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">Intent</span>
+                              <SortIcon field="intent" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Suchintention: Informational, Navigational, Commercial, Transactional
+                              Suchintention: Informational, Navigational, Commercial, Transactional. Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
@@ -1250,10 +1291,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('trend')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Trend</TooltipTrigger>
-                            <TooltipContent>Positionsänderung vs. letzter Snapshot</TooltipContent>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">Trend</span>
+                              <SortIcon field="trend" />
+                            </TooltipTrigger>
+                            <TooltipContent>Positionsänderung vs. letzter Snapshot. Klicken zum Sortieren.</TooltipContent>
                           </Tooltip>
                         </th>
                         <th className="text-left p-3 font-medium min-w-[280px] bg-muted/50">New URL</th>
