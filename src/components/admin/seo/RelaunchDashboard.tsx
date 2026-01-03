@@ -232,27 +232,30 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const loadMappings = useCallback(async () => {
     if (!domain) return;
     
-    // Get the latest snapshot date first
+    // Get the latest snapshot date first for the selected country
     const { data: latestData, error: latestError } = await supabase
       .from('relaunch_url_mappings')
       .select('snapshot_date')
       .eq('domain', domain)
+      .eq('country', country)
       .order('snapshot_date', { ascending: false })
       .limit(1);
     
     if (latestError || !latestData || latestData.length === 0) {
-      console.log('[Relaunch] No snapshots found');
+      console.log('[Relaunch] No snapshots found for country:', country);
       setMappings([]);
+      updateStats([]);
       return;
     }
     
     const latestSnapshotDate = latestData[0].snapshot_date;
     
-    // Get current snapshot data
+    // Get current snapshot data for the selected country
     const { data, error } = await supabase
       .from('relaunch_url_mappings')
       .select('*')
       .eq('domain', domain)
+      .eq('country', country)
       .eq('snapshot_date', latestSnapshotDate)
       .order('current_position', { ascending: true, nullsFirst: false });
       
@@ -266,6 +269,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       .from('relaunch_url_mappings')
       .select('old_url, focus_keyword, current_position, snapshot_date')
       .eq('domain', domain)
+      .eq('country', country)
       .lt('snapshot_date', latestSnapshotDate)
       .order('snapshot_date', { ascending: false });
     
@@ -300,13 +304,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       setMappings(syncedData);
       updateStats(syncedData);
     }
-  }, [domain, syncRedirectStatus]);
+  }, [domain, country, syncRedirectStatus]);
   
   useEffect(() => {
     if (domain) {
       loadMappings();
     }
-  }, [domain, loadMappings]);
+  }, [domain, country, loadMappings]);
   
   const updateStats = (data: MappingRow[]) => {
     setStats({
@@ -394,6 +398,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         .from('relaunch_url_mappings')
         .select('old_url, focus_keyword, current_position, snapshot_date')
         .eq('domain', domain)
+        .eq('country', country)
         .lt('snapshot_date', today)
         .order('snapshot_date', { ascending: false });
       
@@ -506,6 +511,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         
         return {
           domain,
+          country, // Include country for multi-country support
           old_url: url,
           focus_keyword: keyword || null,
           current_position: currentPosition,
@@ -1052,7 +1058,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             </div>
             <div className="text-left">
               <h3 className="font-bold text-foreground">SEO Relaunch Dashboard</h3>
-              <p className="text-xs text-muted-foreground">URL migration & redirect planning with SISTRIX data</p>
+              <p className="text-xs text-muted-foreground">
+                URL migration & redirect planning with SISTRIX data
+                {mappings.length > 0 && (
+                  <span className="ml-2 text-[#00a1ff]">
+                    • Showing data for: {country.toUpperCase()}
+                  </span>
+                )}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -1079,9 +1092,9 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     {domain}
                   </div>
                 </div>
-                <div className="w-32">
+                <div className="w-40">
                   <Label htmlFor="relaunch-country" className="text-sm font-medium mb-2 block">
-                    Country
+                    Country <span className="text-muted-foreground">(for SISTRIX query)</span>
                   </Label>
                   <select
                     id="relaunch-country"
@@ -1089,14 +1102,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     onChange={(e) => setCountry(e.target.value)}
                     className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
                   >
-                    <option value="de">Germany</option>
-                    <option value="us">USA</option>
-                    <option value="uk">UK</option>
-                    <option value="fr">France</option>
-                    <option value="es">Spain</option>
-                    <option value="it">Italy</option>
-                    <option value="at">Austria</option>
-                    <option value="ch">Switzerland</option>
+                    <option value="de">🇩🇪 Germany</option>
+                    <option value="us">🇺🇸 USA</option>
+                    <option value="uk">🇬🇧 UK</option>
+                    <option value="cn">🇨🇳 China</option>
+                    <option value="jp">🇯🇵 Japan</option>
+                    <option value="kr">🇰🇷 Korea</option>
+                    <option value="fr">🇫🇷 France</option>
+                    <option value="es">🇪🇸 Spain</option>
+                    <option value="it">🇮🇹 Italy</option>
+                    <option value="at">🇦🇹 Austria</option>
+                    <option value="ch">🇨🇭 Switzerland</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">

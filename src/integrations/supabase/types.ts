@@ -956,6 +956,7 @@ export type Database = {
           approved_by: string | null
           clicks: number | null
           competition: number | null
+          country: string
           cpc: number | null
           created_at: string
           created_by: string | null
@@ -982,6 +983,7 @@ export type Database = {
           approved_by?: string | null
           clicks?: number | null
           competition?: number | null
+          country?: string
           cpc?: number | null
           created_at?: string
           created_by?: string | null
@@ -1008,6 +1010,7 @@ export type Database = {
           approved_by?: string | null
           clicks?: number | null
           competition?: number | null
+          country?: string
           cpc?: number | null
           created_at?: string
           created_by?: string | null
