@@ -5,8 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   Loader2, 
   TrendingUp, 
   TrendingDown, 
@@ -20,7 +23,10 @@ import {
   ArrowRight,
   FileDown,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles,
+  ChevronsLeft,
+  ChevronsRight
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,6 +81,9 @@ interface PageRegistryItem {
 // Fixed domain for this project
 const FIXED_DOMAIN = 'image-engineering.de';
 
+// Items per page options
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100, 'all'] as const;
+
 export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardProps) => {
   // Domain is fixed for this project
   const domain = FIXED_DOMAIN;
@@ -93,6 +102,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [pageRegistry, setPageRegistry] = useState<PageRegistryItem[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number | 'all'>(() => {
+    const cached = localStorage.getItem('relaunch-page-size');
+    if (cached === 'all') return 'all';
+    return cached ? parseInt(cached) : 25;
+  });
+  
+  // Editing state for new URL input
+  const [editingNewUrl, setEditingNewUrl] = useState<Record<string, string>>({});
   
   // Stats
   const [stats, setStats] = useState({
@@ -377,13 +397,58 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     return true;
   });
   
-  // Trend icon
-  const TrendIcon = ({ trend }: { trend: string }) => {
-    switch (trend) {
-      case 'up': return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'down': return <TrendingDown className="h-4 w-4 text-red-500" />;
-      default: return <Minus className="h-4 w-4 text-muted-foreground" />;
+  // Pagination logic
+  const totalItems = filteredMappings.length;
+  const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
+  const paginatedMappings = pageSize === 'all' 
+    ? filteredMappings 
+    : filteredMappings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus, searchTerm, pageSize]);
+  
+  // Persist page size
+  useEffect(() => {
+    localStorage.setItem('relaunch-page-size', String(pageSize));
+  }, [pageSize]);
+  
+  // Handle new URL input change
+  const handleNewUrlChange = (id: string, value: string) => {
+    setEditingNewUrl(prev => ({ ...prev, [id]: value }));
+  };
+  
+  // Apply suggestion to input
+  const applySuggestion = (id: string, suggestion: string) => {
+    setEditingNewUrl(prev => ({ ...prev, [id]: suggestion }));
+  };
+  
+  // Save new URL from input
+  const saveNewUrl = async (id: string) => {
+    const newUrl = editingNewUrl[id];
+    if (newUrl) {
+      await updateMapping(id, { new_url: newUrl });
+      toast.success('New URL saved');
     }
+  };
+  
+  // Trend icon with tooltip
+  const TrendIcon = ({ trend }: { trend: string }) => {
+    const getTrendInfo = () => {
+      switch (trend) {
+        case 'up': return { icon: <TrendingUp className="h-4 w-4 text-green-500" />, label: 'Position improved' };
+        case 'down': return { icon: <TrendingDown className="h-4 w-4 text-red-500" />, label: 'Position dropped' };
+        default: return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, label: 'No change' };
+      }
+    };
+    const info = getTrendInfo();
+    return (
+      <Tooltip>
+        <TooltipTrigger>{info.icon}</TooltipTrigger>
+        <TooltipContent>{info.label}</TooltipContent>
+      </Tooltip>
+    );
   };
   
   // Status badge
@@ -398,6 +463,81 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       default:
         return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Pending</Badge>;
     }
+  };
+  
+  // Pagination component
+  const Pagination = () => {
+    if (totalPages <= 1 && pageSize !== 'all') return null;
+    
+    const startItem = pageSize === 'all' ? 1 : (currentPage - 1) * pageSize + 1;
+    const endItem = pageSize === 'all' ? totalItems : Math.min(currentPage * pageSize, totalItems);
+    
+    return (
+      <div className="flex items-center justify-between border-t border-border pt-4 mt-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>Showing {startItem}-{endItem} of {totalItems}</span>
+          <Select 
+            value={String(pageSize)} 
+            onValueChange={(v) => setPageSize(v === 'all' ? 'all' : parseInt(v))}
+          >
+            <SelectTrigger className="w-[100px] h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZE_OPTIONS.map(size => (
+                <SelectItem key={size} value={String(size)}>
+                  {size === 'all' ? 'All' : `${size} / page`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {pageSize !== 'all' && totalPages > 1 && (
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="px-3 text-sm">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -543,38 +683,54 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             )}
             
             {/* Mappings Table */}
-            {filteredMappings.length > 0 ? (
+            <TooltipProvider>
+            {paginatedMappings.length > 0 ? (
               <div className="border border-border rounded-lg overflow-hidden">
-                <div className="max-h-[500px] overflow-y-auto">
+                <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-muted/50 sticky top-0">
+                    <thead className="bg-muted/50">
                       <tr>
-                        <th className="text-left p-3 font-medium">Old URL</th>
-                        <th className="text-left p-3 font-medium">Focus Keyword</th>
+                        <th className="text-left p-3 font-medium min-w-[300px]">Old URL</th>
+                        <th className="text-left p-3 font-medium min-w-[150px]">Focus Keyword</th>
                         <th className="text-center p-3 font-medium w-16">Pos.</th>
-                        <th className="text-center p-3 font-medium w-20">Volume</th>
-                        <th className="text-center p-3 font-medium w-16">Trend</th>
-                        <th className="text-left p-3 font-medium">New URL</th>
+                        <th className="text-center p-3 font-medium w-24">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Volume</TooltipTrigger>
+                            <TooltipContent>Monthly search volume</TooltipContent>
+                          </Tooltip>
+                        </th>
+                        <th className="text-center p-3 font-medium w-20">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Trend</TooltipTrigger>
+                            <TooltipContent>Position trend vs. previous snapshot</TooltipContent>
+                          </Tooltip>
+                        </th>
+                        <th className="text-left p-3 font-medium min-w-[280px]">New URL</th>
                         <th className="text-center p-3 font-medium w-24">Status</th>
-                        <th className="text-center p-3 font-medium w-32">Actions</th>
+                        <th className="text-center p-3 font-medium w-32">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Actions</TooltipTrigger>
+                            <TooltipContent>Approve = create 301 redirect, Reject = skip this URL</TooltipContent>
+                          </Tooltip>
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {filteredMappings.map((mapping) => (
+                      {paginatedMappings.map((mapping) => (
                         <tr key={mapping.id} className="hover:bg-muted/20">
                           <td className="p-3">
                             <a 
                               href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#00a1ff] hover:underline flex items-center gap-1 max-w-[200px] truncate"
+                              className="text-[#00a1ff] hover:underline flex items-center gap-1 break-all"
                             >
-                              {mapping.old_url}
+                              <span className="text-xs">{mapping.old_url}</span>
                               <ExternalLink className="h-3 w-3 flex-shrink-0" />
                             </a>
                           </td>
                           <td className="p-3">
-                            <span className="font-medium">{mapping.focus_keyword || '-'}</span>
+                            <span className="font-medium text-xs">{mapping.focus_keyword || '-'}</span>
                           </td>
                           <td className="p-3 text-center">
                             <Badge variant="outline" className={
@@ -586,39 +742,59 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               #{mapping.current_position || '-'}
                             </Badge>
                           </td>
-                          <td className="p-3 text-center text-muted-foreground">
-                            {mapping.search_volume?.toLocaleString() || '-'}
+                          <td className="p-3 text-center">
+                            {mapping.search_volume ? (
+                              <span className="font-medium">{mapping.search_volume.toLocaleString()}</span>
+                            ) : mapping.traffic_estimate ? (
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <span className="text-muted-foreground">~{mapping.traffic_estimate}</span>
+                                </TooltipTrigger>
+                                <TooltipContent>Estimated traffic (search volume not available)</TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
                           </td>
                           <td className="p-3 text-center">
                             <TrendIcon trend={mapping.trend} />
                           </td>
                           <td className="p-3">
                             {mapping.approval_status === 'approved' ? (
-                              <span className="text-green-400 flex items-center gap-1">
+                              <span className="text-green-400 flex items-center gap-1 text-xs">
                                 {mapping.new_url}
                                 <Check className="h-3 w-3" />
                               </span>
                             ) : (
-                              <Select
-                                value={mapping.new_url || mapping.new_url_suggestion || ''}
-                                onValueChange={(value) => updateMapping(mapping.id, { new_url: value })}
-                              >
-                                <SelectTrigger className="h-8 text-xs">
-                                  <SelectValue placeholder={mapping.new_url_suggestion || 'Select new URL...'} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {mapping.new_url_suggestion && (
-                                    <SelectItem value={mapping.new_url_suggestion}>
-                                      {mapping.new_url_suggestion} (suggested)
-                                    </SelectItem>
-                                  )}
-                                  {pageRegistry.map(page => (
-                                    <SelectItem key={page.page_slug} value={`/${page.page_slug}`}>
-                                      /{page.page_slug}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <div className="flex gap-1 items-center">
+                                <Input
+                                  value={editingNewUrl[mapping.id] ?? mapping.new_url ?? mapping.new_url_suggestion ?? ''}
+                                  onChange={(e) => handleNewUrlChange(mapping.id, e.target.value)}
+                                  onBlur={() => {
+                                    const val = editingNewUrl[mapping.id];
+                                    if (val !== undefined && val !== mapping.new_url) {
+                                      saveNewUrl(mapping.id);
+                                    }
+                                  }}
+                                  placeholder="Enter new URL path..."
+                                  className="h-8 text-xs flex-1 min-w-[150px]"
+                                />
+                                {mapping.new_url_suggestion && !editingNewUrl[mapping.id] && !mapping.new_url && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-8 w-8 p-0 text-[#00a1ff] hover:text-[#00a1ff] hover:bg-[#00a1ff]/10"
+                                        onClick={() => applySuggestion(mapping.id, mapping.new_url_suggestion!)}
+                                      >
+                                        <Sparkles className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Apply suggested URL: {mapping.new_url_suggestion}</TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
                             )}
                           </td>
                           <td className="p-3 text-center">
@@ -627,24 +803,34 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-3">
                             {mapping.approval_status === 'pending' && (
                               <div className="flex gap-1 justify-center">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                                  onClick={() => approveMapping(mapping)}
-                                  disabled={isSaving}
-                                >
-                                  <Check className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                  onClick={() => updateMapping(mapping.id, { approval_status: 'rejected' })}
-                                  disabled={isSaving}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                                      onClick={() => approveMapping(mapping)}
+                                      disabled={isSaving}
+                                    >
+                                      <Check className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Approve & create 301 redirect</TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                      onClick={() => updateMapping(mapping.id, { approval_status: 'rejected' })}
+                                      disabled={isSaving}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Reject (no redirect)</TooltipContent>
+                                </Tooltip>
                               </div>
                             )}
                             {mapping.approval_status === 'approved' && mapping.redirect_created && (
@@ -652,12 +838,28 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                 301 ✓
                               </Badge>
                             )}
+                            {mapping.approval_status === 'rejected' && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                                    onClick={() => updateMapping(mapping.id, { approval_status: 'pending' })}
+                                  >
+                                    Undo
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Revert to pending</TooltipContent>
+                              </Tooltip>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+                <Pagination />
               </div>
             ) : mappings.length === 0 ? (
               <Card className="p-8 bg-muted/10 border-dashed text-center">
@@ -672,6 +874,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                 <p className="text-muted-foreground">No results match your filter</p>
               </Card>
             )}
+            </TooltipProvider>
           </div>
         </CollapsibleContent>
       </div>
