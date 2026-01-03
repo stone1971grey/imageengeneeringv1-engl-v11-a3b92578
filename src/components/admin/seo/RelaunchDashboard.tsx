@@ -121,6 +121,9 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Editing state for new URL input
   const [editingNewUrl, setEditingNewUrl] = useState<Record<string, string>>({});
   
+  // Import option: include search volume (costs 5 credits per keyword)
+  const [includeSearchVolume, setIncludeSearchVolume] = useState(true);
+  
   // Stats
   const [stats, setStats] = useState({
     total: 0,
@@ -327,13 +330,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return;
       }
       
-      // Step 2: Extract unique keywords for search volume lookup
-      const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
-      toast.info(`Fetching search volume for ${uniqueKeywords.length} keywords...`);
+      // Step 2: Optionally fetch search volume (costs 5 credits per keyword)
+      let searchVolumeMap = new Map<string, number>();
       
-      // Step 3: Fetch search volume metrics
-      const searchVolumeMap = await fetchSearchVolumeForKeywords(uniqueKeywords);
-      console.log('[Relaunch] Search volume data retrieved for', searchVolumeMap.size, 'keywords');
+      if (includeSearchVolume) {
+        const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
+        toast.info(`Fetching search volume for ${uniqueKeywords.length} keywords (5 credits each)...`);
+        searchVolumeMap = await fetchSearchVolumeForKeywords(uniqueKeywords);
+        console.log('[Relaunch] Search volume data retrieved for', searchVolumeMap.size, 'keywords');
+      } else {
+        console.log('[Relaunch] Skipping search volume fetch (user opted out)');
+      }
       
       // Transform and save to database with search volume
       const today = new Date().toISOString().split('T')[0];
@@ -778,6 +785,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     <option value="at">Austria</option>
                     <option value="ch">Switzerland</option>
                   </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="include-search-volume"
+                    checked={includeSearchVolume}
+                    onChange={(e) => setIncludeSearchVolume(e.target.checked)}
+                    className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
+                  />
+                  <Label htmlFor="include-search-volume" className="text-sm cursor-pointer whitespace-nowrap">
+                    Mit Suchvolumen <span className="text-muted-foreground">(+5 Credits/Keyword)</span>
+                  </Label>
                 </div>
                 <Button
                   onClick={fetchRankings}
