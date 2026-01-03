@@ -136,6 +136,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [credits, setCredits] = useState<number | null>(null);
   const [isLoadingCredits, setIsLoadingCredits] = useState(false);
   
+  // Progress bar state for import
+  interface ImportProgress {
+    step: 'idle' | 'fetching' | 'metrics' | 'aio' | 'saving';
+    currentItem: number;
+    totalItems: number;
+    stepLabel: string;
+    startTime: number | null;
+  }
+  const [importProgress, setImportProgress] = useState<ImportProgress>({
+    step: 'idle',
+    currentItem: 0,
+    totalItems: 0,
+    stepLabel: '',
+    startTime: null
+  });
+  
   // Stats
   const [stats, setStats] = useState({
     total: 0,
@@ -391,6 +407,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
     
     setIsLoading(true);
+    const startTime = Date.now();
+    
+    // Initialize progress
+    setImportProgress({
+      step: 'fetching',
+      currentItem: 0,
+      totalItems: 0,
+      stepLabel: 'Fetching keyword rankings from SISTRIX...',
+      startTime
+    });
+    
     try {
       // Step 0: Fetch previous snapshot for trend comparison
       const today = new Date().toISOString().split('T')[0];
@@ -438,15 +465,24 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         console.error('[Relaunch] No keyword data found. Full response:', JSON.stringify(data));
         toast.warning('No ranking keywords found for this domain');
         setIsLoading(false);
+        setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
         return;
       }
+      
+      const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
       
       // Step 2: Optionally fetch keyword metrics (costs 5 credits per keyword)
       let metricsMap = new Map<string, { searchVolume: number; clicks: number; competition: number; intent: string }>();
       
       if (includeSearchVolume) {
-        const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
-        toast.info(`Fetching metrics for ${uniqueKeywords.length} keywords (5 credits each)...`);
+        setImportProgress({
+          step: 'metrics',
+          currentItem: 0,
+          totalItems: uniqueKeywords.length,
+          stepLabel: `Fetching search metrics for ${uniqueKeywords.length} keywords...`,
+          startTime
+        });
+        
         metricsMap = await fetchKeywordMetrics(uniqueKeywords);
         console.log('[Relaunch] Metrics data retrieved for', metricsMap.size, 'keywords');
       } else {
@@ -456,11 +492,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       // Step 2b: Fetch SERP features to detect AI Overviews (1 credit per keyword)
       let aioMap = new Map<string, boolean>();
       if (includeSearchVolume) {
-        const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
-        toast.info(`Checking AI Overviews for ${uniqueKeywords.length} keywords (1 credit each)...`);
+        setImportProgress({
+          step: 'aio',
+          currentItem: 0,
+          totalItems: uniqueKeywords.length,
+          stepLabel: `Checking AI Overviews (0/${uniqueKeywords.length})...`,
+          startTime
+        });
         
         // Process in batches of 10 to avoid timeout
         const batchSize = 10;
+        let processedCount = 0;
+        
         for (let i = 0; i < uniqueKeywords.length; i += batchSize) {
           const batch = uniqueKeywords.slice(i, i + batchSize);
           try {
@@ -482,11 +525,26 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           } catch (e) {
             console.error('[Relaunch] SERP features batch error:', e);
           }
+          
+          processedCount = Math.min(i + batchSize, uniqueKeywords.length);
+          setImportProgress(prev => ({
+            ...prev,
+            currentItem: processedCount,
+            stepLabel: `Checking AI Overviews (${processedCount}/${uniqueKeywords.length})...`
+          }));
         }
         console.log('[Relaunch] AIO data retrieved for', aioMap.size, 'keywords, with AIO:', [...aioMap.values()].filter(v => v).length);
       }
       
       // Step 3: Transform and calculate trends
+      setImportProgress({
+        step: 'saving',
+        currentItem: 0,
+        totalItems: 1,
+        stepLabel: 'Saving data to database...',
+        startTime
+      });
+      
       const allMappings = keywordData.map((r: any) => {
         const keyword = r.kw || r.keyword || '';
         const url = r.url || '';
@@ -559,7 +617,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       const withVolume = mappingsToInsert.filter((m: any) => m.search_volume).length;
       const withTrend = mappingsToInsert.filter((m: any) => m.trend !== 'stable').length;
       const withAIO = mappingsToInsert.filter((m: any) => m.has_ai_overview === true).length;
-      toast.success(`${keywordData.length} keywords imported (${withVolume} with SV, ${withAIO} with AI Overview)`);
+      toast.success(`${mappingsToInsert.length} URLs imported (${withVolume} with SV, ${withAIO} with AI Overview)`);
       await loadMappings();
       
     } catch (e) {
@@ -567,6 +625,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       toast.error('Failed to fetch SISTRIX rankings');
     } finally {
       setIsLoading(false);
+      setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
     }
   };
   
@@ -764,12 +823,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return;
       }
       
-      // SISTRIX API returns credits in response.answer[0].credits or response.credits
-      const creditsValue = data?.answer?.[0]?.credits ?? data?.credits ?? null;
-      if (creditsValue !== null) {
+      console.log('[Relaunch] Credits API response:', JSON.stringify(data));
+      
+      // SISTRIX API returns credits in multiple possible locations
+      // Try: data.answer[0].credits, data.credits, or data.answer[0]['credits']
+      let creditsValue: number | null = null;
+      
+      if (data?.answer?.[0]?.credits !== undefined) {
+        creditsValue = parseInt(data.answer[0].credits);
+      } else if (data?.credits !== undefined) {
+        creditsValue = parseInt(data.credits);
+      } else if (Array.isArray(data?.answer) && data.answer.length > 0) {
+        // Check first answer item for any credits property
+        const firstAnswer = data.answer[0];
+        for (const key of Object.keys(firstAnswer)) {
+          if (key.toLowerCase().includes('credit')) {
+            creditsValue = parseInt(firstAnswer[key]);
+            break;
+          }
+        }
+      }
+      
+      if (creditsValue !== null && !isNaN(creditsValue)) {
         setCredits(creditsValue);
         toast.success(`Verfügbare Credits: ${creditsValue.toLocaleString('de-DE')}`);
       } else {
+        console.error('[Relaunch] Could not parse credits from response:', data);
         toast.error('Credits konnten nicht abgerufen werden');
       }
     } catch (error) {
@@ -1178,7 +1257,82 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
               </div>
             </Card>
             
-            {/* Stats Overview */}
+            {/* Import Progress Bar */}
+            {importProgress.step !== 'idle' && (
+              <Card className="p-4 bg-[#f9dc24]/10 border-[#f9dc24]/50">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-5 w-5 animate-spin text-[#f9dc24]" />
+                      <div>
+                        <div className="font-medium text-foreground">SISTRIX Import</div>
+                        <div className="text-sm text-muted-foreground">{importProgress.stepLabel}</div>
+                      </div>
+                    </div>
+                    {importProgress.totalItems > 0 && (
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-[#f9dc24]">
+                          {Math.round((importProgress.currentItem / importProgress.totalItems) * 100)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {importProgress.currentItem} / {importProgress.totalItems}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Progress bar */}
+                  <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-[#f9dc24] transition-all duration-300 ease-out rounded-full"
+                      style={{ 
+                        width: importProgress.totalItems > 0 
+                          ? `${(importProgress.currentItem / importProgress.totalItems) * 100}%` 
+                          : importProgress.step === 'fetching' ? '15%' 
+                          : importProgress.step === 'saving' ? '95%' 
+                          : '0%'
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Step indicators */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className={`flex items-center gap-1 ${importProgress.step === 'fetching' ? 'text-[#f9dc24] font-medium' : 'text-muted-foreground'}`}>
+                      <div className={`w-2 h-2 rounded-full ${importProgress.step === 'fetching' ? 'bg-[#f9dc24]' : ['metrics', 'aio', 'saving'].includes(importProgress.step) ? 'bg-green-500' : 'bg-zinc-600'}`} />
+                      Fetching
+                    </div>
+                    <div className={`flex items-center gap-1 ${importProgress.step === 'metrics' ? 'text-[#f9dc24] font-medium' : 'text-muted-foreground'}`}>
+                      <div className={`w-2 h-2 rounded-full ${importProgress.step === 'metrics' ? 'bg-[#f9dc24]' : ['aio', 'saving'].includes(importProgress.step) ? 'bg-green-500' : 'bg-zinc-600'}`} />
+                      Metrics
+                    </div>
+                    <div className={`flex items-center gap-1 ${importProgress.step === 'aio' ? 'text-[#f9dc24] font-medium' : 'text-muted-foreground'}`}>
+                      <div className={`w-2 h-2 rounded-full ${importProgress.step === 'aio' ? 'bg-[#f9dc24]' : importProgress.step === 'saving' ? 'bg-green-500' : 'bg-zinc-600'}`} />
+                      AI Overviews
+                    </div>
+                    <div className={`flex items-center gap-1 ${importProgress.step === 'saving' ? 'text-[#f9dc24] font-medium' : 'text-muted-foreground'}`}>
+                      <div className={`w-2 h-2 rounded-full ${importProgress.step === 'saving' ? 'bg-[#f9dc24]' : 'bg-zinc-600'}`} />
+                      Saving
+                    </div>
+                  </div>
+                  
+                  {/* Estimated time remaining */}
+                  {importProgress.startTime && importProgress.currentItem > 0 && importProgress.totalItems > 0 && (
+                    <div className="text-xs text-muted-foreground text-center">
+                      {(() => {
+                        const elapsed = (Date.now() - importProgress.startTime) / 1000;
+                        const rate = importProgress.currentItem / elapsed;
+                        const remaining = Math.round((importProgress.totalItems - importProgress.currentItem) / rate);
+                        if (remaining > 60) {
+                          return `Geschätzte Restzeit: ~${Math.ceil(remaining / 60)} Minuten`;
+                        }
+                        return `Geschätzte Restzeit: ~${remaining} Sekunden`;
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+            
             {stats.total > 0 && (
               <div className="grid grid-cols-5 gap-3">
                 <Card className="p-3 bg-muted/20 text-center">
