@@ -171,44 +171,43 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     
     setIsLoading(true);
     try {
-      // Fetch top URLs from SISTRIX using domain.urls endpoint
+      // Fetch keyword rankings from SISTRIX using keyword.domain.seo endpoint
       const { data, error } = await supabase.functions.invoke('sistrix-api', {
         body: { 
-          action: 'domain.urls', 
+          action: 'keyword.domain.seo', 
           domain, 
           country,
-          limit: 500 // Get up to 500 URLs
+          limit: 500 // Get up to 500 keywords
         }
       });
       
       if (error) throw error;
       
-      // domain.urls returns array of URLs with top10, top100, and visibilityShare
-      const urlData = data?.answer?.[0]?.url || [];
-      console.log('[Relaunch] Fetched URL data:', urlData.length);
+      // keyword.domain.seo returns array with: kw, position, competition, traffic, url
+      const keywordData = data?.answer?.[0]?.['keyword.domain.seo'] || data?.answer || [];
+      console.log('[Relaunch] Fetched keyword data:', keywordData.length);
       
-      if (urlData.length === 0) {
-        toast.warning('No ranking URLs found for this domain');
+      if (keywordData.length === 0) {
+        toast.warning('No ranking keywords found for this domain');
         setIsLoading(false);
         return;
       }
       
       // Transform and save to database
       const today = new Date().toISOString().split('T')[0];
-      const mappingsToInsert = urlData.map((r: any) => ({
+      const mappingsToInsert = keywordData.map((r: any) => ({
         domain,
         old_url: r.url || '',
-        focus_keyword: null, // domain.urls doesn't provide individual keywords
-        current_position: null, // We'll need to fetch this separately or use top10/top100 count
-        search_volume: null,
-        competition: null,
+        focus_keyword: r.kw || r.keyword || null,
+        current_position: parseInt(r.position) || null,
+        search_volume: null, // Not provided by this endpoint
+        competition: parseFloat(r.competition) || null,
         cpc: null,
-        traffic_estimate: parseInt(r.top10) || null, // Use top10 count as a traffic indicator
-        new_url_suggestion: suggestNewUrl(r.url || '', ''),
+        traffic_estimate: parseInt(r.traffic) || null,
+        new_url_suggestion: suggestNewUrl(r.url || '', r.kw || r.keyword || ''),
         approval_status: 'pending',
         trend: 'stable',
-        snapshot_date: today,
-        notes: `Top10: ${r.top10 || 0}, Top100: ${r.top100 || 0}, Visibility: ${r.visibilityShare || 0}%`
+        snapshot_date: today
       }));
       
       // Upsert to database (update if exists for same domain/url/date)
@@ -224,7 +223,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         throw insertError;
       }
       
-      toast.success(`${urlData.length} URLs imported`);
+      toast.success(`${keywordData.length} keywords imported`);
       await loadMappings();
       
     } catch (e) {
