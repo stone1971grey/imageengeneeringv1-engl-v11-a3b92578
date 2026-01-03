@@ -23,7 +23,8 @@ serve(async (req) => {
       );
     }
 
-    const { action, domain, url, keyword, country = 'de', mobile = false, history = false } = await req.json();
+    const requestBody = await req.json();
+    const { action, domain, url, keyword, country = 'de', mobile = false, history = false, limit = 100, offset = 0 } = requestBody;
     console.log(`SISTRIX API request: action=${action}, domain=${domain}, country=${country}`);
 
     let endpoint = '';
@@ -155,8 +156,6 @@ serve(async (req) => {
         endpoint = '/domain.ranking';
         params.append('domain', domain);
         params.append('country', country);
-        // Optional limit and offset for pagination
-        const { limit = 100, offset = 0 } = await req.json().catch(() => ({}));
         if (limit) params.append('limit', String(limit));
         if (offset) params.append('offset', String(offset));
         break;
