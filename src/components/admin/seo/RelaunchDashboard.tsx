@@ -62,6 +62,8 @@ interface MappingRow {
   old_url: string;
   focus_keyword: string | null;
   current_position: number | null;
+  previous_position: number | null;
+  previous_snapshot_date: string | null;
   search_volume: number | null;
   competition: number | null;
   cpc: number | null;
@@ -211,14 +213,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     return updatedMappings;
   }, []);
 
-  // Load existing mappings from database
+  // Load existing mappings from database with previous snapshot data for trend display
   const loadMappings = useCallback(async () => {
     if (!domain) return;
     
+    // Get the latest snapshot date first
+    const { data: latestData, error: latestError } = await supabase
+      .from('relaunch_url_mappings')
+      .select('snapshot_date')
+      .eq('domain', domain)
+      .order('snapshot_date', { ascending: false })
+      .limit(1);
+    
+    if (latestError || !latestData || latestData.length === 0) {
+      console.log('[Relaunch] No snapshots found');
+      setMappings([]);
+      return;
+    }
+    
+    const latestSnapshotDate = latestData[0].snapshot_date;
+    
+    // Get current snapshot data
     const { data, error } = await supabase
       .from('relaunch_url_mappings')
       .select('*')
       .eq('domain', domain)
+      .eq('snapshot_date', latestSnapshotDate)
       .order('current_position', { ascending: true, nullsFirst: false });
       
     if (error) {
@@ -226,9 +246,42 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       return;
     }
     
+    // Get previous snapshot data for trend comparison display
+    const { data: previousSnapshots } = await supabase
+      .from('relaunch_url_mappings')
+      .select('old_url, focus_keyword, current_position, snapshot_date')
+      .eq('domain', domain)
+      .lt('snapshot_date', latestSnapshotDate)
+      .order('snapshot_date', { ascending: false });
+    
+    // Build previous data map
+    const previousDataMap = new Map<string, { position: number; date: string }>();
+    if (previousSnapshots) {
+      for (const snap of previousSnapshots) {
+        const key = `${snap.old_url}|${snap.focus_keyword}`;
+        if (!previousDataMap.has(key) && snap.current_position) {
+          previousDataMap.set(key, { 
+            position: snap.current_position, 
+            date: snap.snapshot_date 
+          });
+        }
+      }
+    }
+    
     if (data) {
+      // Enrich with previous position data
+      const enrichedData = data.map((m: any) => {
+        const key = `${m.old_url}|${m.focus_keyword}`;
+        const prevData = previousDataMap.get(key);
+        return {
+          ...m,
+          previous_position: prevData?.position || null,
+          previous_snapshot_date: prevData?.date || null
+        } as MappingRow;
+      });
+      
       // Sync with redirects table
-      const syncedData = await syncRedirectStatus(data as unknown as MappingRow[]);
+      const syncedData = await syncRedirectStatus(enrichedData);
       setMappings(syncedData);
       updateStats(syncedData);
     }
@@ -307,6 +360,31 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     
     setIsLoading(true);
     try {
+      // Step 0: Fetch previous snapshot for trend comparison
+      const today = new Date().toISOString().split('T')[0];
+      const { data: previousSnapshots } = await supabase
+        .from('relaunch_url_mappings')
+        .select('old_url, focus_keyword, current_position, snapshot_date')
+        .eq('domain', domain)
+        .lt('snapshot_date', today)
+        .order('snapshot_date', { ascending: false });
+      
+      // Build a map of old_url -> { position, date } from the most recent previous snapshot
+      const previousDataMap = new Map<string, { position: number; date: string }>();
+      if (previousSnapshots && previousSnapshots.length > 0) {
+        // Group by old_url and take the most recent
+        for (const snap of previousSnapshots) {
+          const key = `${snap.old_url}|${snap.focus_keyword}`;
+          if (!previousDataMap.has(key) && snap.current_position) {
+            previousDataMap.set(key, { 
+              position: snap.current_position, 
+              date: snap.snapshot_date 
+            });
+          }
+        }
+        console.log('[Relaunch] Found previous data for', previousDataMap.size, 'URL/keyword combinations');
+      }
+      
       // Step 1: Fetch keyword rankings from SISTRIX using keyword.domain.seo endpoint
       const { data, error } = await supabase.functions.invoke('sistrix-api', {
         body: { 
@@ -342,22 +420,37 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         console.log('[Relaunch] Skipping search volume fetch (user opted out)');
       }
       
-      // Transform and save to database with search volume
-      const today = new Date().toISOString().split('T')[0];
+      // Step 3: Transform and calculate trends
       const mappingsToInsert = keywordData.map((r: any) => {
         const keyword = r.kw || r.keyword || '';
+        const url = r.url || '';
+        const currentPosition = parseInt(r.position) || null;
+        
+        // Look up previous position for trend calculation
+        const key = `${url}|${keyword}`;
+        const previousData = previousDataMap.get(key);
+        
+        let trend: 'up' | 'stable' | 'down' = 'stable';
+        if (previousData && currentPosition) {
+          if (currentPosition < previousData.position) {
+            trend = 'up'; // Lower position number = better ranking
+          } else if (currentPosition > previousData.position) {
+            trend = 'down';
+          }
+        }
+        
         return {
           domain,
-          old_url: r.url || '',
+          old_url: url,
           focus_keyword: keyword || null,
-          current_position: parseInt(r.position) || null,
+          current_position: currentPosition,
           search_volume: searchVolumeMap.get(keyword.toLowerCase()) || null,
           competition: parseFloat(r.competition) || null,
           cpc: null,
           traffic_estimate: parseInt(r.traffic) || null,
-          new_url_suggestion: suggestNewUrl(r.url || '', keyword),
+          new_url_suggestion: suggestNewUrl(url, keyword),
           approval_status: 'pending',
-          trend: 'stable',
+          trend,
           snapshot_date: today
         };
       });
@@ -376,7 +469,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       }
       
       const withVolume = mappingsToInsert.filter((m: any) => m.search_volume).length;
-      toast.success(`${keywordData.length} keywords imported (${withVolume} with search volume)`);
+      const withTrend = mappingsToInsert.filter((m: any) => m.trend !== 'stable').length;
+      toast.success(`${keywordData.length} keywords imported (${withVolume} with search volume, ${withTrend} with trend changes)`);
       await loadMappings();
       
     } catch (e) {
@@ -612,20 +706,55 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
   };
   
-  // Trend icon with tooltip
-  const TrendIcon = ({ trend }: { trend: string }) => {
+  // Trend icon with tooltip showing position change and comparison date
+  const TrendIcon = ({ mapping }: { mapping: MappingRow }) => {
+    const { trend, current_position, previous_position, previous_snapshot_date } = mapping;
+    
     const getTrendInfo = () => {
+      const posChange = previous_position && current_position 
+        ? previous_position - current_position 
+        : 0;
+      const dateStr = previous_snapshot_date 
+        ? new Date(previous_snapshot_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : null;
+      
       switch (trend) {
-        case 'up': return { icon: <TrendingUp className="h-4 w-4 text-green-500" />, label: 'Position improved' };
-        case 'down': return { icon: <TrendingDown className="h-4 w-4 text-red-500" />, label: 'Position dropped' };
-        default: return { icon: <Minus className="h-4 w-4 text-muted-foreground" />, label: 'No change' };
+        case 'up': 
+          return { 
+            icon: <TrendingUp className="h-4 w-4 text-green-500" />, 
+            label: `↑ ${Math.abs(posChange)} Positionen verbessert${dateStr ? ` (vs. ${dateStr})` : ''}` 
+          };
+        case 'down': 
+          return { 
+            icon: <TrendingDown className="h-4 w-4 text-red-500" />, 
+            label: `↓ ${Math.abs(posChange)} Positionen verschlechtert${dateStr ? ` (vs. ${dateStr})` : ''}` 
+          };
+        default: 
+          return { 
+            icon: <Minus className="h-4 w-4 text-muted-foreground" />, 
+            label: previous_position ? `Keine Änderung${dateStr ? ` (vs. ${dateStr})` : ''}` : 'Erster Import (kein Vergleich)'
+          };
       }
     };
     const info = getTrendInfo();
     return (
       <Tooltip>
-        <TooltipTrigger>{info.icon}</TooltipTrigger>
-        <TooltipContent>{info.label}</TooltipContent>
+        <TooltipTrigger className="flex items-center gap-1">
+          {info.icon}
+          {previous_position && current_position && trend !== 'stable' && (
+            <span className={`text-xs ${trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+              {trend === 'up' ? '+' : ''}{previous_position - current_position}
+            </span>
+          )}
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs">
+          <div>{info.label}</div>
+          {previous_position && (
+            <div className="text-xs text-muted-foreground mt-1">
+              Vorher: Pos. {previous_position} → Jetzt: Pos. {current_position}
+            </div>
+          )}
+        </TooltipContent>
       </Tooltip>
     );
   };
@@ -1006,7 +1135,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             )}
                           </td>
                           <td className="p-3 text-center">
-                            <TrendIcon trend={mapping.trend} />
+                            <TrendIcon mapping={mapping} />
                           </td>
                           <td className="p-3">
                             {mapping.approval_status === 'approved' ? (
