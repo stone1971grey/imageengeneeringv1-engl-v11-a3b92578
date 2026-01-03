@@ -217,7 +217,16 @@ serve(async (req) => {
       );
     }
 
+    // Log the raw response structure for debugging
     console.log(`SISTRIX API success: ${action}`);
+    console.log(`Raw response keys: ${JSON.stringify(Object.keys(data))}`);
+    if (data.answer && Array.isArray(data.answer)) {
+      console.log(`Answer array length: ${data.answer.length}`);
+      if (data.answer[0]) {
+        console.log(`First answer keys: ${JSON.stringify(Object.keys(data.answer[0]))}`);
+      }
+    }
+    
     return new Response(
       JSON.stringify(data),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
