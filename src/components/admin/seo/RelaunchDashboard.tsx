@@ -587,25 +587,26 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         };
       });
       
-      // CRITICAL FIX: Deduplicate by domain+old_url+snapshot_date to avoid PostgreSQL 
+      // CRITICAL FIX: Deduplicate by domain+old_url+focus_keyword+country to match unique index
+      // "relaunch_url_mappings_domain_url_keyword_country_idx" and avoid PostgreSQL 
       // "ON CONFLICT DO UPDATE command cannot affect row a second time" error.
-      // Keep the entry with highest traffic for each unique URL.
+      // Keep the entry with highest traffic for each unique combination.
       const dedupeMap = new Map<string, typeof allMappings[0]>();
       for (const mapping of allMappings) {
-        const dedupeKey = `${mapping.domain}|${mapping.old_url}|${mapping.snapshot_date}`;
+        const dedupeKey = `${mapping.domain}|${mapping.old_url}|${mapping.focus_keyword}|${mapping.country}`;
         const existing = dedupeMap.get(dedupeKey);
         if (!existing || (mapping.traffic_estimate || 0) > (existing.traffic_estimate || 0)) {
           dedupeMap.set(dedupeKey, mapping);
         }
       }
       const mappingsToInsert = Array.from(dedupeMap.values());
-      console.log(`[Relaunch] Deduplicated ${allMappings.length} entries to ${mappingsToInsert.length} unique URLs`);
+      console.log(`[Relaunch] Deduplicated ${allMappings.length} entries to ${mappingsToInsert.length} unique URL/keyword combinations`);
       
-      // Upsert to database (update if exists for same domain/url/date)
+      // Upsert to database using the correct unique constraint
       const { error: insertError } = await supabase
         .from('relaunch_url_mappings')
         .upsert(mappingsToInsert, {
-          onConflict: 'domain,old_url,snapshot_date',
+          onConflict: 'domain,old_url,focus_keyword,country',
           ignoreDuplicates: false
         });
         
