@@ -107,7 +107,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'traffic' | 'redirect' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -449,7 +449,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'traffic' | 'redirect') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -488,6 +488,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         } else if (sortField === 'position') {
           const aVal = a.current_position ?? 999;
           const bVal = b.current_position ?? 999;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'searchVolume') {
+          const aVal = a.search_volume ?? 0;
+          const bVal = b.search_volume ?? 0;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         } else if (sortField === 'traffic') {
           const aVal = a.traffic_estimate ?? 0;
@@ -560,7 +564,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'traffic' | 'redirect' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -827,11 +831,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <SortIcon field="position" />
                           </span>
                         </th>
-                        <th className="text-center p-3 font-medium w-24 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('searchVolume')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">SV</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">SV</span>
+                              <SortIcon field="searchVolume" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Monatliches Suchvolumen für dieses Keyword aus SISTRIX-Daten
+                              Monatliches Suchvolumen für dieses Keyword. Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
