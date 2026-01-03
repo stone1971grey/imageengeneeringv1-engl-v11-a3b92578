@@ -123,6 +123,9 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Editing state for new URL input
   const [editingNewUrl, setEditingNewUrl] = useState<Record<string, string>>({});
   
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  
   // Import option: include search volume (costs 5 credits per keyword)
   const [includeSearchVolume, setIncludeSearchVolume] = useState(true);
   
@@ -581,21 +584,72 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
   };
   
-  // Bulk approve all pending with suggestions
-  const bulkApprove = async () => {
-    const pendingWithSuggestions = mappings.filter(
+  // Toggle selection for a single row
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+  
+  // Toggle all visible rows
+  const toggleSelectAll = () => {
+    const visibleIds = paginatedMappings.map(m => m.id);
+    const allSelected = visibleIds.every(id => selectedIds.has(id));
+    
+    if (allSelected) {
+      // Deselect all visible
+      setSelectedIds(prev => {
+        const newSet = new Set(prev);
+        visibleIds.forEach(id => newSet.delete(id));
+        return newSet;
+      });
+    } else {
+      // Select all visible
+      setSelectedIds(prev => {
+        const newSet = new Set(prev);
+        visibleIds.forEach(id => newSet.add(id));
+        return newSet;
+      });
+    }
+  };
+  
+  // Get approvable items (selected or all pending with suggestions)
+  const getApprovableItems = () => {
+    if (selectedIds.size > 0) {
+      // Only approve selected items that are pending and have a URL
+      return mappings.filter(
+        m => selectedIds.has(m.id) && 
+             m.approval_status === 'pending' && 
+             (m.new_url || m.new_url_suggestion)
+      );
+    }
+    // Fallback: all pending with suggestions
+    return mappings.filter(
       m => m.approval_status === 'pending' && (m.new_url || m.new_url_suggestion)
     );
+  };
+
+  // Bulk approve selected or all pending with suggestions
+  const bulkApprove = async () => {
+    const toApprove = getApprovableItems();
     
-    if (pendingWithSuggestions.length === 0) {
-      toast.warning('No pending mappings with URL suggestions');
+    if (toApprove.length === 0) {
+      toast.warning(selectedIds.size > 0 
+        ? 'Keine der ausgewählten URLs kann genehmigt werden (keine neue URL oder bereits approved)'
+        : 'Keine pending Mappings mit URL-Vorschlägen');
       return;
     }
     
     setIsSaving(true);
     let successCount = 0;
     
-    for (const mapping of pendingWithSuggestions) {
+    for (const mapping of toApprove) {
       try {
         await approveMapping(mapping);
         successCount++;
@@ -605,7 +659,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
     
     setIsSaving(false);
-    toast.success(`${successCount} redirects created`);
+    setSelectedIds(new Set()); // Clear selection after bulk action
+    toast.success(`${successCount} Redirects erstellt`);
     await loadMappings();
   };
   
@@ -1000,6 +1055,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     <SelectItem value="skipped">Skipped</SelectItem>
                   </SelectContent>
                 </Select>
+                {selectedIds.size > 0 && (
+                  <Badge variant="outline" className="border-[#00a1ff]/50 text-[#00a1ff]">
+                    {selectedIds.size} ausgewählt
+                  </Badge>
+                )}
                 <Button
                   onClick={bulkApprove}
                   variant="outline"
@@ -1007,8 +1067,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   disabled={isSaving}
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
-                  Bulk Approve ({mappings.filter(m => m.approval_status === 'pending' && (m.new_url || m.new_url_suggestion)).length})
+                  {selectedIds.size > 0 
+                    ? `Ausgewählte genehmigen (${getApprovableItems().length})`
+                    : `Bulk Approve (${mappings.filter(m => m.approval_status === 'pending' && (m.new_url || m.new_url_suggestion)).length})`
+                  }
                 </Button>
+                {selectedIds.size > 0 && (
+                  <Button
+                    onClick={() => setSelectedIds(new Set())}
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Auswahl aufheben
+                  </Button>
+                )}
               </div>
             )}
             
@@ -1020,6 +1094,15 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50 sticky top-0 z-10">
                       <tr>
+                        <th className="text-center p-3 w-10 bg-muted/50">
+                          <input
+                            type="checkbox"
+                            checked={paginatedMappings.length > 0 && paginatedMappings.every(m => selectedIds.has(m.id))}
+                            onChange={toggleSelectAll}
+                            className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
+                            title="Alle auf dieser Seite auswählen"
+                          />
+                        </th>
                         <th className="text-left p-3 font-medium min-w-[300px] bg-muted/50">Old URL</th>
                         <th 
                           className="text-left p-3 font-medium min-w-[150px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
@@ -1088,7 +1171,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     </thead>
                     <tbody className="divide-y divide-border">
                       {paginatedMappings.map((mapping) => (
-                        <tr key={mapping.id} className="hover:bg-muted/20">
+                        <tr 
+                          key={mapping.id} 
+                          className={`hover:bg-muted/20 ${selectedIds.has(mapping.id) ? 'bg-[#00a1ff]/10' : ''}`}
+                        >
+                          <td className="p-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.has(mapping.id)}
+                              onChange={() => toggleSelection(mapping.id)}
+                              className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
+                            />
+                          </td>
                           <td className="p-3">
                             <a 
                               href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
