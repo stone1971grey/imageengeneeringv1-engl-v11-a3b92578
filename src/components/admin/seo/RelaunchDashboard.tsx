@@ -132,6 +132,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Import option: include search volume (costs 5 credits per keyword)
   const [includeSearchVolume, setIncludeSearchVolume] = useState(true);
   
+  // Credits state
+  const [credits, setCredits] = useState<number | null>(null);
+  const [isLoadingCredits, setIsLoadingCredits] = useState(false);
+  
   // Stats
   const [stats, setStats] = useState({
     total: 0,
@@ -726,6 +730,31 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     await loadMappings();
   };
   
+  // Check SISTRIX credits
+  const checkCredits = async () => {
+    setIsLoadingCredits(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('sistrix-api', {
+        body: { action: 'credits' }
+      });
+      
+      if (error) {
+        console.error('[Relaunch] Error checking credits:', error);
+        toast.error('Fehler beim Abrufen der Credits');
+        return;
+      }
+      
+      if (data?.credits !== undefined) {
+        setCredits(data.credits);
+        toast.success(`Verfügbare Credits: ${data.credits.toLocaleString('de-DE')}`);
+      }
+    } catch (error) {
+      console.error('[Relaunch] Credits check error:', error);
+      toast.error('Fehler beim Abrufen der Credits');
+    } finally {
+      setIsLoadingCredits(false);
+    }
+  };
   // Toggle sort
   const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl') => {
     if (sortField === field) {
@@ -1098,6 +1127,19 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
+                </Button>
+                <Button
+                  onClick={checkCredits}
+                  variant="outline"
+                  className="h-10 border-[#00a1ff]/30 text-[#00a1ff] hover:bg-[#00a1ff]/10"
+                  disabled={isLoadingCredits}
+                >
+                  {isLoadingCredits ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <SistrixIcon className="h-4 w-4 mr-2" />
+                  )}
+                  {credits !== null ? `${credits.toLocaleString('de-DE')} Credits` : 'Check Credits'}
                 </Button>
               </div>
             </Card>
