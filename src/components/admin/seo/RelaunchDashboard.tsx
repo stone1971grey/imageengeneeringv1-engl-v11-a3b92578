@@ -827,6 +827,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <SortIcon field="position" />
                           </span>
                         </th>
+                        <th className="text-center p-3 font-medium w-24 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">SV</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Monatliches Suchvolumen für dieses Keyword aus SISTRIX-Daten
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
                         <th 
                           className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('traffic')}
@@ -837,7 +845,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               <SortIcon field="traffic" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten (nicht Suchvolumen). Klicken zum Sortieren.
+                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten. Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
@@ -886,6 +894,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             }`}>
                               {mapping.current_position || '-'}
                             </Badge>
+                          </td>
+                          <td className="p-3 text-center">
+                            {mapping.search_volume ? (
+                              <span className="font-medium text-muted-foreground">{mapping.search_volume.toLocaleString()}</span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
                           </td>
                           <td className="p-3 text-center">
                             {mapping.traffic_estimate ? (
