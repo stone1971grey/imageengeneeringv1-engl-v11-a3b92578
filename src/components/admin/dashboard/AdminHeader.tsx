@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink } from "lucide-react";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
+import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,6 +73,8 @@ interface AdminHeaderProps {
   onCopyPageClick: () => void;
   isSEOEditorOpen: boolean;
   setIsSEOEditorOpen: (open: boolean) => void;
+  isEnterpriseSEOOpen?: boolean;
+  setIsEnterpriseSEOOpen?: (open: boolean) => void;
   isGlossaryOpen: boolean;
   setIsGlossaryOpen: (open: boolean) => void;
   isContentAutomationOpen?: boolean;
@@ -101,6 +104,8 @@ export const AdminHeader = ({
   onCopyPageClick,
   isSEOEditorOpen,
   setIsSEOEditorOpen,
+  isEnterpriseSEOOpen,
+  setIsEnterpriseSEOOpen,
   isGlossaryOpen,
   setIsGlossaryOpen,
   isContentAutomationOpen,
@@ -415,6 +420,17 @@ export const AdminHeader = ({
               >
                 <Eye className="h-4 w-4" />
                 SEO Settings
+              </Button>
+            )}
+            {/* Enterprise SEO - Admin only, domain-wide SISTRIX data */}
+            {isAdmin && setIsEnterpriseSEOOpen && (
+              <Button
+                variant="decision"
+                className="flex items-center gap-2 bg-[#00a1ff] hover:bg-[#0088dd] text-white shadow-soft hover:shadow-lg"
+                onClick={() => setIsEnterpriseSEOOpen(!isEnterpriseSEOOpen)}
+              >
+                <SistrixIcon className="h-4 w-4" />
+                Enterprise SEO
               </Button>
             )}
             {(isAdmin || allowedPages.includes('glossary')) && (
