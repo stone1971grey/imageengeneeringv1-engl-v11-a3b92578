@@ -10,17 +10,20 @@ const SISTRIX_BASE_URL = 'https://api.sistrix.com';
 const FIXED_DOMAIN = 'image-engineering.de';
 const TOP10_LOSS_THRESHOLD = 5; // Alert if URL loses 5+ top10 keywords
 
-interface UrlData {
+interface KeywordData {
+  kw: string;
+  keyword?: string;
   url: string;
-  top10: number;
-  top100: number;
-  visibilityShare: number;
+  position: number;
+  traffic: number;
+  competition: number;
 }
 
 interface RankingAlert {
+  keyword: string;
   url: string;
-  old_top10: number;
-  new_top10: number;
+  old_position: number;
+  new_position: number;
   change: number;
 }
 
@@ -58,23 +61,23 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Fetch current URL data from SISTRIX using domain.urls
-    console.log('Step 1: Fetching URLs from SISTRIX...');
+    // Step 1: Fetch keyword rankings from SISTRIX using keyword.domain.seo
+    console.log('Step 1: Fetching keyword rankings from SISTRIX...');
     const params = new URLSearchParams();
     params.append('api_key', SISTRIX_API_KEY);
     params.append('format', 'json');
     params.append('domain', FIXED_DOMAIN);
     params.append('country', 'de');
-    params.append('limit', '500'); // Get top 500 URLs
+    params.append('limit', '500'); // Get top 500 keywords
 
-    const sistrixResponse = await fetch(`${SISTRIX_BASE_URL}/domain.urls?${params.toString()}`);
+    const sistrixResponse = await fetch(`${SISTRIX_BASE_URL}/keyword.domain.seo?${params.toString()}`);
     const sistrixData = await sistrixResponse.json();
 
     // Log raw SISTRIX response for debugging
     console.log('SISTRIX raw response status:', sistrixResponse.status);
     console.log('SISTRIX raw response:', JSON.stringify(sistrixData).slice(0, 500));
 
-    if (!sistrixResponse.ok || sistrixData.status === 'error') {
+    if (!sistrixResponse.ok || sistrixData.status === 'error' || sistrixData.status === 'fail') {
       console.error('SISTRIX API error:', sistrixData);
       return new Response(
         JSON.stringify({ error: 'SISTRIX API error', details: sistrixData }),
@@ -82,9 +85,9 @@ serve(async (req) => {
       );
     }
 
-    // Try different response structures
-    const urlData: UrlData[] = sistrixData.answer?.[0]?.url || sistrixData.answer || [];
-    console.log(`Fetched ${urlData.length} URLs from SISTRIX`);
+    // keyword.domain.seo returns array with: kw, position, competition, traffic, url
+    const keywordData: KeywordData[] = sistrixData.answer?.[0]?.['keyword.domain.seo'] || sistrixData.answer || [];
+    console.log(`Fetched ${keywordData.length} keywords from SISTRIX`);
 
     // Step 2: Get previous snapshot data to compare
     console.log('Step 2: Fetching previous snapshot for comparison...');
@@ -98,46 +101,51 @@ serve(async (req) => {
       console.error('Error fetching previous data:', prevError);
     }
 
-    // Create a map of previous top10 counts by URL
-    const previousTop10 = new Map<string, number>();
+    // Create a map of previous positions by keyword
+    const previousPositions = new Map<string, { position: number; url: string }>();
     if (previousData) {
       for (const row of previousData) {
-        if (row.old_url && !previousTop10.has(row.old_url)) {
-          previousTop10.set(row.old_url, row.traffic_estimate || 0);
+        if (row.focus_keyword && !previousPositions.has(row.focus_keyword)) {
+          previousPositions.set(row.focus_keyword, {
+            position: row.current_position || 100,
+            url: row.old_url
+          });
         }
       }
     }
-    console.log(`Previous snapshot has ${previousTop10.size} URLs`);
+    console.log(`Previous snapshot has ${previousPositions.size} keywords`);
 
-    // Step 3: Process URL data and detect changes
-    console.log('Step 3: Processing URL data and detecting changes...');
+    // Step 3: Process keyword data and detect changes
+    console.log('Step 3: Processing keyword data and detecting changes...');
     const alerts: RankingAlert[] = [];
     const today = new Date().toISOString().split('T')[0];
     const newMappings: any[] = [];
 
-    for (const item of urlData) {
-      const url = item.url;
-      const newTop10 = parseInt(String(item.top10)) || 0;
-      const top100 = parseInt(String(item.top100)) || 0;
-      const visibilityShare = parseFloat(String(item.visibilityShare)) || 0;
+    for (const item of keywordData) {
+      const keyword = item.kw || item.keyword || '';
+      const url = item.url || '';
+      const newPosition = parseInt(String(item.position)) || 100;
+      const traffic = parseInt(String(item.traffic)) || 0;
+      const competition = parseFloat(String(item.competition)) || 0;
 
-      // Check if this URL had previous data
-      const previousCount = previousTop10.get(url);
+      // Check if this keyword had previous data
+      const previous = previousPositions.get(keyword);
       let trend = 'stable';
 
-      if (previousCount !== undefined) {
-        const change = previousCount - newTop10; // Positive = lost keywords
-        if (change >= 5) {
-          // Lost 5+ top10 keywords
+      if (previous) {
+        const positionChange = newPosition - previous.position; // Positive = dropped in ranking
+        if (positionChange > 10) {
+          // Dropped more than 10 positions
           trend = 'down';
           alerts.push({
+            keyword,
             url,
-            old_top10: previousCount,
-            new_top10: newTop10,
-            change
+            old_position: previous.position,
+            new_position: newPosition,
+            change: positionChange
           });
-          console.log(`ALERT: "${url}" lost ${change} top10 keywords (${previousCount} → ${newTop10})`);
-        } else if (change <= -3) {
+          console.log(`ALERT: "${keyword}" dropped from ${previous.position} to ${newPosition} (-${positionChange} positions)`);
+        } else if (positionChange < -3) {
           trend = 'up';
         }
       } else {
@@ -148,16 +156,15 @@ serve(async (req) => {
       newMappings.push({
         domain: FIXED_DOMAIN,
         old_url: url,
-        focus_keyword: null, // domain.urls doesn't provide keywords
-        current_position: null,
+        focus_keyword: keyword,
+        current_position: newPosition,
         search_volume: null,
-        traffic_estimate: newTop10, // Use top10 count as indicator
+        traffic_estimate: traffic,
         cpc: null,
-        competition: null,
+        competition,
         snapshot_date: today,
         trend,
-        approval_status: 'pending',
-        notes: `Top10: ${newTop10}, Top100: ${top100}, Visibility: ${visibilityShare}%`
+        approval_status: 'pending'
       });
     }
 
@@ -207,9 +214,9 @@ serve(async (req) => {
 
     // Step 5: Log alerts for future notification implementation
     if (alerts.length > 0) {
-      console.log(`Detected ${alerts.length} URLs with significant top10 keyword losses:`);
+      console.log(`Detected ${alerts.length} keywords with significant ranking drops:`);
       alerts.slice(0, 10).forEach(alert => {
-        console.log(`  - "${alert.url}": ${alert.old_top10} → ${alert.new_top10} top10 keywords (lost ${alert.change})`);
+        console.log(`  - "${alert.keyword}": ${alert.old_position} → ${alert.new_position} (dropped ${alert.change} positions)`);
       });
       // TODO: Implement notification system (email, dashboard alerts, etc.) when requirements are defined
     } else {
@@ -221,7 +228,7 @@ serve(async (req) => {
       success: true,
       domain: FIXED_DOMAIN,
       snapshot_date: today,
-      urls_fetched: urlData.length,
+      keywords_fetched: keywordData.length,
       records_updated: upsertedCount,
       alerts_count: alerts.length,
       alerts: alerts.slice(0, 10) // Include first 10 alerts in response

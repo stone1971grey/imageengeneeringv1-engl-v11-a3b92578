@@ -145,16 +145,16 @@ serve(async (req) => {
         params.append('country', country);
         break;
 
-      case 'domain.urls':
-        // Get top ranking URLs for domain - CORE FOR RELAUNCH DASHBOARD
-        // Returns URLs with top10/top100 keyword counts and visibility share
+      case 'keyword.domain.seo':
+        // Get organic keyword rankings for domain - CORE FOR RELAUNCH DASHBOARD
+        // Returns: keyword (kw), position, competition, traffic, url
         if (!domain) {
           return new Response(
-            JSON.stringify({ error: 'Domain is required for domain.urls' }),
+            JSON.stringify({ error: 'Domain is required for keyword.domain.seo' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        endpoint = '/domain.urls';
+        endpoint = '/keyword.domain.seo';
         params.append('domain', domain);
         params.append('country', country);
         if (limit) params.append('limit', String(limit));
