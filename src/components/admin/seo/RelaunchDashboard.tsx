@@ -107,7 +107,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'traffic' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'traffic' | 'redirect' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -391,12 +391,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'traffic') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'traffic' | 'redirect') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for position/traffic
+      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for others
     }
   };
   
@@ -434,6 +434,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         } else if (sortField === 'traffic') {
           const aVal = a.traffic_estimate ?? 0;
           const bVal = b.traffic_estimate ?? 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'redirect') {
+          const aVal = a.redirect_created ? 1 : 0;
+          const bVal = b.redirect_created ? 1 : 0;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
         return 0;
@@ -498,7 +502,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'traffic' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'traffic' | 'redirect' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -787,11 +791,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                         </th>
                         <th className="text-left p-3 font-medium min-w-[280px] bg-muted/50">New URL</th>
                         <th className="text-center p-3 font-medium w-24 bg-muted/50">Status</th>
-                        <th className="text-center p-3 font-medium w-32 bg-muted/50">
-                          <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Actions</TooltipTrigger>
-                            <TooltipContent>Approve = create 301 redirect, Reject = skip this URL</TooltipContent>
-                          </Tooltip>
+                        <th 
+                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('redirect')}
+                        >
+                          <span className="flex items-center justify-center">
+                            Redirect
+                            <SortIcon field="redirect" />
+                          </span>
                         </th>
                       </tr>
                     </thead>
@@ -880,57 +887,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-3 text-center">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
-                          <td className="p-3">
-                            {mapping.approval_status === 'pending' && (
-                              <div className="flex gap-1 justify-center">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                                      onClick={() => approveMapping(mapping)}
-                                      disabled={isSaving}
-                                    >
-                                      <Check className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Approve & create 301 redirect</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                      onClick={() => updateMapping(mapping.id, { approval_status: 'rejected' })}
-                                      disabled={isSaving}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Reject (no redirect)</TooltipContent>
-                                </Tooltip>
-                              </div>
-                            )}
-                            {mapping.approval_status === 'approved' && mapping.redirect_created && (
-                              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
-                                301 ✓
-                              </Badge>
-                            )}
-                            {mapping.approval_status === 'rejected' && (
+                          <td className="p-3 text-center">
+                            {mapping.redirect_created ? (
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <Check className="h-5 w-5 text-green-500 mx-auto" />
+                                </TooltipTrigger>
+                                <TooltipContent>301 Redirect aktiv → {mapping.new_url}</TooltipContent>
+                              </Tooltip>
+                            ) : (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 text-xs text-muted-foreground hover:text-foreground"
-                                    onClick={() => updateMapping(mapping.id, { approval_status: 'pending' })}
+                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-green-400 hover:bg-green-500/10"
+                                    onClick={() => approveMapping(mapping)}
+                                    disabled={isSaving || !mapping.new_url && !mapping.new_url_suggestion}
                                   >
-                                    Undo
+                                    <X className="h-5 w-5" />
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>Revert to pending</TooltipContent>
+                                <TooltipContent>
+                                  {mapping.new_url || mapping.new_url_suggestion 
+                                    ? 'Klicken um 301 Redirect zu erstellen' 
+                                    : 'Erst New URL eingeben'}
+                                </TooltipContent>
                               </Tooltip>
                             )}
                           </td>
