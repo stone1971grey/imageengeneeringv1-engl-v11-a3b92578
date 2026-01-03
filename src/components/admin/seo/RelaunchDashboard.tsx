@@ -26,7 +26,10 @@ import {
   CheckCircle2,
   Sparkles,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -102,6 +105,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [pageRegistry, setPageRegistry] = useState<PageRegistryItem[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Sorting states
+  const [sortField, setSortField] = useState<'keyword' | 'position' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -383,31 +390,66 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     await loadMappings();
   };
   
-  // Filter mappings
-  const filteredMappings = mappings.filter(m => {
-    if (filterStatus !== 'all' && m.approval_status !== filterStatus) return false;
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      return (
-        m.old_url?.toLowerCase().includes(search) ||
-        m.focus_keyword?.toLowerCase().includes(search) ||
-        m.new_url?.toLowerCase().includes(search)
-      );
+  // Toggle sort
+  const toggleSort = (field: 'keyword' | 'position') => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for position
     }
-    return true;
-  });
+  };
+  
+  // Filter and sort mappings
+  const filteredAndSortedMappings = (() => {
+    let result = mappings.filter(m => {
+      if (filterStatus !== 'all' && m.approval_status !== filterStatus) return false;
+      if (searchTerm) {
+        const search = searchTerm.toLowerCase();
+        return (
+          m.old_url?.toLowerCase().includes(search) ||
+          m.focus_keyword?.toLowerCase().includes(search) ||
+          m.new_url?.toLowerCase().includes(search)
+        );
+      }
+      return true;
+    });
+    
+    // Apply sorting
+    if (sortField) {
+      result = [...result].sort((a, b) => {
+        if (sortField === 'keyword') {
+          const aVal = (a.focus_keyword || '').toLowerCase();
+          const bVal = (b.focus_keyword || '').toLowerCase();
+          if (!aVal && !bVal) return 0;
+          if (!aVal) return 1;
+          if (!bVal) return -1;
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal, 'de') 
+            : bVal.localeCompare(aVal, 'de');
+        } else if (sortField === 'position') {
+          const aVal = a.current_position ?? 999;
+          const bVal = b.current_position ?? 999;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+        return 0;
+      });
+    }
+    
+    return result;
+  })();
   
   // Pagination logic
-  const totalItems = filteredMappings.length;
+  const totalItems = filteredAndSortedMappings.length;
   const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
   const paginatedMappings = pageSize === 'all' 
-    ? filteredMappings 
-    : filteredMappings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    ? filteredAndSortedMappings 
+    : filteredAndSortedMappings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters/sort change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterStatus, searchTerm, pageSize]);
+  }, [filterStatus, searchTerm, pageSize, sortField, sortDirection]);
   
   // Persist page size
   useEffect(() => {
@@ -449,6 +491,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         <TooltipContent>{info.label}</TooltipContent>
       </Tooltip>
     );
+  };
+  
+  // Sort icon component
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' }) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="h-3 w-3 ml-1" />
+      : <ArrowDown className="h-3 w-3 ml-1" />;
   };
   
   // Status badge
@@ -686,28 +738,46 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             <TooltipProvider>
             {paginatedMappings.length > 0 ? (
               <div className="border border-border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-muted/50">
+                    <thead className="bg-muted/50 sticky top-0 z-10">
                       <tr>
-                        <th className="text-left p-3 font-medium min-w-[300px]">Old URL</th>
-                        <th className="text-left p-3 font-medium min-w-[150px]">Focus Keyword</th>
-                        <th className="text-center p-3 font-medium w-16">Pos.</th>
-                        <th className="text-center p-3 font-medium w-24">
+                        <th className="text-left p-3 font-medium min-w-[300px] bg-muted/50">Old URL</th>
+                        <th 
+                          className="text-left p-3 font-medium min-w-[150px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('keyword')}
+                        >
+                          <span className="flex items-center">
+                            Focus Keyword
+                            <SortIcon field="keyword" />
+                          </span>
+                        </th>
+                        <th 
+                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('position')}
+                        >
+                          <span className="flex items-center justify-center">
+                            Pos.
+                            <SortIcon field="position" />
+                          </span>
+                        </th>
+                        <th className="text-center p-3 font-medium w-24 bg-muted/50">
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Volume</TooltipTrigger>
-                            <TooltipContent>Monthly search volume</TooltipContent>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">Traffic</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten (nicht Suchvolumen)
+                            </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-20">
+                        <th className="text-center p-3 font-medium w-20 bg-muted/50">
                           <Tooltip>
                             <TooltipTrigger className="cursor-help underline decoration-dotted">Trend</TooltipTrigger>
                             <TooltipContent>Position trend vs. previous snapshot</TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-left p-3 font-medium min-w-[280px]">New URL</th>
-                        <th className="text-center p-3 font-medium w-24">Status</th>
-                        <th className="text-center p-3 font-medium w-32">
+                        <th className="text-left p-3 font-medium min-w-[280px] bg-muted/50">New URL</th>
+                        <th className="text-center p-3 font-medium w-24 bg-muted/50">Status</th>
+                        <th className="text-center p-3 font-medium w-32 bg-muted/50">
                           <Tooltip>
                             <TooltipTrigger className="cursor-help underline decoration-dotted">Actions</TooltipTrigger>
                             <TooltipContent>Approve = create 301 redirect, Reject = skip this URL</TooltipContent>
@@ -743,14 +813,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </Badge>
                           </td>
                           <td className="p-3 text-center">
-                            {mapping.search_volume ? (
-                              <span className="font-medium">{mapping.search_volume.toLocaleString()}</span>
-                            ) : mapping.traffic_estimate ? (
+                            {mapping.traffic_estimate ? (
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <span className="text-muted-foreground">~{mapping.traffic_estimate}</span>
+                                  <span className="font-medium">{mapping.traffic_estimate.toLocaleString()}</span>
                                 </TooltipTrigger>
-                                <TooltipContent>Estimated traffic (search volume not available)</TooltipContent>
+                                <TooltipContent>
+                                  Geschätzter monatlicher Traffic basierend auf Position & Keyword-Daten
+                                </TooltipContent>
                               </Tooltip>
                             ) : (
                               <span className="text-muted-foreground">-</span>
