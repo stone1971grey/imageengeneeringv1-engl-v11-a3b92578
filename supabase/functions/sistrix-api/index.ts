@@ -144,6 +144,23 @@ serve(async (req) => {
         params.append('country', country);
         break;
 
+      case 'domain.ranking':
+        // Get all ranking keywords for domain - CORE FOR RELAUNCH DASHBOARD
+        if (!domain) {
+          return new Response(
+            JSON.stringify({ error: 'Domain is required for domain.ranking' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        endpoint = '/domain.ranking';
+        params.append('domain', domain);
+        params.append('country', country);
+        // Optional limit and offset for pagination
+        const { limit = 100, offset = 0 } = await req.json().catch(() => ({}));
+        if (limit) params.append('limit', String(limit));
+        if (offset) params.append('offset', String(offset));
+        break;
+
       case 'keyword.seo':
         // Get keyword rankings for a specific keyword
         if (!keyword) {
