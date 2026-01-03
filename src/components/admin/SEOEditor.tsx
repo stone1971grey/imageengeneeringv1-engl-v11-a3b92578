@@ -128,7 +128,15 @@ export const SEOEditor = ({
     setLastLoadedPageSlug(pageSlug);
     setIsFocusKeywordLoaded(false);
     
-    // STEP 1: Try to load from localStorage IMMEDIATELY (sync)
+    // CRITICAL FIX: ALWAYS RESET local state when page changes to prevent cross-contamination
+    setLocalFocusKeyword('');
+    setLocalTitle('');
+    setLocalMetaDescription('');
+    localFocusKeywordRef.current = '';
+    localTitleRef.current = '';
+    localMetaDescriptionRef.current = '';
+    
+    // STEP 1: Try to load from localStorage IMMEDIATELY (sync) - ONLY for THIS specific page
     let cachedFkw = '';
     let cachedTitle = '';
     let cachedDescription = '';
@@ -159,7 +167,7 @@ export const SEOEditor = ({
       console.warn('[SEO Editor] Failed to read SEO data from cache');
     }
     
-    // Set cached values IMMEDIATELY if available
+    // Set cached values IMMEDIATELY if available - these are PAGE-SPECIFIC
     if (cachedFkw) {
       setLocalFocusKeyword(cachedFkw);
       localFocusKeywordRef.current = cachedFkw;
@@ -174,15 +182,22 @@ export const SEOEditor = ({
       localMetaDescriptionRef.current = cachedDescription;
     }
     
-    // Sync cached values to parent if different
-    if (cachedFkw || cachedTitle || cachedDescription) {
-      const updates: Partial<typeof data> = {};
-      if (cachedFkw && cachedFkw !== data.focusKeyword) updates.focusKeyword = cachedFkw;
-      if (cachedTitle && cachedTitle !== data.title) updates.title = cachedTitle;
-      if (cachedDescription && cachedDescription !== data.metaDescription) updates.metaDescription = cachedDescription;
-      if (Object.keys(updates).length > 0) {
-        onChange({ ...data, ...updates });
-      }
+    // Sync cached values to parent - OR reset parent if no cache exists
+    const updates: Partial<typeof data> = {};
+    if (cachedFkw) {
+      if (cachedFkw !== data.focusKeyword) updates.focusKeyword = cachedFkw;
+    } else if (data.focusKeyword) {
+      // Reset parent focus keyword if no cache for this page
+      updates.focusKeyword = '';
+    }
+    if (cachedTitle) {
+      if (cachedTitle !== data.title) updates.title = cachedTitle;
+    }
+    if (cachedDescription) {
+      if (cachedDescription !== data.metaDescription) updates.metaDescription = cachedDescription;
+    }
+    if (Object.keys(updates).length > 0) {
+      onChange({ ...data, ...updates });
     }
     
     // STEP 2: Verify/load from DB (async) - this is the authoritative source
