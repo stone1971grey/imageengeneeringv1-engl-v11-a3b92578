@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Loader2, TrendingUp, TrendingDown, Globe, BarChart3, Target, Users, ArrowUpRight, RefreshCw, Zap, Trophy, Search } from "lucide-react";
+import { ChevronDown, Loader2, TrendingUp, TrendingDown, BarChart3, Target, Users, ArrowUpRight, RefreshCw, Zap, Trophy, Search } from "lucide-react";
+import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -337,7 +338,7 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#00a1ff] rounded-lg flex items-center justify-center">
-              <Globe className="h-5 w-5 text-white" />
+              <SistrixIcon className="h-5 w-5 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">SISTRIX Enterprise SEO</h3>

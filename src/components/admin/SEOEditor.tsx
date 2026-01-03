@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft, Building2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft } from "lucide-react";
+import { SistrixIcon } from "../icons/SistrixIcon";
 import { SistrixEnterpriseTab } from "./seo/SistrixEnterpriseTab";
 import {
   AlertDialog,
@@ -7384,7 +7385,7 @@ export const SEOEditor = ({
               </TabsTrigger>
               <TabsTrigger value="enterprise" className="text-base font-medium py-3 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white flex items-center gap-2">
                 Enterprise
-                <Building2 className="h-4 w-4" />
+                <SistrixIcon className="h-4 w-4" />
               </TabsTrigger>
             </>
           )}
