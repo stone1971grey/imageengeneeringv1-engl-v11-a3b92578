@@ -247,6 +247,54 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     });
   };
   
+  // Fetch search volume metrics for keywords
+  const fetchSearchVolumeForKeywords = async (keywords: string[]): Promise<Map<string, number>> => {
+    const searchVolumeMap = new Map<string, number>();
+    
+    if (keywords.length === 0) return searchVolumeMap;
+    
+    // SISTRIX costs 5 credits per keyword for metrics, so batch in chunks of 50
+    const BATCH_SIZE = 50;
+    const batches: string[][] = [];
+    
+    for (let i = 0; i < keywords.length; i += BATCH_SIZE) {
+      batches.push(keywords.slice(i, i + BATCH_SIZE));
+    }
+    
+    console.log(`[Relaunch] Fetching search volume for ${keywords.length} keywords in ${batches.length} batches`);
+    
+    for (const batch of batches) {
+      try {
+        const { data, error } = await supabase.functions.invoke('sistrix-api', {
+          body: { 
+            action: 'keyword.seo.metrics', 
+            keywords: batch,
+            country
+          }
+        });
+        
+        if (error) {
+          console.error('[Relaunch] Error fetching metrics batch:', error);
+          continue;
+        }
+        
+        // keyword.seo.metrics returns: kw, competition, cpc, traffic (=search volume), clicks
+        const metricsData = data?.answer?.[0]?.result || data?.answer || [];
+        console.log('[Relaunch] Metrics batch result:', metricsData.length);
+        
+        for (const item of metricsData) {
+          if (item.kw && item.traffic) {
+            searchVolumeMap.set(item.kw.toLowerCase(), parseInt(item.traffic) || 0);
+          }
+        }
+      } catch (e) {
+        console.error('[Relaunch] Batch metrics error:', e);
+      }
+    }
+    
+    return searchVolumeMap;
+  };
+
   // Fetch rankings from SISTRIX and save to database
   const fetchRankings = async () => {
     if (!domain) {
@@ -256,7 +304,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     
     setIsLoading(true);
     try {
-      // Fetch keyword rankings from SISTRIX using keyword.domain.seo endpoint
+      // Step 1: Fetch keyword rankings from SISTRIX using keyword.domain.seo endpoint
       const { data, error } = await supabase.functions.invoke('sistrix-api', {
         body: { 
           action: 'keyword.domain.seo', 
@@ -279,22 +327,33 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return;
       }
       
-      // Transform and save to database
+      // Step 2: Extract unique keywords for search volume lookup
+      const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
+      toast.info(`Fetching search volume for ${uniqueKeywords.length} keywords...`);
+      
+      // Step 3: Fetch search volume metrics
+      const searchVolumeMap = await fetchSearchVolumeForKeywords(uniqueKeywords);
+      console.log('[Relaunch] Search volume data retrieved for', searchVolumeMap.size, 'keywords');
+      
+      // Transform and save to database with search volume
       const today = new Date().toISOString().split('T')[0];
-      const mappingsToInsert = keywordData.map((r: any) => ({
-        domain,
-        old_url: r.url || '',
-        focus_keyword: r.kw || r.keyword || null,
-        current_position: parseInt(r.position) || null,
-        search_volume: null, // Not provided by this endpoint
-        competition: parseFloat(r.competition) || null,
-        cpc: null,
-        traffic_estimate: parseInt(r.traffic) || null,
-        new_url_suggestion: suggestNewUrl(r.url || '', r.kw || r.keyword || ''),
-        approval_status: 'pending',
-        trend: 'stable',
-        snapshot_date: today
-      }));
+      const mappingsToInsert = keywordData.map((r: any) => {
+        const keyword = r.kw || r.keyword || '';
+        return {
+          domain,
+          old_url: r.url || '',
+          focus_keyword: keyword || null,
+          current_position: parseInt(r.position) || null,
+          search_volume: searchVolumeMap.get(keyword.toLowerCase()) || null,
+          competition: parseFloat(r.competition) || null,
+          cpc: null,
+          traffic_estimate: parseInt(r.traffic) || null,
+          new_url_suggestion: suggestNewUrl(r.url || '', keyword),
+          approval_status: 'pending',
+          trend: 'stable',
+          snapshot_date: today
+        };
+      });
       
       // Upsert to database (update if exists for same domain/url/date)
       const { error: insertError } = await supabase
@@ -309,7 +368,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         throw insertError;
       }
       
-      toast.success(`${keywordData.length} keywords imported`);
+      const withVolume = mappingsToInsert.filter((m: any) => m.search_volume).length;
+      toast.success(`${keywordData.length} keywords imported (${withVolume} with search volume)`);
       await loadMappings();
       
     } catch (e) {

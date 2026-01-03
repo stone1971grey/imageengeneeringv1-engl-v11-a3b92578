@@ -161,6 +161,23 @@ serve(async (req) => {
         if (offset) params.append('offset', String(offset));
         break;
 
+      case 'keyword.seo.metrics':
+        // Get keyword metrics (search volume, CPC, clicks) for specific keywords
+        // Use for enriching keyword data with search volume
+        if (!requestBody.keywords || !Array.isArray(requestBody.keywords)) {
+          return new Response(
+            JSON.stringify({ error: 'Keywords array is required for keyword.seo.metrics' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        endpoint = '/keyword.seo.metrics';
+        // SISTRIX accepts bulk keywords as array
+        for (const kw of requestBody.keywords) {
+          params.append('kw[]', kw);
+        }
+        params.append('country', country);
+        break;
+
       case 'keyword.seo':
         // Get keyword rankings for a specific keyword
         if (!keyword) {
