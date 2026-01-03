@@ -11,8 +11,9 @@ import {
   SplitSquareVertical, List, PanelBottom, History as HistoryIcon,
   Search, FileCheck, Wand2, Clock, Copy, Database,
   ChevronDown, Flame, PenLine, Rocket, Package, Sliders,
-  HardDrive, GitBranch, Puzzle, BarChart3
+  HardDrive, GitBranch, Puzzle, BarChart3, CheckCircle2, Circle
 } from "lucide-react";
+import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import lovableIcon from "@/assets/lovable-icon.png";
 
 interface WelcomeTabProps {
@@ -148,7 +149,18 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
                     onToggle={() => toggleVersion("v1.1")}
                     isPlanned
                   >
-                    <FeatureItem icon={Wand2} label="Advanced AI SEO Suite" isPlanned />
+                    <FeatureItem icon={CheckCircle2} label="Smart Focus Keyword" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart Title Generator" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart Description Generator" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart H1 Generator" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart H2/H3 Generators" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart Content Optimizer" isDone />
+                    <FeatureItem icon={CheckCircle2} label="FKW Content Score" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Readability Analysis" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart Internal Links" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Smart External Links" isDone />
+                    <FeatureItem icon={Circle} label="Link Analysis Dashboard" isPlanned />
+                    <FeatureItem icon={Circle} label="Content Gap Analysis" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
@@ -173,49 +185,63 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
 
                   <VersionSection 
                     versionKey="v1.4"
-                    label="v1.4 – Template System"
+                    label="v1.4 – Enterprise SEO"
                     isOpen={openVersions["v1.4"]}
                     onToggle={() => toggleVersion("v1.4")}
+                    isPlanned
+                  >
+                    <FeatureItem icon={CheckCircle2} label="SISTRIX Integration" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Relaunch Dashboard" isDone />
+                    <FeatureItem icon={Circle} label="Ranking Alerts" isPlanned />
+                    <FeatureItem icon={Circle} label="Competitor Analysis" isPlanned />
+                    <FeatureItem icon={Circle} label="Visibility Tracking" isPlanned />
+                  </VersionSection>
+
+                  <VersionSection 
+                    versionKey="v1.5"
+                    label="v1.5 – Template System"
+                    isOpen={openVersions["v1.5"]}
+                    onToggle={() => toggleVersion("v1.5")}
                     isPlanned
                   >
                     <FeatureItem icon={Package} label="Template/Boilerplate System" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
-                    versionKey="v1.5"
-                    label="v1.5 – Configuration Layer"
-                    isOpen={openVersions["v1.5"]}
-                    onToggle={() => toggleVersion("v1.5")}
+                    versionKey="v1.6"
+                    label="v1.6 – Configuration Layer"
+                    isOpen={openVersions["v1.6"]}
+                    onToggle={() => toggleVersion("v1.6")}
                     isPlanned
                   >
                     <FeatureItem icon={Sliders} label="Tenant Configuration Layer" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
-                    versionKey="v1.6"
-                    label="v1.6 – Data Isolation"
-                    isOpen={openVersions["v1.6"]}
-                    onToggle={() => toggleVersion("v1.6")}
+                    versionKey="v1.7"
+                    label="v1.7 – Data Isolation"
+                    isOpen={openVersions["v1.7"]}
+                    onToggle={() => toggleVersion("v1.7")}
                     isPlanned
                   >
                     <FeatureItem icon={HardDrive} label="Multi-Tenant Data Isolation" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
-                    versionKey="v1.7"
-                    label="v1.7 – Tenant Onboarding"
-                    isOpen={openVersions["v1.7"]}
-                    onToggle={() => toggleVersion("v1.7")}
+                    versionKey="v1.8"
+                    label="v1.8 – Tenant Onboarding"
+                    isOpen={openVersions["v1.8"]}
+                    onToggle={() => toggleVersion("v1.8")}
                     isPlanned
                   >
                     <FeatureItem icon={GitBranch} label="Tenant Onboarding Pipeline" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
-                    versionKey="v1.8"
-                    label="v1.8 – Mautic Vision"
-                    isOpen={openVersions["v1.8"]}
-                    onToggle={() => toggleVersion("v1.8")}
+                    versionKey="v1.9"
+                    label="v1.9 – Mautic Vision"
+                    isOpen={openVersions["v1.9"]}
+                    onToggle={() => toggleVersion("v1.9")}
                     isPlanned
                   >
                     <FeatureItem icon={BarChart3} label="Marketing Automation KPIs" isPlanned />
@@ -340,10 +366,16 @@ const VersionSection = ({ label, isOpen, onToggle, isCurrent, isPlanned, childre
 );
 
 // Helper component for feature items
-const FeatureItem = ({ icon: Icon, label, isPlanned }: { icon: any; label: string; isPlanned?: boolean }) => (
-  <div className={`flex items-center gap-3 p-3 rounded-lg ${isPlanned ? 'bg-gray-700/30' : 'bg-gray-800/50'}`}>
-    <Icon className={`h-5 w-5 ${isPlanned ? 'text-gray-500' : 'text-[#f9dc24]'}`} />
-    <span className={`text-sm font-medium ${isPlanned ? 'text-gray-400' : 'text-white'}`}>{label}</span>
+const FeatureItem = ({ icon: Icon, label, isPlanned, isDone }: { icon: any; label: string; isPlanned?: boolean; isDone?: boolean }) => (
+  <div className={`flex items-center gap-3 p-3 rounded-lg ${
+    isDone ? 'bg-green-900/30' : isPlanned ? 'bg-gray-700/30' : 'bg-gray-800/50'
+  }`}>
+    <Icon className={`h-5 w-5 ${
+      isDone ? 'text-green-400' : isPlanned ? 'text-gray-500' : 'text-[#f9dc24]'
+    }`} />
+    <span className={`text-sm font-medium ${
+      isDone ? 'text-green-300' : isPlanned ? 'text-gray-400' : 'text-white'
+    }`}>{label}</span>
   </div>
 );
 
