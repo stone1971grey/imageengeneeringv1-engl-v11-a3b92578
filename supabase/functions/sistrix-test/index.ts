@@ -43,6 +43,11 @@ serve(async (req) => {
     const oppRes = await fetch(`${SISTRIX_BASE_URL}/domain.opportunities?api_key=${SISTRIX_API_KEY}&format=json&domain=image-engineering.de&country=de&limit=5`);
     results.opportunities = await oppRes.json();
 
+    // Test 5: keyword.domain.seo - Core for Relaunch Dashboard
+    console.log('Testing: keyword.domain.seo');
+    const keywordRes = await fetch(`${SISTRIX_BASE_URL}/keyword.domain.seo?api_key=${SISTRIX_API_KEY}&format=json&domain=image-engineering.de&country=de&limit=10`);
+    results.keywordDomainSeo = await keywordRes.json();
+
     console.log('All tests completed');
 
     return new Response(
