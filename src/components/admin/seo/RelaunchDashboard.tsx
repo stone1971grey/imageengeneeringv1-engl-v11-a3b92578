@@ -1335,7 +1335,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                 mapping.competition >= 40 ? 'border-amber-500/50 text-amber-400' :
                                 'border-green-500/50 text-green-400'
                               }`}>
-                                {Math.round(mapping.competition)}
+                                {Math.round(mapping.competition)}%
                               </Badge>
                             ) : (
                               <span className="text-muted-foreground">-</span>
