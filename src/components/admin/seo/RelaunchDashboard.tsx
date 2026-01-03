@@ -820,13 +820,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <span className="font-medium text-xs">{mapping.focus_keyword || '-'}</span>
                           </td>
                           <td className="p-3 text-center">
-                            <Badge variant="outline" className={
+                            <Badge variant="outline" className={`text-base font-semibold px-3 py-1 ${
                               (mapping.current_position || 999) <= 3 ? 'border-green-500/50 text-green-400' :
                               (mapping.current_position || 999) <= 10 ? 'border-blue-500/50 text-blue-400' :
                               (mapping.current_position || 999) <= 20 ? 'border-amber-500/50 text-amber-400' :
                               'border-zinc-500/50 text-zinc-400'
-                            }>
-                              #{mapping.current_position || '-'}
+                            }`}>
+                              {mapping.current_position || '-'}
                             </Badge>
                           </td>
                           <td className="p-3 text-center">
