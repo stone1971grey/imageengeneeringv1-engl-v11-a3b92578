@@ -744,9 +744,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return;
       }
       
-      if (data?.credits !== undefined) {
-        setCredits(data.credits);
-        toast.success(`Verfügbare Credits: ${data.credits.toLocaleString('de-DE')}`);
+      // SISTRIX API returns credits in response.answer[0].credits or response.credits
+      const creditsValue = data?.answer?.[0]?.credits ?? data?.credits ?? null;
+      if (creditsValue !== null) {
+        setCredits(creditsValue);
+        toast.success(`Verfügbare Credits: ${creditsValue.toLocaleString('de-DE')}`);
+      } else {
+        toast.error('Credits konnten nicht abgerufen werden');
       }
     } catch (error) {
       console.error('[Relaunch] Credits check error:', error);
