@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,7 +40,6 @@ serve(async (req) => {
     console.log(`Domain: ${FIXED_DOMAIN}`);
 
     const SISTRIX_API_KEY = Deno.env.get('SISTRIX_API_KEY');
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -209,82 +207,15 @@ serve(async (req) => {
 
     console.log(`Database update: ${upsertedCount} records upserted, ${errorCount} errors`);
 
-    // Step 5: Send email alerts if there are significant ranking drops
-    if (alerts.length > 0 && RESEND_API_KEY) {
-      console.log('Step 5: Sending email alerts...');
-      const resend = new Resend(RESEND_API_KEY);
-
-      const alertHtml = `
-        <h1>⚠️ SEO Ranking Alert - ${FIXED_DOMAIN}</h1>
-        <p>Die folgenden Keywords haben mehr als ${RANKING_LOSS_THRESHOLD} Positionen verloren:</p>
-        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-          <tr style="background-color: #f0f0f0;">
-            <th>Keyword</th>
-            <th>Alte Position</th>
-            <th>Neue Position</th>
-            <th>Verlust</th>
-            <th>URL</th>
-          </tr>
-          ${alerts.slice(0, 20).map(alert => `
-            <tr>
-              <td><strong>${alert.keyword}</strong></td>
-              <td style="text-align: center;">${alert.old_position}</td>
-              <td style="text-align: center; color: red;">${alert.new_position}</td>
-              <td style="text-align: center; color: red;">-${alert.position_change}</td>
-              <td style="font-size: 12px;">${alert.old_url}</td>
-            </tr>
-          `).join('')}
-        </table>
-        ${alerts.length > 20 ? `<p><em>... und ${alerts.length - 20} weitere Alerts</em></p>` : ''}
-        <p style="margin-top: 20px;">
-          <a href="https://preview--imageengeneeringv1-engl-v11.lovable.app/en/admin-dashboard" style="background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            Zum Relaunch Dashboard
-          </a>
-        </p>
-        <p style="color: #666; font-size: 12px; margin-top: 30px;">
-          Dieser Report wurde automatisch am ${today} generiert.
-        </p>
-      `;
-
-      try {
-        // Get admin emails from profiles
-        const { data: admins } = await supabase
-          .from('user_roles')
-          .select('user_id')
-          .eq('role', 'admin');
-
-        const adminEmails: string[] = [];
-        if (admins && admins.length > 0) {
-          for (const admin of admins) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('email')
-              .eq('id', admin.user_id)
-              .single();
-            if (profile?.email) {
-              adminEmails.push(profile.email);
-            }
-          }
-        }
-
-        // Fallback to a default email if no admins found
-        const recipients = adminEmails.length > 0 ? adminEmails : ['admin@image-engineering.de'];
-
-        const emailResponse = await resend.emails.send({
-          from: 'SEO Alert <onboarding@resend.dev>',
-          to: recipients,
-          subject: `⚠️ SEO Alert: ${alerts.length} Ranking-Verluste für ${FIXED_DOMAIN}`,
-          html: alertHtml,
-        });
-
-        console.log('Email sent successfully:', emailResponse);
-      } catch (emailError) {
-        console.error('Error sending email:', emailError);
-      }
-    } else if (alerts.length > 0 && !RESEND_API_KEY) {
-      console.log('Alerts detected but RESEND_API_KEY not configured - skipping email');
+    // Step 5: Log alerts for future notification implementation
+    if (alerts.length > 0) {
+      console.log(`Detected ${alerts.length} significant ranking changes (> ${RANKING_LOSS_THRESHOLD} positions):`);
+      alerts.slice(0, 10).forEach(alert => {
+        console.log(`  - "${alert.keyword}": ${alert.old_position} → ${alert.new_position} (${alert.position_change > 0 ? '-' : '+'}${Math.abs(alert.position_change)})`);
+      });
+      // TODO: Implement notification system (email, dashboard alerts, etc.) when requirements are defined
     } else {
-      console.log('No significant ranking drops detected - no email sent');
+      console.log('No significant ranking changes detected');
     }
 
     // Step 6: Summary
@@ -295,8 +226,7 @@ serve(async (req) => {
       rankings_fetched: rankings.length,
       records_updated: upsertedCount,
       alerts_count: alerts.length,
-      alerts: alerts.slice(0, 10), // Include first 10 alerts in response
-      email_sent: alerts.length > 0 && !!RESEND_API_KEY
+      alerts: alerts.slice(0, 10) // Include first 10 alerts in response
     };
 
     console.log('=== SISTRIX CRON SNAPSHOT COMPLETED ===');
