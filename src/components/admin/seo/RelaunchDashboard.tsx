@@ -107,7 +107,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'traffic' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -391,12 +391,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'traffic') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for position
+      setSortDirection(field === 'keyword' ? 'asc' : 'desc'); // A-Z default for keyword, high-to-low for position/traffic
     }
   };
   
@@ -430,6 +430,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         } else if (sortField === 'position') {
           const aVal = a.current_position ?? 999;
           const bVal = b.current_position ?? 999;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'traffic') {
+          const aVal = a.traffic_estimate ?? 0;
+          const bVal = b.traffic_estimate ?? 0;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
         return 0;
@@ -494,7 +498,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'traffic' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -761,11 +765,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <SortIcon field="position" />
                           </span>
                         </th>
-                        <th className="text-center p-3 font-medium w-24 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('traffic')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">Traffic</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">Traffic</span>
+                              <SortIcon field="traffic" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten (nicht Suchvolumen)
+                              Geschätzter monatlicher Traffic für diese URL basierend auf SISTRIX-Daten (nicht Suchvolumen). Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
@@ -795,7 +805,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               rel="noopener noreferrer"
                               className="text-[#00a1ff] hover:underline flex items-center gap-1 break-all"
                             >
-                              <span className="text-xs">{mapping.old_url}</span>
+                              <span className="text-sm">{mapping.old_url}</span>
                               <ExternalLink className="h-3 w-3 flex-shrink-0" />
                             </a>
                           </td>
