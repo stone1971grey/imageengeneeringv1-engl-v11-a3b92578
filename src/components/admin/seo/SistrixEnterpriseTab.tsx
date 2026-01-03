@@ -9,6 +9,7 @@ import { ChevronDown, Loader2, TrendingUp, TrendingDown, BarChart3, Target, User
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { RelaunchDashboard } from "./RelaunchDashboard";
 
 interface SistrixEnterpriseTabProps {
   pageSlug: string;
@@ -333,6 +334,9 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
 
   return (
     <div className="space-y-6">
+      {/* Relaunch Dashboard - Primary Feature */}
+      <RelaunchDashboard editorLanguage={editorLanguage} />
+      
       {/* Header with SISTRIX Branding */}
       <div className="p-4 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg">
         <div className="flex items-center justify-between">

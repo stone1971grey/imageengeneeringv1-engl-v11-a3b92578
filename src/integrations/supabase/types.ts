@@ -949,6 +949,78 @@ export type Database = {
         }
         Relationships: []
       }
+      relaunch_url_mappings: {
+        Row: {
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
+          competition: number | null
+          cpc: number | null
+          created_at: string
+          created_by: string | null
+          current_position: number | null
+          domain: string
+          focus_keyword: string | null
+          id: string
+          new_url: string | null
+          new_url_suggestion: string | null
+          notes: string | null
+          old_url: string
+          redirect_created: boolean | null
+          search_volume: number | null
+          snapshot_date: string
+          traffic_estimate: number | null
+          trend: string | null
+          updated_at: string
+        }
+        Insert: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          competition?: number | null
+          cpc?: number | null
+          created_at?: string
+          created_by?: string | null
+          current_position?: number | null
+          domain: string
+          focus_keyword?: string | null
+          id?: string
+          new_url?: string | null
+          new_url_suggestion?: string | null
+          notes?: string | null
+          old_url: string
+          redirect_created?: boolean | null
+          search_volume?: number | null
+          snapshot_date?: string
+          traffic_estimate?: number | null
+          trend?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          competition?: number | null
+          cpc?: number | null
+          created_at?: string
+          created_by?: string | null
+          current_position?: number | null
+          domain?: string
+          focus_keyword?: string | null
+          id?: string
+          new_url?: string | null
+          new_url_suggestion?: string | null
+          notes?: string | null
+          old_url?: string
+          redirect_created?: boolean | null
+          search_volume?: number | null
+          snapshot_date?: string
+          traffic_estimate?: number | null
+          trend?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       segment_registry: {
         Row: {
           created_at: string | null
