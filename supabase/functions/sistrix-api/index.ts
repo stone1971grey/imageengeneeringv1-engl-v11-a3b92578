@@ -191,6 +191,58 @@ serve(async (req) => {
         params.append('country', country);
         break;
 
+      case 'keyword.seo.serpfeatures':
+        // Get SERP features for keywords (including AI Overviews)
+        // Costs: 1 credit per keyword
+        if (!requestBody.keywords || !Array.isArray(requestBody.keywords)) {
+          return new Response(
+            JSON.stringify({ error: 'Keywords array is required for keyword.seo.serpfeatures' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        // SISTRIX serpfeatures only accepts single keywords, so we need to batch them
+        const serpResults: any[] = [];
+        for (const kw of requestBody.keywords) {
+          const serpParams = new URLSearchParams();
+          serpParams.append('api_key', SISTRIX_API_KEY);
+          serpParams.append('format', 'json');
+          serpParams.append('kw', kw);
+          serpParams.append('country', country);
+          serpParams.append('show-all-types', 'true');
+          
+          const serpUrl = `${SISTRIX_BASE_URL}/keyword.seo.serpfeatures?${serpParams.toString()}`;
+          console.log(`[SERP Features] Fetching for keyword: ${kw}`);
+          
+          try {
+            const serpResp = await fetch(serpUrl);
+            const serpData = await serpResp.json();
+            
+            // Check for AI Overview in the response
+            const features = serpData?.answer?.[0]?.['keyword.seo.serpfeatures'] || serpData?.answer?.[0]?.result || [];
+            const hasAIO = features.some((f: any) => 
+              f.type?.toLowerCase().includes('ai') || 
+              f.type?.toLowerCase().includes('overview') ||
+              f.type === 'aio' ||
+              f.type === 'ai_overview' ||
+              f.type === 'AI Overview'
+            );
+            
+            serpResults.push({
+              keyword: kw,
+              hasAIO,
+              features: features.map((f: any) => f.type || f)
+            });
+          } catch (e) {
+            console.error(`[SERP Features] Error for ${kw}:`, e);
+            serpResults.push({ keyword: kw, hasAIO: false, features: [] });
+          }
+        }
+        
+        return new Response(
+          JSON.stringify({ answer: [{ serpfeatures: serpResults }] }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
       case 'url.visibilityindex':
         // Get visibility for specific URL
         if (!url) {

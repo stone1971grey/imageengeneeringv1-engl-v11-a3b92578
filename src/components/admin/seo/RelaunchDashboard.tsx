@@ -78,6 +78,7 @@ interface MappingRow {
   notes: string | null;
   snapshot_date: string;
   approved_at?: string | null;
+  has_ai_overview: boolean | null;
 }
 
 interface PageRegistryItem {
@@ -438,6 +439,39 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         console.log('[Relaunch] Skipping metrics fetch (user opted out)');
       }
       
+      // Step 2b: Fetch SERP features to detect AI Overviews (1 credit per keyword)
+      let aioMap = new Map<string, boolean>();
+      if (includeSearchVolume) {
+        const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
+        toast.info(`Checking AI Overviews for ${uniqueKeywords.length} keywords (1 credit each)...`);
+        
+        // Process in batches of 10 to avoid timeout
+        const batchSize = 10;
+        for (let i = 0; i < uniqueKeywords.length; i += batchSize) {
+          const batch = uniqueKeywords.slice(i, i + batchSize);
+          try {
+            const { data: serpData, error: serpError } = await supabase.functions.invoke('sistrix-api', {
+              body: { 
+                action: 'keyword.seo.serpfeatures', 
+                keywords: batch,
+                country
+              }
+            });
+            
+            if (!serpError && serpData?.answer?.[0]?.serpfeatures) {
+              for (const item of serpData.answer[0].serpfeatures) {
+                if (item.keyword) {
+                  aioMap.set(item.keyword.toLowerCase(), item.hasAIO === true);
+                }
+              }
+            }
+          } catch (e) {
+            console.error('[Relaunch] SERP features batch error:', e);
+          }
+        }
+        console.log('[Relaunch] AIO data retrieved for', aioMap.size, 'keywords, with AIO:', [...aioMap.values()].filter(v => v).length);
+      }
+      
       // Step 3: Transform and calculate trends
       const mappingsToInsert = keywordData.map((r: any) => {
         const keyword = r.kw || r.keyword || '';
@@ -459,6 +493,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         
         // Get enriched metrics data
         const metrics = metricsMap.get(keyword.toLowerCase());
+        const hasAIO = aioMap.get(keyword.toLowerCase()) || null;
         
         return {
           domain,
@@ -474,7 +509,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           new_url_suggestion: suggestNewUrl(url, keyword),
           approval_status: 'pending',
           trend,
-          snapshot_date: today
+          snapshot_date: today,
+          has_ai_overview: hasAIO
         };
       });
       
@@ -493,7 +529,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       
       const withVolume = mappingsToInsert.filter((m: any) => m.search_volume).length;
       const withTrend = mappingsToInsert.filter((m: any) => m.trend !== 'stable').length;
-      toast.success(`${keywordData.length} keywords imported (${withVolume} with search volume, ${withTrend} with trend changes)`);
+      const withAIO = mappingsToInsert.filter((m: any) => m.has_ai_overview === true).length;
+      toast.success(`${keywordData.length} keywords imported (${withVolume} with SV, ${withAIO} with AI Overview)`);
       await loadMappings();
       
     } catch (e) {
@@ -1194,6 +1231,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
+                        <th className="text-center p-3 font-medium w-16 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help underline decoration-dotted">AIO</TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              AI Overview: Zeigt an, ob Google für dieses Keyword eine KI-generierte Zusammenfassung anzeigt
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
                         <th className="text-center p-3 font-medium w-20 bg-muted/50">
                           <Tooltip>
                             <TooltipTrigger className="cursor-help underline decoration-dotted">Trend</TooltipTrigger>
@@ -1297,6 +1342,24 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               </Badge>
                             ) : (
                               <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            {mapping.has_ai_overview === true ? (
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 text-xs font-bold px-2 py-0.5 animate-pulse">
+                                    AIO
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  Google zeigt für dieses Keyword eine AI Overview an. CTR kann um ~50% niedriger sein.
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : mapping.has_ai_overview === false ? (
+                              <span className="text-muted-foreground text-xs">–</span>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">?</span>
                             )}
                           </td>
                           <td className="p-3 text-center">

@@ -962,6 +962,7 @@ export type Database = {
           current_position: number | null
           domain: string
           focus_keyword: string | null
+          has_ai_overview: boolean | null
           id: string
           intent: string | null
           new_url: string | null
@@ -987,6 +988,7 @@ export type Database = {
           current_position?: number | null
           domain: string
           focus_keyword?: string | null
+          has_ai_overview?: boolean | null
           id?: string
           intent?: string | null
           new_url?: string | null
@@ -1012,6 +1014,7 @@ export type Database = {
           current_position?: number | null
           domain?: string
           focus_keyword?: string | null
+          has_ai_overview?: boolean | null
           id?: string
           intent?: string | null
           new_url?: string | null
