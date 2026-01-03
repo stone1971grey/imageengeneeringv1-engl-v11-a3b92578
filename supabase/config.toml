@@ -80,3 +80,6 @@ verify_jwt = true
 
 [functions.sistrix-api]
 verify_jwt = true
+
+[functions.sistrix-cron-snapshot]
+verify_jwt = false
