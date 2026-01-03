@@ -112,7 +112,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -722,7 +722,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -773,6 +773,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         } else if (sortField === 'redirect') {
           const aVal = a.redirect_created ? 1 : 0;
           const bVal = b.redirect_created ? 1 : 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'aio') {
+          // Sort by AI Overview: true first (desc) or false first (asc)
+          const aVal = a.has_ai_overview === true ? 1 : 0;
+          const bVal = b.has_ai_overview === true ? 1 : 0;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
         return 0;
@@ -872,7 +877,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -1231,11 +1236,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             </TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-center p-3 font-medium w-16 bg-muted/50">
+                        <th 
+                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('aio')}
+                        >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help underline decoration-dotted">AIO</TooltipTrigger>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                              <span className="underline decoration-dotted">AIO</span>
+                              <SortIcon field="aio" />
+                            </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              AI Overview: Zeigt an, ob Google für dieses Keyword eine KI-generierte Zusammenfassung anzeigt
+                              AI Overview: Zeigt an, ob Google für dieses Keyword eine KI-generierte Zusammenfassung anzeigt. Klicken zum Sortieren.
                             </TooltipContent>
                           </Tooltip>
                         </th>
