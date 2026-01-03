@@ -289,10 +289,17 @@ serve(async (req) => {
     // Log the raw response structure for debugging
     console.log(`SISTRIX API success: ${action}`);
     console.log(`Raw response keys: ${JSON.stringify(Object.keys(data))}`);
+    if (action === 'credits') {
+      console.log(`Credits response - data.credits: ${JSON.stringify(data.credits)}`);
+      if (data.answer && data.answer[0]) {
+        console.log(`Credits response - data.answer[0].credits: ${JSON.stringify(data.answer[0].credits)}`);
+      }
+    }
     if (data.answer && Array.isArray(data.answer)) {
       console.log(`Answer array length: ${data.answer.length}`);
       if (data.answer[0]) {
         console.log(`First answer keys: ${JSON.stringify(Object.keys(data.answer[0]))}`);
+        console.log(`First answer sample: ${JSON.stringify(data.answer[0]).slice(0, 500)}`);
       }
     }
     

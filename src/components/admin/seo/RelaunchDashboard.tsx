@@ -826,23 +826,34 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       
       console.log('[Relaunch] Credits API response:', JSON.stringify(data));
       
-      // SISTRIX API returns credits in multiple possible locations
-      // Try: data.answer[0].credits, data.credits, or data.answer[0]['credits']
+      // SISTRIX API returns credits in multiple possible formats:
+      // 1. data.credits (root level - number or object with value)
+      // 2. data.answer[0].credits (in answer array - number or object with value)
       let creditsValue: number | null = null;
       
-      if (data?.answer?.[0]?.credits !== undefined) {
-        creditsValue = parseInt(data.answer[0].credits);
-      } else if (data?.credits !== undefined) {
-        creditsValue = parseInt(data.credits);
-      } else if (Array.isArray(data?.answer) && data.answer.length > 0) {
-        // Check first answer item for any credits property
-        const firstAnswer = data.answer[0];
-        for (const key of Object.keys(firstAnswer)) {
-          if (key.toLowerCase().includes('credit')) {
-            creditsValue = parseInt(firstAnswer[key]);
-            break;
-          }
+      // Try root level credits first (most reliable based on logs)
+      if (data?.credits !== undefined) {
+        if (typeof data.credits === 'number') {
+          creditsValue = data.credits;
+        } else if (typeof data.credits === 'object' && data.credits?.value !== undefined) {
+          creditsValue = parseInt(data.credits.value);
+        } else if (typeof data.credits === 'string') {
+          creditsValue = parseInt(data.credits);
         }
+        console.log('[Relaunch] Parsed from data.credits:', creditsValue);
+      }
+      
+      // Fallback to answer[0].credits
+      if (creditsValue === null && data?.answer?.[0]?.credits !== undefined) {
+        const answerCredits = data.answer[0].credits;
+        if (typeof answerCredits === 'number') {
+          creditsValue = answerCredits;
+        } else if (typeof answerCredits === 'object' && answerCredits?.value !== undefined) {
+          creditsValue = parseInt(answerCredits.value);
+        } else if (typeof answerCredits === 'string') {
+          creditsValue = parseInt(answerCredits);
+        }
+        console.log('[Relaunch] Parsed from data.answer[0].credits:', creditsValue);
       }
       
       if (creditsValue !== null && !isNaN(creditsValue)) {
@@ -850,7 +861,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         toast.success(`Verfügbare Credits: ${creditsValue.toLocaleString('de-DE')}`);
       } else {
         console.error('[Relaunch] Could not parse credits from response:', data);
-        toast.error('Credits konnten nicht abgerufen werden');
+        toast.error('Credits konnten nicht abgerufen werden - siehe Console');
       }
     } catch (error) {
       console.error('[Relaunch] Credits check error:', error);
