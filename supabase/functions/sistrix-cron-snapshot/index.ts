@@ -70,6 +70,10 @@ serve(async (req) => {
     const sistrixResponse = await fetch(`${SISTRIX_BASE_URL}/domain.urls?${params.toString()}`);
     const sistrixData = await sistrixResponse.json();
 
+    // Log raw SISTRIX response for debugging
+    console.log('SISTRIX raw response status:', sistrixResponse.status);
+    console.log('SISTRIX raw response:', JSON.stringify(sistrixData).slice(0, 500));
+
     if (!sistrixResponse.ok || sistrixData.status === 'error') {
       console.error('SISTRIX API error:', sistrixData);
       return new Response(
@@ -78,7 +82,8 @@ serve(async (req) => {
       );
     }
 
-    const urlData: UrlData[] = sistrixData.answer?.[0]?.url || [];
+    // Try different response structures
+    const urlData: UrlData[] = sistrixData.answer?.[0]?.url || sistrixData.answer || [];
     console.log(`Fetched ${urlData.length} URLs from SISTRIX`);
 
     // Step 2: Get previous snapshot data to compare
