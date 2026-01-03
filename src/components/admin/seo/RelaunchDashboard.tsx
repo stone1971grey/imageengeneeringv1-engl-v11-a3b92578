@@ -72,11 +72,12 @@ interface PageRegistryItem {
   page_title: string;
 }
 
+// Fixed domain for this project
+const FIXED_DOMAIN = 'image-engineering.de';
+
 export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardProps) => {
-  // Domain input
-  const [domain, setDomain] = useState<string>(() => {
-    return localStorage.getItem('sistrix-domain') || '';
-  });
+  // Domain is fixed for this project
+  const domain = FIXED_DOMAIN;
   const [country, setCountry] = useState<string>(() => {
     return localStorage.getItem('sistrix-country') || 'de';
   });
@@ -423,20 +424,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         
         <CollapsibleContent>
           <div className="p-4 space-y-4">
-            {/* Domain Input & Controls */}
+            {/* Domain Display & Controls */}
             <Card className="p-4 bg-muted/20 border-border">
               <div className="flex gap-4 items-end flex-wrap">
                 <div className="flex-1 min-w-[200px]">
-                  <Label htmlFor="relaunch-domain" className="text-sm font-medium mb-2 block">
-                    Domain to Analyze
+                  <Label className="text-sm font-medium mb-2 block">
+                    Domain
                   </Label>
-                  <Input
-                    id="relaunch-domain"
-                    value={domain}
-                    onChange={(e) => setDomain(e.target.value)}
-                    placeholder="example.com"
-                    className="bg-background"
-                  />
+                  <div className="h-10 px-3 rounded-md border border-[#00a1ff]/50 bg-[#00a1ff]/10 flex items-center text-sm font-medium text-foreground">
+                    {domain}
+                  </div>
                 </div>
                 <div className="w-32">
                   <Label htmlFor="relaunch-country" className="text-sm font-medium mb-2 block">
