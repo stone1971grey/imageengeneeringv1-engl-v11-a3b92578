@@ -146,6 +146,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     localStorage.setItem('seo-relaunch-dashboard-open', String(isOpen));
   }, [isOpen]);
   
+  // Persist country selection
+  useEffect(() => {
+    localStorage.setItem('sistrix-country', country);
+  }, [country]);
+  
   // Load page registry for suggestions
   useEffect(() => {
     const loadPageRegistry = async () => {
