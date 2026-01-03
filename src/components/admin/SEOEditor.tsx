@@ -500,6 +500,15 @@ export const SEOEditor = ({
     targetTitle?: string;
   }>>([]);
   
+  // SISTRIX recommended Focus Keyword state
+  const [sistrixRecommendedKeyword, setSistrixRecommendedKeyword] = useState<{
+    keyword: string;
+    position: number | null;
+    trafficEstimate: number | null;
+    oldUrl: string;
+  } | null>(null);
+  const [isLoadingSistrixKeyword, setIsLoadingSistrixKeyword] = useState(false);
+  
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
   const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
     const saved = localStorage.getItem('seo-healthcheck-open');
@@ -565,6 +574,70 @@ export const SEOEditor = ({
     localStorage.getItem('seo-advanced-redirects-open');
     localStorage.setItem('seo-advanced-redirects-open', String(isRedirectsOpen));
   }, [isRedirectsOpen]);
+  
+  // Load SISTRIX recommended Focus Keyword from relaunch_url_mappings
+  useEffect(() => {
+    const loadSistrixKeyword = async () => {
+      if (!pageSlug) return;
+      
+      setIsLoadingSistrixKeyword(true);
+      setSistrixRecommendedKeyword(null);
+      
+      try {
+        // First, check if there's a redirect pointing TO this page
+        const { data: redirects } = await supabase
+          .from('redirects')
+          .select('source_url, target_url')
+          .eq('is_active', true);
+        
+        if (!redirects || redirects.length === 0) {
+          setIsLoadingSistrixKeyword(false);
+          return;
+        }
+        
+        // Find redirects that point to the current page
+        const matchingRedirects = redirects.filter(r => {
+          const normalizedTarget = r.target_url.replace(/^\/+|\/+$/g, '').toLowerCase();
+          const normalizedSlug = pageSlug.replace(/^\/+|\/+$/g, '').toLowerCase();
+          return normalizedTarget.includes(normalizedSlug) || normalizedSlug.includes(normalizedTarget);
+        });
+        
+        if (matchingRedirects.length === 0) {
+          setIsLoadingSistrixKeyword(false);
+          return;
+        }
+        
+        // Check relaunch_url_mappings for the source URLs
+        for (const redirect of matchingRedirects) {
+          const normalizedSource = redirect.source_url.replace(/^\/+|\/+$/g, '');
+          
+          const { data: mappings } = await supabase
+            .from('relaunch_url_mappings')
+            .select('focus_keyword, current_position, traffic_estimate, old_url')
+            .or(`old_url.ilike.%${normalizedSource}%,old_url.ilike.%${normalizedSource.split('/').pop()}%`)
+            .not('focus_keyword', 'is', null)
+            .limit(1);
+          
+          if (mappings && mappings.length > 0 && mappings[0].focus_keyword) {
+            console.log('[SEO Editor] Found SISTRIX recommended keyword:', mappings[0]);
+            setSistrixRecommendedKeyword({
+              keyword: mappings[0].focus_keyword,
+              position: mappings[0].current_position,
+              trafficEstimate: mappings[0].traffic_estimate,
+              oldUrl: mappings[0].old_url
+            });
+            break;
+          }
+        }
+      } catch (error) {
+        console.error('[SEO Editor] Error loading SISTRIX keyword:', error);
+      } finally {
+        setIsLoadingSistrixKeyword(false);
+      }
+    };
+    
+    loadSistrixKeyword();
+  }, [pageSlug]);
   
   // FKW Content Optimizer state
   const [isGeneratingFkwContent, setIsGeneratingFkwContent] = useState(false);
@@ -7867,6 +7940,72 @@ export const SEOEditor = ({
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {/* SISTRIX Recommended Keyword */}
+            {sistrixRecommendedKeyword && !isLoadingSistrixKeyword && (
+              <div className="mt-4 p-4 rounded-lg bg-[#00a1ff]/10 border border-[#00a1ff]/30">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <SistrixIcon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-[#00a1ff]">SISTRIX Empfehlung</span>
+                      {sistrixRecommendedKeyword.position && (
+                        <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30 text-xs">
+                          Position {sistrixRecommendedKeyword.position}
+                        </Badge>
+                      )}
+                      {sistrixRecommendedKeyword.trafficEstimate && sistrixRecommendedKeyword.trafficEstimate > 0 && (
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                          ~{sistrixRecommendedKeyword.trafficEstimate} Traffic
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Für die Redirect-Quelle <code className="text-xs bg-muted/50 px-1 py-0.5 rounded">{sistrixRecommendedKeyword.oldUrl}</code> existiert ein bestehendes Ranking:
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg font-semibold text-foreground">
+                        "{sistrixRecommendedKeyword.keyword}"
+                      </span>
+                      {data.focusKeyword?.toLowerCase() !== sistrixRecommendedKeyword.keyword.toLowerCase() && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            handleChange('focusKeyword', sistrixRecommendedKeyword.keyword);
+                            setLocalFocusKeyword(sistrixRecommendedKeyword.keyword);
+                            localFocusKeywordRef.current = sistrixRecommendedKeyword.keyword;
+                            localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, sistrixRecommendedKeyword.keyword);
+                            toast.success(`Focus Keyword auf "${sistrixRecommendedKeyword.keyword}" gesetzt (SISTRIX-Empfehlung)`);
+                          }}
+                          className="h-7 text-xs bg-[#00a1ff]/10 border-[#00a1ff]/30 text-[#00a1ff] hover:bg-[#00a1ff]/20"
+                        >
+                          Übernehmen
+                        </Button>
+                      )}
+                      {data.focusKeyword?.toLowerCase() === sistrixRecommendedKeyword.keyword.toLowerCase() && (
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Aktiv
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Dieses Keyword wird empfohlen, um bestehende Rankings nach dem Redirect zu erhalten.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {isLoadingSistrixKeyword && (
+              <div className="mt-4 p-3 rounded-lg bg-muted/30 border border-border/50 flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Prüfe SISTRIX-Rankings...</span>
               </div>
             )}
             
