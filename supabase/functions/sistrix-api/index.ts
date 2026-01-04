@@ -171,11 +171,10 @@ serve(async (req) => {
           );
         }
         endpoint = '/keyword.seo.metrics';
-        // SISTRIX accepts bulk keywords as array
-        for (const kw of requestBody.keywords) {
-          params.append('kw[]', kw);
-        }
+        // SISTRIX expects kw as JSON array for bulk requests: kw=["kw1","kw2"]
+        params.append('kw', JSON.stringify(requestBody.keywords));
         params.append('country', country);
+        console.log(`[keyword.seo.metrics] Requesting metrics for ${requestBody.keywords.length} keywords`);
         break;
 
       case 'keyword.seo':
