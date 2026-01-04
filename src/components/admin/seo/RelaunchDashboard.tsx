@@ -831,34 +831,21 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       // 2. data.answer[0].credits (in answer array - number or object with value)
       let creditsValue: number | null = null;
       
-      // Try root level credits first (most reliable based on logs)
-      if (data?.credits !== undefined) {
-        if (typeof data.credits === 'number') {
-          creditsValue = data.credits;
-        } else if (typeof data.credits === 'object' && data.credits?.value !== undefined) {
-          creditsValue = parseInt(data.credits.value);
-        } else if (typeof data.credits === 'string') {
-          creditsValue = parseInt(data.credits);
-        }
-        console.log('[Relaunch] Parsed from data.credits:', creditsValue);
-      }
+      // IMPORTANT: data.credits contains {"used":0} - NOT the available credits!
+      // The actual AVAILABLE credits are in data.answer[0].credits as [{"value":5833}]
       
-      // Fallback to answer[0].credits - SISTRIX returns this as an array: [{"value":5833}]
-      if (creditsValue === null && data?.answer?.[0]?.credits !== undefined) {
+      // Check answer[0].credits - this contains the AVAILABLE credits
+      if (data?.answer?.[0]?.credits !== undefined) {
         const answerCredits = data.answer[0].credits;
-        console.log('[Relaunch] answerCredits type:', typeof answerCredits, 'isArray:', Array.isArray(answerCredits), 'value:', answerCredits);
+        console.log('[Relaunch] answerCredits:', JSON.stringify(answerCredits));
         
         if (Array.isArray(answerCredits) && answerCredits.length > 0 && answerCredits[0]?.value !== undefined) {
           // Format: [{"value":5833}]
-          creditsValue = parseInt(answerCredits[0].value);
+          creditsValue = parseInt(String(answerCredits[0].value));
+          console.log('[Relaunch] Parsed credits from answer[0].credits[0].value:', creditsValue);
         } else if (typeof answerCredits === 'number') {
           creditsValue = answerCredits;
-        } else if (typeof answerCredits === 'object' && answerCredits?.value !== undefined) {
-          creditsValue = parseInt(answerCredits.value);
-        } else if (typeof answerCredits === 'string') {
-          creditsValue = parseInt(answerCredits);
         }
-        console.log('[Relaunch] Parsed from data.answer[0].credits:', creditsValue);
       }
       
       if (creditsValue !== null && !isNaN(creditsValue)) {
