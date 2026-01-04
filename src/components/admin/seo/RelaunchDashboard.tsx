@@ -1018,6 +1018,40 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
   };
   
+  // Disapprove mapping and delete redirect
+  const disapproveMapping = async (mapping: MappingRow) => {
+    try {
+      setIsSaving(true);
+      
+      // Delete redirect if it exists
+      if (mapping.redirect_created) {
+        const { error: deleteError } = await supabase
+          .from('redirects')
+          .delete()
+          .eq('source_url', mapping.old_url);
+          
+        if (deleteError) {
+          console.error('[Relaunch] Delete redirect error:', deleteError);
+        }
+      }
+      
+      // Update mapping to pending status
+      await updateMapping(mapping.id, {
+        approval_status: 'pending',
+        redirect_created: false,
+        approved_at: null
+      });
+      
+      toast.success('Redirect removed');
+      
+    } catch (e) {
+      console.error('[Relaunch] Disapprove error:', e);
+      toast.error('Failed to remove redirect');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
   // Toggle selection for a single row
   const toggleSelection = (id: string) => {
     setSelectedIds(prev => {
@@ -2090,10 +2124,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-10 min-w-10">
                             {mapping.redirect_created ? (
                               <Tooltip>
-                                <TooltipTrigger>
-                                  <Check className="h-4 w-4 text-green-500 mx-auto" />
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0 text-green-500 hover:text-red-400 hover:bg-red-500/10"
+                                    onClick={() => disapproveMapping(mapping)}
+                                    disabled={isSaving}
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>301 aktiv → {mapping.new_url}</TooltipContent>
+                                <TooltipContent>
+                                  301 aktiv → {mapping.new_url}
+                                  <br />
+                                  <span className="text-red-400">Klicken zum Entfernen</span>
+                                </TooltipContent>
                               </Tooltip>
                             ) : (
                               <Tooltip>
