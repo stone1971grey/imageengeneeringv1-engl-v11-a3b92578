@@ -426,15 +426,30 @@ export async function saveSegments(
       }
     }
 
-    // Safety checks
+    // CRITICAL SAFETY CHECKS - Protect against accidental data loss
+    const existingNonFooterCount = existingSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+    const newNonFooterCount = pageSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+    
+    // Block saving completely empty list
     const isLosingAllSegments = existingSegments.length > 0 && pageSegments.length === 0;
     if (isLosingAllSegments) {
-      toast.error("Speichern blockiert - leere Segment-Liste kann bestehende Segmente nicht überschreiben");
+      console.error('[SAVE GUARD] BLOCKED: Attempted to save empty segment list over', existingSegments.length, 'existing segments');
+      toast.error("KRITISCH: Speichern blockiert - leere Segment-Liste kann bestehende Segmente nicht überschreiben");
       return false;
     }
 
+    // ENHANCED: Block if losing most content segments (keeping only footer)
+    const isLosingMostContent = existingNonFooterCount > 2 && newNonFooterCount <= 1;
+    if (isLosingMostContent) {
+      console.error('[SAVE GUARD] BLOCKED: Attempted to reduce', existingNonFooterCount, 'content segments to', newNonFooterCount);
+      toast.error(`KRITISCH: Speichern blockiert - würde ${existingNonFooterCount - newNonFooterCount} Content-Segmente löschen. Das sieht nach einem Bug aus!`);
+      return false;
+    }
+
+    // Warning for significant segment loss
     const isLosingMultipleSegments = existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1;
     if (isLosingMultipleSegments) {
+      console.warn('[SAVE GUARD] WARNING: About to delete', existingSegments.length - pageSegments.length, 'segments');
       const confirmed = window.confirm(
         `WARNUNG: Sie sind dabei, ${existingSegments.length - pageSegments.length} Segmente zu löschen. Fortfahren?`
       );
@@ -477,6 +492,7 @@ export async function saveSegments(
 }
 
 // Auto-save segment with debounce (returns a timer ID)
+// CRITICAL: This function now includes safety checks to prevent data loss
 export function autoSaveSegmentDebounced(
   context: SegmentContext,
   updatedSegments: any[],
@@ -489,6 +505,42 @@ export function autoSaveSegmentDebounced(
 
   timerRef.current = setTimeout(async () => {
     try {
+      const currentPageSlug = context.resolvedPageSlug || context.selectedPage;
+      
+      // CRITICAL SAFETY CHECK: Fetch existing segments before overwriting
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", currentPageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", context.editorLanguage)
+        .single();
+
+      let existingSegments: any[] = [];
+      if (existingData?.content_value) {
+        try {
+          existingSegments = JSON.parse(existingData.content_value);
+        } catch (e) {
+          console.warn('[AUTO-SAVE GUARD] Could not parse existing segments');
+        }
+      }
+
+      // Count non-footer segments
+      const existingNonFooterCount = existingSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+      const newNonFooterCount = updatedSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+
+      // BLOCK if would delete most content
+      if (existingNonFooterCount > 2 && newNonFooterCount <= 1) {
+        console.error('[AUTO-SAVE GUARD] BLOCKED: Would reduce', existingNonFooterCount, 'content segments to', newNonFooterCount);
+        return;
+      }
+
+      // BLOCK if empty overwriting non-empty
+      if (existingSegments.length > 0 && updatedSegments.length === 0) {
+        console.error('[AUTO-SAVE GUARD] BLOCKED: Would save empty list over', existingSegments.length, 'segments');
+        return;
+      }
+
       const segmentsWithPositions = updatedSegments.map((seg, idx) => ({
         ...seg,
         position: idx
@@ -497,10 +549,11 @@ export function autoSaveSegmentDebounced(
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: context.resolvedPageSlug || context.selectedPage,
+          page_slug: currentPageSlug,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(segmentsWithPositions),
+          language: context.editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: context.userId
         }, { onConflict: 'page_slug,section_key,language' });
