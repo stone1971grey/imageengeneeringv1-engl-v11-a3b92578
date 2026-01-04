@@ -843,10 +843,15 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         console.log('[Relaunch] Parsed from data.credits:', creditsValue);
       }
       
-      // Fallback to answer[0].credits
+      // Fallback to answer[0].credits - SISTRIX returns this as an array: [{"value":5833}]
       if (creditsValue === null && data?.answer?.[0]?.credits !== undefined) {
         const answerCredits = data.answer[0].credits;
-        if (typeof answerCredits === 'number') {
+        console.log('[Relaunch] answerCredits type:', typeof answerCredits, 'isArray:', Array.isArray(answerCredits), 'value:', answerCredits);
+        
+        if (Array.isArray(answerCredits) && answerCredits.length > 0 && answerCredits[0]?.value !== undefined) {
+          // Format: [{"value":5833}]
+          creditsValue = parseInt(answerCredits[0].value);
+        } else if (typeof answerCredits === 'number') {
           creditsValue = answerCredits;
         } else if (typeof answerCredits === 'object' && answerCredits?.value !== undefined) {
           creditsValue = parseInt(answerCredits.value);
