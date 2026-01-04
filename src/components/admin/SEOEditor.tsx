@@ -51,7 +51,7 @@ interface SEOEditorProps {
   onChange: (data: SEOData) => void;
   onSave: () => void;
   pageSegments?: any[];
-  /** 
+  /**
    * Access level for SEO features:
    * - 'basic': Only basic SEO features (Title, Meta, Slug, H1 detection)
    * - 'advanced': Full access including Focus Keywords, Smart H1, Smart FKW, etc.
@@ -60,6 +60,13 @@ interface SEOEditorProps {
   accessLevel?: 'basic' | 'advanced';
   /** Current editor language for database queries */
   editorLanguage?: 'en' | 'de' | 'ja' | 'ko' | 'zh';
+  /** SEO Permission Flags - from user_seo_permissions table */
+  seoPermissions?: {
+    basic: boolean;
+    social: boolean;
+    advanced: boolean;
+    enterprise: boolean;
+  };
 }
 
 export const SEOEditor = ({ 
@@ -69,11 +76,19 @@ export const SEOEditor = ({
   onSave, 
   pageSegments = [],
   accessLevel = 'advanced', // Default to advanced for now (full program)
-  editorLanguage = 'en' // Default to English
+  editorLanguage = 'en', // Default to English
+  seoPermissions // Optional: if not provided, uses accessLevel logic
 }: SEOEditorProps) => {
   
   // Helper to check if advanced features are available
   const isAdvancedMode = accessLevel === 'advanced';
+  
+  // SEO tab visibility - either from seoPermissions or fallback to accessLevel logic
+  const showBasicsTab = seoPermissions?.basic ?? true; // Always show basics by default
+  const showSocialTab = seoPermissions?.social ?? true; // Always show social by default
+  const showAdvancedTab = seoPermissions?.advanced ?? isAdvancedMode;
+  const showReadabilityTab = seoPermissions?.advanced ?? isAdvancedMode; // Bundled with Advanced
+  const showEnterpriseTab = seoPermissions?.enterprise ?? isAdvancedMode;
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -7508,26 +7523,34 @@ export const SEOEditor = ({
         </div>
       </Collapsible>
 
-      {/* Tabs for different sections */}
-      <Tabs defaultValue="basics" className="w-full">
-        <TabsList className={`grid w-full mb-6 bg-muted h-12 ${isAdvancedMode ? 'grid-cols-5' : 'grid-cols-2'}`}>
-          <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
-          <TabsTrigger value="social" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
-          {isAdvancedMode && (
-            <>
-              <TabsTrigger value="advanced" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
-                Advanced
-                <GeminiIcon className="h-4 w-4" />
-              </TabsTrigger>
-              <TabsTrigger value="readability" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
-                Readability
-                <GeminiIcon className="h-4 w-4" />
-              </TabsTrigger>
-              <TabsTrigger value="enterprise" className="text-base font-medium py-3 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white flex items-center gap-2">
-                Enterprise
-                <SistrixIcon className="h-4 w-4" />
-              </TabsTrigger>
-            </>
+      {/* Tabs for different sections - visibility controlled by seoPermissions */}
+      <Tabs defaultValue={showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "enterprise"} className="w-full">
+        <TabsList className={`grid w-full mb-6 bg-muted h-12`} style={{ 
+          gridTemplateColumns: `repeat(${[showBasicsTab, showSocialTab, showAdvancedTab, showReadabilityTab, showEnterpriseTab].filter(Boolean).length}, 1fr)` 
+        }}>
+          {showBasicsTab && (
+            <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
+          )}
+          {showSocialTab && (
+            <TabsTrigger value="social" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Social Media</TabsTrigger>
+          )}
+          {showAdvancedTab && (
+            <TabsTrigger value="advanced" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
+              Advanced
+              <GeminiIcon className="h-4 w-4" />
+            </TabsTrigger>
+          )}
+          {showReadabilityTab && (
+            <TabsTrigger value="readability" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex items-center gap-2">
+              Readability
+              <GeminiIcon className="h-4 w-4" />
+            </TabsTrigger>
+          )}
+          {showEnterpriseTab && (
+            <TabsTrigger value="enterprise" className="text-base font-medium py-3 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white flex items-center gap-2">
+              Enterprise
+              <SistrixIcon className="h-4 w-4" />
+            </TabsTrigger>
           )}
         </TabsList>
 

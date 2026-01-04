@@ -1117,6 +1117,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_seo_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          seo_advanced: boolean
+          seo_basic: boolean
+          seo_enterprise: boolean
+          seo_social: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          seo_advanced?: boolean
+          seo_basic?: boolean
+          seo_enterprise?: boolean
+          seo_social?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          seo_advanced?: boolean
+          seo_basic?: boolean
+          seo_enterprise?: boolean
+          seo_social?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

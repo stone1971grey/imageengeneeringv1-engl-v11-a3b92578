@@ -168,7 +168,7 @@ import { TileItem, BannerImage, SolutionItem } from '@/components/admin/dashboar
 
 const AdminDashboard = () => {
   // Authentication state from hook
-  const { user, session, isAdmin, isEditor, allowedPages, canPublish, canDraft, frontendEditingEnabled, loading, handleLogout, addAllowedPage } = useAdminAuth();
+  const { user, session, isAdmin, isEditor, allowedPages, canPublish, canDraft, frontendEditingEnabled, seoPermissions, loading, handleLogout, addAllowedPage } = useAdminAuth();
   
   const [content, setContent] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -1529,6 +1529,7 @@ const AdminDashboard = () => {
                 onSave={handleSaveSEO}
                 pageSegments={pageSegments}
                 editorLanguage={editorLanguage}
+                seoPermissions={isAdmin ? undefined : seoPermissions}
               />
             </CardContent>
           </Card>
