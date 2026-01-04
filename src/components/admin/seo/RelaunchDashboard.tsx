@@ -1898,20 +1898,19 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
                             />
                           </td>
-                          <td className="p-2 w-[180px] max-w-[180px]">
+                          <td className="p-2 w-[200px] max-w-[200px]">
                             <a 
                               href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#00a1ff] hover:underline flex items-center gap-1"
-                              title={mapping.old_url}
+                              className="text-[#00a1ff] hover:underline flex items-start gap-1"
                             >
-                              <span className="text-xs truncate block max-w-[150px]">{mapping.old_url}</span>
-                              <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                              <span className="text-xs break-words whitespace-normal leading-tight">{mapping.old_url}</span>
+                              <ExternalLink className="h-3 w-3 flex-shrink-0 mt-0.5" />
                             </a>
                           </td>
-                          <td className="p-2 w-[120px] max-w-[120px]">
-                            <span className="font-medium text-xs truncate block" title={mapping.focus_keyword || ''}>{mapping.focus_keyword || '-'}</span>
+                          <td className="p-2 w-[140px] max-w-[140px]">
+                            <span className="font-medium text-xs break-words whitespace-normal leading-tight">{mapping.focus_keyword || '-'}</span>
                           </td>
                           <td className="p-3 text-center">
                             <Badge variant="outline" className={`text-base font-semibold px-3 py-1 ${
