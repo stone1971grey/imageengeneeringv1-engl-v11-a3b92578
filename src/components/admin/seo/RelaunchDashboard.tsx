@@ -485,11 +485,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       }
       
       // Step 1: Fetch keyword rankings from SISTRIX using keyword.domain.seo endpoint
+      // IMPORTANT: Use mobile=false for desktop data (typically has more keywords than mobile)
       const { data, error } = await supabase.functions.invoke('sistrix-api', {
         body: { 
           action: 'keyword.domain.seo', 
           domain, 
           country,
+          mobile: false, // Desktop data - typically has 5-10x more keywords
           limit: 500 // Get up to 500 keywords
         }
       });
