@@ -114,7 +114,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | 'priority' | null>(null);
+  
+  // Redirect validation state
+  const [validatingRedirects, setValidatingRedirects] = useState<Set<string>>(new Set());
+  const [redirectValidation, setRedirectValidation] = useState<Record<string, { status: number; ok: boolean; checked: string }>>({});
   
   // Position filter state
   const [positionFilter, setPositionFilter] = useState<string>('all');
@@ -1184,8 +1188,73 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       setIsLoadingCredits(false);
     }
   };
+  
+  // Calculate priority score: Traffic × Position Factor (higher = more important)
+  // Position factor: Top 3 = 100, Top 10 = 80, Top 20 = 50, 21-50 = 20, 51+ = 5
+  const calculatePriorityScore = (mapping: MappingRow): number => {
+    const traffic = mapping.traffic_estimate ?? mapping.clicks ?? 0;
+    const position = mapping.current_position ?? 100;
+    
+    let positionFactor: number;
+    if (position <= 3) positionFactor = 100;
+    else if (position <= 10) positionFactor = 80;
+    else if (position <= 20) positionFactor = 50;
+    else if (position <= 50) positionFactor = 20;
+    else positionFactor = 5;
+    
+    return Math.round(traffic * positionFactor / 10);
+  };
+  
+  // Validate a single redirect (check HTTP status)
+  const validateRedirect = async (mapping: MappingRow) => {
+    if (!mapping.redirect_created || !mapping.old_url) return;
+    
+    const id = mapping.id;
+    setValidatingRedirects(prev => new Set(prev).add(id));
+    
+    try {
+      const fullUrl = mapping.old_url.startsWith('http') 
+        ? mapping.old_url 
+        : `https://${domain}${mapping.old_url.startsWith('/') ? '' : '/'}${mapping.old_url}`;
+      
+      const { data, error } = await supabase.functions.invoke('validate-redirect', {
+        body: { url: fullUrl, expectedTarget: mapping.new_url }
+      });
+      
+      if (error) throw error;
+      
+      setRedirectValidation(prev => ({
+        ...prev,
+        [id]: {
+          status: data.status || 0,
+          ok: data.ok || false,
+          checked: new Date().toISOString()
+        }
+      }));
+      
+      if (data.ok) {
+        toast.success(`Redirect OK: ${data.status}`);
+      } else {
+        toast.warning(`Redirect Issue: ${data.status} ${data.message || ''}`);
+      }
+    } catch (e) {
+      console.error('[Relaunch] Validate redirect error:', e);
+      setRedirectValidation(prev => ({
+        ...prev,
+        [id]: { status: 0, ok: false, checked: new Date().toISOString() }
+      }));
+      toast.error('Validierung fehlgeschlagen');
+    } finally {
+      setValidatingRedirects(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  };
+
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | 'priority') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -1293,6 +1362,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           return sortDirection === 'asc' 
             ? aVal.localeCompare(bVal, 'de') 
             : bVal.localeCompare(aVal, 'de');
+        } else if (sortField === 'priority') {
+          const aVal = calculatePriorityScore(a);
+          const bVal = calculatePriorityScore(b);
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
         return 0;
       });
@@ -1391,7 +1464,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | 'priority' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -1954,6 +2027,20 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                         </th>
                         <th className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 text-xs">Status</th>
                         <th 
+                          className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('priority')}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">Prio</span>
+                              <SortIcon field="priority" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Priority Score: Traffic × Positionsfaktor. Höher = wichtiger für Relaunch. Klicken zum Sortieren.
+                            </TooltipContent>
+                          </Tooltip>
+                        </th>
+                        <th 
                           className="text-center p-1 font-medium w-10 min-w-10 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('redirect')}
                         >
@@ -1961,6 +2048,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             301
                             <SortIcon field="redirect" />
                           </span>
+                        </th>
+                        <th className="text-center p-1 font-medium w-12 min-w-12 bg-muted/50">
+                          <Tooltip>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">Check</span>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              Redirect-Validierung: Prüft ob 301-Weiterleitung korrekt funktioniert
+                            </TooltipContent>
+                          </Tooltip>
                         </th>
                       </tr>
                     </thead>
@@ -2121,6 +2218,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-14 min-w-14">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
+                          <td className="p-1 text-center w-14 min-w-14">
+                            {(() => {
+                              const score = calculatePriorityScore(mapping);
+                              if (score === 0) return <span className="text-muted-foreground text-xs">-</span>;
+                              return (
+                                <Badge variant="outline" className={`text-xs px-1.5 py-0 font-semibold ${
+                                  score >= 500 ? 'border-red-500/50 text-red-400 bg-red-500/10' :
+                                  score >= 200 ? 'border-orange-500/50 text-orange-400 bg-orange-500/10' :
+                                  score >= 50 ? 'border-amber-500/50 text-amber-400' :
+                                  'border-zinc-500/50 text-zinc-400'
+                                }`}>
+                                  {score >= 1000 ? `${(score / 1000).toFixed(1)}k` : score}
+                                </Badge>
+                              );
+                            })()}
+                          </td>
                           <td className="p-1 text-center w-10 min-w-10">
                             {mapping.redirect_created ? (
                               <Tooltip>
@@ -2160,6 +2273,59 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                     : 'Erst New URL eingeben'}
                                 </TooltipContent>
                               </Tooltip>
+                            )}
+                          </td>
+                          <td className="p-1 text-center w-12 min-w-12">
+                            {mapping.redirect_created ? (
+                              validatingRedirects.has(mapping.id) ? (
+                                <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
+                              ) : redirectValidation[mapping.id] ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className={`h-6 w-6 p-0 ${
+                                        redirectValidation[mapping.id].ok 
+                                          ? 'text-green-500 hover:bg-green-500/10' 
+                                          : 'text-red-500 hover:bg-red-500/10'
+                                      }`}
+                                      onClick={() => validateRedirect(mapping)}
+                                    >
+                                      {redirectValidation[mapping.id].ok ? (
+                                        <CheckCircle2 className="h-4 w-4" />
+                                      ) : (
+                                        <AlertCircle className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    Status: {redirectValidation[mapping.id].status || 'Error'}
+                                    <br />
+                                    <span className="text-muted-foreground text-xs">
+                                      Geprüft: {new Date(redirectValidation[mapping.id].checked).toLocaleString('de')}
+                                    </span>
+                                    <br />
+                                    <span className="text-[#00a1ff]">Klicken zum erneuten Prüfen</span>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-muted-foreground hover:text-[#00a1ff] hover:bg-[#00a1ff]/10"
+                                      onClick={() => validateRedirect(mapping)}
+                                    >
+                                      <RefreshCw className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Redirect validieren</TooltipContent>
+                                </Tooltip>
+                              )
+                            ) : (
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
                         </tr>
