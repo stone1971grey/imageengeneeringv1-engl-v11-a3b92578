@@ -31,7 +31,8 @@ import {
   ArrowUp,
   ArrowDown,
   FileUp,
-  Upload
+  Upload,
+  Star
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -2309,44 +2310,37 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-14 min-w-14">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
-                          <td className="p-1 text-center w-20 min-w-20">
+                          <td className="p-1 text-center w-16 min-w-16">
                             {(() => {
                               const score = calculatePriorityScore(mapping);
                               if (score === 0) return <span className="text-muted-foreground text-xs">-</span>;
                               
-                              // Calculate priority level (1-5 stars equivalent)
-                              const level = score >= 500 ? 5 : score >= 200 ? 4 : score >= 100 ? 3 : score >= 50 ? 2 : 1;
-                              const levelLabel = level === 5 ? 'KRITISCH' : level === 4 ? 'HOCH' : level === 3 ? 'MITTEL' : level === 2 ? 'NIEDRIG' : 'MINIMAL';
-                              const colorClass = score >= 500 ? 'bg-red-500' : score >= 200 ? 'bg-orange-500' : score >= 100 ? 'bg-amber-500' : score >= 50 ? 'bg-yellow-500' : 'bg-zinc-500';
-                              const textClass = score >= 500 ? 'text-red-400' : score >= 200 ? 'text-orange-400' : score >= 100 ? 'text-amber-400' : score >= 50 ? 'text-yellow-400' : 'text-zinc-400';
+                              // Star rating: 3 stars = critical, 2 = important, 1 = notable, 0 = low
+                              const stars = score >= 200 ? 3 : score >= 100 ? 2 : score >= 50 ? 1 : 0;
+                              const label = stars === 3 ? 'Super wichtig' : stars === 2 ? 'Wichtig' : stars === 1 ? 'Relevant' : 'Niedrig';
                               
                               return (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex flex-col items-center gap-0.5 cursor-help">
-                                      <div className="flex gap-0.5">
-                                        {[1, 2, 3, 4, 5].map((i) => (
-                                          <div
-                                            key={i}
-                                            className={`w-2 h-3 rounded-sm ${i <= level ? colorClass : 'bg-zinc-700'}`}
-                                          />
-                                        ))}
-                                      </div>
-                                      <span className={`text-[9px] font-bold ${textClass}`}>
-                                        {score >= 1000 ? `${(score / 1000).toFixed(1)}k` : score}
-                                      </span>
+                                    <div className="flex items-center justify-center gap-0.5 cursor-help">
+                                      {[1, 2, 3].map((i) => (
+                                        <Star
+                                          key={i}
+                                          className={`h-4 w-4 ${i <= stars ? 'text-[#f9dc24] fill-[#f9dc24]' : 'text-zinc-600'}`}
+                                        />
+                                      ))}
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <div className="text-center">
-                                      <span className={`font-bold ${textClass}`}>{levelLabel}</span>
+                                      <span className="font-bold text-[#f9dc24]">{label}</span>
                                       <br />
                                       <span className="text-xs text-muted-foreground">
-                                        Score: {score} = Traffic × Position
+                                        Score: {score}
                                       </span>
                                       <br />
                                       <span className="text-[10px] text-muted-foreground">
-                                        (500+ kritisch, 200+ hoch, 100+ mittel)
+                                        ⭐⭐⭐ ab 200 · ⭐⭐ ab 100 · ⭐ ab 50
                                       </span>
                                     </div>
                                   </TooltipContent>
