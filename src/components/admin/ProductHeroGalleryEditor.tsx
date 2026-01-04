@@ -847,11 +847,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-amber-400">
-                      H1 ist extern definiert
+                      H1 is defined externally
                     </p>
                     <p className="text-xs text-amber-400/80 mt-1">
-                      Die H1-Überschrift dieser Seite wird im <strong>{effectiveH1Source.label}</strong>-Segment definiert.
-                      Title und Subtitle hier werden als <strong>H2</strong> angezeigt oder können leer gelassen werden.
+                      The H1 heading for this page is defined in the <strong>{effectiveH1Source.label}</strong> segment.
+                      Title and Subtitle here will be displayed as <strong>H2</strong> or can be left empty.
                     </p>
                   </div>
                 </div>
@@ -860,7 +860,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                {effectiveH1Source ? 'Title (H2 – Zeile 1)' : 'Title (H1 – Zeile 1)'}
+                {effectiveH1Source ? 'Title (H2 – Line 1)' : 'Title (H1 – Line 1)'}
                 {effectiveH1Source && (
                   <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">H1 → H2</span>
                 )}
@@ -872,13 +872,13 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   setLocalData(updatedData);
                   onChange(updatedData);
                 }}
-                placeholder={effectiveH1Source ? "Optional – kann leer bleiben" : "Product Name"}
+                placeholder={effectiveH1Source ? "Optional – can be left empty" : "Product Name"}
               />
             </div>
 
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                {effectiveH1Source ? 'Subtitle (H2 – Zeile 2)' : 'Subtitle (H1 – Zeile 2)'}
+                {effectiveH1Source ? 'Subtitle (H2 – Line 2)' : 'Subtitle (H1 – Line 2)'}
                 {effectiveH1Source && (
                   <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">H1 → H2</span>
                 )}
@@ -890,7 +890,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   setLocalData(updatedData);
                   onChange(updatedData);
                 }}
-                placeholder={effectiveH1Source ? "Optional – kann leer bleiben" : "Product Variants"}
+                placeholder={effectiveH1Source ? "Optional – can be left empty" : "Product Variants"}
               />
             </div>
 
