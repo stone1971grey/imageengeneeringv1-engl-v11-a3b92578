@@ -81,16 +81,15 @@ const ActionHeroEditorComponent = ({
               String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
             );
             
-            // Check if intro has a title/headline with H1 heading level
-            if (introSegment?.data?.title || introSegment?.data?.headline) {
-              if (introSegment.data.headingLevel === 'h1') {
-                setDetectedH1Source({
-                  type: 'intro',
-                  key: introRegistry.segment_key,
-                  label: `Intro (ID: ${introRegistry.segment_id})`
-                });
-                return;
-              }
+            // Intro always has H1 priority - check for title OR headline content
+            const hasIntroContent = introSegment?.data?.title || introSegment?.data?.headline;
+            if (hasIntroContent) {
+              setDetectedH1Source({
+                type: 'intro',
+                key: introRegistry.segment_key,
+                label: `Intro (ID: ${introRegistry.segment_id})`
+              });
+              return;
             }
           } catch (e) {
             console.error('[ActionHero] Failed to parse page_segments:', e);
