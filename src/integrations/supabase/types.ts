@@ -1069,6 +1069,33 @@ export type Database = {
         }
         Relationships: []
       }
+      sistrix_visibility_history: {
+        Row: {
+          country: string
+          created_at: string
+          domain: string
+          id: string
+          recorded_at: string
+          visibility_index: number
+        }
+        Insert: {
+          country?: string
+          created_at?: string
+          domain: string
+          id?: string
+          recorded_at?: string
+          visibility_index: number
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          domain?: string
+          id?: string
+          recorded_at?: string
+          visibility_index?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
