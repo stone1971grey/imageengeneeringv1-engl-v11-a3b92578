@@ -1787,7 +1787,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           />
                         </th>
                         <th 
-                          className="text-left p-3 font-medium w-[180px] max-w-[180px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-left p-2 font-medium w-[200px] min-w-[200px] max-w-[200px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('oldUrl')}
                         >
                           <span className="flex items-center">
@@ -1796,29 +1796,29 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </span>
                         </th>
                         <th 
-                          className="text-left p-3 font-medium w-[120px] max-w-[120px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-left p-2 font-medium w-[130px] min-w-[130px] max-w-[130px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('keyword')}
                         >
                           <span className="flex items-center">
-                            Focus Keyword
+                            Keyword
                             <SortIcon field="keyword" />
                           </span>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-12 min-w-12 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('position')}
                         >
-                          <span className="flex items-center justify-center">
-                            Pos.
+                          <span className="flex items-center justify-center text-xs">
+                            Pos
                             <SortIcon field="position" />
                           </span>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('searchVolume')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
                               <span className="underline decoration-dotted">SV</span>
                               <SortIcon field="searchVolume" />
                             </TooltipTrigger>
@@ -1828,11 +1828,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('clicks')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
                               <span className="underline decoration-dotted">Klicks</span>
                               <SortIcon field="clicks" />
                             </TooltipTrigger>
@@ -1842,11 +1842,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-16 min-w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('traffic')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
                               <span className="underline decoration-dotted">Traffic</span>
                               <SortIcon field="traffic" />
                             </TooltipTrigger>
@@ -1856,12 +1856,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('competition')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
-                              <span className="underline decoration-dotted">Wettb.</span>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">Wett.</span>
                               <SortIcon field="competition" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
@@ -1870,12 +1870,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-12 min-w-12 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('intent')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
-                              <span className="underline decoration-dotted">Intent</span>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">Int.</span>
                               <SortIcon field="intent" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
@@ -1884,12 +1884,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-10 min-w-10 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('aio')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
-                              <span className="underline decoration-dotted">AIO</span>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">AI</span>
                               <SortIcon field="aio" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
@@ -1898,32 +1898,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-center p-3 font-medium w-20 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-12 min-w-12 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('trend')}
                         >
                           <Tooltip>
-                            <TooltipTrigger className="cursor-help flex items-center justify-center">
-                              <span className="underline decoration-dotted">Trend</span>
+                            <TooltipTrigger className="cursor-help flex items-center justify-center text-xs">
+                              <span className="underline decoration-dotted">Δ</span>
                               <SortIcon field="trend" />
                             </TooltipTrigger>
                             <TooltipContent>Positionsänderung vs. letzter Snapshot. Klicken zum Sortieren.</TooltipContent>
                           </Tooltip>
                         </th>
                         <th 
-                          className="text-left p-3 font-medium w-[180px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-left p-2 font-medium w-[160px] min-w-[160px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('newUrl')}
                         >
-                          <span className="flex items-center">
+                          <span className="flex items-center text-xs">
                             New URL
                             <SortIcon field="newUrl" />
                           </span>
                         </th>
-                        <th className="text-center p-2 font-medium w-16 bg-muted/50">Status</th>
+                        <th className="text-center p-1 font-medium w-14 min-w-14 bg-muted/50 text-xs">Status</th>
                         <th 
-                          className="text-center p-2 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-1 font-medium w-10 min-w-10 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('redirect')}
                         >
-                          <span className="flex items-center justify-center">
+                          <span className="flex items-center justify-center text-xs">
                             301
                             <SortIcon field="redirect" />
                           </span>
@@ -1936,7 +1936,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           key={mapping.id} 
                           className={`hover:bg-muted/20 ${selectedIds.has(mapping.id) ? 'bg-[#00a1ff]/10' : ''}`}
                         >
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-10">
                             <input
                               type="checkbox"
                               checked={selectedIds.has(mapping.id)}
@@ -1944,22 +1944,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
                             />
                           </td>
-                          <td className="p-2 w-[200px] max-w-[200px]">
+                          <td className="p-2 w-[200px] min-w-[200px] max-w-[200px] overflow-hidden">
                             <a 
                               href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-[#00a1ff] hover:underline flex items-start gap-1"
                             >
-                              <span className="text-xs break-words whitespace-normal leading-tight">{mapping.old_url}</span>
+                              <span className="text-xs break-words whitespace-normal leading-tight block">{mapping.old_url}</span>
                               <ExternalLink className="h-3 w-3 flex-shrink-0 mt-0.5" />
                             </a>
                           </td>
-                          <td className="p-2 w-[140px] max-w-[140px]">
-                            <span className="font-medium text-xs break-words whitespace-normal leading-tight">{mapping.focus_keyword || '-'}</span>
+                          <td className="p-2 w-[130px] min-w-[130px] max-w-[130px] overflow-hidden">
+                            <span className="font-medium text-xs break-words whitespace-normal leading-tight block">{mapping.focus_keyword || '-'}</span>
                           </td>
-                          <td className="p-3 text-center">
-                            <Badge variant="outline" className={`text-base font-semibold px-3 py-1 ${
+                          <td className="p-1 text-center w-12 min-w-12">
+                            <Badge variant="outline" className={`text-sm font-semibold px-2 py-0.5 ${
                               (mapping.current_position || 999) <= 3 ? 'border-green-500/50 text-green-400' :
                               (mapping.current_position || 999) <= 10 ? 'border-blue-500/50 text-blue-400' :
                               (mapping.current_position || 999) <= 20 ? 'border-amber-500/50 text-amber-400' :
@@ -1968,30 +1968,30 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               {mapping.current_position || '-'}
                             </Badge>
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-14 min-w-14">
                             {mapping.search_volume ? (
-                              <span className="font-medium text-muted-foreground">{mapping.search_volume.toLocaleString()}</span>
+                              <span className="font-medium text-muted-foreground text-xs">{mapping.search_volume.toLocaleString()}</span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-14 min-w-14">
                             {mapping.clicks ? (
-                              <span className="font-medium text-muted-foreground">{mapping.clicks.toLocaleString()}</span>
+                              <span className="font-medium text-muted-foreground text-xs">{mapping.clicks.toLocaleString()}</span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-16 min-w-16">
                             {mapping.traffic_estimate ? (
-                              <span className="font-medium">{mapping.traffic_estimate.toLocaleString()}</span>
+                              <span className="font-medium text-xs">{mapping.traffic_estimate.toLocaleString()}</span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-14 min-w-14">
                             {mapping.competition ? (
-                              <Badge variant="outline" className={`text-xs ${
+                              <Badge variant="outline" className={`text-xs px-1 py-0 ${
                                 mapping.competition * 100 >= 70 ? 'border-red-500/50 text-red-400' :
                                 mapping.competition * 100 >= 40 ? 'border-amber-500/50 text-amber-400' :
                                 'border-green-500/50 text-green-400'
@@ -1999,29 +1999,34 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                 {Math.round(mapping.competition * 100)}%
                               </Badge>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-12 min-w-12">
                             {mapping.intent ? (
-                              <Badge variant="outline" className={`text-xs ${
-                                mapping.intent.toLowerCase().includes('trans') ? 'border-purple-500/50 text-purple-400' :
-                                mapping.intent.toLowerCase().includes('comm') ? 'border-orange-500/50 text-orange-400' :
-                                mapping.intent.toLowerCase().includes('nav') ? 'border-blue-500/50 text-blue-400' :
-                                'border-zinc-500/50 text-zinc-400'
-                              }`}>
-                                {mapping.intent.substring(0, 4)}
-                              </Badge>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <Badge variant="outline" className={`text-xs px-1 py-0 ${
+                                    mapping.intent.toLowerCase().includes('trans') ? 'border-purple-500/50 text-purple-400' :
+                                    mapping.intent.toLowerCase().includes('comm') ? 'border-orange-500/50 text-orange-400' :
+                                    mapping.intent.toLowerCase().includes('nav') ? 'border-blue-500/50 text-blue-400' :
+                                    'border-zinc-500/50 text-zinc-400'
+                                  }`}>
+                                    {mapping.intent.substring(0, 1).toUpperCase()}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>{mapping.intent}</TooltipContent>
+                              </Tooltip>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-10 min-w-10">
                             {mapping.has_ai_overview === true ? (
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 text-xs font-bold px-2 py-0.5 animate-pulse">
-                                    AIO
+                                  <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 text-xs font-bold px-1 py-0">
+                                    ✓
                                   </Badge>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
@@ -2034,10 +2039,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               <span className="text-muted-foreground text-xs">?</span>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-1 text-center w-12 min-w-12">
                             <TrendIcon mapping={mapping} />
                           </td>
-                          <td className="p-2 w-[180px]">
+                          <td className="p-2 w-[160px] min-w-[160px] max-w-[160px] overflow-hidden">
                             {mapping.approval_status === 'approved' ? (
                               <span className="text-green-400 flex items-center gap-1 text-xs truncate" title={mapping.new_url || ''}>
                                 {mapping.new_url}
@@ -2075,10 +2080,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               </div>
                             )}
                           </td>
-                          <td className="p-2 text-center w-16">
+                          <td className="p-1 text-center w-14 min-w-14">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
-                          <td className="p-2 text-center w-16">
+                          <td className="p-1 text-center w-10 min-w-10">
                             {mapping.redirect_created ? (
                               <Tooltip>
                                 <TooltipTrigger>
