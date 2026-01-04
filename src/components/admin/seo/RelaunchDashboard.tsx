@@ -86,6 +86,7 @@ interface MappingRow {
 interface PageRegistryItem {
   page_slug: string;
   page_title: string;
+  page_id: number;
 }
 
 // Fixed domain for this project
@@ -117,10 +118,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Sorting states
   const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | 'priority' | null>(null);
   
-  // Redirect validation state
+  // Redirect validation state - persist in localStorage
   const [validatingRedirects, setValidatingRedirects] = useState<Set<string>>(new Set());
-  const [redirectValidation, setRedirectValidation] = useState<Record<string, { status: number; ok: boolean; checked: string }>>({});
-  
+  const [redirectValidation, setRedirectValidation] = useState<Record<string, { status: number; ok: boolean; checked: string; newUrl: string }>>(() => {
+    const cached = localStorage.getItem('relaunch-redirect-validation');
+    return cached ? JSON.parse(cached) : {};
+  });
+
   // Position filter state
   const [positionFilter, setPositionFilter] = useState<string>('all');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -188,12 +192,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     const loadPageRegistry = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, page_title')
+        .select('page_slug, page_title, page_id')
         .eq('status', 'published')
         .order('page_title');
         
       if (!error && data) {
-        setPageRegistry(data);
+        setPageRegistry(data as PageRegistryItem[]);
       }
     };
     loadPageRegistry();
@@ -1242,14 +1246,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       
       if (error) throw error;
       
-      setRedirectValidation(prev => ({
-        ...prev,
-        [id]: {
-          status: data.status || 0,
-          ok: data.ok || false,
-          checked: new Date().toISOString()
-        }
-      }));
+      const validationResult = {
+        status: data.status || 0,
+        ok: data.ok || false,
+        checked: new Date().toISOString(),
+        newUrl: mapping.new_url || ''
+      };
+      setRedirectValidation(prev => {
+        const updated = { ...prev, [id]: validationResult };
+        localStorage.setItem('relaunch-redirect-validation', JSON.stringify(updated));
+        return updated;
+      });
       
       if (data.ok) {
         toast.success(`Redirect OK: ${data.status}`);
@@ -1258,10 +1265,12 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       }
     } catch (e) {
       console.error('[Relaunch] Validate redirect error:', e);
-      setRedirectValidation(prev => ({
-        ...prev,
-        [id]: { status: 0, ok: false, checked: new Date().toISOString() }
-      }));
+      const errorResult = { status: 0, ok: false, checked: new Date().toISOString(), newUrl: mapping.new_url || '' };
+      setRedirectValidation(prev => {
+        const updated = { ...prev, [id]: errorResult };
+        localStorage.setItem('relaunch-redirect-validation', JSON.stringify(updated));
+        return updated;
+      });
       toast.error('Validierung fehlgeschlagen');
     } finally {
       setValidatingRedirects(prev => {
@@ -1271,6 +1280,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       });
     }
   };
+
+  // Helper to find Page ID from new_url
+  const getPageIdFromUrl = useCallback((newUrl: string | null): number | null => {
+    if (!newUrl) return null;
+    // Extract page_slug from URL (remove language prefix like /en/, /de/, etc.)
+    const slug = newUrl.replace(/^\/(en|de|ja|ko|zh)\//, '').replace(/^\//, '');
+    const page = pageRegistry.find(p => p.page_slug === slug);
+    return page?.page_id || null;
+  }, [pageRegistry]);
+
+  // Check if a validation is still valid (same URL as when checked)
+  const isValidationStillValid = useCallback((mappingId: string, currentNewUrl: string | null): boolean => {
+    const validation = redirectValidation[mappingId];
+    if (!validation || !validation.ok) return false;
+    return validation.newUrl === currentNewUrl;
+  }, [redirectValidation]);
 
   // Toggle sort
   const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | 'priority') => {
@@ -2200,12 +2225,25 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-12 min-w-12">
                             <TrendIcon mapping={mapping} />
                           </td>
-                          <td className="p-2 w-[160px] min-w-[160px] max-w-[160px] overflow-hidden">
+                          <td className="p-2 w-[180px] min-w-[180px] max-w-[180px] overflow-hidden">
                             {mapping.approval_status === 'approved' ? (
-                              <span className="text-green-400 flex items-center gap-1 text-xs truncate" title={mapping.new_url || ''}>
-                                {mapping.new_url}
-                                <Check className="h-3 w-3 flex-shrink-0" />
-                              </span>
+                              <div className="flex items-center gap-1.5 text-xs">
+                                {(() => {
+                                  const pageId = getPageIdFromUrl(mapping.new_url);
+                                  return pageId ? (
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-[10px] px-1 py-0 font-bold bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/50 flex-shrink-0"
+                                    >
+                                      {pageId}
+                                    </Badge>
+                                  ) : null;
+                                })()}
+                                <span className="text-green-400 truncate flex-1" title={mapping.new_url || ''}>
+                                  {mapping.new_url}
+                                </span>
+                                <Check className="h-3 w-3 flex-shrink-0 text-green-400" />
+                              </div>
                             ) : (
                               <div className="flex gap-1 items-center">
                                 <Input
@@ -2302,31 +2340,74 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             {mapping.redirect_created ? (
                               validatingRedirects.has(mapping.id) ? (
                                 <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
-                              ) : redirectValidation[mapping.id] ? (
+                              ) : isValidationStillValid(mapping.id, mapping.new_url) ? (
+                                // Persistent green check - URL unchanged since validation
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      className={`h-6 w-6 p-0 ${
-                                        redirectValidation[mapping.id].ok 
-                                          ? 'text-green-500 hover:bg-green-500/10' 
-                                          : 'text-red-500 hover:bg-red-500/10'
-                                      }`}
+                                      className="h-6 w-6 p-0 text-green-500 hover:bg-green-500/10"
                                       onClick={() => validateRedirect(mapping)}
                                     >
-                                      {redirectValidation[mapping.id].ok ? (
-                                        <CheckCircle2 className="h-4 w-4" />
-                                      ) : (
-                                        <AlertCircle className="h-4 w-4" />
-                                      )}
+                                      <CheckCircle2 className="h-4 w-4" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    Status: {redirectValidation[mapping.id].status || 'Error'}
+                                    <span className="text-green-400 font-semibold">✓ Redirect OK</span>
+                                    <br />
+                                    Status: {redirectValidation[mapping.id]?.status || 301}
+                                    <br />
+                                    <span className="text-muted-foreground text-xs">
+                                      Geprüft: {redirectValidation[mapping.id]?.checked ? new Date(redirectValidation[mapping.id].checked).toLocaleString('de') : '-'}
+                                    </span>
+                                    <br />
+                                    <span className="text-[#00a1ff]">Klicken zum erneuten Prüfen</span>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : redirectValidation[mapping.id] && !redirectValidation[mapping.id].ok ? (
+                                // Failed validation
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-red-500 hover:bg-red-500/10"
+                                      onClick={() => validateRedirect(mapping)}
+                                    >
+                                      <AlertCircle className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <span className="text-red-400 font-semibold">✗ Redirect Fehler</span>
+                                    <br />
+                                    Status: {redirectValidation[mapping.id]?.status || 'Error'}
                                     <br />
                                     <span className="text-muted-foreground text-xs">
                                       Geprüft: {new Date(redirectValidation[mapping.id].checked).toLocaleString('de')}
+                                    </span>
+                                    <br />
+                                    <span className="text-[#00a1ff]">Klicken zum erneuten Prüfen</span>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : redirectValidation[mapping.id] && redirectValidation[mapping.id].newUrl !== mapping.new_url ? (
+                                // URL changed since validation - show warning
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-amber-500 hover:bg-amber-500/10"
+                                      onClick={() => validateRedirect(mapping)}
+                                    >
+                                      <AlertCircle className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <span className="text-amber-400 font-semibold">⚠ URL geändert</span>
+                                    <br />
+                                    <span className="text-muted-foreground text-xs">
+                                      Letzte Prüfung war für: {redirectValidation[mapping.id]?.newUrl}
                                     </span>
                                     <br />
                                     <span className="text-[#00a1ff]">Klicken zum erneuten Prüfen</span>
