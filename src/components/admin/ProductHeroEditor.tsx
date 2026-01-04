@@ -78,7 +78,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
               String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
             );
             
-            if (introSegment?.data?.headline && introSegment.data.headingLevel === 'h1') {
+            // Intro always has H1 priority - check for title OR headline content
+            const hasIntroContent = introSegment?.data?.headline || introSegment?.data?.title;
+            if (hasIntroContent) {
               setDetectedH1Source({
                 type: 'intro',
                 key: introRegistry.segment_key,

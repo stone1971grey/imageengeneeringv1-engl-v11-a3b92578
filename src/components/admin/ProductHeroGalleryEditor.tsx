@@ -178,7 +178,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             
             console.log('[PHG Editor] Looking for segment_id:', introRegistry.segment_id, 'Found:', introSegment);
             
-            if (introSegment?.data?.title && introSegment.data.headingLevel === 'h1') {
+            // Intro always has H1 priority - check for title OR headline content
+            const hasIntroContent = introSegment?.data?.title || introSegment?.data?.headline;
+            if (hasIntroContent) {
               console.log('[PHG Editor] ✅ Found external H1 in Intro segment:', introRegistry.segment_id);
               setDetectedH1Source({
                 type: 'intro',
@@ -187,10 +189,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               });
               return;
             } else {
-              console.log('[PHG Editor] Intro segment found but no H1:', {
-                hasTitle: !!introSegment?.data?.title,
-                headingLevel: introSegment?.data?.headingLevel
-              });
+              console.log('[PHG Editor] Intro segment found but no content');
             }
           } catch (e) {
             console.error('[PHG Editor] Failed to parse page_segments:', e);
