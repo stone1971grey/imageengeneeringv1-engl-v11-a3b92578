@@ -134,9 +134,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Import option: include search volume (costs 5 credits per keyword)
   const [includeSearchVolume, setIncludeSearchVolume] = useState(true);
   
-  // PDF Import state
-  const [isPdfImporting, setIsPdfImporting] = useState(false);
-  const pdfFileInputRef = useState<HTMLInputElement | null>(null);
+  // CSV Import state
+  const [isCsvImporting, setIsCsvImporting] = useState(false);
   // Credits state
   const [credits, setCredits] = useState<number | null>(null);
   const [isLoadingCredits, setIsLoadingCredits] = useState(false);
@@ -706,27 +705,60 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
   };
   
-  // Parse SISTRIX PDF export and import directly to database (no API credits!)
-  const parseSistrixPdfAndImport = async (file: File) => {
-    setIsPdfImporting(true);
+  // Parse SISTRIX CSV export and import directly to database (no API credits!)
+  const parseSistrixCsvAndImport = async (file: File) => {
+    setIsCsvImporting(true);
     const startTime = Date.now();
     
     setImportProgress({
       step: 'fetching',
       currentItem: 0,
       totalItems: 0,
-      stepLabel: 'Reading PDF file...',
+      stepLabel: 'Lese CSV-Datei...',
       startTime
     });
     
     try {
-      // Read file as text (PDF-to-text parsing in browser is limited, but our PDFs are text-based)
       const text = await file.text();
-      console.log('[PDF Import] File read, length:', text.length);
+      console.log('[CSV Import] File read, length:', text.length);
       
-      // Parse the text content to extract keyword data
-      // SISTRIX PDF format: Keyword | Position | Klicks | Suchvolumen | Wettbewerber | Intent | CPC | URL
+      // Parse CSV - SISTRIX uses semicolon as delimiter
       const lines = text.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        toast.error('CSV-Datei ist leer oder hat kein gültiges Format');
+        setIsCsvImporting(false);
+        setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
+        return;
+      }
+      
+      // Parse header to find column indices
+      const header = lines[0].split(';').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+      console.log('[CSV Import] Headers:', header);
+      
+      // Map column names (SISTRIX uses German column names)
+      const colIndex = {
+        keyword: header.findIndex(h => h === 'keyword' || h === 'suchbegriff'),
+        position: header.findIndex(h => h === 'position' || h === 'pos' || h === 'rang'),
+        clicks: header.findIndex(h => h === 'klicks' || h === 'clicks'),
+        searchVolume: header.findIndex(h => h === 'suchvolumen' || h === 'search volume' || h === 'sv'),
+        competition: header.findIndex(h => h === 'wettbewerb' || h === 'competition' || h === 'wettb.'),
+        intent: header.findIndex(h => h === 'intent' || h === 'suchintention'),
+        cpc: header.findIndex(h => h === 'cpc' || h.includes('klickpreis')),
+        url: header.findIndex(h => h === 'url' || h === 'seite' || h === 'page')
+      };
+      
+      console.log('[CSV Import] Column indices:', colIndex);
+      
+      // Check for required columns
+      if (colIndex.keyword === -1 || colIndex.url === -1) {
+        toast.error('CSV fehlt Pflichtfelder: Keyword und URL werden benötigt');
+        setIsCsvImporting(false);
+        setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
+        return;
+      }
+      
+      // Parse data rows
       const parsedData: Array<{
         keyword: string;
         position: number;
@@ -738,94 +770,61 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         url: string;
       }> = [];
       
-      // Regex to match data lines - looking for lines with URLs
-      const urlPattern = /https?:\/\/[^\s]+/;
-      
-      for (const line of lines) {
-        // Skip header lines and page markers
-        if (line.includes('Keyword') && line.includes('Position') && line.includes('URL')) continue;
-        if (line.match(/^#+\s/) || line.includes('page screenshot') || line.includes('Images from page')) continue;
-        if (line.startsWith('##') || line.startsWith('###') || line.match(/^\d+$/)) continue;
+      for (let i = 1; i < lines.length; i++) {
+        // Handle quoted values with semicolons inside
+        const row: string[] = [];
+        let currentValue = '';
+        let inQuotes = false;
         
-        // Try to extract URL first
-        const urlMatch = line.match(urlPattern);
-        if (!urlMatch) continue;
-        
-        const url = urlMatch[0];
-        const beforeUrl = line.substring(0, line.indexOf(url)).trim();
-        
-        if (!beforeUrl) continue;
-        
-        // Parse the data before the URL
-        // Format varies but generally: keyword, position, clicks, searchVolume, competition%, intent, cpc
-        // Example: "iqanalyzer  1  5  20  16%  Divers  0,00 EUR"
-        
-        // Split by whitespace but try to keep multi-word keywords together
-        const parts = beforeUrl.split(/\s{2,}/).map(p => p.trim()).filter(p => p);
-        
-        if (parts.length < 3) continue;
-        
-        // Try to identify numeric columns from the right
-        // The pattern is usually: keyword, pos, clicks, sv, competition%, intent, cpc
-        let keyword = '';
-        let position = 0;
-        let clicks = 0;
-        let searchVolume = 0;
-        let competition = 0;
-        let intent = '';
-        let cpc = 0;
-        
-        // Find position (first number that's reasonable position 1-100)
-        for (let i = 0; i < parts.length; i++) {
-          const parsed = parseInt(parts[i]);
-          if (!isNaN(parsed) && parsed >= 1 && parsed <= 100) {
-            keyword = parts.slice(0, i).join(' ').trim();
-            position = parsed;
-            
-            // Parse remaining values
-            const remaining = parts.slice(i + 1);
-            if (remaining.length >= 1) clicks = parseInt(remaining[0]) || 0;
-            if (remaining.length >= 2) searchVolume = parseInt(remaining[1]) || 0;
-            if (remaining.length >= 3) {
-              const compMatch = remaining[2].match(/(\d+)/);
-              competition = compMatch ? parseInt(compMatch[1]) / 100 : 0;
-            }
-            if (remaining.length >= 4) {
-              // Intent can be multiple words like "Know Simple"
-              const intentPart = remaining[3];
-              if (intentPart && !intentPart.includes('EUR') && !intentPart.match(/^\d/)) {
-                intent = intentPart;
-              }
-            }
-            // CPC is usually last before URL
-            const cpcPart = remaining.find(p => p.includes('EUR'));
-            if (cpcPart) {
-              cpc = parseFloat(cpcPart.replace(',', '.').replace(/[^\d.]/g, '')) || 0;
-            }
-            
-            break;
+        for (const char of lines[i]) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ';' && !inQuotes) {
+            row.push(currentValue.trim());
+            currentValue = '';
+          } else {
+            currentValue += char;
           }
         }
+        row.push(currentValue.trim()); // Push last value
         
-        if (keyword && position > 0 && url) {
-          parsedData.push({
-            keyword,
-            position,
-            clicks,
-            searchVolume,
-            competition,
-            intent,
-            cpc,
-            url
-          });
-        }
+        const getValue = (idx: number): string => idx >= 0 && idx < row.length ? row[idx].replace(/"/g, '') : '';
+        
+        const keyword = getValue(colIndex.keyword);
+        const url = getValue(colIndex.url);
+        
+        if (!keyword || !url) continue;
+        
+        // Parse numeric values - handle German number format (comma as decimal separator)
+        const parseGermanNumber = (val: string): number => {
+          if (!val) return 0;
+          // Remove thousand separators (.) and replace comma with dot
+          return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+        };
+        
+        const parsePercentage = (val: string): number => {
+          if (!val) return 0;
+          const match = val.match(/(\d+(?:[.,]\d+)?)/);
+          return match ? parseFloat(match[1].replace(',', '.')) / 100 : 0;
+        };
+        
+        parsedData.push({
+          keyword,
+          position: parseInt(getValue(colIndex.position)) || 0,
+          clicks: parseInt(getValue(colIndex.clicks)) || 0,
+          searchVolume: parseInt(getValue(colIndex.searchVolume)) || 0,
+          competition: parsePercentage(getValue(colIndex.competition)),
+          intent: getValue(colIndex.intent),
+          cpc: parseGermanNumber(getValue(colIndex.cpc)),
+          url
+        });
       }
       
-      console.log('[PDF Import] Parsed', parsedData.length, 'entries from PDF');
+      console.log('[CSV Import] Parsed', parsedData.length, 'entries from CSV');
       
       if (parsedData.length === 0) {
-        toast.error('No keyword data found in PDF. Make sure this is a SISTRIX keyword export.');
-        setIsPdfImporting(false);
+        toast.error('Keine Keyword-Daten in der CSV gefunden');
+        setIsCsvImporting(false);
         setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
         return;
       }
@@ -834,7 +833,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         step: 'saving',
         currentItem: 0,
         totalItems: parsedData.length,
-        stepLabel: 'Importing to database...',
+        stepLabel: 'Importiere in Datenbank...',
         startTime
       });
       
@@ -845,17 +844,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         country,
         old_url: item.url,
         focus_keyword: item.keyword,
-        current_position: item.position,
+        current_position: item.position > 0 ? item.position : null,
         search_volume: item.searchVolume || null,
         clicks: item.clicks || null,
         competition: item.competition || null,
         intent: item.intent || null,
         cpc: item.cpc || null,
-        traffic_estimate: item.clicks || null, // Use clicks as traffic estimate
+        traffic_estimate: item.clicks || null,
         new_url_suggestion: suggestNewUrl(item.url, item.keyword),
         approval_status: 'pending',
         snapshot_date: today,
-        has_ai_overview: null // Not available from PDF
+        has_ai_overview: null
       }));
       
       // Deduplicate by unique key before insert
@@ -868,7 +867,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         }
       }
       const dedupedMappings = Array.from(seenKeys.values());
-      console.log('[PDF Import] After dedup:', dedupedMappings.length, 'unique entries');
+      console.log('[CSV Import] After dedup:', dedupedMappings.length, 'unique entries');
       
       // Upsert to database
       const { error: upsertError } = await supabase
@@ -879,31 +878,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         });
         
       if (upsertError) {
-        console.error('[PDF Import] Upsert error:', upsertError);
+        console.error('[CSV Import] Upsert error:', upsertError);
         throw upsertError;
       }
       
-      toast.success(`${dedupedMappings.length} Keywords aus PDF importiert! (0 Credits verbraucht)`);
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      toast.success(`${dedupedMappings.length} Keywords aus CSV importiert! (0 Credits, ${elapsed}s)`);
       await loadMappings();
       
     } catch (e) {
-      console.error('[PDF Import] Error:', e);
-      toast.error('PDF import failed: ' + (e instanceof Error ? e.message : 'Unknown error'));
+      console.error('[CSV Import] Error:', e);
+      toast.error('CSV-Import fehlgeschlagen: ' + (e instanceof Error ? e.message : 'Unbekannter Fehler'));
     } finally {
-      setIsPdfImporting(false);
+      setIsCsvImporting(false);
       setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
     }
   };
   
-  // Handle PDF file selection
-  const handlePdfFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle CSV file selection
+  const handleCsvFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
-        toast.error('Please select a PDF file');
+      if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
+        toast.error('Bitte eine CSV-Datei auswählen');
         return;
       }
-      parseSistrixPdfAndImport(file);
+      parseSistrixCsvAndImport(file);
     }
     // Reset input so same file can be selected again
     event.target.value = '';
@@ -1540,32 +1540,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                 </Button>
               </div>
               
-              {/* Row 2: PDF Import - prominent green button */}
+              {/* Row 2: CSV Import - prominent green button */}
               <div className="flex items-center gap-3 pt-2 border-t border-border">
                 <span className="text-sm text-muted-foreground">Alternative:</span>
                 <div className="relative">
                   <input
                     type="file"
-                    accept=".pdf,application/pdf"
-                    onChange={handlePdfFileSelect}
+                    accept=".csv,text/csv"
+                    onChange={handleCsvFileSelect}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    disabled={isPdfImporting}
+                    disabled={isCsvImporting}
                   />
                   <Button
                     variant="outline"
                     className="h-10 border-green-500 text-green-400 bg-green-500/10 hover:bg-green-500/20"
-                    disabled={isPdfImporting}
+                    disabled={isCsvImporting}
                   >
-                    {isPdfImporting ? (
+                    {isCsvImporting ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
                       <Upload className="h-4 w-4 mr-2" />
                     )}
-                    PDF Import (0 Credits)
+                    CSV Import (0 Credits)
                   </Button>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  Lade eine SISTRIX PDF-Export-Datei hoch um Keywords ohne API-Credits zu importieren
+                  SISTRIX CSV-Export hochladen (Semikolon-getrennt)
                 </span>
               </div>
             </Card>
