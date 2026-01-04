@@ -1228,7 +1228,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     return Math.round(traffic * positionFactor / 10);
   };
   
-  // Validate a single redirect (check HTTP status)
+  // Validate a redirect by checking if it exists correctly in the database
+  // (Live validation only works after domain switch)
   const validateRedirect = async (mapping: MappingRow) => {
     if (!mapping.redirect_created || !mapping.old_url) return;
     
@@ -1236,19 +1237,43 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     setValidatingRedirects(prev => new Set(prev).add(id));
     
     try {
-      const fullUrl = mapping.old_url.startsWith('http') 
-        ? mapping.old_url 
-        : `https://${domain}${mapping.old_url.startsWith('/') ? '' : '/'}${mapping.old_url}`;
+      // Extract path from old_url (remove domain)
+      const oldPath = mapping.old_url.replace(/^https?:\/\/[^/]+/, '');
       
-      const { data, error } = await supabase.functions.invoke('validate-redirect', {
-        body: { url: fullUrl, expectedTarget: mapping.new_url }
-      });
+      // Check if redirect exists in database
+      const { data: redirect, error } = await supabase
+        .from('redirects')
+        .select('source_url, target_url, is_active')
+        .eq('source_url', oldPath)
+        .eq('is_active', true)
+        .maybeSingle();
       
       if (error) throw error;
       
+      let ok = false;
+      let message = '';
+      let status = 0;
+      
+      if (redirect) {
+        // Check if target matches
+        if (redirect.target_url === mapping.new_url) {
+          ok = true;
+          status = 301;
+          message = 'Redirect in DB korrekt';
+        } else {
+          ok = false;
+          status = 301;
+          message = `Ziel abweichend: ${redirect.target_url}`;
+        }
+      } else {
+        ok = false;
+        status = 404;
+        message = 'Redirect nicht in DB gefunden';
+      }
+      
       const validationResult = {
-        status: data.status || 0,
-        ok: data.ok || false,
+        status,
+        ok,
         checked: new Date().toISOString(),
         newUrl: mapping.new_url || ''
       };
@@ -1258,10 +1283,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         return updated;
       });
       
-      if (data.ok) {
-        toast.success(`Redirect OK: ${data.status}`);
+      if (ok) {
+        toast.success(`✓ Redirect korrekt in DB`);
       } else {
-        toast.warning(`Redirect Issue: ${data.status} ${data.message || ''}`);
+        toast.warning(`⚠ ${message}`);
       }
     } catch (e) {
       console.error('[Relaunch] Validate redirect error:', e);
@@ -2284,19 +2309,48 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-14 min-w-14">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
-                          <td className="p-1 text-center w-14 min-w-14">
+                          <td className="p-1 text-center w-20 min-w-20">
                             {(() => {
                               const score = calculatePriorityScore(mapping);
                               if (score === 0) return <span className="text-muted-foreground text-xs">-</span>;
+                              
+                              // Calculate priority level (1-5 stars equivalent)
+                              const level = score >= 500 ? 5 : score >= 200 ? 4 : score >= 100 ? 3 : score >= 50 ? 2 : 1;
+                              const levelLabel = level === 5 ? 'KRITISCH' : level === 4 ? 'HOCH' : level === 3 ? 'MITTEL' : level === 2 ? 'NIEDRIG' : 'MINIMAL';
+                              const colorClass = score >= 500 ? 'bg-red-500' : score >= 200 ? 'bg-orange-500' : score >= 100 ? 'bg-amber-500' : score >= 50 ? 'bg-yellow-500' : 'bg-zinc-500';
+                              const textClass = score >= 500 ? 'text-red-400' : score >= 200 ? 'text-orange-400' : score >= 100 ? 'text-amber-400' : score >= 50 ? 'text-yellow-400' : 'text-zinc-400';
+                              
                               return (
-                                <Badge variant="outline" className={`text-xs px-1.5 py-0 font-semibold ${
-                                  score >= 500 ? 'border-red-500/50 text-red-400 bg-red-500/10' :
-                                  score >= 200 ? 'border-orange-500/50 text-orange-400 bg-orange-500/10' :
-                                  score >= 50 ? 'border-amber-500/50 text-amber-400' :
-                                  'border-zinc-500/50 text-zinc-400'
-                                }`}>
-                                  {score >= 1000 ? `${(score / 1000).toFixed(1)}k` : score}
-                                </Badge>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex flex-col items-center gap-0.5 cursor-help">
+                                      <div className="flex gap-0.5">
+                                        {[1, 2, 3, 4, 5].map((i) => (
+                                          <div
+                                            key={i}
+                                            className={`w-2 h-3 rounded-sm ${i <= level ? colorClass : 'bg-zinc-700'}`}
+                                          />
+                                        ))}
+                                      </div>
+                                      <span className={`text-[9px] font-bold ${textClass}`}>
+                                        {score >= 1000 ? `${(score / 1000).toFixed(1)}k` : score}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="text-center">
+                                      <span className={`font-bold ${textClass}`}>{levelLabel}</span>
+                                      <br />
+                                      <span className="text-xs text-muted-foreground">
+                                        Score: {score} = Traffic × Position
+                                      </span>
+                                      <br />
+                                      <span className="text-[10px] text-muted-foreground">
+                                        (500+ kritisch, 200+ hoch, 100+ mittel)
+                                      </span>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
                               );
                             })()}
                           </td>
