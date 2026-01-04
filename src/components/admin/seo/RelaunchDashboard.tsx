@@ -2215,16 +2215,57 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             {mapping.intent ? (
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <Badge variant="outline" className={`text-xs px-1 py-0 ${
-                                    mapping.intent.toLowerCase().includes('trans') ? 'border-purple-500/50 text-purple-400' :
-                                    mapping.intent.toLowerCase().includes('comm') ? 'border-orange-500/50 text-orange-400' :
-                                    mapping.intent.toLowerCase().includes('nav') ? 'border-blue-500/50 text-blue-400' :
-                                    'border-zinc-500/50 text-zinc-400'
-                                  }`}>
-                                    {mapping.intent.substring(0, 1).toUpperCase()}
-                                  </Badge>
+                                  {(() => {
+                                    const intentLower = mapping.intent.toLowerCase();
+                                    const isTransactional = intentLower.includes('trans') || intentLower === 'do';
+                                    const isCommercial = intentLower.includes('comm') || intentLower === 'know commercial';
+                                    const isNavigational = intentLower.includes('nav') || intentLower === 'website' || intentLower === 'go';
+                                    const isInformational = intentLower.includes('info') || intentLower === 'know' || intentLower === 'know simple';
+                                    
+                                    let abbr = '?';
+                                    let colorClass = 'border-zinc-500/50 text-zinc-400';
+                                    
+                                    if (isTransactional) {
+                                      abbr = 'T';
+                                      colorClass = 'border-purple-500/50 text-purple-400';
+                                    } else if (isCommercial) {
+                                      abbr = 'C';
+                                      colorClass = 'border-orange-500/50 text-orange-400';
+                                    } else if (isNavigational) {
+                                      abbr = 'N';
+                                      colorClass = 'border-blue-500/50 text-blue-400';
+                                    } else if (isInformational) {
+                                      abbr = 'I';
+                                      colorClass = 'border-green-500/50 text-green-400';
+                                    }
+                                    
+                                    return (
+                                      <Badge variant="outline" className={`text-xs px-1.5 py-0 font-bold ${colorClass}`}>
+                                        {abbr}
+                                      </Badge>
+                                    );
+                                  })()}
                                 </TooltipTrigger>
-                                <TooltipContent>{mapping.intent}</TooltipContent>
+                                <TooltipContent className="max-w-xs">
+                                  <div className="space-y-1">
+                                    <div className="font-bold">{mapping.intent}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {(() => {
+                                        const intentLower = mapping.intent.toLowerCase();
+                                        if (intentLower.includes('trans') || intentLower === 'do') {
+                                          return '🛒 Transactional: Nutzer will kaufen oder eine Aktion ausführen (z.B. "iphone 15 kaufen")';
+                                        } else if (intentLower.includes('comm') || intentLower === 'know commercial') {
+                                          return '💰 Commercial: Nutzer vergleicht Produkte vor dem Kauf (z.B. "beste kamera 2024")';
+                                        } else if (intentLower.includes('nav') || intentLower === 'website' || intentLower === 'go') {
+                                          return '🧭 Navigational: Nutzer sucht eine bestimmte Website (z.B. "facebook login")';
+                                        } else if (intentLower.includes('info') || intentLower === 'know' || intentLower === 'know simple') {
+                                          return 'ℹ️ Informational: Nutzer sucht Wissen/Antworten (z.B. "was ist SEO")';
+                                        }
+                                        return 'Suchintention nicht eindeutig zugeordnet';
+                                      })()}
+                                    </div>
+                                  </div>
+                                </TooltipContent>
                               </Tooltip>
                             ) : (
                               <span className="text-muted-foreground text-xs">-</span>
