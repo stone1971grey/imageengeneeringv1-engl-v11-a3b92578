@@ -7362,19 +7362,19 @@ export const SEOEditor = ({
               </div>
               <div className="flex items-center gap-3">
                 <div className={`h-3 w-3 rounded-full ${
-                  isAdvancedMode
+                  showAdvancedTab
                     ? (totalPassedCount >= 9 ? 'bg-green-500' : 
                        totalPassedCount >= 6 ? 'bg-yellow-500' : 'bg-red-500')
                     : (basicPassedCount >= 4 ? 'bg-green-500' : 
                        basicPassedCount >= 3 ? 'bg-yellow-500' : 'bg-red-500')
                 }`} />
                 <span className="text-sm font-medium text-muted-foreground">
-                  {isAdvancedMode 
+                  {showAdvancedTab 
                     ? `${totalPassedCount}/${totalChecks} Checks`
                     : `${basicPassedCount}/5 Checks`
                   }
                 </span>
-                {isAdvancedMode && (
+                {showAdvancedTab && (
                   <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">Advanced</Badge>
                 )}
                 <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isHealthCheckOpen ? 'rotate-180' : ''}`} />
@@ -7419,8 +7419,8 @@ export const SEOEditor = ({
                 </div>
               </div>
 
-              {/* Advanced Health Check - Only visible in Advanced mode */}
-              {isAdvancedMode && (
+              {/* Advanced Health Check - Only visible with Advanced SEO permission */}
+              {showAdvancedTab && (
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Advanced ({advancedPassedCount}/7)</h4>
                   <div className={`flex items-center gap-2 p-2.5 rounded-md transition-colors ${
