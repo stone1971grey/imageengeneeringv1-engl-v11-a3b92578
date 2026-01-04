@@ -1749,7 +1749,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           />
                         </th>
                         <th 
-                          className="text-left p-3 font-medium min-w-[300px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-left p-3 font-medium w-[180px] max-w-[180px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('oldUrl')}
                         >
                           <span className="flex items-center">
@@ -1758,7 +1758,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </span>
                         </th>
                         <th 
-                          className="text-left p-3 font-medium min-w-[150px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-left p-3 font-medium w-[120px] max-w-[120px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('keyword')}
                         >
                           <span className="flex items-center">
@@ -1871,14 +1871,14 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <TooltipContent>Positionsänderung vs. letzter Snapshot. Klicken zum Sortieren.</TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-left p-3 font-medium min-w-[280px] bg-muted/50">New URL</th>
-                        <th className="text-center p-3 font-medium w-24 bg-muted/50">Status</th>
+                        <th className="text-left p-3 font-medium w-[180px] bg-muted/50">New URL</th>
+                        <th className="text-center p-2 font-medium w-16 bg-muted/50">Status</th>
                         <th 
-                          className="text-center p-3 font-medium w-24 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          className="text-center p-2 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
                           onClick={() => toggleSort('redirect')}
                         >
                           <span className="flex items-center justify-center">
-                            Redirect
+                            301
                             <SortIcon field="redirect" />
                           </span>
                         </th>
@@ -1898,19 +1898,20 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
                             />
                           </td>
-                          <td className="p-3">
+                          <td className="p-2 w-[180px] max-w-[180px]">
                             <a 
                               href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#00a1ff] hover:underline flex items-center gap-1 break-all"
+                              className="text-[#00a1ff] hover:underline flex items-center gap-1"
+                              title={mapping.old_url}
                             >
-                              <span className="text-sm">{mapping.old_url}</span>
+                              <span className="text-xs truncate block max-w-[150px]">{mapping.old_url}</span>
                               <ExternalLink className="h-3 w-3 flex-shrink-0" />
                             </a>
                           </td>
-                          <td className="p-3">
-                            <span className="font-medium text-xs">{mapping.focus_keyword || '-'}</span>
+                          <td className="p-2 w-[120px] max-w-[120px]">
+                            <span className="font-medium text-xs truncate block" title={mapping.focus_keyword || ''}>{mapping.focus_keyword || '-'}</span>
                           </td>
                           <td className="p-3 text-center">
                             <Badge variant="outline" className={`text-base font-semibold px-3 py-1 ${
@@ -1991,11 +1992,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-3 text-center">
                             <TrendIcon mapping={mapping} />
                           </td>
-                          <td className="p-3">
+                          <td className="p-2 w-[180px]">
                             {mapping.approval_status === 'approved' ? (
-                              <span className="text-green-400 flex items-center gap-1 text-xs">
+                              <span className="text-green-400 flex items-center gap-1 text-xs truncate" title={mapping.new_url || ''}>
                                 {mapping.new_url}
-                                <Check className="h-3 w-3" />
+                                <Check className="h-3 w-3 flex-shrink-0" />
                               </span>
                             ) : (
                               <div className="flex gap-1 items-center">
@@ -2008,8 +2009,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                       saveNewUrl(mapping.id);
                                     }
                                   }}
-                                  placeholder="Enter new URL path..."
-                                  className="h-8 text-xs flex-1 min-w-[150px]"
+                                  placeholder="/new-path..."
+                                  className="h-7 text-xs flex-1 min-w-[100px]"
                                 />
                                 {mapping.new_url_suggestion && !editingNewUrl[mapping.id] && !mapping.new_url && (
                                   <Tooltip>
@@ -2017,28 +2018,28 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                       <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="h-8 w-8 p-0 text-[#00a1ff] hover:text-[#00a1ff] hover:bg-[#00a1ff]/10"
+                                        className="h-7 w-7 p-0 text-[#00a1ff] hover:text-[#00a1ff] hover:bg-[#00a1ff]/10"
                                         onClick={() => applySuggestion(mapping.id, mapping.new_url_suggestion!)}
                                       >
-                                        <Sparkles className="h-4 w-4" />
+                                        <Sparkles className="h-3 w-3" />
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Apply suggested URL: {mapping.new_url_suggestion}</TooltipContent>
+                                    <TooltipContent>Apply: {mapping.new_url_suggestion}</TooltipContent>
                                   </Tooltip>
                                 )}
                               </div>
                             )}
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-2 text-center w-16">
                             <StatusBadge status={mapping.approval_status} />
                           </td>
-                          <td className="p-3 text-center">
+                          <td className="p-2 text-center w-16">
                             {mapping.redirect_created ? (
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <Check className="h-5 w-5 text-green-500 mx-auto" />
+                                  <Check className="h-4 w-4 text-green-500 mx-auto" />
                                 </TooltipTrigger>
-                                <TooltipContent>301 Redirect aktiv → {mapping.new_url}</TooltipContent>
+                                <TooltipContent>301 aktiv → {mapping.new_url}</TooltipContent>
                               </Tooltip>
                             ) : (
                               <Tooltip>
@@ -2046,16 +2047,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-green-400 hover:bg-green-500/10"
+                                    className="h-6 w-6 p-0 text-muted-foreground hover:text-green-400 hover:bg-green-500/10"
                                     onClick={() => approveMapping(mapping)}
                                     disabled={isSaving || !mapping.new_url && !mapping.new_url_suggestion}
                                   >
-                                    <X className="h-5 w-5" />
+                                    <X className="h-4 w-4" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   {mapping.new_url || mapping.new_url_suggestion 
-                                    ? 'Klicken um 301 Redirect zu erstellen' 
+                                    ? '301 Redirect erstellen' 
                                     : 'Erst New URL eingeben'}
                                 </TooltipContent>
                               </Tooltip>
