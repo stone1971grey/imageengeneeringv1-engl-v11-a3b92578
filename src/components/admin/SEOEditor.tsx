@@ -500,13 +500,19 @@ export const SEOEditor = ({
     targetTitle?: string;
   }>>([]);
   
-  // SISTRIX recommended Focus Keyword state
+  // SISTRIX recommended Focus Keyword state - now supports primary + secondary keywords
   const [sistrixRecommendedKeyword, setSistrixRecommendedKeyword] = useState<{
     keyword: string;
     position: number | null;
     trafficEstimate: number | null;
     oldUrl: string;
   } | null>(null);
+  const [sistrixSecondaryKeywords, setSistrixSecondaryKeywords] = useState<Array<{
+    keyword: string;
+    position: number | null;
+    trafficEstimate: number | null;
+    oldUrl: string;
+  }>>([]);
   const [isLoadingSistrixKeyword, setIsLoadingSistrixKeyword] = useState(false);
   
   // Collapsible state for SEO Health Check and SERP Preview - with localStorage persistence
@@ -575,13 +581,15 @@ export const SEOEditor = ({
     localStorage.setItem('seo-advanced-redirects-open', String(isRedirectsOpen));
   }, [isRedirectsOpen]);
   
-  // Load SISTRIX recommended Focus Keyword from relaunch_url_mappings
+  // Load SISTRIX recommended Focus Keywords from relaunch_url_mappings
+  // Now loads ALL keywords for the URL, sorted by position (best first)
   useEffect(() => {
-    const loadSistrixKeyword = async () => {
+    const loadSistrixKeywords = async () => {
       if (!pageSlug) return;
       
       setIsLoadingSistrixKeyword(true);
       setSistrixRecommendedKeyword(null);
+      setSistrixSecondaryKeywords([]);
       
       try {
         // First, check if there's a redirect pointing TO this page
@@ -607,7 +615,15 @@ export const SEOEditor = ({
           return;
         }
         
-        // Check relaunch_url_mappings for the source URLs
+        // Collect ALL keywords from all matching redirects
+        const allKeywords: Array<{
+          keyword: string;
+          position: number | null;
+          trafficEstimate: number | null;
+          oldUrl: string;
+        }> = [];
+        
+        // Check relaunch_url_mappings for the source URLs - get ALL keywords, not just one
         for (const redirect of matchingRedirects) {
           const normalizedSource = redirect.source_url.replace(/^\/+|\/+$/g, '');
           
@@ -615,28 +631,64 @@ export const SEOEditor = ({
             .from('relaunch_url_mappings')
             .select('focus_keyword, current_position, traffic_estimate, old_url')
             .or(`old_url.ilike.%${normalizedSource}%,old_url.ilike.%${normalizedSource.split('/').pop()}%`)
-            .not('focus_keyword', 'is', null)
-            .limit(1);
+            .not('focus_keyword', 'is', null);
           
-          if (mappings && mappings.length > 0 && mappings[0].focus_keyword) {
-            console.log('[SEO Editor] Found SISTRIX recommended keyword:', mappings[0]);
-            setSistrixRecommendedKeyword({
-              keyword: mappings[0].focus_keyword,
-              position: mappings[0].current_position,
-              trafficEstimate: mappings[0].traffic_estimate,
-              oldUrl: mappings[0].old_url
-            });
-            break;
+          if (mappings && mappings.length > 0) {
+            for (const mapping of mappings) {
+              if (mapping.focus_keyword) {
+                allKeywords.push({
+                  keyword: mapping.focus_keyword,
+                  position: mapping.current_position,
+                  trafficEstimate: mapping.traffic_estimate,
+                  oldUrl: mapping.old_url
+                });
+              }
+            }
           }
         }
+        
+        if (allKeywords.length === 0) {
+          setIsLoadingSistrixKeyword(false);
+          return;
+        }
+        
+        // Sort by position (best/lowest first), null positions go to end
+        allKeywords.sort((a, b) => {
+          if (a.position === null && b.position === null) return 0;
+          if (a.position === null) return 1;
+          if (b.position === null) return -1;
+          return a.position - b.position;
+        });
+        
+        // Deduplicate by keyword (keep first/best occurrence)
+        const seenKeywords = new Set<string>();
+        const uniqueKeywords = allKeywords.filter(kw => {
+          const lowerKeyword = kw.keyword.toLowerCase();
+          if (seenKeywords.has(lowerKeyword)) return false;
+          seenKeywords.add(lowerKeyword);
+          return true;
+        });
+        
+        console.log('[SEO Editor] Found SISTRIX keywords:', uniqueKeywords);
+        
+        // First keyword = primary recommendation (best position)
+        if (uniqueKeywords.length > 0) {
+          setSistrixRecommendedKeyword(uniqueKeywords[0]);
+        }
+        
+        // Remaining keywords = secondary recommendations
+        if (uniqueKeywords.length > 1) {
+          setSistrixSecondaryKeywords(uniqueKeywords.slice(1));
+        }
+        
       } catch (error) {
-        console.error('[SEO Editor] Error loading SISTRIX keyword:', error);
+        console.error('[SEO Editor] Error loading SISTRIX keywords:', error);
       } finally {
         setIsLoadingSistrixKeyword(false);
       }
     };
     
-    loadSistrixKeyword();
+    loadSistrixKeywords();
   }, [pageSlug]);
   
   // FKW Content Optimizer state
@@ -7943,62 +7995,122 @@ export const SEOEditor = ({
               </div>
             )}
             
-            {/* SISTRIX Recommended Keyword */}
+            {/* SISTRIX Recommended Keywords - Primary + Secondary */}
             {sistrixRecommendedKeyword && !isLoadingSistrixKeyword && (
-              <div className="mt-4 p-4 rounded-lg bg-[#00a1ff]/10 border border-[#00a1ff]/30">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <SistrixIcon className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-[#00a1ff]">SISTRIX Empfehlung</span>
-                      {sistrixRecommendedKeyword.position && (
-                        <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30 text-xs">
-                          Position {sistrixRecommendedKeyword.position}
-                        </Badge>
-                      )}
-                      {sistrixRecommendedKeyword.trafficEstimate && sistrixRecommendedKeyword.trafficEstimate > 0 && (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                          ~{sistrixRecommendedKeyword.trafficEstimate} Traffic
-                        </Badge>
-                      )}
+              <div className="mt-4 space-y-3">
+                {/* Primary Keyword - Best Position */}
+                <div className="p-4 rounded-lg bg-[#00a1ff]/10 border border-[#00a1ff]/30">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <SistrixIcon className="h-5 w-5" />
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Für die Redirect-Quelle <code className="text-xs bg-muted/50 px-1 py-0.5 rounded">{sistrixRecommendedKeyword.oldUrl}</code> existiert ein bestehendes Ranking:
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-semibold text-foreground">
-                        "{sistrixRecommendedKeyword.keyword}"
-                      </span>
-                      {data.focusKeyword?.toLowerCase() !== sistrixRecommendedKeyword.keyword.toLowerCase() && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            handleChange('focusKeyword', sistrixRecommendedKeyword.keyword);
-                            setLocalFocusKeyword(sistrixRecommendedKeyword.keyword);
-                            localFocusKeywordRef.current = sistrixRecommendedKeyword.keyword;
-                            localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, sistrixRecommendedKeyword.keyword);
-                            toast.success(`Focus Keyword auf "${sistrixRecommendedKeyword.keyword}" gesetzt (SISTRIX-Empfehlung)`);
-                          }}
-                          className="h-7 text-xs bg-[#00a1ff]/10 border-[#00a1ff]/30 text-[#00a1ff] hover:bg-[#00a1ff]/20"
-                        >
-                          Übernehmen
-                        </Button>
-                      )}
-                      {data.focusKeyword?.toLowerCase() === sistrixRecommendedKeyword.keyword.toLowerCase() && (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
-                          Aktiv
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-semibold text-[#00a1ff]">Primäres Focus Keyword</span>
+                        <Badge className="bg-[#00a1ff]/30 text-[#00a1ff] border-[#00a1ff]/50 text-xs font-semibold">
+                          #1 Empfehlung
                         </Badge>
-                      )}
+                        {sistrixRecommendedKeyword.position && (
+                          <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30 text-xs">
+                            Position {sistrixRecommendedKeyword.position}
+                          </Badge>
+                        )}
+                        {sistrixRecommendedKeyword.trafficEstimate && sistrixRecommendedKeyword.trafficEstimate > 0 && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                            ~{sistrixRecommendedKeyword.trafficEstimate} Traffic
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Bestes Ranking für <code className="text-xs bg-muted/50 px-1 py-0.5 rounded">{sistrixRecommendedKeyword.oldUrl}</code>
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-semibold text-[#00a1ff]">
+                          "{sistrixRecommendedKeyword.keyword}"
+                        </span>
+                        {data.focusKeyword?.toLowerCase() !== sistrixRecommendedKeyword.keyword.toLowerCase() && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              handleChange('focusKeyword', sistrixRecommendedKeyword.keyword);
+                              setLocalFocusKeyword(sistrixRecommendedKeyword.keyword);
+                              localFocusKeywordRef.current = sistrixRecommendedKeyword.keyword;
+                              localStorage.setItem(`seo-fkw-${pageSlug}-${editorLanguage}`, sistrixRecommendedKeyword.keyword);
+                              toast.success(`Focus Keyword auf "${sistrixRecommendedKeyword.keyword}" gesetzt`);
+                            }}
+                            className="h-7 text-xs bg-[#00a1ff]/10 border-[#00a1ff]/30 text-[#00a1ff] hover:bg-[#00a1ff]/20"
+                          >
+                            Als FKW übernehmen
+                          </Button>
+                        )}
+                        {data.focusKeyword?.toLowerCase() === sistrixRecommendedKeyword.keyword.toLowerCase() && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Aktives FKW
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Dieses Keyword hat die beste Position und sollte als Focus Keyword verwendet werden.
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Dieses Keyword wird empfohlen, um bestehende Rankings nach dem Redirect zu erhalten.
-                    </p>
                   </div>
                 </div>
+                
+                {/* Secondary Keywords - For H2/H3 */}
+                {sistrixSecondaryKeywords.length > 0 && (
+                  <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <SistrixIcon className="h-4 w-4 opacity-60" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-semibold text-amber-400">Sekundäre Keywords</span>
+                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">
+                            {sistrixSecondaryKeywords.length} weitere
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Diese Keywords sollten in <strong>H2/H3-Überschriften</strong> oder im Fließtext eingebaut werden – besonders wichtig bei hoher FKW-Dichte zur Vermeidung von Keyword-Stuffing.
+                        </p>
+                        <div className="space-y-2">
+                          {sistrixSecondaryKeywords.map((skw, idx) => (
+                            <div key={idx} className="flex items-center justify-between py-2 px-3 rounded bg-muted/20 border border-border/30">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <span className="text-sm font-medium text-foreground truncate">
+                                  "{skw.keyword}"
+                                </span>
+                                {skw.position && (
+                                  <Badge variant="outline" className="text-xs text-muted-foreground border-border/50 flex-shrink-0">
+                                    Pos. {skw.position}
+                                  </Badge>
+                                )}
+                                {skw.trafficEstimate && skw.trafficEstimate > 0 && (
+                                  <Badge variant="outline" className="text-xs text-muted-foreground border-border/50 flex-shrink-0">
+                                    ~{skw.trafficEstimate}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                                <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[10px]">
+                                  H2
+                                </Badge>
+                                <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30 text-[10px]">
+                                  H3
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-3 italic">
+                          Tipp: Nutze diese Keywords als natürliche Variationen in Zwischenüberschriften, um thematische Tiefe zu signalisieren.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             
