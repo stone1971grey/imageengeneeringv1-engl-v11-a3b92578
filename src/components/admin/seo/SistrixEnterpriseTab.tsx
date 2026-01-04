@@ -10,6 +10,7 @@ import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { RelaunchDashboard } from "./RelaunchDashboard";
+import VisibilityIndexWidget from "./VisibilityIndexWidget";
 
 interface SistrixEnterpriseTabProps {
   pageSlug: string;
@@ -334,6 +335,9 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
 
   return (
     <div className="space-y-6">
+      {/* Visibility Index Widget - New! */}
+      <VisibilityIndexWidget domain={domain || 'image-engineering.de'} country={country} />
+      
       {/* Relaunch Dashboard - Primary Feature */}
       <RelaunchDashboard editorLanguage={editorLanguage} />
       
