@@ -235,8 +235,14 @@ const AdminDashboard = () => {
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
   const [activeTab, setActiveTabState] = useState<string>(() => {
-    // Initialize from localStorage immediately on mount
-    const pageKey = new URLSearchParams(window.location.search).get('page') || 'index';
+    // Initialize from URL param first (for deep links like ?tab=seo), then localStorage
+    const params = new URLSearchParams(window.location.search);
+    const urlTab = params.get('tab');
+    if (urlTab) {
+      console.log("[AdminDashboard] Initial tab from URL param:", urlTab);
+      return urlTab;
+    }
+    const pageKey = params.get('page') || 'index';
     const savedTab = localStorage.getItem(`admin-activeTab-${pageKey}`);
     console.log("[AdminDashboard] Initial tab from localStorage:", savedTab, "for page:", pageKey);
     return savedTab || "";
