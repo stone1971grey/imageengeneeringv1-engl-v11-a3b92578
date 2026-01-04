@@ -107,6 +107,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     return cached !== null ? cached === 'true' : true;
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [mappings, setMappings] = useState<MappingRow[]>([]);
   const [pageRegistry, setPageRegistry] = useState<PageRegistryItem[]>([]);
@@ -256,80 +257,98 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   }, []);
 
   // Load existing mappings from database with previous snapshot data for trend display
-  const loadMappings = useCallback(async () => {
+  const loadMappings = useCallback(async (showToast = false) => {
     if (!domain) return;
     
-    // Get the latest snapshot date first for the selected country
-    const { data: latestData, error: latestError } = await supabase
-      .from('relaunch_url_mappings')
-      .select('snapshot_date')
-      .eq('domain', domain)
-      .eq('country', country)
-      .order('snapshot_date', { ascending: false })
-      .limit(1);
+    console.log('[Relaunch] Loading mappings for:', domain, country);
+    setIsRefreshing(true);
     
-    if (latestError || !latestData || latestData.length === 0) {
-      console.log('[Relaunch] No snapshots found for country:', country);
-      setMappings([]);
-      updateStats([]);
-      return;
-    }
-    
-    const latestSnapshotDate = latestData[0].snapshot_date;
-    
-    // Get current snapshot data for the selected country
-    const { data, error } = await supabase
-      .from('relaunch_url_mappings')
-      .select('*')
-      .eq('domain', domain)
-      .eq('country', country)
-      .eq('snapshot_date', latestSnapshotDate)
-      .order('current_position', { ascending: true, nullsFirst: false });
+    try {
+      // Get the latest snapshot date first for the selected country
+      const { data: latestData, error: latestError } = await supabase
+        .from('relaunch_url_mappings')
+        .select('snapshot_date')
+        .eq('domain', domain)
+        .eq('country', country)
+        .order('snapshot_date', { ascending: false })
+        .limit(1);
       
-    if (error) {
-      console.error('[Relaunch] Error loading mappings:', error);
-      return;
-    }
-    
-    // Get previous snapshot data for trend comparison display
-    const { data: previousSnapshots } = await supabase
-      .from('relaunch_url_mappings')
-      .select('old_url, focus_keyword, current_position, snapshot_date')
-      .eq('domain', domain)
-      .eq('country', country)
-      .lt('snapshot_date', latestSnapshotDate)
-      .order('snapshot_date', { ascending: false });
-    
-    // Build previous data map
-    const previousDataMap = new Map<string, { position: number; date: string }>();
-    if (previousSnapshots) {
-      for (const snap of previousSnapshots) {
-        const key = `${snap.old_url}|${snap.focus_keyword}`;
-        if (!previousDataMap.has(key) && snap.current_position) {
-          previousDataMap.set(key, { 
-            position: snap.current_position, 
-            date: snap.snapshot_date 
-          });
+      if (latestError || !latestData || latestData.length === 0) {
+        console.log('[Relaunch] No snapshots found for country:', country);
+        setMappings([]);
+        updateStats([]);
+        if (showToast) {
+          toast.info('Keine Daten gefunden für ' + country.toUpperCase());
+        }
+        return;
+      }
+      
+      const latestSnapshotDate = latestData[0].snapshot_date;
+      
+      // Get current snapshot data for the selected country
+      const { data, error } = await supabase
+        .from('relaunch_url_mappings')
+        .select('*')
+        .eq('domain', domain)
+        .eq('country', country)
+        .eq('snapshot_date', latestSnapshotDate)
+        .order('current_position', { ascending: true, nullsFirst: false });
+        
+      if (error) {
+        console.error('[Relaunch] Error loading mappings:', error);
+        if (showToast) {
+          toast.error('Fehler beim Laden der Daten');
+        }
+        return;
+      }
+      
+      // Get previous snapshot data for trend comparison display
+      const { data: previousSnapshots } = await supabase
+        .from('relaunch_url_mappings')
+        .select('old_url, focus_keyword, current_position, snapshot_date')
+        .eq('domain', domain)
+        .eq('country', country)
+        .lt('snapshot_date', latestSnapshotDate)
+        .order('snapshot_date', { ascending: false });
+      
+      // Build previous data map
+      const previousDataMap = new Map<string, { position: number; date: string }>();
+      if (previousSnapshots) {
+        for (const snap of previousSnapshots) {
+          const key = `${snap.old_url}|${snap.focus_keyword}`;
+          if (!previousDataMap.has(key) && snap.current_position) {
+            previousDataMap.set(key, { 
+              position: snap.current_position, 
+              date: snap.snapshot_date 
+            });
+          }
         }
       }
-    }
-    
-    if (data) {
-      // Enrich with previous position data
-      const enrichedData = data.map((m: any) => {
-        const key = `${m.old_url}|${m.focus_keyword}`;
-        const prevData = previousDataMap.get(key);
-        return {
-          ...m,
-          previous_position: prevData?.position || null,
-          previous_snapshot_date: prevData?.date || null
-        } as MappingRow;
-      });
       
-      // Sync with redirects table
-      const syncedData = await syncRedirectStatus(enrichedData);
-      setMappings(syncedData);
-      updateStats(syncedData);
+      if (data) {
+        // Enrich with previous position data
+        const enrichedData = data.map((m: any) => {
+          const key = `${m.old_url}|${m.focus_keyword}`;
+          const prevData = previousDataMap.get(key);
+          return {
+            ...m,
+            previous_position: prevData?.position || null,
+            previous_snapshot_date: prevData?.date || null
+          } as MappingRow;
+        });
+        
+        // Sync with redirects table
+        const syncedData = await syncRedirectStatus(enrichedData);
+        setMappings(syncedData);
+        updateStats(syncedData);
+        
+        console.log('[Relaunch] Loaded', syncedData.length, 'mappings');
+        if (showToast) {
+          toast.success(`${syncedData.length} Einträge geladen`);
+        }
+      }
+    } finally {
+      setIsRefreshing(false);
     }
   }, [domain, country, syncRedirectStatus]);
   
@@ -1655,12 +1674,16 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   Import Rankings
                 </Button>
                 <Button
-                  onClick={loadMappings}
+                  onClick={() => loadMappings(true)}
                   variant="outline"
                   className="h-10"
-                  disabled={!domain || isLoading}
+                  disabled={!domain || isLoading || isRefreshing}
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  {isRefreshing ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
                   Refresh
                 </Button>
                 <Button
