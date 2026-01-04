@@ -1422,6 +1422,7 @@ const AdminDashboard = () => {
           isEditor={isEditor}
           allowedPages={allowedPages}
           canPublish={canPublish}
+          canDraft={canDraft}
           showUserManagement={showUserManagement}
           setShowUserManagement={setShowUserManagement}
           handleLogout={handleLogout}

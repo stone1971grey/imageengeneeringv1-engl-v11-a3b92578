@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink, GitBranch } from "lucide-react";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { useNavigate } from "react-router-dom";
@@ -59,6 +59,7 @@ interface AdminHeaderProps {
   isEditor: boolean;
   allowedPages: string[];
   canPublish?: boolean; // Editor permission to publish
+  canDraft?: boolean; // Editor permission to draft
   showUserManagement: boolean;
   setShowUserManagement: (show: boolean) => void;
   handleLogout: () => void;
@@ -96,6 +97,7 @@ export const AdminHeader = ({
   isEditor,
   allowedPages,
   canPublish = false,
+  canDraft = false,
   showUserManagement,
   setShowUserManagement,
   handleLogout,
@@ -462,6 +464,19 @@ export const AdminHeader = ({
                 <FirecrawlIcon className="h-4 w-4 text-white" />
                 Content Automation
               </Button>
+            )}
+            {/* Content Workflow - Admin always, Editor with can_draft or can_publish permissions */}
+            {(isAdmin || (isEditor && (canDraft || canPublish))) && (
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-700 border border-emerald-600 h-10 ${!selectedPage ? 'opacity-50' : ''}`}>
+                <GitBranch className="h-5 w-5 text-white flex-shrink-0" />
+                <span className="text-base font-medium text-white whitespace-nowrap">Content Workflow</span>
+                <Switch
+                  checked={true}
+                  onCheckedChange={() => {}}
+                  disabled={!selectedPage}
+                  className="data-[state=checked]:bg-white data-[state=unchecked]:bg-emerald-900 [&>span]:data-[state=checked]:bg-emerald-700 [&>span]:data-[state=unchecked]:bg-white"
+                />
+              </div>
             )}
             {/* Frontend Editing - Admin only, with toggle and open button */}
             {isAdmin && (
