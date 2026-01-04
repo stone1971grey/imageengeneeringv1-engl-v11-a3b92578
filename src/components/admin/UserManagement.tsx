@@ -129,6 +129,11 @@ interface UserWithRole {
   canDraft?: boolean;  // Permission to save drafts
   canPublish?: boolean; // Permission to publish content
   frontendEditingEnabled?: boolean; // Permission to use frontend editing
+  // SEO Permissions
+  seoBasic?: boolean;
+  seoSocial?: boolean;
+  seoAdvanced?: boolean;
+  seoEnterprise?: boolean;
 }
 
 export const UserManagement = () => {
@@ -173,6 +178,16 @@ export const UserManagement = () => {
   // Frontend Editing permissions
   const [inviteFrontendEditingEnabled, setInviteFrontendEditingEnabled] = useState(false);
   const [editFrontendEditingEnabled, setEditFrontendEditingEnabled] = useState(false);
+  
+  // SEO Permissions (4 blocks: Basic, Social, Advanced, Enterprise)
+  const [inviteSeoBasic, setInviteSeoBasic] = useState(false);
+  const [inviteSeoSocial, setInviteSeoSocial] = useState(false);
+  const [inviteSeoAdvanced, setInviteSeoAdvanced] = useState(false);
+  const [inviteSeoEnterprise, setInviteSeoEnterprise] = useState(false);
+  const [editSeoBasic, setEditSeoBasic] = useState(false);
+  const [editSeoSocial, setEditSeoSocial] = useState(false);
+  const [editSeoAdvanced, setEditSeoAdvanced] = useState(false);
+  const [editSeoEnterprise, setEditSeoEnterprise] = useState(false);
 
   // Check for existing user when username or email changes
   useEffect(() => {
@@ -217,6 +232,16 @@ export const UserManagement = () => {
 
       if (accessError) throw accessError;
 
+      // Fetch SEO permissions
+      const { data: seoPermissions, error: seoError } = await supabase
+        .from('user_seo_permissions')
+        .select('user_id, seo_basic, seo_social, seo_advanced, seo_enterprise');
+
+      if (seoError) {
+        console.error('Error loading SEO permissions:', seoError);
+        // Don't throw - SEO permissions are optional
+      }
+
       // Combine profiles with their roles and editor access
       const usersWithRoles: UserWithRole[] = (profiles || []).map(profile => {
         const userRoles = (roles || [])
@@ -227,6 +252,9 @@ export const UserManagement = () => {
           .filter(a => a.user_id === profile.id);
         
         const userEditors = userEditorAccess.map(a => a.page_slug);
+
+        // Get SEO permissions for this user
+        const userSeoPerms = (seoPermissions || []).find(s => s.user_id === profile.id);
 
         // Determine access type
         let accessType: 'all' | 'custom' | 'none' = 'none';
@@ -293,7 +321,12 @@ export const UserManagement = () => {
           globalSegmentLanguages,
           canDraft,
           canPublish,
-          frontendEditingEnabled
+          frontendEditingEnabled,
+          // SEO Permissions
+          seoBasic: userSeoPerms?.seo_basic || false,
+          seoSocial: userSeoPerms?.seo_social || false,
+          seoAdvanced: userSeoPerms?.seo_advanced || false,
+          seoEnterprise: userSeoPerms?.seo_enterprise || false
         };
       });
 
@@ -753,6 +786,24 @@ export const UserManagement = () => {
         }
       }
 
+      // Save SEO permissions (upsert)
+      const { error: seoError } = await supabase
+        .from('user_seo_permissions')
+        .upsert({
+          user_id: selectedUser.id,
+          seo_basic: editSeoBasic,
+          seo_social: editSeoSocial,
+          seo_advanced: editSeoAdvanced,
+          seo_enterprise: editSeoEnterprise
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (seoError) {
+        console.error('SEO permissions error:', seoError);
+        // Don't throw - continue anyway
+      }
+
       toast.success('User updated successfully');
       // Dialog stays open - only closed via X button
       loadUsers();
@@ -1062,6 +1113,11 @@ export const UserManagement = () => {
                             setEditCanDraft(user.canDraft ?? true);
                             setEditCanPublish(user.canPublish ?? false);
                             setEditFrontendEditingEnabled(user.frontendEditingEnabled ?? false);
+                            // SEO Permissions
+                            setEditSeoBasic(user.seoBasic ?? false);
+                            setEditSeoSocial(user.seoSocial ?? false);
+                            setEditSeoAdvanced(user.seoAdvanced ?? false);
+                            setEditSeoEnterprise(user.seoEnterprise ?? false);
                             setShowEditUserDialog(true);
                           }}
                           className="h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-yellow-500 hover:bg-zinc-800 rounded-md transition-colors border border-zinc-700 hover:border-yellow-500"
@@ -2056,6 +2112,111 @@ export const UserManagement = () => {
                       ? '✓ Editor can access Frontend Editing mode via ?edit=true URL parameter'
                       : 'Frontend Editing is disabled - editor must use the Admin Dashboard'}
                   </p>
+                </div>
+              </div>
+            )}
+
+            {/* SEO Permissions - only for Editor role */}
+            {editUserRole === 'editor' && (
+              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
+                <div>
+                  <Label className="text-xl font-bold text-white flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-amber-400" />
+                    SEO Permissions
+                  </Label>
+                  <p className="text-base text-zinc-400 mt-2">
+                    Control which SEO tabs this editor can access
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {/* SEO Basic */}
+                  <div 
+                    className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
+                      editSeoBasic 
+                        ? 'bg-amber-600/20 border-2 border-amber-500' 
+                        : 'bg-zinc-800/50 border-2 border-zinc-700 hover:border-zinc-600'
+                    }`}
+                    onClick={() => setEditSeoBasic(!editSeoBasic)}
+                  >
+                    <Checkbox
+                      checked={editSeoBasic}
+                      onCheckedChange={() => setEditSeoBasic(!editSeoBasic)}
+                      className="h-5 w-5"
+                    />
+                    <div>
+                      <span className={`text-base font-semibold ${editSeoBasic ? 'text-amber-300' : 'text-white'}`}>
+                        SEO Basic
+                      </span>
+                      <p className="text-xs text-zinc-400">Title, Description, FKW</p>
+                    </div>
+                  </div>
+
+                  {/* SEO Social */}
+                  <div 
+                    className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
+                      editSeoSocial 
+                        ? 'bg-blue-600/20 border-2 border-blue-500' 
+                        : 'bg-zinc-800/50 border-2 border-zinc-700 hover:border-zinc-600'
+                    }`}
+                    onClick={() => setEditSeoSocial(!editSeoSocial)}
+                  >
+                    <Checkbox
+                      checked={editSeoSocial}
+                      onCheckedChange={() => setEditSeoSocial(!editSeoSocial)}
+                      className="h-5 w-5"
+                    />
+                    <div>
+                      <span className={`text-base font-semibold ${editSeoSocial ? 'text-blue-300' : 'text-white'}`}>
+                        SEO Social
+                      </span>
+                      <p className="text-xs text-zinc-400">OG Tags, Social Media</p>
+                    </div>
+                  </div>
+
+                  {/* SEO Advanced */}
+                  <div 
+                    className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
+                      editSeoAdvanced 
+                        ? 'bg-purple-600/20 border-2 border-purple-500' 
+                        : 'bg-zinc-800/50 border-2 border-zinc-700 hover:border-zinc-600'
+                    }`}
+                    onClick={() => setEditSeoAdvanced(!editSeoAdvanced)}
+                  >
+                    <Checkbox
+                      checked={editSeoAdvanced}
+                      onCheckedChange={() => setEditSeoAdvanced(!editSeoAdvanced)}
+                      className="h-5 w-5"
+                    />
+                    <div>
+                      <span className={`text-base font-semibold ${editSeoAdvanced ? 'text-purple-300' : 'text-white'}`}>
+                        SEO Advanced
+                      </span>
+                      <p className="text-xs text-zinc-400">Readability, Smart Tools</p>
+                    </div>
+                  </div>
+
+                  {/* SEO Enterprise */}
+                  <div 
+                    className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
+                      editSeoEnterprise 
+                        ? 'bg-[#00a1ff]/20 border-2 border-[#00a1ff]' 
+                        : 'bg-zinc-800/50 border-2 border-zinc-700 hover:border-zinc-600'
+                    }`}
+                    onClick={() => setEditSeoEnterprise(!editSeoEnterprise)}
+                  >
+                    <Checkbox
+                      checked={editSeoEnterprise}
+                      onCheckedChange={() => setEditSeoEnterprise(!editSeoEnterprise)}
+                      className="h-5 w-5"
+                    />
+                    <div>
+                      <span className={`text-base font-semibold ${editSeoEnterprise ? 'text-[#00a1ff]' : 'text-white'}`}>
+                        SEO Enterprise
+                      </span>
+                      <p className="text-xs text-zinc-400">SISTRIX, Relaunch</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

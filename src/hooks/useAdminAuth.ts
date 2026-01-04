@@ -4,6 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
+export interface SeoPermissions {
+  basic: boolean;
+  social: boolean;
+  advanced: boolean;
+  enterprise: boolean;
+}
+
 export interface AdminAuthState {
   user: User | null;
   session: Session | null;
@@ -13,6 +20,7 @@ export interface AdminAuthState {
   canPublish: boolean;
   canDraft: boolean;
   frontendEditingEnabled: boolean;
+  seoPermissions: SeoPermissions;
   loading: boolean;
 }
 
@@ -25,6 +33,12 @@ export const useAdminAuth = () => {
   const [canPublish, setCanPublish] = useState(false);
   const [canDraft, setCanDraft] = useState(true);
   const [frontendEditingEnabled, setFrontendEditingEnabled] = useState(false);
+  const [seoPermissions, setSeoPermissions] = useState<SeoPermissions>({
+    basic: true,
+    social: true,
+    advanced: true,
+    enterprise: true
+  });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -60,6 +74,8 @@ export const useAdminAuth = () => {
       setCanPublish(true); // Admins can always publish
       setCanDraft(true); // Admins can always draft
       setFrontendEditingEnabled(true); // Admins have full frontend editing
+      // Admins have full SEO access
+      setSeoPermissions({ basic: true, social: true, advanced: true, enterprise: true });
       setLoading(false);
       return;
     }
@@ -113,10 +129,30 @@ export const useAdminAuth = () => {
       setCanDraft(finalCanDraft);
       setFrontendEditingEnabled(finalFrontendEditing);
       
+      // Load SEO permissions for this editor
+      const { data: seoPermsData } = await supabase
+        .from('user_seo_permissions')
+        .select('seo_basic, seo_social, seo_advanced, seo_enterprise')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (seoPermsData) {
+        setSeoPermissions({
+          basic: seoPermsData.seo_basic ?? false,
+          social: seoPermsData.seo_social ?? false,
+          advanced: seoPermsData.seo_advanced ?? false,
+          enterprise: seoPermsData.seo_enterprise ?? false
+        });
+      } else {
+        // No SEO permissions set - default to no access
+        setSeoPermissions({ basic: false, social: false, advanced: false, enterprise: false });
+      }
+      
       console.log('[AdminDashboard] Editor permissions:', {
         canPublish: finalCanPublish,
         canDraft: finalCanDraft,
         frontendEditingEnabled: finalFrontendEditing,
+        seoPermissions: seoPermsData,
         pageAccessData: pageAccessData.map(p => ({ slug: p.page_slug, canPublish: p.can_publish }))
       });
       
@@ -180,6 +216,7 @@ export const useAdminAuth = () => {
     canPublish,
     canDraft,
     frontendEditingEnabled,
+    seoPermissions,
     loading,
     handleLogout,
     addAllowedPage
