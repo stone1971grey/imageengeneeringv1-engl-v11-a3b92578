@@ -118,18 +118,18 @@ const CONTENT_EDITORS: ContentEditor[] = [
     name: 'Content Workflow',
     description: 'Draft & Publish permissions',
     icon: <Save className="h-6 w-6" />,
-    color: 'hsl(25 95% 53%)',
-    bgColor: 'bg-orange-500',
-    borderColor: 'border-orange-500'
+    color: 'hsl(160 84% 18%)',
+    bgColor: 'bg-emerald-900',
+    borderColor: 'border-emerald-700'
   },
   {
     id: 'frontend-editing',
     name: 'Frontend Editing',
     description: 'Edit content on live pages',
     icon: <MonitorSmartphone className="h-6 w-6" />,
-    color: 'hsl(188 78% 41%)',
-    bgColor: 'bg-cyan-500',
-    borderColor: 'border-cyan-500'
+    color: 'hsl(160 84% 29%)',
+    bgColor: 'bg-emerald-700',
+    borderColor: 'border-emerald-600'
   }
 ];
 
