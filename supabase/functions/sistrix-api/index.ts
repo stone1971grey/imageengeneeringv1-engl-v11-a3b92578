@@ -148,6 +148,7 @@ serve(async (req) => {
       case 'keyword.domain.seo':
         // Get organic keyword rankings for domain - CORE FOR RELAUNCH DASHBOARD
         // Returns: keyword (kw), position, competition, traffic, url
+        // IMPORTANT: mobile=false returns desktop data (typically more keywords)
         if (!domain) {
           return new Response(
             JSON.stringify({ error: 'Domain is required for keyword.domain.seo' }),
@@ -157,8 +158,11 @@ serve(async (req) => {
         endpoint = '/keyword.domain.seo';
         params.append('domain', domain);
         params.append('country', country);
+        // Default to desktop data (mobile=false) as it typically has more keywords
+        params.append('mobile', mobile ? 'true' : 'false');
         if (limit) params.append('limit', String(limit));
         if (offset) params.append('offset', String(offset));
+        console.log(`[keyword.domain.seo] domain=${domain}, country=${country}, mobile=${mobile}, limit=${limit}, offset=${offset}`);
         break;
 
       case 'keyword.seo.metrics':
