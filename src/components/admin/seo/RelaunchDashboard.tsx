@@ -1774,7 +1774,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             {paginatedMappings.length > 0 ? (
               <div className="border border-border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
                     <thead className="bg-muted/50 sticky top-0 z-10">
                       <tr>
                         <th className="text-center p-3 w-10 bg-muted/50">
@@ -1944,19 +1944,23 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               className="h-4 w-4 rounded border-border text-[#00a1ff] focus:ring-[#00a1ff]"
                             />
                           </td>
-                          <td className="p-2 w-[200px] min-w-[200px] max-w-[200px] overflow-hidden">
-                            <a 
-                              href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#00a1ff] hover:underline flex items-start gap-1"
-                            >
-                              <span className="text-xs break-words whitespace-normal leading-tight block">{mapping.old_url}</span>
-                              <ExternalLink className="h-3 w-3 flex-shrink-0 mt-0.5" />
-                            </a>
+                          <td className="p-2 align-top" style={{ width: '200px', minWidth: '200px', maxWidth: '200px' }}>
+                            <div className="overflow-hidden" style={{ maxWidth: '190px' }}>
+                              <a 
+                                href={mapping.old_url.startsWith('http') ? mapping.old_url : `https://${domain}${mapping.old_url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#00a1ff] hover:underline flex items-start gap-1"
+                              >
+                                <span className="text-xs leading-tight" style={{ wordBreak: 'break-all' }}>{mapping.old_url}</span>
+                                <ExternalLink className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                              </a>
+                            </div>
                           </td>
-                          <td className="p-2 w-[130px] min-w-[130px] max-w-[130px] overflow-hidden">
-                            <span className="font-medium text-xs break-words whitespace-normal leading-tight block">{mapping.focus_keyword || '-'}</span>
+                          <td className="p-2 align-top" style={{ width: '130px', minWidth: '130px', maxWidth: '130px' }}>
+                            <div className="overflow-hidden" style={{ maxWidth: '120px' }}>
+                              <span className="font-medium text-xs leading-tight" style={{ wordBreak: 'break-all' }}>{mapping.focus_keyword || '-'}</span>
+                            </div>
                           </td>
                           <td className="p-1 text-center w-12 min-w-12">
                             <Badge variant="outline" className={`text-sm font-semibold px-2 py-0.5 ${
