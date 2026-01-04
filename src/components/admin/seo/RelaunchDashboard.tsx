@@ -2425,12 +2425,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               return (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex items-center justify-center gap-0 cursor-help">
+                                    <div className="flex items-center justify-center gap-px cursor-help">
                                       {stars > 0 ? (
                                         [...Array(stars)].map((_, i) => (
                                           <Star
                                             key={i}
-                                            className="h-4 w-4 text-[#f9dc24] fill-[#f9dc24]"
+                                            className="h-3 w-3 text-[#f9dc24] fill-[#f9dc24]"
+                                            strokeWidth={1.5}
                                           />
                                         ))
                                       ) : (
