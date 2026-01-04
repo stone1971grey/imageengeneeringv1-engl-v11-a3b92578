@@ -112,6 +112,24 @@ const CONTENT_EDITORS: ContentEditor[] = [
     color: 'hsl(0 100% 27%)',
     bgColor: 'bg-[#8B0000]',
     borderColor: 'border-[#8B0000]'
+  },
+  {
+    id: 'content-workflow',
+    name: 'Content Workflow',
+    description: 'Draft & Publish permissions',
+    icon: <Save className="h-6 w-6" />,
+    color: 'hsl(25 95% 53%)',
+    bgColor: 'bg-orange-500',
+    borderColor: 'border-orange-500'
+  },
+  {
+    id: 'frontend-editing',
+    name: 'Frontend Editing',
+    description: 'Edit content on live pages',
+    icon: <MonitorSmartphone className="h-6 w-6" />,
+    color: 'hsl(188 78% 41%)',
+    bgColor: 'bg-cyan-500',
+    borderColor: 'border-cyan-500'
   }
 ];
 
@@ -1947,10 +1965,18 @@ export const UserManagement = () => {
                             setEditSelectedEditors(editSelectedEditors.filter(id => id !== editor.id));
                           } else {
                             setEditSelectedEditors([...editSelectedEditors, editor.id]);
-                            // If SEO Settings is selected, scroll to SEO Permissions after a short delay
+                            // Scroll to relevant section after a short delay
                             if (editor.id === 'seo') {
                               setTimeout(() => {
                                 document.getElementById('seo-permissions-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 100);
+                            } else if (editor.id === 'content-workflow') {
+                              setTimeout(() => {
+                                document.getElementById('content-workflow-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 100);
+                            } else if (editor.id === 'frontend-editing') {
+                              setTimeout(() => {
+                                document.getElementById('frontend-editing-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                               }, 100);
                             }
                           }
@@ -1989,9 +2015,9 @@ export const UserManagement = () => {
               </div>
             )}
 
-            {/* Draft/Publish Permissions - only for Editor role */}
-            {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
+            {/* Draft/Publish Permissions - only visible when Content Workflow is selected */}
+            {editUserRole === 'editor' && editSelectedEditors.includes('content-workflow') && (
+              <div id="content-workflow-section" className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-white flex items-center gap-2">
                     <Save className="h-5 w-5 text-orange-400" />
@@ -2072,9 +2098,9 @@ export const UserManagement = () => {
               </div>
             )}
 
-            {/* Frontend Editing Settings - only for Editor role */}
-            {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
+            {/* Frontend Editing Settings - only visible when Frontend Editing is selected */}
+            {editUserRole === 'editor' && editSelectedEditors.includes('frontend-editing') && (
+              <div id="frontend-editing-section" className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-white flex items-center gap-2">
                     <MonitorSmartphone className="h-5 w-5 text-cyan-400" />
