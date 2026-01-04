@@ -2267,6 +2267,24 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                     ) : null;
                                   })()}
                                   <Check className="h-3 w-3 flex-shrink-0 text-green-400" />
+                                  {mapping.new_url && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <a
+                                          href={`${mapping.new_url}?edit=true`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-[#f9dc24] hover:text-[#f9dc24]/80 flex-shrink-0"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <ExternalLink className="h-3 w-3" />
+                                        </a>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        Frontend öffnen (mit Edit-Mode)
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
                                 </div>
                                 <span 
                                   className="text-green-400 text-xs break-all leading-tight" 
