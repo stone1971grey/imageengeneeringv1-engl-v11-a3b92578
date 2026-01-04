@@ -305,6 +305,7 @@ export const AdminHeader = ({
                     onStatusChange={(newStatus) => onPageStatusChange?.(newStatus)}
                     isAdmin={isAdmin}
                     canPublish={canPublish}
+                    canDraft={canDraft}
                   />
                   <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
                   <span className="text-base text-gray-700 font-mono whitespace-nowrap">

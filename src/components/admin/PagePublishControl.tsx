@@ -23,6 +23,7 @@ interface PagePublishControlProps {
   onStatusChange: (newStatus: 'draft' | 'published') => void;
   isAdmin: boolean;
   canPublish?: boolean; // Editor permission to publish
+  canDraft?: boolean; // Editor permission to work with drafts
 }
 
 export const PagePublishControl = ({
@@ -32,6 +33,7 @@ export const PagePublishControl = ({
   onStatusChange,
   isAdmin,
   canPublish = false,
+  canDraft = false,
 }: PagePublishControlProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
