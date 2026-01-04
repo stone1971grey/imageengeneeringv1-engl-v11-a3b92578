@@ -2225,24 +2225,29 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-12 min-w-12">
                             <TrendIcon mapping={mapping} />
                           </td>
-                          <td className="p-2 w-[180px] min-w-[180px] max-w-[180px] overflow-hidden">
+                          <td className="p-2 w-[200px] min-w-[200px] max-w-[200px]">
                             {mapping.approval_status === 'approved' ? (
-                              <div className="flex items-center gap-1.5 text-xs">
-                                {(() => {
-                                  const pageId = getPageIdFromUrl(mapping.new_url);
-                                  return pageId ? (
-                                    <Badge 
-                                      variant="outline" 
-                                      className="text-[10px] px-1 py-0 font-bold bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/50 flex-shrink-0"
-                                    >
-                                      {pageId}
-                                    </Badge>
-                                  ) : null;
-                                })()}
-                                <span className="text-green-400 truncate flex-1" title={mapping.new_url || ''}>
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5">
+                                  {(() => {
+                                    const pageId = getPageIdFromUrl(mapping.new_url);
+                                    return pageId ? (
+                                      <Badge 
+                                        variant="outline" 
+                                        className="text-[10px] px-1 py-0 font-bold bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/50 flex-shrink-0"
+                                      >
+                                        {pageId}
+                                      </Badge>
+                                    ) : null;
+                                  })()}
+                                  <Check className="h-3 w-3 flex-shrink-0 text-green-400" />
+                                </div>
+                                <span 
+                                  className="text-green-400 text-xs break-all leading-tight" 
+                                  title={mapping.new_url || ''}
+                                >
                                   {mapping.new_url}
                                 </span>
-                                <Check className="h-3 w-3 flex-shrink-0 text-green-400" />
                               </div>
                             ) : (
                               <div className="flex gap-1 items-center">
