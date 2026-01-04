@@ -1947,11 +1947,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-3 text-center">
                             {mapping.competition ? (
                               <Badge variant="outline" className={`text-xs ${
-                                mapping.competition >= 70 ? 'border-red-500/50 text-red-400' :
-                                mapping.competition >= 40 ? 'border-amber-500/50 text-amber-400' :
+                                mapping.competition * 100 >= 70 ? 'border-red-500/50 text-red-400' :
+                                mapping.competition * 100 >= 40 ? 'border-amber-500/50 text-amber-400' :
                                 'border-green-500/50 text-green-400'
                               }`}>
-                                {Math.round(mapping.competition)}%
+                                {Math.round(mapping.competition * 100)}%
                               </Badge>
                             ) : (
                               <span className="text-muted-foreground">-</span>
