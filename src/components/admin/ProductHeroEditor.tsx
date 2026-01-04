@@ -613,7 +613,7 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
       <div className="space-y-4">
         <div>
           <Label className="text-white flex items-center gap-2">
-            {effectiveH1Source ? 'Title (H2 – Zeile 1)' : 'Title (H1 – Zeile 1)'}
+            {effectiveH1Source ? 'Title (H2 – Line 1)' : 'Title (H1 – Line 1)'}
             {effectiveH1Source && (
               <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                 H1 → H2 (H1 in {effectiveH1Source.label})
@@ -629,7 +629,7 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         
         <div>
           <Label className="text-white flex items-center gap-2">
-            {effectiveH1Source ? 'Subtitle (H2 – Zeile 2)' : 'Subtitle (H1 – Zeile 2, Optional)'}
+            {effectiveH1Source ? 'Subtitle (H2 – Line 2)' : 'Subtitle (H1 – Line 2, Optional)'}
             {effectiveH1Source && (
               <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                 H1 → H2

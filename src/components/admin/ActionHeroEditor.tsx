@@ -425,11 +425,11 @@ const ActionHeroEditorComponent = ({
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium text-amber-400">
-                H1 ist extern definiert
+                H1 is defined externally
               </p>
               <p className="text-xs text-amber-400/80 mt-1">
-                Die H1-Überschrift dieser Seite wird im <strong>{detectedH1Source.label}</strong>-Segment definiert.
-                Title hier wird als <strong>H2</strong> angezeigt.
+                The H1 heading for this page is defined in the <strong>{detectedH1Source.label}</strong> segment.
+                Title here will be displayed as <strong>H2</strong>.
               </p>
             </div>
           </div>
