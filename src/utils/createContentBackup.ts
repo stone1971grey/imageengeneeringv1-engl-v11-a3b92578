@@ -77,3 +77,80 @@ export async function createMultipleBackups(
   );
   return results.every(success => success);
 }
+
+/**
+ * CRITICAL: Validates if a page_segments save operation is safe.
+ * Returns { safe: boolean, reason?: string }
+ * 
+ * This function should be called BEFORE any save operation that modifies page_segments
+ * to prevent accidental data loss.
+ */
+export async function validatePageSegmentsSave(
+  pageSlug: string,
+  newSegments: any[],
+  language: string = 'en'
+): Promise<{ safe: boolean; reason?: string; existingCount?: number; newCount?: number }> {
+  try {
+    // Fetch existing segments
+    const { data: existingData, error } = await supabase
+      .from('page_content')
+      .select('content_value')
+      .eq('page_slug', pageSlug)
+      .eq('section_key', 'page_segments')
+      .eq('language', language)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.warn('[SAVE VALIDATOR] Error fetching existing segments:', error);
+      return { safe: true }; // Allow if we can't check
+    }
+
+    let existingSegments: any[] = [];
+    if (existingData?.content_value) {
+      try {
+        existingSegments = JSON.parse(existingData.content_value);
+      } catch (e) {
+        console.warn('[SAVE VALIDATOR] Could not parse existing segments');
+        return { safe: true };
+      }
+    }
+
+    // Count non-footer content segments
+    const countNonFooter = (segs: any[]) => 
+      segs.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+    
+    const existingNonFooterCount = countNonFooter(existingSegments);
+    const newNonFooterCount = countNonFooter(newSegments);
+
+    // BLOCK: Empty list overwriting non-empty
+    if (existingSegments.length > 0 && newSegments.length === 0) {
+      console.error('[SAVE VALIDATOR] BLOCKED: Empty list would overwrite', existingSegments.length, 'segments');
+      return { 
+        safe: false, 
+        reason: `Cannot save empty segment list - would delete ${existingSegments.length} existing segments`,
+        existingCount: existingSegments.length,
+        newCount: 0
+      };
+    }
+
+    // BLOCK: Losing most content (keeping only footer)
+    if (existingNonFooterCount > 2 && newNonFooterCount <= 1) {
+      console.error('[SAVE VALIDATOR] BLOCKED: Would reduce', existingNonFooterCount, 'content segments to', newNonFooterCount);
+      return { 
+        safe: false, 
+        reason: `Would delete ${existingNonFooterCount - newNonFooterCount} content segments - this looks like a bug`,
+        existingCount: existingNonFooterCount,
+        newCount: newNonFooterCount
+      };
+    }
+
+    return { 
+      safe: true,
+      existingCount: existingSegments.length,
+      newCount: newSegments.length
+    };
+  } catch (error) {
+    console.error('[SAVE VALIDATOR] Unexpected error:', error);
+    return { safe: true }; // Allow on error to not block legitimate saves
+  }
+}

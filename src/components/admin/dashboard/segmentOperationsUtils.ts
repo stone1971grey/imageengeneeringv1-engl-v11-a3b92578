@@ -540,20 +540,35 @@ export async function saveAllSegments(
       }
     }
 
-    // Safety checks
+    // CRITICAL SAFETY CHECKS - Protect against accidental data loss
+    const existingNonFooterCount = existingSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+    const newNonFooterCount = pageSegments.filter((s: any) => s.type !== 'footer' && s.type !== 'mini-footer').length;
+    
+    // Block saving completely empty list
     const isLosingAllSegments = existingSegments.length > 0 && pageSegments.length === 0;
     if (isLosingAllSegments) {
-      toast.error("Save blocked - cannot overwrite existing segments with empty list");
+      console.error('[SAVE GUARD] BLOCKED: Attempted to save empty segment list over', existingSegments.length, 'existing segments');
+      toast.error("CRITICAL: Save blocked - cannot overwrite existing segments with empty list");
       return false;
     }
 
+    // ENHANCED: Block if losing most content segments (keeping only footer)
+    const isLosingMostContent = existingNonFooterCount > 2 && newNonFooterCount <= 1;
+    if (isLosingMostContent) {
+      console.error('[SAVE GUARD] BLOCKED: Attempted to reduce', existingNonFooterCount, 'content segments to', newNonFooterCount);
+      toast.error(`CRITICAL: Save blocked - would delete ${existingNonFooterCount - newNonFooterCount} content segments. This looks like a bug!`);
+      return false;
+    }
+
+    // Warning for significant segment loss (more than 1 segment being deleted)
     const isLosingMultipleSegments = existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1;
     if (isLosingMultipleSegments) {
+      console.warn('[SAVE GUARD] WARNING: About to delete', existingSegments.length - pageSegments.length, 'segments');
       const confirmed = window.confirm(
         `WARNING: You are about to delete ${existingSegments.length - pageSegments.length} segments. Continue?`
       );
       if (!confirmed) {
-        toast.info("Save cancelled");
+        toast.info("Save cancelled - segments unchanged");
         return false;
       }
     }
