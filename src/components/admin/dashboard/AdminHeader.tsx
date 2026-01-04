@@ -418,11 +418,11 @@ export const AdminHeader = ({
             colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
             defaultOpen={false}
           >
-            {/* SEO Settings - Admin always, Editor only with SEO permissions and selectedPage */}
-            {(isAdmin || (isEditor && selectedPage && seoPermissions && (seoPermissions.basic || seoPermissions.social || seoPermissions.advanced || seoPermissions.enterprise))) && (
+            {/* SEO Settings - Admin always, Editor with any SEO permission (button disabled without selectedPage) */}
+            {(isAdmin || (isEditor && seoPermissions && (seoPermissions.basic || seoPermissions.social || seoPermissions.advanced || seoPermissions.enterprise))) && (
               <Button
                 variant="decision"
-                className={`flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg ${!selectedPage && isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg ${!selectedPage ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={() => selectedPage && setIsSEOEditorOpen(!isSEOEditorOpen)}
                 disabled={!selectedPage}
                 title={!selectedPage ? 'Select a page first to edit SEO settings' : undefined}
