@@ -83,6 +83,12 @@ interface AdminHeaderProps {
   currentUser?: SupabaseUser | null;
   onPageStatusChange?: (newStatus: 'draft' | 'published') => void;
   onFrontendEditingChange?: (enabled: boolean) => void;
+  seoPermissions?: {
+    basic: boolean;
+    social: boolean;
+    advanced: boolean;
+    enterprise: boolean;
+  };
 }
 
 export const AdminHeader = ({
@@ -114,6 +120,7 @@ export const AdminHeader = ({
   currentUser,
   onPageStatusChange,
   onFrontendEditingChange,
+  seoPermissions,
 }: AdminHeaderProps) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -409,8 +416,8 @@ export const AdminHeader = ({
             colorClass="bg-gradient-to-r from-slate-600 to-gray-700"
             defaultOpen={false}
           >
-            {/* SEO Settings - Admin always, Editor only with selectedPage */}
-            {(isAdmin || (isEditor && selectedPage)) && (
+            {/* SEO Settings - Admin always, Editor only with SEO permissions and selectedPage */}
+            {(isAdmin || (isEditor && selectedPage && seoPermissions && (seoPermissions.basic || seoPermissions.social || seoPermissions.advanced || seoPermissions.enterprise))) && (
               <Button
                 variant="decision"
                 className={`flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 shadow-soft hover:shadow-lg ${!selectedPage && isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -422,8 +429,8 @@ export const AdminHeader = ({
                 SEO Settings
               </Button>
             )}
-            {/* Enterprise SEO - Admin only, domain-wide SISTRIX data */}
-            {isAdmin && setIsEnterpriseSEOOpen && (
+            {/* Enterprise SEO - Admin or Editor with enterprise permission */}
+            {(isAdmin || (isEditor && seoPermissions?.enterprise)) && setIsEnterpriseSEOOpen && (
               <Button
                 variant="decision"
                 className="flex items-center gap-2 bg-[#00a1ff] hover:bg-[#0088dd] text-white shadow-soft hover:shadow-lg"

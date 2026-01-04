@@ -1446,6 +1446,7 @@ const AdminDashboard = () => {
           currentUser={user}
           onPageStatusChange={(newStatus) => setPageInfo(prev => prev ? { ...prev, status: newStatus } : prev)}
           onFrontendEditingChange={(enabled) => setPageInfo(prev => prev ? { ...prev, frontendEditingEnabled: enabled } : prev)}
+          seoPermissions={seoPermissions}
         />
 
         {/* Segment Template Dialog */}
