@@ -175,39 +175,37 @@ serve(async (req) => {
     // Step 4: Upsert new data (update existing or insert new)
     console.log('Step 4: Updating database...');
     
-    // For simplicity, we'll update existing entries by old_url+domain, or insert new ones
+    // Deduplicate by domain|old_url|focus_keyword|country before upserting
+    const seenKeys = new Set<string>();
+    const dedupedMappings = newMappings.filter(m => {
+      const key = `${m.domain}|${m.old_url}|${m.focus_keyword}|de`;
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    });
+    console.log(`Deduplicated: ${newMappings.length} → ${dedupedMappings.length} mappings`);
+
+    // Add country field and upsert in batches
+    const mappingsWithCountry = dedupedMappings.map(m => ({ ...m, country: 'de' }));
+    
     let upsertedCount = 0;
     let errorCount = 0;
+    const batchSize = 50;
 
-    for (const mapping of newMappings) {
-      const { data, error } = await supabase
+    for (let i = 0; i < mappingsWithCountry.length; i += batchSize) {
+      const batch = mappingsWithCountry.slice(i, i + batchSize);
+      const { error } = await supabase
         .from('relaunch_url_mappings')
-        .upsert(
-          {
-            ...mapping,
-          },
-          {
-            onConflict: 'domain,old_url',
-            ignoreDuplicates: false
-          }
-        );
+        .upsert(batch, {
+          onConflict: 'domain,old_url,focus_keyword,country',
+          ignoreDuplicates: false
+        });
 
       if (error) {
-        // If upsert fails (no unique constraint), try insert
-        const { error: insertError } = await supabase
-          .from('relaunch_url_mappings')
-          .insert(mapping);
-        
-        if (insertError) {
-          errorCount++;
-          if (errorCount <= 3) {
-            console.error('Insert error:', insertError);
-          }
-        } else {
-          upsertedCount++;
-        }
+        console.error('Batch upsert error:', error);
+        errorCount += batch.length;
       } else {
-        upsertedCount++;
+        upsertedCount += batch.length;
       }
     }
 
