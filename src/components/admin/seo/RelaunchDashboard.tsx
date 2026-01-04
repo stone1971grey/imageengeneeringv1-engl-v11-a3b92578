@@ -746,8 +746,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         clicks: header.findIndex(h => h === 'klicks' || h === 'clicks'),
         searchVolume: header.findIndex(h => h === 'suchvolumen' || h === 'search volume' || h === 'sv'),
         competition: header.findIndex(h => 
-          h === 'wettbewerb' || h === 'competition' || h === 'wettb.' || 
-          h === 'wettb' || h.includes('wettbew') || h.includes('compet')
+          h === 'wettbewerb' || h === 'wettbewerber' || h === 'competition' || 
+          h === 'wettb.' || h === 'wettb' || h.includes('wettbew') || h.includes('compet')
         ),
         intent: header.findIndex(h => h === 'intent' || h === 'suchintention'),
         cpc: header.findIndex(h => h === 'cpc' || h.includes('klickpreis')),
