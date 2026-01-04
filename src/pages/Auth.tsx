@@ -159,7 +159,7 @@ const Auth = () => {
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-bold text-white">Lovable</span>
                 <Badge variant="outline" className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold">
-                  v0.9
+                  v1.0.7
                 </Badge>
               </div>
               <span className="text-xl font-medium text-zinc-400">CMS</span>
