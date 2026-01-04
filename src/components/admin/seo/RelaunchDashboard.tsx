@@ -1458,7 +1458,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
         <CollapsibleContent>
           <div className="p-4 space-y-4">
             {/* Domain Display & Controls */}
-            <Card className="p-4 bg-muted/20 border-border">
+            <Card className="p-4 bg-muted/20 border-border space-y-4">
+              {/* Row 1: Domain, Country, Checkbox, API Buttons */}
               <div className="flex gap-4 items-end flex-wrap">
                 <div className="flex-1 min-w-[200px]">
                   <Label className="text-sm font-medium mb-2 block">
@@ -1537,19 +1538,22 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   )}
                   {credits !== null ? `${credits.toLocaleString('de-DE')} Credits` : 'Check Credits'}
                 </Button>
-                
-                {/* PDF Import Button - No API credits needed! */}
+              </div>
+              
+              {/* Row 2: PDF Import - prominent green button */}
+              <div className="flex items-center gap-3 pt-2 border-t border-border">
+                <span className="text-sm text-muted-foreground">Alternative:</span>
                 <div className="relative">
                   <input
                     type="file"
                     accept=".pdf,application/pdf"
                     onChange={handlePdfFileSelect}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     disabled={isPdfImporting}
                   />
                   <Button
                     variant="outline"
-                    className="h-10 border-green-500/50 text-green-400 hover:bg-green-500/10 pointer-events-none"
+                    className="h-10 border-green-500 text-green-400 bg-green-500/10 hover:bg-green-500/20"
                     disabled={isPdfImporting}
                   >
                     {isPdfImporting ? (
@@ -1560,6 +1564,9 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     PDF Import (0 Credits)
                   </Button>
                 </div>
+                <span className="text-xs text-muted-foreground">
+                  Lade eine SISTRIX PDF-Export-Datei hoch um Keywords ohne API-Credits zu importieren
+                </span>
               </div>
             </Card>
             
