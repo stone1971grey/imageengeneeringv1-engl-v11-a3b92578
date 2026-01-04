@@ -118,9 +118,9 @@ const CONTENT_EDITORS: ContentEditor[] = [
     name: 'Content Workflow',
     description: 'Draft & Publish permissions',
     icon: <Save className="h-6 w-6" />,
-    color: 'hsl(160 84% 18%)',
-    bgColor: 'bg-emerald-900',
-    borderColor: 'border-emerald-700'
+    color: 'hsl(160 84% 15%)',
+    bgColor: 'bg-[#064e3b]',
+    borderColor: 'border-emerald-800'
   },
   {
     id: 'frontend-editing',
