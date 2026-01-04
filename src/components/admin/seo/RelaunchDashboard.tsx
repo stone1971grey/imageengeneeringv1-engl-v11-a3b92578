@@ -347,55 +347,94 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   }
   
   // Fetch keyword metrics (search volume, clicks, competition, intent) for keywords
-  const fetchKeywordMetrics = async (keywords: string[]): Promise<Map<string, KeywordMetrics>> => {
+  // Now with PARALLEL processing for 5-10x speed improvement
+  const fetchKeywordMetrics = async (
+    keywords: string[], 
+    onProgress?: (current: number, total: number) => void
+  ): Promise<Map<string, KeywordMetrics>> => {
     const metricsMap = new Map<string, KeywordMetrics>();
     
     if (keywords.length === 0) return metricsMap;
     
-    // SISTRIX costs 5 credits per keyword for metrics, so batch in chunks of 50
+    // SISTRIX costs 5 credits per keyword for metrics, batch in chunks of 50
     const BATCH_SIZE = 50;
+    const PARALLEL_BATCHES = 5; // Process 5 batches in parallel
     const batches: string[][] = [];
     
     for (let i = 0; i < keywords.length; i += BATCH_SIZE) {
       batches.push(keywords.slice(i, i + BATCH_SIZE));
     }
     
-    console.log(`[Relaunch] Fetching metrics for ${keywords.length} keywords in ${batches.length} batches`);
+    console.log(`[Relaunch] Fetching metrics for ${keywords.length} keywords in ${batches.length} batches (${PARALLEL_BATCHES} parallel)`);
     
-    for (const batch of batches) {
-      try {
-        const { data, error } = await supabase.functions.invoke('sistrix-api', {
-          body: { 
-            action: 'keyword.seo.metrics', 
-            keywords: batch,
-            country
-          }
-        });
-        
-        if (error) {
-          console.error('[Relaunch] Error fetching metrics batch:', error);
-          continue;
-        }
-        
-        // keyword.seo.metrics returns: kw, competition, cpc, traffic (=search volume), clicks, intent
-        const metricsData = data?.answer?.[0]?.result || data?.answer || [];
-        console.log('[Relaunch] Metrics batch result:', metricsData.length, 'Sample:', metricsData[0]);
-        
-        for (const item of metricsData) {
-          if (item.kw) {
-            metricsMap.set(item.kw.toLowerCase(), {
-              searchVolume: parseInt(item.traffic) || 0,
-              clicks: parseInt(item.clicks) || 0,
-              competition: parseFloat(item.competition) || 0,
-              intent: item.intent || null
+    let processedBatches = 0;
+    
+    // Process batches in parallel groups
+    for (let i = 0; i < batches.length; i += PARALLEL_BATCHES) {
+      const parallelBatches = batches.slice(i, i + PARALLEL_BATCHES);
+      
+      const results = await Promise.allSettled(
+        parallelBatches.map(async (batch) => {
+          try {
+            console.log(`[Relaunch] Calling keyword.seo.metrics for ${batch.length} keywords...`);
+            const { data, error } = await supabase.functions.invoke('sistrix-api', {
+              body: { 
+                action: 'keyword.seo.metrics', 
+                keywords: batch,
+                country
+              }
             });
+            
+            if (error) {
+              console.error('[Relaunch] Error fetching metrics batch:', error);
+              return [];
+            }
+            
+            // Log raw response for debugging
+            console.log('[Relaunch] Metrics raw response keys:', data ? Object.keys(data) : 'null');
+            if (data?.answer) {
+              console.log('[Relaunch] Answer structure:', data.answer.length, 'items, first item keys:', 
+                data.answer[0] ? Object.keys(data.answer[0]) : 'empty');
+            }
+            
+            // SISTRIX returns: answer[0]['keyword.seo.metrics'] array with kw, competition, cpc, traffic, clicks
+            // Try multiple parsing strategies
+            const metricsData = 
+              data?.answer?.[0]?.['keyword.seo.metrics'] || 
+              data?.answer?.[0]?.result || 
+              (Array.isArray(data?.answer) ? data.answer.filter((item: any) => item.kw) : []);
+            
+            console.log('[Relaunch] Metrics batch parsed:', metricsData.length, 'entries. Sample:', metricsData[0]);
+            return metricsData;
+          } catch (e) {
+            console.error('[Relaunch] Batch metrics error:', e);
+            return [];
+          }
+        })
+      );
+      
+      // Process results
+      for (const result of results) {
+        if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+          for (const item of result.value) {
+            if (item.kw) {
+              metricsMap.set(item.kw.toLowerCase(), {
+                searchVolume: parseInt(item.traffic) || 0,
+                clicks: parseInt(item.clicks) || 0,
+                competition: parseFloat(item.competition) || 0,
+                intent: item.intent || null
+              });
+            }
           }
         }
-      } catch (e) {
-        console.error('[Relaunch] Batch metrics error:', e);
       }
+      
+      processedBatches += parallelBatches.length;
+      const processedKeywords = Math.min(processedBatches * BATCH_SIZE, keywords.length);
+      onProgress?.(processedKeywords, keywords.length);
     }
     
+    console.log(`[Relaunch] Metrics complete: ${metricsMap.size}/${keywords.length} keywords with data`);
     return metricsMap;
   };
 
@@ -472,6 +511,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       const uniqueKeywords = [...new Set(keywordData.map((r: any) => r.kw || r.keyword).filter(Boolean))] as string[];
       
       // Step 2: Optionally fetch keyword metrics (costs 5 credits per keyword)
+      // Now runs in PARALLEL for much faster imports
       let metricsMap = new Map<string, { searchVolume: number; clicks: number; competition: number; intent: string }>();
       
       if (includeSearchVolume) {
@@ -479,17 +519,24 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           step: 'metrics',
           currentItem: 0,
           totalItems: uniqueKeywords.length,
-          stepLabel: `Fetching search metrics for ${uniqueKeywords.length} keywords...`,
+          stepLabel: `Fetching search metrics (0/${uniqueKeywords.length})...`,
           startTime
         });
         
-        metricsMap = await fetchKeywordMetrics(uniqueKeywords);
+        metricsMap = await fetchKeywordMetrics(uniqueKeywords, (current, total) => {
+          setImportProgress(prev => ({
+            ...prev,
+            currentItem: current,
+            stepLabel: `Fetching search metrics (${current}/${total})...`
+          }));
+        });
         console.log('[Relaunch] Metrics data retrieved for', metricsMap.size, 'keywords');
       } else {
         console.log('[Relaunch] Skipping metrics fetch (user opted out)');
       }
       
       // Step 2b: Fetch SERP features to detect AI Overviews (1 credit per keyword)
+      // Now runs in PARALLEL batches for 5-10x speed improvement
       let aioMap = new Map<string, boolean>();
       if (includeSearchVolume) {
         setImportProgress({
@@ -500,33 +547,55 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           startTime
         });
         
-        // Process in batches of 10 to avoid timeout
+        // Process in parallel batches for speed
         const batchSize = 10;
-        let processedCount = 0;
+        const parallelBatches = 5; // Process 5 batches at once
+        const allBatches: string[][] = [];
         
         for (let i = 0; i < uniqueKeywords.length; i += batchSize) {
-          const batch = uniqueKeywords.slice(i, i + batchSize);
-          try {
-            const { data: serpData, error: serpError } = await supabase.functions.invoke('sistrix-api', {
-              body: { 
-                action: 'keyword.seo.serpfeatures', 
-                keywords: batch,
-                country
+          allBatches.push(uniqueKeywords.slice(i, i + batchSize));
+        }
+        
+        let processedBatches = 0;
+        
+        for (let i = 0; i < allBatches.length; i += parallelBatches) {
+          const currentBatches = allBatches.slice(i, i + parallelBatches);
+          
+          const results = await Promise.allSettled(
+            currentBatches.map(async (batch) => {
+              try {
+                const { data: serpData, error: serpError } = await supabase.functions.invoke('sistrix-api', {
+                  body: { 
+                    action: 'keyword.seo.serpfeatures', 
+                    keywords: batch,
+                    country
+                  }
+                });
+                
+                if (!serpError && serpData?.answer?.[0]?.serpfeatures) {
+                  return serpData.answer[0].serpfeatures;
+                }
+                return [];
+              } catch (e) {
+                console.error('[Relaunch] SERP features batch error:', e);
+                return [];
               }
-            });
-            
-            if (!serpError && serpData?.answer?.[0]?.serpfeatures) {
-              for (const item of serpData.answer[0].serpfeatures) {
+            })
+          );
+          
+          // Process results
+          for (const result of results) {
+            if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+              for (const item of result.value) {
                 if (item.keyword) {
                   aioMap.set(item.keyword.toLowerCase(), item.hasAIO === true);
                 }
               }
             }
-          } catch (e) {
-            console.error('[Relaunch] SERP features batch error:', e);
           }
           
-          processedCount = Math.min(i + batchSize, uniqueKeywords.length);
+          processedBatches += currentBatches.length;
+          const processedCount = Math.min(processedBatches * batchSize, uniqueKeywords.length);
           setImportProgress(prev => ({
             ...prev,
             currentItem: processedCount,

@@ -25,7 +25,7 @@ serve(async (req) => {
 
     const requestBody = await req.json();
     const { action, domain, url, keyword, country = 'de', mobile = false, history = false, limit = 100, offset = 0 } = requestBody;
-    console.log(`SISTRIX API request: action=${action}, domain=${domain}, country=${country}`);
+    console.log(`SISTRIX API request: action=${action}, domain=${domain}, country=${country}, limit=${limit}`);
 
     let endpoint = '';
     const params = new URLSearchParams();
