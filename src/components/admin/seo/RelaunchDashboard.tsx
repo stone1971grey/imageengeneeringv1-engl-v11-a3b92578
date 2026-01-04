@@ -1860,23 +1860,41 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             
             {stats.total > 0 && (
               <div className="grid grid-cols-5 gap-3">
-                <Card className="p-3 bg-muted/20 text-center">
+                <Card 
+                  className="p-3 bg-muted/20 text-center cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => setFilterStatus('all')}
+                >
                   <div className="text-2xl font-bold text-foreground">{stats.total}</div>
                   <div className="text-xs text-muted-foreground">Total URLs</div>
                 </Card>
-                <Card className="p-3 bg-amber-500/10 border-amber-500/30 text-center">
+                <Card 
+                  className="p-3 bg-amber-500/10 border-amber-500/30 text-center cursor-pointer hover:bg-amber-500/20 transition-colors"
+                  onClick={() => setFilterStatus('pending')}
+                >
                   <div className="text-2xl font-bold text-amber-400">{stats.pending}</div>
                   <div className="text-xs text-muted-foreground">Pending</div>
                 </Card>
-                <Card className="p-3 bg-green-500/10 border-green-500/30 text-center">
+                <Card 
+                  className="p-3 bg-green-500/10 border-green-500/30 text-center cursor-pointer hover:bg-green-500/20 transition-colors"
+                  onClick={() => setFilterStatus('approved')}
+                >
                   <div className="text-2xl font-bold text-green-400">{stats.approved}</div>
                   <div className="text-xs text-muted-foreground">Approved</div>
                 </Card>
-                <Card className="p-3 bg-red-500/10 border-red-500/30 text-center">
+                <Card 
+                  className="p-3 bg-red-500/10 border-red-500/30 text-center cursor-pointer hover:bg-red-500/20 transition-colors"
+                  onClick={() => setFilterStatus('rejected')}
+                >
                   <div className="text-2xl font-bold text-red-400">{stats.rejected}</div>
                   <div className="text-xs text-muted-foreground">Rejected</div>
                 </Card>
-                <Card className="p-3 bg-blue-500/10 border-blue-500/30 text-center">
+                <Card 
+                  className="p-3 bg-blue-500/10 border-blue-500/30 text-center cursor-pointer hover:bg-blue-500/20 transition-colors"
+                  onClick={() => {
+                    // Filter to show only items with redirects
+                    setFilterStatus('approved');
+                  }}
+                >
                   <div className="text-2xl font-bold text-blue-400">{stats.redirectsCreated}</div>
                   <div className="text-xs text-muted-foreground">Redirects</div>
                 </Card>
@@ -2295,7 +2313,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-2 w-[200px] min-w-[200px] max-w-[200px]">
                             {mapping.approval_status === 'approved' ? (
                               <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                   {(() => {
                                     const pageId = getPageIdFromUrl(mapping.new_url);
                                     return pageId ? (
@@ -2309,23 +2327,48 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                   })()}
                                   <Check className="h-3.5 w-3.5 flex-shrink-0 text-green-400" />
                                   {mapping.new_url && (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <a
-                                          href={`${mapping.new_url}?edit=true`}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24] hover:bg-[#f9dc24]/30 transition-colors flex-shrink-0"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <ExternalLink className="h-3 w-3" />
-                                          <span className="text-[10px] font-medium">Edit</span>
-                                        </a>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        Frontend öffnen (mit Edit-Mode)
-                                      </TooltipContent>
-                                    </Tooltip>
+                                    <>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <a
+                                            href={`${mapping.new_url}?edit=true`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24] hover:bg-[#f9dc24]/30 transition-colors flex-shrink-0"
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            <ExternalLink className="h-3 w-3" />
+                                            <span className="text-[10px] font-medium">Edit</span>
+                                          </a>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          Frontend öffnen (mit Edit-Mode)
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      {(() => {
+                                        // Extract page slug from new_url for SEO Editor link
+                                        const pageSlug = mapping.new_url?.replace(/^\/[a-z]{2}\//, '').replace(/\/$/, '');
+                                        return pageSlug ? (
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <a
+                                                href={`/admin?page=${encodeURIComponent(pageSlug)}&tab=seo`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#00a1ff]/20 text-[#00a1ff] hover:bg-[#00a1ff]/30 transition-colors flex-shrink-0"
+                                                onClick={(e) => e.stopPropagation()}
+                                              >
+                                                <Search className="h-3 w-3" />
+                                                <span className="text-[10px] font-medium">SEO</span>
+                                              </a>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              SEO-Editor im Admin Dashboard öffnen
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        ) : null;
+                                      })()}
+                                    </>
                                   )}
                                 </div>
                                 <span 
