@@ -1947,6 +1947,12 @@ export const UserManagement = () => {
                             setEditSelectedEditors(editSelectedEditors.filter(id => id !== editor.id));
                           } else {
                             setEditSelectedEditors([...editSelectedEditors, editor.id]);
+                            // If SEO Settings is selected, scroll to SEO Permissions after a short delay
+                            if (editor.id === 'seo') {
+                              setTimeout(() => {
+                                document.getElementById('seo-permissions-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 100);
+                            }
                           }
                         }}
                         className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
@@ -2116,9 +2122,9 @@ export const UserManagement = () => {
               </div>
             )}
 
-            {/* SEO Permissions - only for Editor role */}
-            {editUserRole === 'editor' && (
-              <div className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
+            {/* SEO Permissions - only visible when SEO Settings editor is selected */}
+            {editUserRole === 'editor' && editSelectedEditors.includes('seo') && (
+              <div id="seo-permissions-section" className="space-y-5 pt-6 border-t-2 border-zinc-700 mt-4">
                 <div>
                   <Label className="text-xl font-bold text-white flex items-center gap-2">
                     <Eye className="h-5 w-5 text-amber-400" />
