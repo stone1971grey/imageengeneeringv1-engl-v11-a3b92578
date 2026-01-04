@@ -43,9 +43,67 @@ const ActionHeroEditorComponent = ({
   const [isLoading, setIsLoading] = useState(true);
   const [segmentCount, setSegmentCount] = useState<number>(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
+  // Track if H1 is defined elsewhere (e.g., in Intro segment)
+  const [detectedH1Source, setDetectedH1Source] = useState<{ type: string; key: string; label: string } | null>(null);
 
   // Normalize language code
   const normalizedLang = language?.split('-')[0] || 'en';
+
+  // Check if H1 is defined in an Intro segment
+  const checkExternalH1 = async () => {
+    try {
+      // Check segment_registry for intro segments
+      const { data: registryData } = await supabase
+        .from('segment_registry')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('segment_type', 'intro')
+        .eq('deleted', false)
+        .limit(1);
+      
+      if (registryData && registryData.length > 0) {
+        const introRegistry = registryData[0];
+        
+        // Intro content is stored inside page_segments
+        const { data: pageSegmentsRow } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', normalizedLang)
+          .maybeSingle();
+        
+        if (pageSegmentsRow?.content_value) {
+          try {
+            const segments = JSON.parse(pageSegmentsRow.content_value);
+            const introSegment = segments.find((seg: any) => 
+              String(seg.id) === String(introRegistry.segment_id) && seg.type === 'intro'
+            );
+            
+            // Check if intro has a title/headline with H1 heading level
+            if (introSegment?.data?.title || introSegment?.data?.headline) {
+              if (introSegment.data.headingLevel === 'h1') {
+                setDetectedH1Source({
+                  type: 'intro',
+                  key: introRegistry.segment_key,
+                  label: `Intro (ID: ${introRegistry.segment_id})`
+                });
+                return;
+              }
+            }
+          } catch (e) {
+            console.error('[ActionHero] Failed to parse page_segments:', e);
+          }
+        }
+      }
+      
+      // No external H1 found
+      setDetectedH1Source(null);
+    } catch (error) {
+      console.error('[ActionHero] Error checking external H1:', error);
+    }
+  };
 
   // Load content from database
   useEffect(() => {
@@ -116,6 +174,7 @@ const ActionHeroEditorComponent = ({
     };
 
     loadContent();
+    checkExternalH1();
   }, [pageSlug, segmentId, normalizedLang]);
 
   // Listen for translate event
@@ -358,9 +417,36 @@ const ActionHeroEditorComponent = ({
         </div>
       )}
 
+      {/* H1 Warning Banner - shown when H1 is defined elsewhere */}
+      {detectedH1Source && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <span className="text-amber-400 text-sm">⚠️</span>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-400">
+                H1 ist extern definiert
+              </p>
+              <p className="text-xs text-amber-400/80 mt-1">
+                Die H1-Überschrift dieser Seite wird im <strong>{detectedH1Source.label}</strong>-Segment definiert.
+                Title hier wird als <strong>H2</strong> angezeigt.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title">Title (H1)</Label>
+        <Label htmlFor="title" className="flex items-center gap-2">
+          {detectedH1Source ? 'Title (H2)' : 'Title (H1)'}
+          {detectedH1Source && (
+            <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+              H1 → H2 (H1 in {detectedH1Source.label})
+            </span>
+          )}
+        </Label>
         <Input
           id="title"
           value={title}

@@ -344,7 +344,14 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
       )}
       
       <div className="space-y-2">
-        <Label htmlFor="intro-title">Title (H1)</Label>
+        <Label htmlFor="intro-title" className="flex items-center gap-2">
+          {isH1Segment ? 'Title (H1)' : 'Title (H2)'}
+          {!isH1Segment && (
+            <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+              H1 → H2
+            </span>
+          )}
+        </Label>
         <Input
           id="intro-title"
           value={title}
