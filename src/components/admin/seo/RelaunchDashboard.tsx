@@ -2294,8 +2294,8 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           </td>
                           <td className="p-2 w-[200px] min-w-[200px] max-w-[200px]">
                             {mapping.approval_status === 'approved' ? (
-                              <div className="flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1.5">
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
                                   {(() => {
                                     const pageId = getPageIdFromUrl(mapping.new_url);
                                     return pageId ? (
@@ -2307,7 +2307,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                       </Badge>
                                     ) : null;
                                   })()}
-                                  <Check className="h-3 w-3 flex-shrink-0 text-green-400" />
+                                  <Check className="h-3.5 w-3.5 flex-shrink-0 text-green-400" />
                                   {mapping.new_url && (
                                     <Tooltip>
                                       <TooltipTrigger asChild>
@@ -2315,10 +2315,11 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                                           href={`${mapping.new_url}?edit=true`}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="text-[#f9dc24] hover:text-[#f9dc24]/80 flex-shrink-0"
+                                          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#f9dc24]/20 text-[#f9dc24] hover:bg-[#f9dc24]/30 transition-colors flex-shrink-0"
                                           onClick={(e) => e.stopPropagation()}
                                         >
                                           <ExternalLink className="h-3 w-3" />
+                                          <span className="text-[10px] font-medium">Edit</span>
                                         </a>
                                       </TooltipTrigger>
                                       <TooltipContent>
@@ -2381,13 +2382,17 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                               return (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex items-center justify-center gap-0.5 cursor-help">
-                                      {[1, 2, 3].map((i) => (
-                                        <Star
-                                          key={i}
-                                          className={`h-4 w-4 ${i <= stars ? 'text-[#f9dc24] fill-[#f9dc24]' : 'text-zinc-600'}`}
-                                        />
-                                      ))}
+                                    <div className="flex items-center justify-center gap-0 cursor-help">
+                                      {stars > 0 ? (
+                                        [...Array(stars)].map((_, i) => (
+                                          <Star
+                                            key={i}
+                                            className="h-4 w-4 text-[#f9dc24] fill-[#f9dc24]"
+                                          />
+                                        ))
+                                      ) : (
+                                        <span className="text-zinc-500 text-xs">–</span>
+                                      )}
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
