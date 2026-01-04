@@ -29,7 +29,9 @@ import {
   ChevronsRight,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  FileUp,
+  Upload
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -132,6 +134,9 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   // Import option: include search volume (costs 5 credits per keyword)
   const [includeSearchVolume, setIncludeSearchVolume] = useState(true);
   
+  // PDF Import state
+  const [isPdfImporting, setIsPdfImporting] = useState(false);
+  const pdfFileInputRef = useState<HTMLInputElement | null>(null);
   // Credits state
   const [credits, setCredits] = useState<number | null>(null);
   const [isLoadingCredits, setIsLoadingCredits] = useState(false);
@@ -699,6 +704,209 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       setIsLoading(false);
       setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
     }
+  };
+  
+  // Parse SISTRIX PDF export and import directly to database (no API credits!)
+  const parseSistrixPdfAndImport = async (file: File) => {
+    setIsPdfImporting(true);
+    const startTime = Date.now();
+    
+    setImportProgress({
+      step: 'fetching',
+      currentItem: 0,
+      totalItems: 0,
+      stepLabel: 'Reading PDF file...',
+      startTime
+    });
+    
+    try {
+      // Read file as text (PDF-to-text parsing in browser is limited, but our PDFs are text-based)
+      const text = await file.text();
+      console.log('[PDF Import] File read, length:', text.length);
+      
+      // Parse the text content to extract keyword data
+      // SISTRIX PDF format: Keyword | Position | Klicks | Suchvolumen | Wettbewerber | Intent | CPC | URL
+      const lines = text.split('\n').filter(line => line.trim());
+      const parsedData: Array<{
+        keyword: string;
+        position: number;
+        clicks: number;
+        searchVolume: number;
+        competition: number;
+        intent: string;
+        cpc: number;
+        url: string;
+      }> = [];
+      
+      // Regex to match data lines - looking for lines with URLs
+      const urlPattern = /https?:\/\/[^\s]+/;
+      
+      for (const line of lines) {
+        // Skip header lines and page markers
+        if (line.includes('Keyword') && line.includes('Position') && line.includes('URL')) continue;
+        if (line.match(/^#+\s/) || line.includes('page screenshot') || line.includes('Images from page')) continue;
+        if (line.startsWith('##') || line.startsWith('###') || line.match(/^\d+$/)) continue;
+        
+        // Try to extract URL first
+        const urlMatch = line.match(urlPattern);
+        if (!urlMatch) continue;
+        
+        const url = urlMatch[0];
+        const beforeUrl = line.substring(0, line.indexOf(url)).trim();
+        
+        if (!beforeUrl) continue;
+        
+        // Parse the data before the URL
+        // Format varies but generally: keyword, position, clicks, searchVolume, competition%, intent, cpc
+        // Example: "iqanalyzer  1  5  20  16%  Divers  0,00 EUR"
+        
+        // Split by whitespace but try to keep multi-word keywords together
+        const parts = beforeUrl.split(/\s{2,}/).map(p => p.trim()).filter(p => p);
+        
+        if (parts.length < 3) continue;
+        
+        // Try to identify numeric columns from the right
+        // The pattern is usually: keyword, pos, clicks, sv, competition%, intent, cpc
+        let keyword = '';
+        let position = 0;
+        let clicks = 0;
+        let searchVolume = 0;
+        let competition = 0;
+        let intent = '';
+        let cpc = 0;
+        
+        // Find position (first number that's reasonable position 1-100)
+        for (let i = 0; i < parts.length; i++) {
+          const parsed = parseInt(parts[i]);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= 100) {
+            keyword = parts.slice(0, i).join(' ').trim();
+            position = parsed;
+            
+            // Parse remaining values
+            const remaining = parts.slice(i + 1);
+            if (remaining.length >= 1) clicks = parseInt(remaining[0]) || 0;
+            if (remaining.length >= 2) searchVolume = parseInt(remaining[1]) || 0;
+            if (remaining.length >= 3) {
+              const compMatch = remaining[2].match(/(\d+)/);
+              competition = compMatch ? parseInt(compMatch[1]) / 100 : 0;
+            }
+            if (remaining.length >= 4) {
+              // Intent can be multiple words like "Know Simple"
+              const intentPart = remaining[3];
+              if (intentPart && !intentPart.includes('EUR') && !intentPart.match(/^\d/)) {
+                intent = intentPart;
+              }
+            }
+            // CPC is usually last before URL
+            const cpcPart = remaining.find(p => p.includes('EUR'));
+            if (cpcPart) {
+              cpc = parseFloat(cpcPart.replace(',', '.').replace(/[^\d.]/g, '')) || 0;
+            }
+            
+            break;
+          }
+        }
+        
+        if (keyword && position > 0 && url) {
+          parsedData.push({
+            keyword,
+            position,
+            clicks,
+            searchVolume,
+            competition,
+            intent,
+            cpc,
+            url
+          });
+        }
+      }
+      
+      console.log('[PDF Import] Parsed', parsedData.length, 'entries from PDF');
+      
+      if (parsedData.length === 0) {
+        toast.error('No keyword data found in PDF. Make sure this is a SISTRIX keyword export.');
+        setIsPdfImporting(false);
+        setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
+        return;
+      }
+      
+      setImportProgress({
+        step: 'saving',
+        currentItem: 0,
+        totalItems: parsedData.length,
+        stepLabel: 'Importing to database...',
+        startTime
+      });
+      
+      // Transform to database format
+      const today = new Date().toISOString().split('T')[0];
+      const mappingsToInsert = parsedData.map(item => ({
+        domain,
+        country,
+        old_url: item.url,
+        focus_keyword: item.keyword,
+        current_position: item.position,
+        search_volume: item.searchVolume || null,
+        clicks: item.clicks || null,
+        competition: item.competition || null,
+        intent: item.intent || null,
+        cpc: item.cpc || null,
+        traffic_estimate: item.clicks || null, // Use clicks as traffic estimate
+        new_url_suggestion: suggestNewUrl(item.url, item.keyword),
+        approval_status: 'pending',
+        snapshot_date: today,
+        has_ai_overview: null // Not available from PDF
+      }));
+      
+      // Deduplicate by unique key before insert
+      const uniqueKey = (m: any) => `${m.domain}|${m.old_url}|${m.focus_keyword}|${m.country}`;
+      const seenKeys = new Map<string, any>();
+      for (const m of mappingsToInsert) {
+        const key = uniqueKey(m);
+        if (!seenKeys.has(key) || (m.traffic_estimate || 0) > (seenKeys.get(key).traffic_estimate || 0)) {
+          seenKeys.set(key, m);
+        }
+      }
+      const dedupedMappings = Array.from(seenKeys.values());
+      console.log('[PDF Import] After dedup:', dedupedMappings.length, 'unique entries');
+      
+      // Upsert to database
+      const { error: upsertError } = await supabase
+        .from('relaunch_url_mappings')
+        .upsert(dedupedMappings, {
+          onConflict: 'domain,old_url,focus_keyword,country',
+          ignoreDuplicates: false
+        });
+        
+      if (upsertError) {
+        console.error('[PDF Import] Upsert error:', upsertError);
+        throw upsertError;
+      }
+      
+      toast.success(`${dedupedMappings.length} Keywords aus PDF importiert! (0 Credits verbraucht)`);
+      await loadMappings();
+      
+    } catch (e) {
+      console.error('[PDF Import] Error:', e);
+      toast.error('PDF import failed: ' + (e instanceof Error ? e.message : 'Unknown error'));
+    } finally {
+      setIsPdfImporting(false);
+      setImportProgress({ step: 'idle', currentItem: 0, totalItems: 0, stepLabel: '', startTime: null });
+    }
+  };
+  
+  // Handle PDF file selection
+  const handlePdfFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+        toast.error('Please select a PDF file');
+        return;
+      }
+      parseSistrixPdfAndImport(file);
+    }
+    // Reset input so same file can be selected again
+    event.target.value = '';
   };
   
   // Suggest new URL based on keyword matching
@@ -1329,6 +1537,29 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   )}
                   {credits !== null ? `${credits.toLocaleString('de-DE')} Credits` : 'Check Credits'}
                 </Button>
+                
+                {/* PDF Import Button - No API credits needed! */}
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={handlePdfFileSelect}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={isPdfImporting}
+                  />
+                  <Button
+                    variant="outline"
+                    className="h-10 border-green-500/50 text-green-400 hover:bg-green-500/10 pointer-events-none"
+                    disabled={isPdfImporting}
+                  >
+                    {isPdfImporting ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Upload className="h-4 w-4 mr-2" />
+                    )}
+                    PDF Import (0 Credits)
+                  </Button>
+                </div>
               </div>
             </Card>
             
