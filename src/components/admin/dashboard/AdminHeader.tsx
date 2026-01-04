@@ -468,14 +468,14 @@ export const AdminHeader = ({
             )}
             {/* Content Workflow - Admin always, Editor with can_draft or can_publish permissions */}
             {(isAdmin || (isEditor && (canDraft || canPublish))) && (
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-700 border border-emerald-600 h-10 ${!selectedPage ? 'opacity-50' : ''}`}>
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-900 border border-emerald-700 h-10 ${!selectedPage ? 'opacity-50' : ''}`}>
                 <GitBranch className="h-5 w-5 text-white flex-shrink-0" />
                 <span className="text-base font-medium text-white whitespace-nowrap">Content Workflow</span>
                 <Switch
                   checked={true}
                   onCheckedChange={() => {}}
                   disabled={!selectedPage}
-                  className="data-[state=checked]:bg-white data-[state=unchecked]:bg-emerald-900 [&>span]:data-[state=checked]:bg-emerald-700 [&>span]:data-[state=unchecked]:bg-white"
+                  className="data-[state=checked]:bg-white data-[state=unchecked]:bg-emerald-950 [&>span]:data-[state=checked]:bg-emerald-800 [&>span]:data-[state=unchecked]:bg-white"
                 />
               </div>
             )}
