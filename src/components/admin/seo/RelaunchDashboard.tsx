@@ -2416,39 +2416,45 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                           <td className="p-1 text-center w-16 min-w-16">
                             {(() => {
                               const score = calculatePriorityScore(mapping);
-                              if (score === 0) return <span className="text-muted-foreground text-xs">-</span>;
+                              if (score === 0) return <span className="text-muted-foreground text-xs">–</span>;
                               
-                              // Star rating: 3 stars = critical, 2 = important, 1 = notable, 0 = low
-                              const stars = score >= 200 ? 3 : score >= 100 ? 2 : score >= 50 ? 1 : 0;
-                              const label = stars === 3 ? 'Super wichtig' : stars === 2 ? 'Wichtig' : stars === 1 ? 'Relevant' : 'Niedrig';
+                              // Star rating: 3 yellow = critical, 2 yellow = important, 1 yellow = notable, 1 gray = low, dash = minimal
+                              const yellowStars = score >= 200 ? 3 : score >= 100 ? 2 : score >= 50 ? 1 : 0;
+                              const grayStars = score >= 10 && score < 50 ? 1 : 0;
+                              const label = yellowStars === 3 ? 'Super wichtig' : yellowStars === 2 ? 'Wichtig' : yellowStars === 1 ? 'Relevant' : grayStars === 1 ? 'Niedrig' : 'Minimal';
                               
                               return (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center justify-center gap-px cursor-help">
-                                      {stars > 0 ? (
-                                        [...Array(stars)].map((_, i) => (
+                                      {yellowStars > 0 ? (
+                                        [...Array(yellowStars)].map((_, i) => (
                                           <Star
                                             key={i}
                                             className="h-3 w-3 text-[#f9dc24] fill-[#f9dc24]"
                                             strokeWidth={1.5}
                                           />
                                         ))
+                                      ) : grayStars > 0 ? (
+                                        <Star
+                                          className="h-3 w-3 text-zinc-500 fill-zinc-600"
+                                          strokeWidth={1.5}
+                                        />
                                       ) : (
-                                        <span className="text-zinc-500 text-xs">–</span>
+                                        <span className="text-zinc-600 text-xs">–</span>
                                       )}
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <div className="text-center">
-                                      <span className="font-bold text-[#f9dc24]">{label}</span>
+                                      <span className={`font-bold ${yellowStars > 0 ? 'text-[#f9dc24]' : 'text-zinc-400'}`}>{label}</span>
                                       <br />
                                       <span className="text-xs text-muted-foreground">
                                         Score: {score}
                                       </span>
                                       <br />
                                       <span className="text-[10px] text-muted-foreground">
-                                        ⭐⭐⭐ ab 200 · ⭐⭐ ab 100 · ⭐ ab 50
+                                        ⭐⭐⭐ ab 200 · ⭐⭐ ab 100 · ⭐ ab 50 · ☆ ab 10
                                       </span>
                                     </div>
                                   </TooltipContent>
