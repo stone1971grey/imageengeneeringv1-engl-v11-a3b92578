@@ -737,12 +737,18 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
       console.log('[CSV Import] Headers:', header);
       
       // Map column names (SISTRIX uses German column names)
+      // Log all headers for debugging
+      console.log('[CSV Import] All headers:', header.join(' | '));
+      
       const colIndex = {
         keyword: header.findIndex(h => h === 'keyword' || h === 'suchbegriff'),
         position: header.findIndex(h => h === 'position' || h === 'pos' || h === 'rang'),
         clicks: header.findIndex(h => h === 'klicks' || h === 'clicks'),
         searchVolume: header.findIndex(h => h === 'suchvolumen' || h === 'search volume' || h === 'sv'),
-        competition: header.findIndex(h => h === 'wettbewerb' || h === 'competition' || h === 'wettb.'),
+        competition: header.findIndex(h => 
+          h === 'wettbewerb' || h === 'competition' || h === 'wettb.' || 
+          h === 'wettb' || h.includes('wettbew') || h.includes('compet')
+        ),
         intent: header.findIndex(h => h === 'intent' || h === 'suchintention'),
         cpc: header.findIndex(h => h === 'cpc' || h.includes('klickpreis')),
         url: header.findIndex(h => h === 'url' || h === 'seite' || h === 'page')
