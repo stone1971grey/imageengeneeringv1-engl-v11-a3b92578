@@ -1547,13 +1547,13 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const StatusBadge = ({ status }: { status: string }) => {
     switch (status) {
       case 'approved':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Approved</Badge>;
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px] px-1.5">Appro.</Badge>;
       case 'rejected':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Rejected</Badge>;
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px] px-1.5">Rej.</Badge>;
       case 'skipped':
-        return <Badge className="bg-zinc-500/20 text-zinc-400 border-zinc-500/30">Skipped</Badge>;
+        return <Badge className="bg-zinc-500/20 text-zinc-400 border-zinc-500/30 text-[10px] px-1.5">Skip</Badge>;
       default:
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Pending</Badge>;
+        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[10px] px-1.5">Pend.</Badge>;
     }
   };
   
