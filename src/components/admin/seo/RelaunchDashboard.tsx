@@ -114,7 +114,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   const [searchTerm, setSearchTerm] = useState('');
   
   // Sorting states
-  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | null>(null);
+  const [sortField, setSortField] = useState<'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' | null>(null);
+  
+  // Position filter state
+  const [positionFilter, setPositionFilter] = useState<string>('all');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
   // Pagination states
@@ -1148,19 +1151,32 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
     }
   };
   // Toggle sort
-  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl') => {
+  const toggleSort = (field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl') => {
     if (sortField === field) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection((field === 'keyword' || field === 'oldUrl') ? 'asc' : 'desc'); // A-Z default for text fields, high-to-low for others
+      setSortDirection((field === 'keyword' || field === 'oldUrl' || field === 'newUrl') ? 'asc' : 'desc'); // A-Z default for text fields, high-to-low for others
     }
   };
   
   // Filter and sort mappings
   const filteredAndSortedMappings = (() => {
     let result = mappings.filter(m => {
+      // Status filter
       if (filterStatus !== 'all' && m.approval_status !== filterStatus) return false;
+      
+      // Position filter
+      if (positionFilter !== 'all') {
+        const pos = m.current_position ?? 999;
+        if (positionFilter === 'top10' && pos > 10) return false;
+        if (positionFilter === 'top20' && pos > 20) return false;
+        if (positionFilter === '11-20' && (pos < 11 || pos > 20)) return false;
+        if (positionFilter === '21-50' && (pos < 21 || pos > 50)) return false;
+        if (positionFilter === '51+' && pos < 51) return false;
+      }
+      
+      // Search filter
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
         return (
@@ -1234,6 +1250,15 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
           const aVal = trendOrder[a.trend] ?? 2;
           const bVal = trendOrder[b.trend] ?? 2;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortField === 'newUrl') {
+          const aVal = (a.new_url || a.new_url_suggestion || '').toLowerCase();
+          const bVal = (b.new_url || b.new_url_suggestion || '').toLowerCase();
+          if (!aVal && !bVal) return 0;
+          if (!aVal) return 1;
+          if (!bVal) return -1;
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal, 'de') 
+            : bVal.localeCompare(aVal, 'de');
         }
         return 0;
       });
@@ -1332,7 +1357,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
   
   // Sort icon component
-  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' }) => {
+  const SortIcon = ({ field }: { field: 'keyword' | 'position' | 'searchVolume' | 'traffic' | 'redirect' | 'aio' | 'clicks' | 'competition' | 'intent' | 'trend' | 'oldUrl' | 'newUrl' }) => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
     }
@@ -1689,7 +1714,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                   />
                 </div>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-[150px]">
+                  <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder="Filter status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1698,6 +1723,19 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
                     <SelectItem value="skipped">Skipped</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={positionFilter} onValueChange={setPositionFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle Positionen</SelectItem>
+                    <SelectItem value="top10">Top 10</SelectItem>
+                    <SelectItem value="top20">Top 20</SelectItem>
+                    <SelectItem value="11-20">Position 11-20</SelectItem>
+                    <SelectItem value="21-50">Position 21-50</SelectItem>
+                    <SelectItem value="51+">Position 51+</SelectItem>
                   </SelectContent>
                 </Select>
                 {selectedIds.size > 0 && (
@@ -1871,7 +1909,15 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                             <TooltipContent>Positionsänderung vs. letzter Snapshot. Klicken zum Sortieren.</TooltipContent>
                           </Tooltip>
                         </th>
-                        <th className="text-left p-3 font-medium w-[180px] bg-muted/50">New URL</th>
+                        <th 
+                          className="text-left p-3 font-medium w-[180px] bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
+                          onClick={() => toggleSort('newUrl')}
+                        >
+                          <span className="flex items-center">
+                            New URL
+                            <SortIcon field="newUrl" />
+                          </span>
+                        </th>
                         <th className="text-center p-2 font-medium w-16 bg-muted/50">Status</th>
                         <th 
                           className="text-center p-2 font-medium w-16 bg-muted/50 cursor-pointer hover:bg-muted/70 select-none"
