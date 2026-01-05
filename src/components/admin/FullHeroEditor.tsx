@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,7 +126,15 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
           const content = fullHeroSegment.data;
           setTitleLine1(content.titleLine1 || "");
           setTitleLine2(content.titleLine2 || "");
-          setSubtitle(content.subtitle || "");
+          // Strip HTML tags from subtitle (migrate from SimpleRichTextEditor format)
+          const rawSubtitle = content.subtitle || "";
+          const cleanSubtitle = rawSubtitle
+            .replace(/<p>/gi, '')
+            .replace(/<\/p>/gi, '\n')
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<[^>]*>/g, '')
+            .trim();
+          setSubtitle(cleanSubtitle);
           setButton1Text(content.button1Text || "");
           setButton1Link(content.button1Link || "");
           setButton1Color(content.button1Color || 'yellow');
@@ -958,10 +966,13 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
 
             <div className="space-y-2">
               <Label htmlFor="subtitle">Subtitle</Label>
-              <SimpleRichTextEditor
+              <Textarea
+                id="subtitle"
                 value={subtitle}
-                onChange={setSubtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
                 placeholder="Professional solutions for testing and calibrating camera systems..."
+                rows={3}
+                className="resize-y"
               />
             </div>
           </TabsContent>
@@ -1201,10 +1212,13 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
                       <Label htmlFor="videoAlt">
                         Video Description (for SEO & Accessibility)
                       </Label>
-                      <SimpleRichTextEditor
+                      <Textarea
+                        id="videoAlt"
                         value={videoAlt}
-                        onChange={setVideoAlt}
+                        onChange={(e) => setVideoAlt(e.target.value)}
                         placeholder="Describe the video content for screen readers and search engines..."
+                        rows={2}
+                        className="resize-y"
                       />
                       <p className="text-xs text-muted-foreground">
                         This description is used as title/aria-label for accessibility and SEO. 
