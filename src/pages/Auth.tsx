@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
 import { Eye, EyeOff } from "lucide-react";
 import logoIE from "@/assets/logo-ie-new-v7.png";
-import lovableLogo from "@/assets/lovable-cms-logo.png";
+import spadeCmsLogo from "@/assets/spade-cms-logo.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -149,21 +149,15 @@ const Auth = () => {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader className="space-y-4">
-          <div className="flex justify-center gap-4 items-center">
+          <div className="flex justify-center items-center">
             <img 
-              src={lovableLogo} 
-              alt="Lovable CMS" 
-              className="h-16 w-auto"
+              src={spadeCmsLogo} 
+              alt="SpadeCMS" 
+              className="h-20 w-auto"
             />
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-white">Lovable</span>
-                <Badge variant="outline" className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold">
-                  v1.0.7
-                </Badge>
-              </div>
-              <span className="text-xl font-medium text-zinc-400">CMS</span>
-            </div>
+            <Badge variant="outline" className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold ml-3">
+              v1.0.7
+            </Badge>
           </div>
           <div className="border-t border-zinc-700 my-4" />
           <div className="flex justify-center">

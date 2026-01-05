@@ -1,8 +1,11 @@
 // ============================================
-// CMS Configuration
+// SpadeCMS Configuration
 // ============================================
 // This file contains all configurable options for the CMS.
 // When rolling out to a new project, adjust these values.
+//
+// Product: SpadeCMS - simple • smart • scaleable
+// ============================================
 
 import { LanguageOption, SegmentType } from './types';
 

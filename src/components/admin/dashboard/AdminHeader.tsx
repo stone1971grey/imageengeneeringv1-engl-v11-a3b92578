@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink, GitBranch } from "lucide-react";
+import spadeCmsLogo from "@/assets/spade-cms-logo.png";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { useNavigate } from "react-router-dom";
@@ -200,7 +201,14 @@ export const AdminHeader = ({
     <div className="flex flex-wrap items-start gap-4 mb-8">
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <img 
+              src={spadeCmsLogo} 
+              alt="SpadeCMS" 
+              className="h-10 w-auto opacity-90"
+            />
+            <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+          </div>
           <div className="flex items-center gap-3">
             {/* Current User Display */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
