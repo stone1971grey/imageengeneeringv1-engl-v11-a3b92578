@@ -154,7 +154,7 @@ const Auth = () => {
               <img 
                 src={spadeCmsLogo} 
                 alt="SpadeCMS" 
-                className="h-16 w-auto"
+                className="h-20 w-auto"
               />
               <Badge variant="outline" className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-sm font-semibold px-3 py-1">
                 v1.0.7
