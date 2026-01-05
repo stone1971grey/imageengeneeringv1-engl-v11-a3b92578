@@ -14,7 +14,7 @@ import {
   HardDrive, GitBranch, Puzzle, BarChart3, CheckCircle2, Circle
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
-import lovableIcon from "@/assets/lovable-icon.png";
+import spadeCmsLogo from "@/assets/spade-cms-logo.png";
 
 interface WelcomeTabProps {
   version: string;
@@ -45,19 +45,10 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
             {/* Header */}
             <div className="flex items-center gap-6">
               <img 
-                src={lovableIcon} 
-                alt="Lovable" 
-                className="h-20 w-20 object-contain"
+                src={spadeCmsLogo} 
+                alt="SpadeCMS" 
+                className="h-16 w-auto"
               />
-              <div>
-                <div className="flex items-baseline gap-3">
-                  <h1 className="text-5xl font-black text-white tracking-tight">
-                    Lovable
-                  </h1>
-                  <span className="text-3xl font-bold text-[#f9dc24]">CMS</span>
-                </div>
-                <p className="text-xl text-gray-400 mt-1">Content Management System</p>
-              </div>
             </div>
 
             {/* Version History - Collapsible */}
