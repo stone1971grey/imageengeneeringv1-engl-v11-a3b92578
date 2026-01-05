@@ -205,7 +205,7 @@ export const AdminHeader = ({
             <img 
               src={spadeCmsLogo} 
               alt="SpadeCMS" 
-              className="h-14 w-auto"
+              className="h-[72px] w-auto"
             />
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
           </div>

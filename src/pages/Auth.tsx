@@ -156,7 +156,7 @@ const Auth = () => {
                 alt="SpadeCMS" 
                 className="h-20 w-auto"
               />
-              <Badge variant="outline" className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-sm font-semibold px-3 py-1">
+              <Badge variant="outline" className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-[10px] font-semibold px-2 py-0.5">
                 v1.0.7
               </Badge>
             </div>
