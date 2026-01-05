@@ -10,6 +10,7 @@ import { type ImageMetadata, extractImageMetadata, formatFileSize, formatUploadD
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 import { ensureMediaFolderHierarchy, createOrUpdateFileMapping } from "@/utils/ensureMediaFolder";
+import { createMultipleBackups } from "@/utils/createContentBackup";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -450,6 +451,9 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
     try {
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) throw new Error("User not authenticated");
+
+      // 🔐 BACKUP before saving all footer fields
+      await createMultipleBackups(pageSlug, FOOTER_SECTION_KEYS.map(k => k), language);
 
       const rows: any[] = [
         {
