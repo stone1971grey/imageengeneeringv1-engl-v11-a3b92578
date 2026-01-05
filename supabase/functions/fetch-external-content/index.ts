@@ -431,7 +431,8 @@ function parseFirecrawlContent(
       console.log(`[Firecrawl] Extracted section: "${title}" (${fullContent.length} chars)`);
     }
     
-    if (result.useCases.length >= 6) break;
+    // INCREASED LIMIT: Knowledge articles often have 12+ sections (e.g., Image Quality Factors)
+    if (result.useCases.length >= 15) break;
   }
   
   // Generate use cases from benefits if none found

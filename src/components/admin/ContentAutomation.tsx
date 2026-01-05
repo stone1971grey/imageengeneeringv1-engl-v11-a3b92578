@@ -457,7 +457,8 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       }
       
       console.log(`=== Total sections extracted: ${sections.length}`);
-      return sections.slice(0, 12); // Max 12 sections for 4x Image-Text segments with 3 columns each
+      // INCREASED LIMIT: Knowledge articles (e.g., Image Quality Factors) have 15+ sections
+      return sections.slice(0, 18); // Max 18 sections for comprehensive content import
     };
 
     try {
@@ -1083,8 +1084,9 @@ export const ContentAutomation = ({ pageSlug, language, onImportComplete, onRedi
       // ============================================
       
       // Create Feature Image-Text segments from extracted sections
+      // INCREASED LIMIT: Knowledge articles like Image Quality Factors have 12+ sections
       const featureSections = extractedSections.length > 0 
-        ? extractedSections.slice(0, 9) // Max 9 for 3 segments × 3 columns
+        ? extractedSections.slice(0, 15) // Max 15 for 5 segments × 3 columns (handles long knowledge articles)
         : [
             { title: 'Overview', description: 'Key features and capabilities of this product.' },
           ];
