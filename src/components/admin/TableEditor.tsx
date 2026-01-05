@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Trash2, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
+import { createContentBackup } from '@/utils/createContentBackup';
 
 interface TableEditorProps {
   pageSlug: string;
@@ -166,6 +167,9 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, 'page_segments', language);
+
       const { data: segmentsData, error: loadError } = await supabase
         .from("page_content")
         .select("*")

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Languages } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { createContentBackup } from "@/utils/createContentBackup";
 
 interface ProductListSegmentEditorProps {
   segmentId: number;
@@ -268,6 +269,9 @@ export const ProductListSegmentEditor = ({
     setSaving(true);
     try {
       const sectionKey = `product-list-${segmentId}`;
+      
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, sectionKey, 'en');
       const config = {
         title: enTitle,
         description: enDescription,
@@ -308,6 +312,9 @@ export const ProductListSegmentEditor = ({
     setSaving(true);
     try {
       const sectionKey = `product-list-${segmentId}`;
+      
+      // 🔐 BACKUP before saving
+      await createContentBackup(pageSlug, sectionKey, targetLanguage);
       const config = {
         title: targetTitle,
         description: targetDescription,
