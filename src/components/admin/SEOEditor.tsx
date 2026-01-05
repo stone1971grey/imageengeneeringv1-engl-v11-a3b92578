@@ -2303,7 +2303,35 @@ export const SEOEditor = ({
     // Check if keyword is in H1 - use data.h1 if locked, otherwise autoH1
     // CRITICAL FIX: When h1Locked=true, we must check against data.h1 (the saved optimized H1)
     const effectiveH1ForCheck = data.h1Locked && data.h1 ? data.h1 : autoH1;
-    const keywordInH1 = keyword && effectiveH1ForCheck ? effectiveH1ForCheck.toLowerCase().includes(keyword) : false;
+    
+    // FUZZY MATCHING: Also match compound word variations (e.g., "cameracalibrator" matches "camera calibrator")
+    // Google treats these as semantically equivalent, so our Health Check should too
+    const fuzzyKeywordMatch = (text: string, kw: string): boolean => {
+      if (!text || !kw) return false;
+      const textLower = text.toLowerCase();
+      const kwLower = kw.toLowerCase();
+      
+      // Direct match
+      if (textLower.includes(kwLower)) return true;
+      
+      // Compound match: remove spaces and compare (e.g., "camera calibrator" -> "cameracalibrator")
+      const textNoSpaces = textLower.replace(/\s+/g, '');
+      const kwNoSpaces = kwLower.replace(/\s+/g, '');
+      if (textNoSpaces.includes(kwNoSpaces)) return true;
+      
+      // Reverse: keyword without spaces in text with spaces (e.g., "cameracalibrator" in "Camera Calibrator")
+      // Split keyword by common compound patterns and check if all parts exist
+      if (kwNoSpaces.length > 5) {
+        // Check if text contains all words that make up the compound keyword
+        const textWords = textLower.split(/\s+/);
+        const textWordsJoined = textWords.join('');
+        if (textWordsJoined.includes(kwNoSpaces)) return true;
+      }
+      
+      return false;
+    };
+    
+    const keywordInH1 = keyword && effectiveH1ForCheck ? fuzzyKeywordMatch(effectiveH1ForCheck, keyword) : false;
     // Check if H1 is actually present
     const hasH1 = !!effectiveH1ForCheck;
     console.log('[SEO Editor] H1 Detection Result:', {
