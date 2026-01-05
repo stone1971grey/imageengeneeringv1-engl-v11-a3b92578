@@ -200,13 +200,15 @@ export const AdminHeader = ({
   return (
     <div className="flex flex-wrap items-start gap-4 mb-8">
       <div className="flex-1 min-w-0">
-        {/* Top row: Logo left, User controls right */}
-        <div className="flex items-center justify-between mb-6">
-          <img 
-            src={spadeCmsLogo} 
-            alt="SpadeCMS" 
-            className="h-16 w-auto"
-          />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-5">
+            <img 
+              src={spadeCmsLogo} 
+              alt="SpadeCMS" 
+              className="h-14 w-auto"
+            />
+            <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+          </div>
           <div className="flex items-center gap-3">
             {/* Current User Display */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
@@ -265,11 +267,6 @@ export const AdminHeader = ({
               Logout
             </Button>
           </div>
-        </div>
-
-        {/* Title and action buttons row */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
         </div>
         
         <div className="flex items-center gap-4 flex-wrap">
