@@ -35,12 +35,23 @@ interface FullHeroProps {
   onContentUpdate?: () => void;
 }
 
+// Utility to strip HTML tags from text (safety measure for legacy data)
+const stripHtmlTags = (text: string): string => {
+  if (!text) return '';
+  return text
+    .replace(/<p>/gi, '')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .trim();
+};
+
 const FullHero = ({
   id,
   hasMetaNavigation = false,
   titleLine1,
   titleLine2,
-  subtitle,
+  subtitle: rawSubtitle,
   button1Text,
   button1Link,
   button1Color = 'yellow',
@@ -63,6 +74,8 @@ const FullHero = ({
   language = 'en',
   onContentUpdate,
 }: FullHeroProps) => {
+  // Strip any HTML tags from subtitle (safety for legacy data)
+  const subtitle = stripHtmlTags(rawSubtitle);
   const segmentEdit = useSegmentEdit();
   const isEditing = segmentEdit?.isSegmentEditing || false;
   
