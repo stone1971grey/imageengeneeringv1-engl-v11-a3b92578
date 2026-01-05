@@ -5871,10 +5871,11 @@ export const SEOEditor = ({
             return;
           }
           
-          // Update the intro segment in the array
+          // Update the intro segment in the array - use BOTH headline (modern) AND title (legacy) for compatibility
           segments[introIndex].data = {
             ...segments[introIndex].data,
-            title: newH1,
+            headline: newH1,  // Modern field name
+            title: newH1,     // Legacy field name for backward compatibility
             headingLevel: 'h1'
           };
           
