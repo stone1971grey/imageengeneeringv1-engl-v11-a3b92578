@@ -588,6 +588,136 @@ Sowohl `'hero'` (Legacy) als auch `'product-hero'` (Content Automation) müssen 
 
 ---
 
+## 16. Table-Segmente (Standard-Feature)
+
+### 16.1 Referenz-Implementierung: Page ID 503 (AEON Camera Calibrator)
+
+Die Seite 503 zeigt die vollständige Table-Implementierung und dient als Vorlage für alle zukünftigen Imports.
+
+### 16.2 Table-Segment Datenstruktur
+
+```typescript
+{
+  id: string,           // Eindeutige Segment-ID
+  segmentId: string,    // Gleich wie id
+  type: "table",
+  data: {
+    title: string,              // Segment-Überschrift (z.B. "Technical Specifications")
+    columns: string[],          // Spaltenüberschriften (z.B. ["Model", "ACC2", "ACC4"])
+    rows: string[][]            // 2D-Array: Zeilen mit Zellwerten
+  }
+}
+```
+
+**Beispiel aus Page 503:**
+```json
+{
+  "type": "table",
+  "data": {
+    "title": "Technical Specifications",
+    "columns": ["Model", "ACC2", "ACC4"],
+    "rows": [
+      ["Largest sensor diameter", "77 mm", "18 mm (1.1\" sensor)"],
+      ["Standard camera adaptors", "S, CS, C, Nikon F (Others on request)", "S, CS, C"],
+      ["Light source", "Pulsed or current controlled LEDs, 4 or 8 colors...", "..."],
+      // ... weitere Zeilen
+    ]
+  }
+}
+```
+
+### 16.3 Parsing-Regeln für Tables
+
+**Automatische Erkennung in Quell-Content:**
+1. HTML-Tabellen (`<table>...</table>`)
+2. Markdown-Tabellen (`| Header 1 | Header 2 |`)
+3. Strukturierte Spezifikations-Listen
+
+**Extraktion:**
+```typescript
+// HTML-Table Parsing
+const tableMatches = html.match(/<table[^>]*>([\s\S]*?)<\/table>/gi);
+
+// Für jede gefundene Tabelle:
+// 1. <th> Elemente → columns[]
+// 2. <tr> mit <td> Elementen → rows[][]
+
+// Markdown-Table Parsing
+const lines = markdown.split('\n');
+// Zeilen mit | am Anfang und Ende identifizieren
+// Erste Zeile → columns
+// Trennzeile (|---|---| etc.) überspringen
+// Folgezeilen → rows
+```
+
+### 16.4 Frontend-Integration
+
+**Handler in DynamicCMSPage.tsx:**
+```typescript
+case "table":
+  return (
+    <DynamicTable
+      key={`${segmentId}-${refreshCounter}`}
+      id={segmentDbId?.toString()}
+      title={segment.data?.title || ""}
+      columns={segment.data?.columns || []}
+      rows={segment.data?.rows || []}
+      segmentKey={`${segment.type}-${segment.id}`}
+      pageSlug={pageSlug}
+      language={currentUrlLanguage}
+      onContentUpdate={refreshPageContent}
+    />
+  );
+```
+
+**Komponente unterstützt:**
+- Frontend-Editing (inline Bearbeitung von Zellen)
+- Spalten hinzufügen/löschen
+- Zeilen hinzufügen/löschen
+- Responsive Darstellung
+
+### 16.5 Content Automation Workflow für Tables
+
+**Bei Content-Import:**
+1. Quell-HTML auf `<table>` Elemente prüfen
+2. Für jede Tabelle ein separates Table-Segment erstellen
+3. Spaltenüberschriften aus `<th>` oder erster `<tr>` extrahieren
+4. Zellinhalte aus `<td>` in `rows[][]` speichern
+5. `title` aus vorhergehendem `<h2>`/`<h3>` oder `caption` Element
+
+**Segment-Key-Konvention:**
+```
+content-auto-table-{segmentId}
+```
+
+### 16.6 Table-Import Checkliste
+
+- [ ] Quellseite enthält strukturierte Tabellen (HTML oder Markdown)
+- [ ] Alle Zeilen haben gleiche Spaltenanzahl (ggf. leere Zellen auffüllen)
+- [ ] Sonderzeichen in Zellen korrekt escaped (", \, etc.)
+- [ ] `columns` Array enthält mindestens 2 Einträge
+- [ ] `rows` Array ist nicht leer
+- [ ] Segment in `segment_registry` mit `type: 'table'` registriert
+- [ ] Frontend-Handler `case "table"` existiert in DynamicCMSPage.tsx
+
+---
+
+## 17. Geplante Module (Content Automation Roadmap)
+
+Die folgenden Module sind für zukünftige Content Automation Erweiterungen vorgemerkt:
+
+| Modul | Status | Ziel-Tabelle | Notizen |
+|-------|--------|--------------|---------|
+| **News Articles** | ⏳ Geplant | `news_articles` | Titel, Teaser, Content, Bild |
+| **Products** | ⏳ Geplant | `products` | Komplette Produktdaten inkl. Specs |
+| **Events** | ⏳ Geplant | `events` | Datum, Ort, Beschreibung |
+| **Downloads** | ⏳ Geplant | `downloads` | PDF-Import mit Metadaten |
+| **Table Segments** | ✅ Implementiert | `page_content` | Siehe Abschnitt 16 |
+
+Die technische Basis (Edge Functions, Firecrawl, Asset-Download) ist bereits vorhanden.
+
+---
+
 **Erstellt:** 2025-12-26  
-**Letzte Aktualisierung:** 2025-12-31  
-**Status:** PRODUKTIONSREIF v2.1
+**Letzte Aktualisierung:** 2026-01-05  
+**Status:** PRODUKTIONSREIF v2.2 (inkl. Table-Segmente)
