@@ -149,17 +149,17 @@ const Auth = () => {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader className="space-y-4">
-          <div className="flex justify-center items-center">
-            <div className="bg-white rounded-xl px-4 py-2 shadow-lg">
+          <div className="flex justify-center">
+            <div className="bg-white rounded-xl px-6 py-3 shadow-lg flex items-center justify-between gap-4 w-full max-w-sm">
               <img 
                 src={spadeCmsLogo} 
                 alt="SpadeCMS" 
-                className="h-16 w-auto"
+                className="h-12 w-auto"
               />
+              <Badge variant="outline" className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-xs font-semibold">
+                v1.0.7
+              </Badge>
             </div>
-            <Badge variant="outline" className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold ml-3">
-              v1.0.7
-            </Badge>
           </div>
           <div className="border-t border-zinc-700 my-4" />
           <div className="flex justify-center">
