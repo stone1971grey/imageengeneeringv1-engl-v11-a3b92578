@@ -83,6 +83,39 @@ export const SEOEditor = ({
   // Helper to check if advanced features are available
   const isAdvancedMode = accessLevel === 'advanced';
   
+  // FUZZY MATCHING HELPER: Match compound word variations (e.g., "cameracalibrator" matches "camera calibrator")
+  // Google treats these as semantically equivalent, so our Health Check should too
+  // Defined at component level for reuse in all keyword checks
+  const fuzzyKeywordMatch = (text: string, kw: string): boolean => {
+    if (!text || !kw) return false;
+    const textLower = text.toLowerCase();
+    const kwLower = kw.toLowerCase();
+    
+    // Direct match
+    if (textLower.includes(kwLower)) return true;
+    
+    // Compound match: remove spaces and compare (e.g., "camera calibrator" -> "cameracalibrator")
+    const textNoSpaces = textLower.replace(/\s+/g, '');
+    const kwNoSpaces = kwLower.replace(/\s+/g, '');
+    if (textNoSpaces.includes(kwNoSpaces)) return true;
+    
+    // Reverse: keyword without spaces in text with spaces (e.g., "cameracalibrator" in "Camera Calibrator")
+    if (kwNoSpaces.length > 5) {
+      const textWords = textLower.split(/\s+/);
+      const textWordsJoined = textWords.join('');
+      if (textWordsJoined.includes(kwNoSpaces)) return true;
+    }
+    
+    // Split keyword into words and check if ALL words exist in text
+    const kwWords = kwLower.split(/\s+/).filter(w => w.length > 2);
+    if (kwWords.length > 1) {
+      const allWordsPresent = kwWords.every(word => textLower.includes(word));
+      if (allWordsPresent) return true;
+    }
+    
+    return false;
+  };
+  
   // SEO tab visibility - either from seoPermissions or fallback to accessLevel logic
   const showBasicsTab = seoPermissions?.basic ?? true; // Always show basics by default
   const showSocialTab = seoPermissions?.social ?? true; // Always show social by default
@@ -2304,33 +2337,7 @@ export const SEOEditor = ({
     // CRITICAL FIX: When h1Locked=true, we must check against data.h1 (the saved optimized H1)
     const effectiveH1ForCheck = data.h1Locked && data.h1 ? data.h1 : autoH1;
     
-    // FUZZY MATCHING: Also match compound word variations (e.g., "cameracalibrator" matches "camera calibrator")
-    // Google treats these as semantically equivalent, so our Health Check should too
-    const fuzzyKeywordMatch = (text: string, kw: string): boolean => {
-      if (!text || !kw) return false;
-      const textLower = text.toLowerCase();
-      const kwLower = kw.toLowerCase();
-      
-      // Direct match
-      if (textLower.includes(kwLower)) return true;
-      
-      // Compound match: remove spaces and compare (e.g., "camera calibrator" -> "cameracalibrator")
-      const textNoSpaces = textLower.replace(/\s+/g, '');
-      const kwNoSpaces = kwLower.replace(/\s+/g, '');
-      if (textNoSpaces.includes(kwNoSpaces)) return true;
-      
-      // Reverse: keyword without spaces in text with spaces (e.g., "cameracalibrator" in "Camera Calibrator")
-      // Split keyword by common compound patterns and check if all parts exist
-      if (kwNoSpaces.length > 5) {
-        // Check if text contains all words that make up the compound keyword
-        const textWords = textLower.split(/\s+/);
-        const textWordsJoined = textWords.join('');
-        if (textWordsJoined.includes(kwNoSpaces)) return true;
-      }
-      
-      return false;
-    };
-    
+    // Use component-level fuzzyKeywordMatch for semantic matching
     const keywordInH1 = keyword && effectiveH1ForCheck ? fuzzyKeywordMatch(effectiveH1ForCheck, keyword) : false;
     // Check if H1 is actually present
     const hasH1 = !!effectiveH1ForCheck;
@@ -7363,7 +7370,8 @@ export const SEOEditor = ({
   const basicChecks = [checks.titleLength, checks.descriptionLength, checks.hasH1, checks.hasInternalLinks, checks.hasExternalLinks];
   // Calculate FKW Content Optimization score for inclusion in advanced checks
   const fkwContentOptimizationPassed = fkwContentAnalysis ? (() => {
-    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()));
+    // Use fuzzy matching for H1 check - handles compound words like "camera calibrator" vs "cameracalibrator"
+    const actualH1ContainsFkw = !!(data.h1 && data.focusKeyword && fuzzyKeywordMatch(data.h1, data.focusKeyword));
     let calculatedScore = 0;
     if (actualH1ContainsFkw) calculatedScore += 25;
     if (fkwContentAnalysis.introHasFkw) calculatedScore += 20;
