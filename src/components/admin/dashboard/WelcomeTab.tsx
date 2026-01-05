@@ -44,11 +44,13 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
           <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-6">
-              <img 
-                src={spadeCmsLogo} 
-                alt="SpadeCMS" 
-                className="h-16 w-auto"
-              />
+              <div className="bg-white rounded-xl px-5 py-3 shadow-lg">
+                <img 
+                  src={spadeCmsLogo} 
+                  alt="SpadeCMS" 
+                  className="h-14 w-auto"
+                />
+              </div>
             </div>
 
             {/* Version History - Collapsible */}
