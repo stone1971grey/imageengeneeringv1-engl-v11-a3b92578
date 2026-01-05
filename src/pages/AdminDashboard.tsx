@@ -679,14 +679,55 @@ const AdminDashboard = () => {
     // Remove deleted/non-existent segments from tabOrder
     const validTabOrder = safeTabOrder.filter(id => segmentIds.includes(id));
     
-    // Add any new segments that aren't in tabOrder yet (append to end)
+    // CRITICAL FIX: Identify fixed-position segments that should be at the START
+    // Full Hero and Action Hero must always be first if they exist
+    const fixedStartTypes = ['full-hero', 'action-hero'];
+    const fixedStartSegments = safePageSegments
+      .filter(seg => seg && fixedStartTypes.includes(seg.type))
+      .map(seg => seg.id);
+    
+    // Identify footer segments that should be at the END
+    const fixedEndTypes = ['footer', 'mini-footer'];
+    const fixedEndSegments = safePageSegments
+      .filter(seg => seg && fixedEndTypes.includes(seg.type))
+      .map(seg => seg.id);
+    
+    // Add any new segments that aren't in tabOrder yet
     const missingSegments = segmentIds.filter(id => !validTabOrder.includes(id));
     
     // Only update if there are actual changes needed
     const hasChanges = missingSegments.length > 0 || validTabOrder.length !== safeTabOrder.length;
     
     if (hasChanges) {
-      const newOrder = [...validTabOrder, ...missingSegments];
+      // CRITICAL: Insert missing fixed-start segments at the BEGINNING, not the end
+      // Insert missing fixed-end segments at the END
+      // Insert other missing segments before the footer
+      const missingFixedStart = missingSegments.filter(id => fixedStartSegments.includes(id));
+      const missingFixedEnd = missingSegments.filter(id => fixedEndSegments.includes(id));
+      const missingMiddle = missingSegments.filter(id => 
+        !fixedStartSegments.includes(id) && !fixedEndSegments.includes(id)
+      );
+      
+      // Ensure fixed-start segments are at the beginning
+      let newOrder = [...validTabOrder];
+      
+      // Remove fixed-start segments and add them back at the beginning
+      const existingFixedStart = newOrder.filter(id => fixedStartSegments.includes(id));
+      newOrder = newOrder.filter(id => !fixedStartSegments.includes(id));
+      
+      // Remove fixed-end segments and add them back at the end
+      const existingFixedEnd = newOrder.filter(id => fixedEndSegments.includes(id));
+      newOrder = newOrder.filter(id => !fixedEndSegments.includes(id));
+      
+      // Build final order: fixed-start + middle + fixed-end
+      newOrder = [
+        ...existingFixedStart, 
+        ...missingFixedStart,
+        ...newOrder, 
+        ...missingMiddle,
+        ...existingFixedEnd,
+        ...missingFixedEnd
+      ];
       
       // Check if the order is actually different before updating
       const isDifferent = JSON.stringify(newOrder) !== JSON.stringify(safeTabOrder);
