@@ -996,6 +996,38 @@ const AdminDashboard = () => {
     // Parse all content items using extracted utility
     const result = parseContentItems(data || [], selectedPage, segmentRegistry, seoData);
     
+    // ========================================
+    // AUTOMATIC SEGMENT SYNCHRONIZATION
+    // Ensures all segments from segment_registry are present in page_segments/tab_order
+    // ========================================
+    let finalPageSegments = result.pageSegments;
+    let finalTabOrder = result.tabOrder;
+    
+    if (user) {
+      const { autoSyncSegmentsOnLoad } = await import('@/components/admin/dashboard/segmentSyncUtils');
+      const syncResult = await autoSyncSegmentsOnLoad(
+        querySlug,
+        result.pageSegments,
+        result.tabOrder,
+        user.id,
+        editorLanguage
+      );
+      
+      if (syncResult?.synchronized) {
+        console.log('[AdminDashboard] Auto-synchronized missing segments:', syncResult.addedSegments);
+        finalPageSegments = syncResult.updatedPageSegments;
+        finalTabOrder = syncResult.updatedTabOrder;
+        
+        // Show toast notification about synchronized segments
+        if (syncResult.addedSegments.length > 0) {
+          toast.info(
+            `Synchronized ${syncResult.addedSegments.length} missing segment(s): ${syncResult.addedSegments.join(', ')}`,
+            { duration: 5000 }
+          );
+        }
+      }
+    }
+    
     // Apply parsed content to state
     setContent(result.contentMap);
     setApplications(result.applications);
@@ -1017,7 +1049,7 @@ const AdminDashboard = () => {
     setSolutionsSubtext(result.solutionsSubtext);
     setSolutionsLayout(result.solutionsLayout);
     setSolutionsItems(result.solutionsItems);
-    setPageSegments(result.pageSegments);
+    setPageSegments(finalPageSegments); // Use synchronized segments
     setFooterCtaTitle(result.footerCtaTitle);
     setFooterCtaDescription(result.footerCtaDescription);
     setFooterContactHeadline(result.footerContactHeadline);
@@ -1030,9 +1062,9 @@ const AdminDashboard = () => {
     setFooterButtonText(result.footerButtonText);
     setSeoData(result.seoData);
     
-    // Process tab order with filtering - use pageSegments as source of truth
+    // Process tab order with filtering - use synchronized pageSegments as source of truth
     const reverseRegistry = (window as any).__segmentKeyRegistry || {};
-    const { validOrder, wasFiltered } = filterTabOrder(result.tabOrder, reverseRegistry, result.pageSegments);
+    const { validOrder, wasFiltered } = filterTabOrder(finalTabOrder, reverseRegistry, finalPageSegments);
     
     if (wasFiltered && user) {
       await saveCleanedTabOrder(resolvedPageSlug || selectedPage, validOrder, user.id);
@@ -1071,8 +1103,8 @@ const AdminDashboard = () => {
     }
     
     // SAFETY CHECK: Rebuild tab_order if empty but segments exist
-    if (validOrder.length === 0 && result.pageSegments.length > 0 && user) {
-      const rebuiltTabOrder = rebuildTabOrderFromSegments(result.pageSegments);
+    if (validOrder.length === 0 && finalPageSegments.length > 0 && user) {
+      const rebuiltTabOrder = rebuildTabOrderFromSegments(finalPageSegments);
       if (rebuiltTabOrder.length > 0) {
         await saveCleanedTabOrder(resolvedPageSlug || selectedPage, rebuiltTabOrder, user.id);
         setTabOrder(rebuiltTabOrder);
