@@ -5,6 +5,7 @@ import { navigateToLink } from "@/lib/utils";
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { EditableButton } from '@/components/frontend-edit/EditableButton';
 
 interface FullHeroProps {
   id?: string | number;
@@ -310,25 +311,55 @@ const FullHero = ({
           {(button1Text || button2Text) && (
             <div className="pt-4 flex flex-col md:flex-row gap-4">
               {button1Text && (
-                <Button
-                  size="lg"
-                  className="border-0 px-12 py-4 w-full md:w-auto"
-                  style={getButtonStyle(button1Color)}
-                  onClick={() => handleButtonClick(button1Link)}
-                >
-                  {button1Text}
-                </Button>
+                isEditing ? (
+                  <EditableButton
+                    text={button1Text}
+                    link={button1Link}
+                    sectionKey={`${segmentKey}`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    textFieldName="button1Text"
+                    linkFieldName="button1Link"
+                    className="border-0 px-12 py-4 w-full md:w-auto"
+                    style={getButtonStyle(button1Color)}
+                    onUpdate={onContentUpdate}
+                  />
+                ) : (
+                  <Button
+                    size="lg"
+                    className="border-0 px-12 py-4 w-full md:w-auto"
+                    style={getButtonStyle(button1Color)}
+                    onClick={() => handleButtonClick(button1Link)}
+                  >
+                    {button1Text}
+                  </Button>
+                )
               )}
 
               {button2Text && (
-                <Button
-                  size="lg"
-                  className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
-                  style={getButtonStyle(button2Color)}
-                  onClick={() => handleButtonClick(button2Link)}
-                >
-                  {button2Text}
-                </Button>
+                isEditing ? (
+                  <EditableButton
+                    text={button2Text}
+                    link={button2Link}
+                    sectionKey={`${segmentKey}`}
+                    pageSlug={pageSlug}
+                    language={language}
+                    textFieldName="button2Text"
+                    linkFieldName="button2Link"
+                    className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
+                    style={getButtonStyle(button2Color)}
+                    onUpdate={onContentUpdate}
+                  />
+                ) : (
+                  <Button
+                    size="lg"
+                    className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
+                    style={getButtonStyle(button2Color)}
+                    onClick={() => handleButtonClick(button2Link)}
+                  >
+                    {button2Text}
+                  </Button>
+                )
               )}
             </div>
           )}
