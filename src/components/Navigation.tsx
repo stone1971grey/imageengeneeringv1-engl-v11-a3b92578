@@ -397,14 +397,14 @@ const Navigation = () => {
 
   // Industry slug mapping (used to connect hover state with page-level design elements)
   const industrySlugMap: Record<string, string> = {
-    "Automotive": "your-solution/automotive",
-    "Security & Surveillance": "your-solution/security-surveillance",
-    "Mobile Phone": "your-solution/mobile-phone",
-    "Web Camera": "your-solution/web-camera",
-    "Machine Vision": "your-solution/machine-vision",
-    "Medical & Endoscopy": "your-solution/medical-endoscopy",
-    "Scanners & Archiving": "your-solution/scanners-archiving",
-    "Photo & Video": "your-solution/photography",
+    "Automotive": "industries/automotive",
+    "Security & Surveillance": "industries/security-surveillance",
+    "Mobile Phone": "industries/mobile-phone",
+    "Web Camera": "industries/web-camera",
+    "Machine Vision": "industries/machine-vision",
+    "Medical & Endoscopy": "industries/medical-endoscopy",
+    "Scanners & Archiving": "industries/scanners-archiving",
+    "Photo & Video": "industries/photography",
   };
 
   // Product slug mapping (used to connect hover state with page-level design elements)
@@ -583,7 +583,7 @@ const Navigation = () => {
             ) : (
               /* Regular Navigation */
               <>
-            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard} triggerLink={`/${language}/your-solution`}>
+            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard} triggerLink={`/${language}/industries`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-4 p-4">
@@ -591,96 +591,96 @@ const Navigation = () => {
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
                        <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       <Link to={`/${language}/industries/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
                            {(() => {
-                             const key = pageDesignIcons['your-solution/automotive'];
+                             const key = pageDesignIcons['industries/automotive'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
                            <span>{t.nav.automotive}</span>
                        </Link>
                         
-                        <Link to={`/${language}/your-solution/security-surveillance`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/security-surveillance') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        <Link to={`/${language}/industries/security-surveillance`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/security-surveillance') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
                           {(() => {
-                            const key = pageDesignIcons['your-solution/security-surveillance'];
+                            const key = pageDesignIcons['industries/security-surveillance'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
                           <span>{t.nav.securitySurveillance}</span>
                        </Link>
                         
-                       <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                         isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       <Link to={getLink("mobile-phone", "/industries/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                         isActive('/industries/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
                           {(() => {
-                            const key = pageDesignIcons['your-solution/mobile-phone'];
+                            const key = pageDesignIcons['industries/mobile-phone'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
                           <span>{t.nav.mobilePhone}</span>
                        </Link>
                         
-                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                         <Link to={getLink("web-camera", "/industries/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
                            {(() => {
-                             const key = pageDesignIcons['your-solution/web-camera'];
+                             const key = pageDesignIcons['industries/web-camera'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
                            <span>{t.nav.webCamera}</span>
                         </Link>
                         
-                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        <Link to={getLink("machine-vision", "/industries/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
                            {(() => {
-                             const key = pageDesignIcons['your-solution/machine-vision'];
+                             const key = pageDesignIcons['industries/machine-vision'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
                            <span>{t.nav.machineVision}</span>
                         </Link>
                         
-                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        <Link to={getLink("medical-endoscopy", "/industries/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
                            {(() => {
-                             const key = pageDesignIcons['your-solution/medical-endoscopy'];
+                             const key = pageDesignIcons['industries/medical-endoscopy'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
                            <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                         
-                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        <Link to={getLink("scanners-archiving", "/industries/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
                            {(() => {
-                             const key = pageDesignIcons['your-solution/scanners-archiving'];
+                             const key = pageDesignIcons['industries/scanners-archiving'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
                            <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
-                        <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/your-solution/photography') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        <Link to={getLink("photography", "/industries/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/industries/photography') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
                           {(() => {
-                            const key = pageDesignIcons['your-solution/photography'];
+                            const key = pageDesignIcons['industries/photography'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
@@ -729,8 +729,8 @@ const Navigation = () => {
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     {(() => {
-                      const cta = pageCtaConfig['your-solution'];
-                      const targetSlug = cta?.slug || 'your-solution';
+                      const cta = pageCtaConfig['industries'];
+                      const targetSlug = cta?.slug || 'industries';
                       const label = cta?.label || t.hero.findYourSolution;
 
                       const iconKey = cta?.icon || 'search';
@@ -1528,9 +1528,9 @@ const Navigation = () => {
                             <AccordionItem value="automotive" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to={`/${language}/industries/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       {(() => {
-                                        const key = pageDesignIcons['your-solution/automotive'];
+                                        const key = pageDesignIcons['industries/automotive'];
                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                       })()}
@@ -1561,7 +1561,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       {(() => {
-                                        const key = pageDesignIcons['your-solution/security-surveillance'];
+                                        const key = pageDesignIcons['industries/security-surveillance'];
                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                       })()}
@@ -1590,9 +1590,9 @@ const Navigation = () => {
                             <AccordionItem value="mobile" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                    <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                    <Link to={getLink("mobile-phone", "/industries/mobile-phone")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                        {(() => {
-                                         const key = pageDesignIcons['your-solution/mobile-phone'];
+                                         const key = pageDesignIcons['industries/mobile-phone'];
                                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                          return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                        })()}
@@ -1621,9 +1621,9 @@ const Navigation = () => {
                              <AccordionItem value="webcam" className="border-none">
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
-                                      <Link to={getLink("web-camera", "/your-solution/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                      <Link to={getLink("web-camera", "/industries/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                          {(() => {
-                                           const key = pageDesignIcons['your-solution/web-camera'];
+                                           const key = pageDesignIcons['industries/web-camera'];
                                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                            return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                          })()}
@@ -1652,9 +1652,9 @@ const Navigation = () => {
                              <AccordionItem value="machine-vision" className="border-none">
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
-                                      <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                      <Link to={getLink("machine-vision", "/industries/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                          {(() => {
-                                           const key = pageDesignIcons['your-solution/machine-vision'];
+                                           const key = pageDesignIcons['industries/machine-vision'];
                                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                            return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                          })()}
@@ -1683,9 +1683,9 @@ const Navigation = () => {
                             <AccordionItem value="medical" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                   <div className="flex items-center justify-between w-full">
-                                      <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                      <Link to={getLink("medical-endoscopy", "/industries/medical-endoscopy")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                         {(() => {
-                                          const key = pageDesignIcons['your-solution/medical-endoscopy'];
+                                          const key = pageDesignIcons['industries/medical-endoscopy'];
                                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : Stethoscope;
                                           return <IconComp className="h-4 w-4" />;
                                         })()}
@@ -1714,9 +1714,9 @@ const Navigation = () => {
                             <AccordionItem value="scanning" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                   <div className="flex items-center justify-between w-full">
-                                     <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                     <Link to={getLink("scanners-archiving", "/industries/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                         {(() => {
-                                          const key = pageDesignIcons['your-solution/scanners-archiving'];
+                                          const key = pageDesignIcons['industries/scanners-archiving'];
                                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                                           return IconComp ? <IconComp className="h-4 w-4" /> : null;
                                         })()}
@@ -1745,7 +1745,7 @@ const Navigation = () => {
                             <AccordionItem value="photo-video" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                   <div className="flex items-center justify-between w-full">
-                                     <Link to={getLink("photography", "/your-solution/photography")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                     <Link to={getLink("photography", "/industries/photography")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                        <Camera className="h-4 w-4" />
                                        <span>{t.nav.photoVideo}</span>
                                      </Link>
@@ -1768,7 +1768,7 @@ const Navigation = () => {
                           </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to={getLink("your-solution/find-your-solution", "/your-solution/find-your-solution")} onClick={() => setIsOpen(false)}>
+                          <Link to={getLink("industries/find-your-solution", "/industries/find-your-solution")} onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium text-lg">
                               <Search className="h-5 w-5 mr-2" />
                                <span className="hidden sm:inline">{t.hero.findYourSolution}</span>
@@ -2003,7 +2003,7 @@ const Navigation = () => {
                              <AccordionItem value="auto-test" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to={`/${language}/industries/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                        {(() => {
                                          const key = pageDesignIcons['test-lab/automotive'];
                                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
@@ -2016,7 +2016,7 @@ const Navigation = () => {
                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
                                     <div className="block py-2 text-sm text-gray-600">camPAS</div>
-                                     <Link to={`/${language}/your-solution/automotive/in-cabin-testing`} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                     <Link to={`/${language}/industries/automotive/in-cabin-testing`} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                        {t.nav.inCabinTesting}
                                      </Link>
                                     <div className="block py-2 text-sm text-gray-600">HDR Testing</div>

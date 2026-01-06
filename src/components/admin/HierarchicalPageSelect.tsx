@@ -291,9 +291,9 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       // Apply mapping if exists
       categorySlug = slugMapping[categorySlug] || categorySlug;
       
-      const categoryUrl = `/your-solution/${categorySlug}`;
+      const categoryUrl = `/industries/${categorySlug}`;
       // Use full hierarchical slug for page selection
-      const fullCategorySlug = `your-solution/${categorySlug}`;
+      const fullCategorySlug = `industries/${categorySlug}`;
       
       statuses.push({
         slug: fullCategorySlug, // Use full hierarchical slug
@@ -301,7 +301,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         url: categoryUrl,
         isCMS: isPageInCMS(fullCategorySlug, categoryUrl) || isPageInCMS(categorySlug, categoryUrl),
         isStatic: false,
-        category: 'Your Solution',
+        category: 'Industries',
         subcategory: categoryName,
         isMainCategory: true,
         pageId: pageIdMap.get(fullCategorySlug) || pageIdMap.get(categorySlug),
@@ -322,7 +322,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             fullSlug = urlParts.join('/');
           }
         } else {
-          fullSlug = `your-solution/${categorySlug}/${displaySlug}`;
+          fullSlug = `industries/${categorySlug}/${displaySlug}`;
         }
         
         statuses.push({

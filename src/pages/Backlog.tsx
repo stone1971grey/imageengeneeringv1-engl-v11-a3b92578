@@ -10,7 +10,7 @@ const Backlog = () => {
     {
       id: "in-cabin",
       title: "In-Cabin Testing (Automotive)",
-      originalUrl: "/en/your-solution/automotive/in-cabin-testing",
+      originalUrl: "/en/industries/automotive/in-cabin-testing",
       backlogUrl: "/en/backlog/in-cabin-testing",
       snapshot: `
 ## Hero Section
@@ -53,7 +53,7 @@ European Union's General Safety Regulation (GSR) mandates all new cars from 2024
     {
       id: "automotive",
       title: "Automotive Overview",
-      originalUrl: "/en/your-solution/automotive",
+      originalUrl: "/en/industries/automotive",
       backlogUrl: "/en/backlog/automotive",
       snapshot: `
 ## Hero Section

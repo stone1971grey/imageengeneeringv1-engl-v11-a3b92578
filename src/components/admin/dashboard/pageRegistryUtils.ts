@@ -5,7 +5,7 @@ import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 
 // Constants for page level validation
 export const SECOND_LEVEL_PARENTS = [
-  'your-solution', 'products', 'downloads', 'events', 'news', 
+  'industries', 'products', 'downloads', 'events', 'news', 
   'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub', 'company'
 ];
 
@@ -277,7 +277,7 @@ export async function saveCtaConfig(
       // Determine icon based on explicit selection or automatic default by group
       let iconKey: string | null;
       if (ctaIcon === 'auto') {
-        iconKey = ctaGroup === 'your-solution'
+        iconKey = ctaGroup === 'industries'
           ? 'search'
           : ctaGroup === 'products'
             ? 'microscope'
