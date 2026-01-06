@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink, GitBranch } from "lucide-react";
+import { LogOut, Shield, Plus, Eye, Newspaper, Calendar, Target, Download, Book, Layers, Palette, Zap, Copy, User, ChevronDown, Search, Settings, FileText, Database, MonitorSmartphone, ExternalLink, GitBranch, History } from "lucide-react";
 import spadeCmsLogo from "@/assets/spade-cms-logo.png";
 import { FirecrawlIcon } from "@/components/FirecrawlIcon";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { EditorActivityPanel } from '@/components/admin/EditorActivityPanel';
 import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
 import { PagePublishControl } from '@/components/admin/PagePublishControl';
 import { PageInfo } from '@/components/admin/dashboard/pageRegistryUtils';
@@ -128,6 +129,7 @@ export const AdminHeader = ({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [isTogglingFrontendEditing, setIsTogglingFrontendEditing] = useState(false);
+  const [showEditorActivity, setShowEditorActivity] = useState(false);
 
   // Handle frontend editing toggle
   const handleFrontendEditingToggle = async (enabled: boolean) => {
@@ -256,6 +258,16 @@ export const AdminHeader = ({
                   <UserManagement />
                 </DialogContent>
               </Dialog>
+            )}
+            {isAdmin && (
+              <Button
+                size="sm"
+                onClick={() => setShowEditorActivity(true)}
+                className="flex items-center gap-2 bg-amber-600 text-white hover:bg-amber-700"
+              >
+                <History className="h-4 w-4" />
+                Editor Activity
+              </Button>
             )}
             <Button
               onClick={handleLogout}
@@ -604,6 +616,12 @@ export const AdminHeader = ({
           </CollapsibleSection>
         </div>
       </div>
+      
+      {/* Editor Activity Panel */}
+      <EditorActivityPanel 
+        open={showEditorActivity} 
+        onOpenChange={setShowEditorActivity} 
+      />
     </div>
   );
 };
