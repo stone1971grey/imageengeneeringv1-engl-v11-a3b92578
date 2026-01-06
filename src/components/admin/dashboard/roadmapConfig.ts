@@ -24,7 +24,7 @@ export interface RoadmapVersion {
 // ============================================
 // CURRENT VERSION
 // ============================================
-export const CMS_VERSION = '1.0.8';
+export const CMS_VERSION = '1.1.0';
 
 // ============================================
 // ROADMAP VERSIONS
@@ -84,7 +84,7 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
   {
     key: 'v1.0',
     label: '🍾 v1.0.0 – Release',
-    status: 'current',
+    status: 'released',
     features: [
       { label: 'Draft/Publish Workflow', status: 'done' },
       { label: 'Latest Edit', status: 'done' },
@@ -94,14 +94,12 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   
-  // Roadmap Versions (Admin Only)
+  // Current Version
   {
     key: 'v1.1',
-    label: 'v1.1 – Advanced AI SEO Suite & Further Development',
-    status: 'planned',
-    isAdminOnly: true,
+    label: '🍾 v1.1 – Advanced AI SEO Suite',
+    status: 'current',
     features: [
-      // AI SEO Features
       { label: 'Smart Focus Keyword', status: 'done' },
       { label: 'Smart Title Generator', status: 'done' },
       { label: 'Smart Description Generator', status: 'done' },
@@ -112,15 +110,14 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
       { label: 'Readability Analysis', status: 'done' },
       { label: 'Smart Internal Links', status: 'done' },
       { label: 'Smart External Links', status: 'done' },
-      { label: 'Link Analysis Dashboard', status: 'planned' },
-      { label: 'Content Gap Analysis', status: 'planned' },
-      // v1.0.8 Features
       { label: 'Cascading Slug Inheritance', status: 'done' },
       { label: 'Multi-Segment Asset Badges', status: 'done' },
       { label: 'Segment Type Validation', status: 'done' },
       { label: 'Language Switch Stability', status: 'done' },
     ]
   },
+  
+  // Roadmap Versions (Admin Only)
   {
     key: 'v1.2',
     label: 'v1.2 – Frontend Editing',
@@ -147,9 +144,11 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     features: [
       { label: 'SISTRIX Integration', status: 'done' },
       { label: 'Relaunch Dashboard', status: 'done' },
+      { label: 'Visibility Tracking', status: 'done' },
+      { label: 'Content Gap Analysis', status: 'planned' },
+      { label: 'Link Analysis Dashboard', status: 'planned' },
       { label: 'Ranking Alerts', status: 'planned' },
       { label: 'Competitor Analysis', status: 'planned' },
-      { label: 'Visibility Tracking', status: 'planned' },
     ]
   },
   {
