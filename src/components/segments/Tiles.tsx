@@ -12,6 +12,19 @@ import { Plus, Trash2, Loader2, FileText, Download, BarChart3, Zap, Shield, Eye,
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Utility to strip HTML tags from text (safety measure for legacy data)
+const stripHtml = (text: string): string => {
+  if (!text) return '';
+  return text
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim();
+};
+
 const iconMap: Record<string, any> = {
   FileText,
   Download,
@@ -521,9 +534,9 @@ const Tiles: React.FC<TilesProps> = ({
                         </>
                       ) : (
                         <>
-                          <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
+                          <h3 className="text-2xl font-bold text-gray-900">{stripHtml(tile.title)}</h3>
                           <p className="text-gray-600 leading-relaxed">
-                            {tile.description || ''}
+                            {stripHtml(tile.description || '')}
                           </p>
                         </>
                       )}
