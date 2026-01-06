@@ -554,17 +554,31 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                       console.log('=== TILE IMAGE UPLOAD COMPLETE ===');
                     }}
                     onMediaSelect={async (url, metadata) => {
-                      console.log('=== MEDIA SELECT ===', url);
+                      console.log('=== MEDIA SELECT START ===', url);
+                      if (!url) {
+                        console.error('No URL provided from Media Management');
+                        toast.error('Keine Bild-URL erhalten');
+                        return;
+                      }
+                      
                       handleTileChange(index, 'imageUrl', url);
                       if (metadata) {
                         handleTileChange(index, 'metadata', metadata);
                       }
-                      const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
-                      if (altFromMapping) {
-                        handleTileChange(index, 'altText', altFromMapping);
+                      
+                      try {
+                        const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
+                        if (altFromMapping) {
+                          handleTileChange(index, 'altText', altFromMapping);
+                        }
+                        const { count } = await getSegmentCountForImage(url, 'page-images');
+                        handleTileChange(index, 'segmentCount', count);
+                      } catch (error) {
+                        console.error('Error loading metadata:', error);
                       }
-                      const { count } = await getSegmentCountForImage(url, 'page-images');
-                      handleTileChange(index, 'segmentCount', count);
+                      
+                      toast.success('Bild aus Media Management ausgewählt');
+                      console.log('=== MEDIA SELECT COMPLETE ===');
                     }}
                   />
                 )}
