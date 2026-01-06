@@ -11,6 +11,7 @@ import { MediaSelector } from "@/components/admin/MediaSelector";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 import { ensureMediaFolderHierarchy, createOrUpdateFileMapping } from "@/utils/ensureMediaFolder";
 import { createMultipleBackups } from "@/utils/createContentBackup";
+import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -579,6 +580,15 @@ const FooterEditorComponent = ({ pageSlug, language, segmentId, onSave }: Footer
         .upsert(rows, { onConflict: "page_slug,section_key,language" });
 
       if (error) throw error;
+
+      // Update segment mapping for team image to track which segments use this image
+      if (teamImageUrl && segmentId) {
+        const numericSegmentId = typeof segmentId === 'number' ? segmentId : parseInt(String(segmentId).replace(/\D/g, ''));
+        if (numericSegmentId > 0) {
+          await updateSegmentMapping(teamImageUrl, numericSegmentId, 'page-images', false, teamImageMetadata?.altText, language);
+          console.log('[FooterEditor] Updated segment mapping for image:', teamImageUrl, 'segment:', numericSegmentId);
+        }
+      }
 
       toast.success("Footer section saved successfully");
       if (onSave) onSave();
