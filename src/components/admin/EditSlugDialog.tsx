@@ -93,7 +93,7 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         .from('page_registry')
         .update({ 
           page_slug: newSlug,
-          page_title: newTitle.trim() || pageTitle // Use new title or keep old if empty
+          page_title: newTitle.trim() || pageTitle
         })
         .eq('page_id', pageId);
 
@@ -115,15 +115,71 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
 
       if (contentError) throw contentError;
 
-      // Step 4: Update parent_slug for child pages
-      const { error: childError } = await supabase
-        .from('page_registry')
-        .update({ parent_slug: newSlug })
-        .eq('parent_slug', currentSlug);
+      // Step 4: CASCADING UPDATE - Find and update all child pages
+      let childPagesUpdated = 0;
+      if (newSlug !== currentSlug) {
+        // Find all pages that have this page as parent (direct children)
+        const { data: childPages, error: childFetchError } = await supabase
+          .from('page_registry')
+          .select('page_id, page_slug')
+          .eq('parent_slug', currentSlug);
 
-      if (childError) throw childError;
+        if (childFetchError) throw childFetchError;
 
-      // Step 5: Update navigation_links table (automatic navigation update)
+        if (childPages && childPages.length > 0) {
+          console.log(`[Cascading] Found ${childPages.length} child pages to update`);
+          
+          for (const child of childPages) {
+            const oldChildSlug = child.page_slug;
+            // Replace old parent prefix with new parent prefix
+            // e.g., "your-solution/machine-vision" → "industries/machine-vision"
+            const newChildSlug = oldChildSlug.replace(currentSlug, newSlug);
+            
+            console.log(`[Cascading] Updating child: ${oldChildSlug} → ${newChildSlug}`);
+            
+            // Update child's page_registry
+            const { error: childPageError } = await supabase
+              .from('page_registry')
+              .update({ 
+                page_slug: newChildSlug,
+                parent_slug: newSlug 
+              })
+              .eq('page_id', child.page_id);
+
+            if (childPageError) throw childPageError;
+
+            // Update child's segment_registry
+            const { error: childSegmentError } = await supabase
+              .from('segment_registry')
+              .update({ page_slug: newChildSlug })
+              .eq('page_slug', oldChildSlug);
+
+            if (childSegmentError) throw childSegmentError;
+
+            // Update child's page_content
+            const { error: childContentError } = await supabase
+              .from('page_content')
+              .update({ page_slug: newChildSlug })
+              .eq('page_slug', oldChildSlug);
+
+            if (childContentError) throw childContentError;
+
+            // Update child's navigation_links
+            const { error: childNavError } = await supabase
+              .from('navigation_links')
+              .update({ slug: newChildSlug })
+              .eq('slug', oldChildSlug);
+
+            if (childNavError) {
+              console.warn(`[Cascading] Navigation update for ${oldChildSlug} failed:`, childNavError);
+            }
+
+            childPagesUpdated++;
+          }
+        }
+      }
+
+      // Step 5: Update navigation_links table for this page
       const { error: navError } = await supabase
         .from('navigation_links')
         .update({ slug: newSlug })
@@ -131,12 +187,12 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
 
       if (navError) {
         console.warn('Navigation links update failed (might be empty):', navError);
-        // Don't throw - navigation might still use static files
       }
 
       const changes = [];
       if (newSlug !== currentSlug) changes.push(`Slug: "${currentSlug}" → "${newSlug}"`);
       if (newTitle.trim() !== pageTitle) changes.push(`Title: "${pageTitle}" → "${newTitle.trim()}"`);
+      if (childPagesUpdated > 0) changes.push(`${childPagesUpdated} child page(s) updated`);
       
       toast.success(`Page successfully updated!`, {
         description: changes.join(' | ') + " - All database references and navigation updated automatically"
@@ -221,11 +277,11 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         </div>
 
         <div className="bg-blue-900/20 border border-blue-700 rounded-md p-3 mb-2">
-          <p className="text-sm text-blue-300 font-medium mb-1">✓ Automatic Updates:</p>
+          <p className="text-sm text-blue-300 font-medium mb-1">✓ Automatic Cascading Updates:</p>
           <ul className="text-xs text-blue-200 space-y-1 list-disc list-inside">
-            <li>Database: All segments, content, and child pages</li>
+            <li>This page: segments, content, and navigation</li>
+            <li><strong>Child pages:</strong> All hierarchical slugs automatically renamed</li>
             <li>Navigation: All 5 language versions will be updated</li>
-            <li>Routes: Admin dashboard preview and frontend routing</li>
           </ul>
           <p className="text-xs text-yellow-300 mt-2">⚠️ Note: Consider adding redirects for old URLs to maintain SEO</p>
         </div>
