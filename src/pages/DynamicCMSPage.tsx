@@ -418,12 +418,18 @@ const DynamicCMSPage = () => {
       .eq("page_slug", pageSlug)
       .eq("deleted", false);
 
+    // Build segment_registry maps for ID lookup and TYPE validation
+    // segment_registry is the SINGLE SOURCE OF TRUTH for segment types
+    const segmentRegistryIdMap: Record<string, number> = {};
+    const segmentRegistryTypeMap: Record<string, string> = {};
+    
     if (segmentData) {
-      const idMap: Record<string, number> = {};
       segmentData.forEach((seg: any) => {
-        idMap[seg.segment_key] = seg.segment_id;
+        const segId = String(seg.segment_id);
+        segmentRegistryIdMap[seg.segment_key] = seg.segment_id;
+        segmentRegistryTypeMap[segId] = seg.segment_type;
       });
-      setSegmentIdMap(idMap);
+      setSegmentIdMap(segmentRegistryIdMap);
     }
 
     if (!error && data) {
@@ -555,6 +561,18 @@ const DynamicCMSPage = () => {
                 ...(seg.data || {}), // page_segments Daten haben VORRANG
               },
             };
+          }
+          return seg;
+        });
+
+        // CRITICAL: Correct segment types from segment_registry (single source of truth)
+        // This prevents rendering errors when page_segments has stale/incorrect types
+        segments = segments.map((seg: any) => {
+          const segId = String(seg.id || seg.segment_key);
+          const registryType = segmentRegistryTypeMap[segId];
+          if (registryType && registryType !== seg.type) {
+            console.warn(`[DynamicCMSPage] Correcting segment ${segId} type: ${seg.type} -> ${registryType}`);
+            return { ...seg, type: registryType };
           }
           return seg;
         });
