@@ -80,7 +80,8 @@ export {
   deleteSegment,
   saveSegments,
   autoSaveSegmentDebounced,
-  checkSegmentConflicts
+  checkSegmentConflicts,
+  validateAndCorrectSegmentTypes
 } from './segmentManagementUtils';
 export {
   saveHeroSection,
