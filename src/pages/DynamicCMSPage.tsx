@@ -1364,6 +1364,9 @@ const DynamicCMSPage = () => {
             sectionDescription={segment.data?.description}
             articleLimit={segment.data?.articleLimit}
             categories={segment.data?.categories}
+            segmentKey={`news-${segmentDbId}`}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
 
