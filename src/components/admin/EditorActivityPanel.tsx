@@ -468,7 +468,7 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[95vw] max-w-[1400px] h-[85vh] mt-20 flex flex-col bg-gray-900 border-gray-700 text-white p-0">
+        <DialogContent className="w-[95vw] max-w-[1400px] h-[80vh] !top-[120px] flex flex-col bg-gray-900 border-gray-700 text-white p-0">
           <DialogHeader className="px-6 py-4 border-b border-gray-700 bg-gray-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
