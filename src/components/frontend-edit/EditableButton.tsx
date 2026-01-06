@@ -7,14 +7,23 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+// Button style options matching ProductHeroGallery
+const buttonStyles = [
+  { value: 'yellow', label: 'Yellow', color: '#f9dc24' },
+  { value: 'technical', label: 'Black', color: '#1f2937' },
+  { value: 'outline-white', label: 'Transparent', color: '#ffffff' },
+];
+
 interface EditableButtonProps {
   text: string;
   link?: string;
+  buttonStyle?: string; // 'yellow' | 'technical' | 'outline-white'
   sectionKey: string;
   pageSlug: string;
   language: string;
   textFieldName: string;
   linkFieldName: string;
+  styleFieldName?: string; // e.g., 'button1Color' or 'cta1Style'
   className?: string;
   style?: React.CSSProperties;
   size?: 'default' | 'sm' | 'lg' | 'icon';
@@ -25,11 +34,13 @@ interface EditableButtonProps {
 export const EditableButton: React.FC<EditableButtonProps> = ({
   text,
   link = '',
+  buttonStyle: initialButtonStyle = 'yellow',
   sectionKey,
   pageSlug,
   language,
   textFieldName,
   linkFieldName,
+  styleFieldName,
   className,
   style,
   size = 'lg',
@@ -41,8 +52,10 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
   const [editLink, setEditLink] = useState(link);
+  const [editStyle, setEditStyle] = useState(initialButtonStyle);
   const [isSaving, setIsSaving] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
@@ -50,17 +63,22 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   useEffect(() => {
     setEditText(text);
     setEditLink(link);
-  }, [text, link]);
+    setEditStyle(initialButtonStyle);
+  }, [text, link, initialButtonStyle]);
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
 
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        if (isEditing && (editText !== text || editLink !== link)) {
-          handleSave();
-        } else {
-          setIsEditing(false);
-        }
+        handleCancel();
       }
     };
 
@@ -71,10 +89,25 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isEditing, editText, editLink, text, link]);
+  }, [isEditing]);
+
+  // Get button style based on style value (matching ProductHeroGallery)
+  const getComputedButtonStyle = (styleValue: string): React.CSSProperties => {
+    switch (styleValue) {
+      case 'technical':
+      case 'black':
+        return { backgroundColor: '#1f2937', color: 'white' };
+      case 'outline-white':
+      case 'white':
+        return { backgroundColor: 'white', color: 'black', border: '1px solid #e5e5e5' };
+      case 'yellow':
+      default:
+        return { backgroundColor: '#f9dc24', color: 'black' };
+    }
+  };
 
   const handleSave = useCallback(async () => {
-    if (editText === text && editLink === link) {
+    if (editText === text && editLink === link && editStyle === initialButtonStyle) {
       setIsEditing(false);
       return;
     }
@@ -82,20 +115,11 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     setIsSaving(true);
 
     try {
-      // Parse sectionKey to extract segmentKey and find segment ID
-      const lastDashIndex = sectionKey.lastIndexOf('-');
-      if (lastDashIndex === -1) {
-        console.error('[EditableButton] Invalid sectionKey format:', sectionKey);
-        toast.error('Error saving');
-        setIsSaving(false);
-        return;
-      }
-      
       const segmentKey = sectionKey;
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableButton] Saving button for segmentKey:', segmentKey, 'segmentId:', segmentId, 'textField:', textFieldName, 'linkField:', linkFieldName);
+      console.log('[EditableButton] Saving button for segmentKey:', segmentKey, 'segmentId:', segmentId);
 
       // Load page_segments JSON
       let { data: pageSegmentsData, error: loadError } = await supabase
@@ -137,14 +161,17 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           return;
         }
 
-        console.log('[EditableButton] Found segment at index:', segmentIndex, 'type:', segments[segmentIndex].type);
-
-        // Update both text and link fields
+        // Update fields
         if (!segments[segmentIndex].data) {
           segments[segmentIndex].data = {};
         }
         segments[segmentIndex].data[textFieldName] = editText;
         segments[segmentIndex].data[linkFieldName] = editLink;
+        
+        // Save style if styleFieldName is provided
+        if (styleFieldName) {
+          segments[segmentIndex].data[styleFieldName] = editStyle;
+        }
 
         // Save the updated page_segments JSON
         const { error: updateError } = await supabase
@@ -177,13 +204,14 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [editText, editLink, text, link, pageSlug, sectionKey, language, textFieldName, linkFieldName, onUpdate]);
+  }, [editText, editLink, editStyle, text, link, initialButtonStyle, pageSlug, sectionKey, language, textFieldName, linkFieldName, styleFieldName, onUpdate]);
 
   const handleCancel = useCallback(() => {
     setEditText(text);
     setEditLink(link);
+    setEditStyle(initialButtonStyle);
     setIsEditing(false);
-  }, [text, link]);
+  }, [text, link, initialButtonStyle]);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
     if (isSegmentEditing && editContext?.canEdit) {
@@ -198,11 +226,11 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       handleCancel();
-    } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      handleSave();
+      // Don't auto-save on Enter - user should click Save
     }
-  }, [handleCancel, handleSave]);
+  }, [handleCancel]);
 
   // If not in edit mode, render normal button
   if (!isSegmentEditing) {
@@ -210,7 +238,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
       <Button
         size={size}
         className={className}
-        style={style}
+        style={{ ...getComputedButtonStyle(initialButtonStyle), ...style }}
         onClick={onClick}
       >
         {text}
@@ -222,18 +250,19 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   if (!isEditing) {
     return (
       <div className="relative group inline-block">
-        <Button
-          size={size}
+        <div
           className={cn(
             className,
-            "relative cursor-pointer",
-            editContext?.canEdit && "hover:ring-2 hover:ring-[#f9dc24] hover:ring-offset-2 transition-all"
+            "inline-flex items-center justify-center rounded-md cursor-pointer transition-all",
+            "ring-2 ring-dashed ring-gray-400 hover:ring-[#f9dc24] hover:ring-solid",
+            "px-8 py-4 text-lg font-medium"
           )}
-          style={style}
+          style={{ ...getComputedButtonStyle(initialButtonStyle), ...style }}
           onClick={handleClick}
+          title="Click to edit"
         >
-          {text}
-        </Button>
+          {text || 'Button Text'}
+        </div>
         {editContext?.canEdit && (
           <span 
             className="z-[200] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-normal whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]"
@@ -253,40 +282,56 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     );
   }
 
-  // Currently editing - show inline editor directly below button
-  // Styling matches ProductHeroGallery button editor: white bg, black input, yellow save, outline cancel
+  // Currently editing - inline text input + style/link editor below
   return (
     <div ref={containerRef} className="inline-block">
-      {/* The button itself */}
-      <Button
-        size={size}
+      {/* Inline editable button - type directly into it */}
+      <input
+        ref={inputRef}
+        type="text"
+        value={editText}
+        onChange={(e) => setEditText(e.target.value)}
+        onKeyDown={handleKeyDown}
         className={cn(
           className,
-          "ring-2 ring-[#f9dc24] ring-offset-2"
+          "inline-flex items-center justify-center rounded-md",
+          "ring-2 ring-[#f9dc24] bg-transparent border-none outline-none text-center",
+          "px-8 py-4 text-lg font-medium"
         )}
-        style={style}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {editText || text}
-      </Button>
+        style={{ 
+          ...getComputedButtonStyle(editStyle),
+          ...style,
+          minWidth: '140px'
+        }}
+        placeholder="Button text"
+      />
       
-      {/* Inline Editor - directly below the button, matching ProductHeroGallery style */}
+      {/* Editor panel below - Style and Link only (text is edited inline above) */}
       <div 
         className="mt-3 bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[280px] relative z-[100]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Text Editor */}
+        {/* Style Selector - square buttons, active = larger */}
         <div className="flex gap-2 items-center mb-3">
-          <span className="text-xs text-gray-600 w-10 font-medium">Text:</span>
-          <input
-            type="text"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
-            placeholder="Button text..."
-            autoFocus
-          />
+          <span className="text-xs text-gray-600 w-10 font-medium">Style:</span>
+          <div className="flex gap-2 items-end">
+            {buttonStyles.map((s) => (
+              <button
+                key={s.value}
+                type="button"
+                onClick={() => setEditStyle(s.value)}
+                className={cn(
+                  "rounded transition-all border border-gray-400",
+                  editStyle === s.value ? 'w-10 h-10 ring-2 ring-[#f9dc24]' : 'w-7 h-7 hover:w-8 hover:h-8'
+                )}
+                style={{ 
+                  backgroundColor: s.color,
+                  border: s.value === 'outline-white' ? '1px solid #ccc' : undefined
+                }}
+                title={s.label}
+              />
+            ))}
+          </div>
         </div>
         
         {/* Link Editor */}
@@ -302,7 +347,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           />
         </div>
         
-        {/* Save / Cancel Buttons - matching ProductHeroGallery style */}
+        {/* Save / Cancel Buttons */}
         <div className="flex gap-2">
           <Button
             type="button"
