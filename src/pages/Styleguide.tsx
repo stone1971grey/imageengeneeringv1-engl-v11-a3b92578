@@ -1528,7 +1528,7 @@ const Styleguide = () => {
                       <p className="text-sm text-gray-600">Detail page for in-cabin testing solution.</p>
                     </div>
                     <Link
-                      to="/en/your-solution/automotive/in-cabin-testing"
+                      to="/en/industries/automotive/in-cabin-testing"
                       className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
                     >
                       Open page
@@ -1542,7 +1542,7 @@ const Styleguide = () => {
                       <p className="text-sm text-gray-600">Main automotive solution overview page.</p>
                     </div>
                     <Link
-                      to="/en/your-solution/automotive"
+                      to="/en/industries/automotive"
                       className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
                     >
                       Open page

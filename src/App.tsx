@@ -83,23 +83,23 @@ const App = () => (
             
             {/* Redirects for old URLs without language prefix to /en/ version */}
             <Route path="/inside-lab" element={<Navigate to="/en/inside-lab" replace />} />
-            <Route path="/industries" element={<Navigate to="/en/your-solution" replace />} />
-            <Route path="/your-solution" element={<Navigate to="/en/your-solution" replace />} />
+            <Route path="/industries" element={<Navigate to="/en/industries" replace />} />
+            <Route path="/your-solution" element={<Navigate to="/en/industries" replace />} />
             <Route path="/products" element={<Navigate to="/en/products" replace />} />
-            <Route path="/automotive" element={<Navigate to="/en/your-solution/automotive" replace />} />
-            <Route path="/photography" element={<Navigate to="/en/your-solution/photography" replace />} />
-            <Route path="/scanners-archiving" element={<Navigate to="/en/your-solution/scanners-archiving" replace />} />
-            <Route path="/broadcast-video" element={<Navigate to="/en/your-solution/broadcast-video" replace />} />
-            <Route path="/security-surveillance" element={<Navigate to="/en/your-solution/security-surveillance" replace />} />
-            <Route path="/medical-endoscopy" element={<Navigate to="/en/your-solution/medical-endoscopy" replace />} />
-            <Route path="/web-camera" element={<Navigate to="/en/your-solution/web-camera" replace />} />
-            <Route path="/machine-vision" element={<Navigate to="/en/your-solution/machine-vision" replace />} />
-            <Route path="/mobile-phone" element={<Navigate to="/en/your-solution/mobile-phone" replace />} />
-            <Route path="/your-solution/medical-endoscopy" element={<Navigate to="/en/your-solution/medical-endoscopy" replace />} />
-            <Route path="/your-solution/mobile-phone" element={<Navigate to="/en/your-solution/mobile-phone" replace />} />
-            <Route path="/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
-            <Route path="/your-solution/automotive/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
-            <Route path="/adas" element={<Navigate to="/en/your-solution/automotive/adas" replace />} />
+            <Route path="/automotive" element={<Navigate to="/en/industries/automotive" replace />} />
+            <Route path="/photography" element={<Navigate to="/en/industries/photography" replace />} />
+            <Route path="/scanners-archiving" element={<Navigate to="/en/industries/scanners-archiving" replace />} />
+            <Route path="/broadcast-video" element={<Navigate to="/en/industries/broadcast-video" replace />} />
+            <Route path="/security-surveillance" element={<Navigate to="/en/industries/security-surveillance" replace />} />
+            <Route path="/medical-endoscopy" element={<Navigate to="/en/industries/medical-endoscopy" replace />} />
+            <Route path="/web-camera" element={<Navigate to="/en/industries/web-camera" replace />} />
+            <Route path="/machine-vision" element={<Navigate to="/en/industries/machine-vision" replace />} />
+            <Route path="/mobile-phone" element={<Navigate to="/en/industries/mobile-phone" replace />} />
+            <Route path="/your-solution/medical-endoscopy" element={<Navigate to="/en/industries/medical-endoscopy" replace />} />
+            <Route path="/your-solution/mobile-phone" element={<Navigate to="/en/industries/mobile-phone" replace />} />
+            <Route path="/in-cabin-testing" element={<Navigate to="/en/industries/automotive/in-cabin-testing" replace />} />
+            <Route path="/your-solution/automotive/in-cabin-testing" element={<Navigate to="/en/industries/automotive/in-cabin-testing" replace />} />
+            <Route path="/adas" element={<Navigate to="/en/industries/automotive/adas" replace />} />
             <Route path="/product/le7" element={<Navigate to="/en/products/test-charts/le7" replace />} />
             <Route path="/product/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus-led" replace />} />
             <Route path="/le7" element={<Navigate to="/en/products/test-charts/le7" replace />} />
@@ -113,11 +113,11 @@ const App = () => (
             <Route path="/camspecs" element={<Navigate to="/en/products/software/camspecs" replace />} />
             <Route path="/vega" element={<Navigate to="/en/products/software/vega" replace />} />
             <Route path="/product-bundle-ieee" element={<Navigate to="/en/products/bundles-services/product-bundle-ieee" replace />} />
-            <Route path="/vcx-webcam-service" element={<Navigate to="/en/your-solution/web-camera/vcx-webcam-service" replace />} />
-            <Route path="/camera-stabilization" element={<Navigate to="/en/your-solution/mobile-phone/camera-stabilization" replace />} />
-            <Route path="/geometric-calibration-automotive" element={<Navigate to="/en/your-solution/automotive/geometric-calibration-automotive" replace />} />
-            <Route path="/vcx-webcam" element={<Navigate to="/en/your-solution/web-camera/vcx-webcam" replace />} />
-            <Route path="/iec-62676-5-testing" element={<Navigate to="/en/your-solution/security-surveillance/iec-62676-5-testing" replace />} />
+            <Route path="/vcx-webcam-service" element={<Navigate to="/en/industries/web-camera/vcx-webcam-service" replace />} />
+            <Route path="/camera-stabilization" element={<Navigate to="/en/industries/mobile-phone/camera-stabilization" replace />} />
+            <Route path="/geometric-calibration-automotive" element={<Navigate to="/en/industries/automotive/geometric-calibration-automotive" replace />} />
+            <Route path="/vcx-webcam" element={<Navigate to="/en/industries/web-camera/vcx-webcam" replace />} />
+            <Route path="/iec-62676-5-testing" element={<Navigate to="/en/industries/security-surveillance/iec-62676-5-testing" replace />} />
             <Route path="/downloads" element={<Navigate to="/en/downloads" replace />} />
             <Route path="/hidden-segments" element={<Navigate to="/en/hidden-segments" replace />} />
             <Route path="/backlog" element={<Navigate to="/en/backlog" replace />} />
@@ -158,21 +158,22 @@ const App = () => (
             {/* Redirect /en/index to /en (homepage) */}
             <Route path="/:lang/index" element={<Navigate to="../" replace />} />
             <Route path="/:lang/inside-lab" element={<InsideLab />} />
-            <Route path="/:lang/your-solution" element={<YourSolution />} />
+            <Route path="/:lang/industries" element={<YourSolution />} />
+            <Route path="/:lang/your-solution" element={<Navigate to="../industries" replace />} />
             <Route path="/:lang/products" element={<Products />} />
             
-            {/* Hierarchical Your Solution Routes - now handled by DynamicCMSPage catch-all */}
+            {/* Hierarchical Industries Routes - now handled by DynamicCMSPage catch-all */}
             
             {/* Universal catch-all routes for DynamicCMSPage */}
-            <Route path="/:lang/your-solution/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/automotive/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/scanners-archiving/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/mobile-phone/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/web-camera/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/machine-vision/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/medical-endoscopy/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/broadcast-video/:slug" element={<DynamicCMSPage />} />
-            <Route path="/:lang/your-solution/security-surveillance/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/automotive/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/scanners-archiving/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/mobile-phone/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/web-camera/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/machine-vision/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/medical-endoscopy/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/broadcast-video/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/industries/security-surveillance/:slug" element={<DynamicCMSPage />} />
             
             {/* Universal catch-all routes for Products */}
             <Route path="/:lang/products/test-charts" element={<TestChartsListing />} />
