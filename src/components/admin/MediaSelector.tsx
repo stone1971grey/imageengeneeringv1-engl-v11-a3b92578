@@ -1,8 +1,9 @@
-import { useState, useId } from "react";
+import { useState, useId, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, FolderOpen, Trash2 } from "lucide-react";
 import { DataHubDialog } from "./DataHubDialog";
 import { SegmentImageDeleteDialog } from "./ImageDeleteDialog";
+import { toast } from "sonner";
 
 interface MediaSelectorProps {
   onFileSelect: (file: File) => void;
@@ -61,6 +62,20 @@ export const MediaSelector = ({
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const inputId = useId();
+  
+  // Store callback in ref to prevent closure issues
+  const onMediaSelectRef = useRef(onMediaSelect);
+  onMediaSelectRef.current = onMediaSelect;
+  
+  const handleMediaSelected = useCallback((url: string, metadata?: any) => {
+    toast.info('Verarbeite Bildauswahl...');
+    setMediaDialogOpen(false);
+    
+    // Use ref to get the latest callback
+    if (onMediaSelectRef.current) {
+      onMediaSelectRef.current(url, metadata);
+    }
+  }, []);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -94,10 +109,7 @@ export const MediaSelector = ({
             isOpen={mediaDialogOpen}
             onClose={() => setMediaDialogOpen(false)}
             selectionMode={true}
-            onSelect={(url, metadata) => {
-              onMediaSelect(url, metadata);
-              setMediaDialogOpen(false);
-            }}
+            onSelect={handleMediaSelected}
           />
         )}
       </>
@@ -215,14 +227,7 @@ export const MediaSelector = ({
           isOpen={mediaDialogOpen}
           onClose={() => setMediaDialogOpen(false)}
           selectionMode={true}
-          onSelect={(url, metadata) => {
-            console.log('=== MediaSelector forwarding to onMediaSelect ===', url);
-            setMediaDialogOpen(false);
-            // Call the parent's onMediaSelect AFTER closing dialog
-            setTimeout(() => {
-              onMediaSelect(url, metadata);
-            }, 100);
-          }}
+          onSelect={handleMediaSelected}
         />
       )}
     </div>
