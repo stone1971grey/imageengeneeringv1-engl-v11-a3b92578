@@ -216,9 +216,12 @@ export const MediaSelector = ({
           onClose={() => setMediaDialogOpen(false)}
           selectionMode={true}
           onSelect={(url, metadata) => {
-            console.log('=== MediaSelector onSelect CALLED ===', url, metadata);
-            onMediaSelect(url, metadata);
+            console.log('=== MediaSelector forwarding to onMediaSelect ===', url);
             setMediaDialogOpen(false);
+            // Call the parent's onMediaSelect AFTER closing dialog
+            setTimeout(() => {
+              onMediaSelect(url, metadata);
+            }, 100);
           }}
         />
       )}
