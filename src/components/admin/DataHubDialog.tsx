@@ -1309,9 +1309,8 @@ export function DataHubDialog({
                                   className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log('=== SELECT BUTTON CLICKED ===');
-                                    console.log('fileUrl:', fileUrl);
-                                    console.log('onSelect exists:', !!onSelect);
+                                    e.preventDefault();
+                                    toast.info('Bild wird ausgewählt...');
                                     if (onSelect) {
                                       const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
                                       const metadata = {
@@ -1329,11 +1328,10 @@ export function DataHubDialog({
                                         width: 0,
                                         height: 0
                                       };
-                                      console.log('Calling onSelect with metadata:', metadata);
                                       onSelect(fileUrl, metadata);
-                                      console.log('=== SELECT COMPLETE ===');
+                                      toast.success('Bild erfolgreich ausgewählt');
                                     } else {
-                                      console.error('onSelect is undefined!');
+                                      toast.error('Fehler: onSelect Callback fehlt');
                                     }
                                   }}
                                 >
