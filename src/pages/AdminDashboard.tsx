@@ -561,7 +561,7 @@ const AdminDashboard = () => {
         'automotive': 'Automotive',
         'in-cabin-testing': 'In-Cabin Testing',
         'le7': 'LE7 Test Chart',
-        'your-solution': 'Your Solution',
+        'industries': 'Industries',
         'iq-led': 'iQ-LED Illumination'
       };
       
@@ -1476,7 +1476,7 @@ const AdminDashboard = () => {
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
-  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub', 'company'];
+  const SECOND_LEVEL_PARENTS = ['industries', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub', 'company'];
   const THIRD_LEVEL_PARENTS = ['test-lab', 'training-events', 'info-hub', 'company']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
   // Third-level: pages whose parent_slug itself starts with a third-level parent (e.g., parent_slug='test-lab/overview' for a 4th level page)
