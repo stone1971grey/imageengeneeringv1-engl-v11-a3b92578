@@ -182,16 +182,16 @@ export const AdminHeader = ({
       previewUrl = `/${language}/${pageData.page_id}`;
     } else {
       const urlMap: Record<string, string> = {
-        'photography': `/${language}/your-solution/photography`,
-        'scanners-archiving': `/${language}/your-solution/scanners-archiving`,
-        'medical-endoscopy': `/${language}/your-solution/medical-endoscopy`,
-        'web-camera': `/${language}/your-solution/web-camera`,
-        'machine-vision': `/${language}/your-solution/machine-vision`,
-        'mobile-phone': `/${language}/your-solution/mobile-phone`,
-        'automotive': `/${language}/your-solution/automotive`,
-        'in-cabin-testing': `/${language}/your-solution/automotive/in-cabin-testing`,
+        'photography': `/${language}/industries/photography`,
+        'scanners-archiving': `/${language}/industries/scanners-archiving`,
+        'medical-endoscopy': `/${language}/industries/medical-endoscopy`,
+        'web-camera': `/${language}/industries/web-camera`,
+        'machine-vision': `/${language}/industries/machine-vision`,
+        'mobile-phone': `/${language}/industries/mobile-phone`,
+        'automotive': `/${language}/industries/automotive`,
+        'in-cabin-testing': `/${language}/industries/automotive/in-cabin-testing`,
       };
-      previewUrl = urlMap[selectedPage] || `/${language}/your-solution/${selectedPage}`;
+      previewUrl = urlMap[selectedPage] || `/${language}/industries/${selectedPage}`;
     }
 
     window.open(previewUrl, '_blank');
@@ -330,7 +330,7 @@ export const AdminHeader = ({
                       <span className="text-gray-400 text-lg whitespace-nowrap flex-shrink-0">|</span>
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold flex-shrink-0 ${
-                          ['your-solution', 'info-hub', 'training-events', 'test-lab', 'products'].includes(pageInfo.ctaGroup)
+                          ['industries', 'info-hub', 'training-events', 'test-lab', 'products'].includes(pageInfo.ctaGroup)
                             ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
                             : 'bg-black text-white border-gray-600'
                         }`}

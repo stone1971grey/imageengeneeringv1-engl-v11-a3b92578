@@ -136,7 +136,7 @@ export function FlyoutContentDialog({
               {pageInfo?.ctaGroup && pageInfo.ctaGroup !== 'none' && (
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${
-                    pageInfo.ctaGroup === 'your-solution'
+                    pageInfo.ctaGroup === 'industries'
                       ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
                       : 'bg-black text-white border-gray-600'
                   }`}
@@ -149,7 +149,7 @@ export function FlyoutContentDialog({
                   <span>
                     {(() => {
                       const labelMap: Record<string, string> = {
-                        'your-solution': 'Navigation CTA: Your Solution',
+                        'industries': 'Navigation CTA: Industries',
                         'products': 'Navigation CTA: Products',
                         'test-lab': 'Navigation CTA: Test Lab',
                         'training-events': 'Navigation CTA: Training & Events',

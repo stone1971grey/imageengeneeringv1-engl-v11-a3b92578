@@ -8,16 +8,16 @@ export const STATIC_SEGMENT_IDS = {
   solutions: 4
 };
 
-// Mapping from parent page slugs to navigation "industry" categories (Your Solution)
+// Mapping from parent page slugs to navigation "industry" categories (Industries)
 export const INDUSTRY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
-  'your-solution/automotive': 'Automotive',
-  'your-solution/security-surveillance': 'Security & Surveillance',
-  'your-solution/mobile-phone': 'Mobile Phone',
-  'your-solution/web-camera': 'Web Camera',
-  'your-solution/machine-vision': 'Machine Vision',
-  'your-solution/medical-endoscopy': 'Medical & Endoscopy',
-  'your-solution/scanners-archiving': 'Scanners & Archiving',
-  'your-solution/photography': 'Photo & Video',
+  'industries/automotive': 'Automotive',
+  'industries/security-surveillance': 'Security & Surveillance',
+  'industries/mobile-phone': 'Mobile Phone',
+  'industries/web-camera': 'Web Camera',
+  'industries/machine-vision': 'Machine Vision',
+  'industries/medical-endoscopy': 'Medical & Endoscopy',
+  'industries/scanners-archiving': 'Scanners & Archiving',
+  'industries/photography': 'Photo & Video',
 };
 
 // Mapping from parent page slugs to navigation "products" categories
@@ -89,7 +89,7 @@ export const DESIGN_ICON_OPTIONS = [
 
 export const CTA_GROUP_OPTIONS = [
   { key: 'none', label: 'No CTA (disabled)' },
-  { key: 'your-solution', label: 'Your Solution flyout' },
+  { key: 'industries', label: 'Industries flyout' },
   { key: 'products', label: 'Products & Test Services flyout' },
   { key: 'test-lab', label: 'Test Lab flyout' },
   { key: 'training-events', label: 'Training & Events flyout' },

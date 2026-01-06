@@ -54,7 +54,7 @@ const RegularNavigation = () => {
             <a href="/en#services" className="text-muted-foreground hover:text-foreground transition-colors">
               Leistungen
             </a>
-            <Link to="/en/your-solution/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/en/industries/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
               Automotive
             </Link>
             <Link to="/en/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -90,7 +90,7 @@ const RegularNavigation = () => {
               <a href="/en#services" className="text-muted-foreground hover:text-foreground transition-colors">
                 Leistungen
               </a>
-              <Link to="/en/your-solution/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/en/industries/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
                 Automotive
               </Link>
               <Link to="/en/downloads" className="text-muted-foreground hover:text-foreground transition-colors">

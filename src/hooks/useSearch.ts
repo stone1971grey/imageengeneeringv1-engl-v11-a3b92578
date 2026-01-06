@@ -64,7 +64,7 @@ export const useSearch = (): UseSearchReturn => {
           // Determine page type for meta
           let pageType = 'Seite';
           if (page.page_slug.includes('products')) pageType = 'Produktseite';
-          else if (page.page_slug.includes('your-solution')) pageType = 'Lösungsseite';
+          else if (page.page_slug.includes('industries')) pageType = 'Lösungsseite';
           else if (page.page_slug.includes('company')) pageType = 'Unternehmensseite';
           else if (page.page_slug.includes('info-hub')) pageType = 'Info-Hub';
           else if (page.page_slug.includes('training-events')) pageType = 'Training & Events';

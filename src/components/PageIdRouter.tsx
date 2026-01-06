@@ -64,7 +64,7 @@ const PageIdRouter = () => {
         
         // Hard fallback for legacy VCX WebCam Service page (Page ID 287)
         if (numericPageId === 287) {
-          const legacyUrl = `/${lang || language}/your-solution/web-camera/vcx-webcam-service`;
+          const legacyUrl = `/${lang || language}/industries/web-camera/vcx-webcam-service`;
           console.warn("[PageIdRouter] Falling back to hardcoded URL for Page ID 287:", legacyUrl);
           setRedirectUrl(legacyUrl);
         } else {
@@ -81,20 +81,20 @@ const PageIdRouter = () => {
           console.log(`[PageIdRouter] Using hierarchical page_slug directly:`, constructedUrl);
         } else if (data.parent_slug && data.parent_slug !== 'index') {
           // Legacy handling for flat slugs with parent_slug (skip 'index' as it's the root)
-          if (data.parent_slug === "your-solution") {
-            constructedUrl = `${langPrefix}/your-solution/${data.page_slug}`;
+          if (data.parent_slug === "industries") {
+            constructedUrl = `${langPrefix}/industries/${data.page_slug}`;
           } else if (data.parent_slug === "automotive") {
-            constructedUrl = `${langPrefix}/your-solution/automotive/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/automotive/${data.page_slug}`;
           } else if (data.parent_slug === "scanners-archiving") {
-            constructedUrl = `${langPrefix}/your-solution/scanners-archiving/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/scanners-archiving/${data.page_slug}`;
           } else if (data.parent_slug === "web-camera") {
-            constructedUrl = `${langPrefix}/your-solution/web-camera/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/web-camera/${data.page_slug}`;
           } else if (data.parent_slug === "machine-vision") {
-            constructedUrl = `${langPrefix}/your-solution/machine-vision/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/machine-vision/${data.page_slug}`;
           } else if (data.parent_slug === "mobile-phone") {
-            constructedUrl = `${langPrefix}/your-solution/mobile-phone/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/mobile-phone/${data.page_slug}`;
           } else if (data.parent_slug === "medical-endoscopy") {
-            constructedUrl = `${langPrefix}/your-solution/medical-endoscopy/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/industries/medical-endoscopy/${data.page_slug}`;
           } else {
             // For products or other hierarchies
             constructedUrl = `${langPrefix}/${data.parent_slug}/${data.page_slug}`;

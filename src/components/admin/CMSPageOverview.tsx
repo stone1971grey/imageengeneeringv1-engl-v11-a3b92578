@@ -419,7 +419,7 @@ export const CMSPageOverview = () => {
 
   const getCategoryName = (slug: string): string => {
     if (slug === "index") return 'Home';
-    if (slug.startsWith("your-solution")) return 'Your Solution';
+    if (slug.startsWith("industries")) return 'Industries';
     if (slug.startsWith("products")) return 'Products';
     if (slug.startsWith("test-lab")) return 'Test Lab';
     if (slug.startsWith("training") || slug.startsWith("events")) return 'Training & Events';
@@ -433,7 +433,7 @@ export const CMSPageOverview = () => {
     const category = getCategoryName(slug);
     const badgeStyles: Record<string, string> = {
       'Home': 'bg-gray-100 text-gray-800 border-gray-300',
-      'Your Solution': 'bg-blue-100 text-blue-800 border-blue-300',
+      'Industries': 'bg-blue-100 text-blue-800 border-blue-300',
       'Products': 'bg-green-100 text-green-800 border-green-300',
       'Test Lab': 'bg-orange-100 text-orange-800 border-orange-300',
       'Training & Events': 'bg-pink-100 text-pink-800 border-pink-300',
@@ -489,8 +489,8 @@ export const CMSPageOverview = () => {
   const getCtaBadge = (page: CMSPage) => {
     if (!page.cta_group || page.cta_group === 'none') return null;
 
-    // Color scheme: yellow for navigation CTAs (Your Solution, Info Hub, Training Events, Test Lab), black for Products
-    const yellowCtaGroups = ['your-solution', 'info-hub', 'training-events', 'test-lab'];
+    // Color scheme: yellow for navigation CTAs (Industries, Info Hub, Training Events, Test Lab), black for Products
+    const yellowCtaGroups = ['industries', 'info-hub', 'training-events', 'test-lab'];
     const isYellowCta = yellowCtaGroups.includes(page.cta_group);
     const badgeClasses = isYellowCta
       ? 'bg-[#f9dc24] text-black border-[#f9dc24]'

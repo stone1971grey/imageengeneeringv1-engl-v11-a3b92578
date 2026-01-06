@@ -259,7 +259,7 @@ export async function createNewCMSPageWithSlug(params: CreateCMSPageParams): Pro
       if (INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
         navCategory = 'industries';
         navParentCategory = INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
-        flyoutName = 'Your Solution';
+        flyoutName = 'Industries';
       } else if (PRODUCTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value]) {
         navCategory = 'products';
         navParentCategory = PRODUCTS_PARENT_CATEGORY_BY_SLUG[parent_slug_value];
@@ -436,15 +436,15 @@ export async function createNewCMSPage(params: {
       parent_slug = inferred.parent_slug;
 
       if (!parent_id) {
-        const { data: yourSolutionParent } = await supabase
+        const { data: industriesParent } = await supabase
           .from("page_registry")
           .select("page_id, page_slug")
-          .eq("page_slug", "your-solution")
+          .eq("page_slug", "industries")
           .maybeSingle();
 
-        if (yourSolutionParent) {
-          parent_id = yourSolutionParent.page_id;
-          parent_slug = yourSolutionParent.page_slug;
+        if (industriesParent) {
+          parent_id = industriesParent.page_id;
+          parent_slug = industriesParent.page_slug;
         }
       }
 
