@@ -436,7 +436,8 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                 <Select
                   value={tile.icon || "none"}
                   onValueChange={(value) => {
-                    handleTileChange(index, 'icon', value === 'none' ? '' : value);
+                    const newIconValue = value === 'none' ? '' : value;
+                    handleTileChange(index, 'icon', newIconValue);
                     // Clear image when icon is selected
                     if (value !== 'none') {
                       handleTileChange(index, 'imageUrl', '');
@@ -446,15 +447,17 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                   <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                     <SelectValue>
                       {(() => {
-                        const IconComponent = iconMap[tile.icon || ''];
-                        return IconComponent ? (
-                          <div className="flex items-center gap-2">
-                            <IconComponent className="h-4 w-4" />
-                            <span>{tile.icon}</span>
-                          </div>
-                        ) : (
-                          <span>{tile.icon || 'Select an icon'}</span>
-                        );
+                        const hasIcon = tile.icon && tile.icon !== '' && tile.icon !== 'none';
+                        const IconComponent = hasIcon ? iconMap[tile.icon!] : null;
+                        if (IconComponent) {
+                          return (
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="h-4 w-4" />
+                              <span>{tile.icon}</span>
+                            </div>
+                          );
+                        }
+                        return <span className="text-gray-400">No Icon</span>;
                       })()}
                     </SelectValue>
                   </SelectTrigger>
@@ -476,41 +479,42 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               </div>
 
               {/* Image Upload - Alternative to Icon */}
-              <div className="space-y-3">
-                <Label className="text-white flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4" />
-                  Image (Alternative to Icon)
-                </Label>
-                
-                {tile.icon && (
-                  <p className="text-sm text-gray-400 italic">
-                    Deaktivieren Sie das Icon oben, um ein Bild hochzuladen.
-                  </p>
-                )}
-                
-                {!tile.icon && (
-                  <>
-                    {tile.imageUrl ? (
-                      <div className="relative inline-block">
-                        <img 
-                          src={tile.imageUrl} 
-                          alt={`Tile ${index + 1} image`}
-                          className="w-full max-w-[200px] max-h-[100px] object-cover rounded-lg border-2 border-gray-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleTileChange(index, 'imageUrl', '')}
-                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-                          title="Remove Image"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
+              {(() => {
+                const hasIcon = tile.icon && tile.icon !== '' && tile.icon !== 'none';
+                return (
+                  <div className="space-y-3">
+                    <Label className="text-white flex items-center gap-2">
+                      <ImageIcon className="h-4 w-4" />
+                      Image (Alternative to Icon)
+                    </Label>
+                    
+                    {hasIcon ? (
+                      <p className="text-sm text-gray-400 italic">
+                        Wählen Sie oben "No Icon", um ein Bild hochzuladen.
+                      </p>
                     ) : (
-                      <MediaSelector
-                        label=""
-                        currentImageUrl={tile.imageUrl}
-                        onFileSelect={async (file) => {
+                      <>
+                        {tile.imageUrl ? (
+                          <div className="relative inline-block">
+                            <img 
+                              src={tile.imageUrl} 
+                              alt={`Tile ${index + 1} image`}
+                              className="w-full max-w-[200px] max-h-[100px] object-cover rounded-lg border-2 border-gray-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleTileChange(index, 'imageUrl', '')}
+                              className="absolute -top-2 -right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                              title="Remove Image"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <MediaSelector
+                            label=""
+                            currentImageUrl={tile.imageUrl}
+                            onFileSelect={async (file) => {
                           // Upload file to storage using page slug as folder
                           const fileExt = file.name.split('.').pop();
                           const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
@@ -555,10 +559,11 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         }}
                       />
                     )}
-                  </>
-                )}
-              </div>
-
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
               {/* Alt-Text Field - only show when image is set */}
               {tile.imageUrl && !tile.icon && (
                 <div className="space-y-2">
