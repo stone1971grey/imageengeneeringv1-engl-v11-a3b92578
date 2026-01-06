@@ -115,67 +115,86 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
 
       if (contentError) throw contentError;
 
-      // Step 4: CASCADING UPDATE - Find and update all child pages
+      // Step 4: CASCADING UPDATE - Find and update ALL descendant pages
       let childPagesUpdated = 0;
       if (newSlug !== currentSlug) {
-        // Find all pages that have this page as parent (direct children)
-        const { data: childPages, error: childFetchError } = await supabase
+        // Find ALL pages whose page_slug starts with the old slug (all descendants)
+        const { data: descendantPages, error: descendantFetchError } = await supabase
           .from('page_registry')
-          .select('page_id, page_slug')
-          .eq('parent_slug', currentSlug);
+          .select('page_id, page_slug, parent_slug')
+          .like('page_slug', `${currentSlug}/%`);
 
-        if (childFetchError) throw childFetchError;
+        if (descendantFetchError) throw descendantFetchError;
 
-        if (childPages && childPages.length > 0) {
-          console.log(`[Cascading] Found ${childPages.length} child pages to update`);
+        if (descendantPages && descendantPages.length > 0) {
+          console.log(`[Cascading] Found ${descendantPages.length} descendant pages to update`);
           
-          for (const child of childPages) {
-            const oldChildSlug = child.page_slug;
-            // Replace old parent prefix with new parent prefix
-            // e.g., "your-solution/machine-vision" → "industries/machine-vision"
-            const newChildSlug = oldChildSlug.replace(currentSlug, newSlug);
+          for (const descendant of descendantPages) {
+            const oldDescendantSlug = descendant.page_slug;
+            const oldParentSlug = descendant.parent_slug;
             
-            console.log(`[Cascading] Updating child: ${oldChildSlug} → ${newChildSlug}`);
+            // Replace old prefix with new prefix in page_slug
+            const newDescendantSlug = oldDescendantSlug.replace(currentSlug, newSlug);
             
-            // Update child's page_registry
-            const { error: childPageError } = await supabase
+            // Also update parent_slug if it contains the old slug
+            let newParentSlug = oldParentSlug;
+            if (oldParentSlug === currentSlug) {
+              newParentSlug = newSlug;
+            } else if (oldParentSlug && oldParentSlug.startsWith(currentSlug + '/')) {
+              newParentSlug = oldParentSlug.replace(currentSlug, newSlug);
+            }
+            
+            console.log(`[Cascading] Updating: ${oldDescendantSlug} → ${newDescendantSlug}`);
+            
+            // Update descendant's page_registry
+            const { error: descendantPageError } = await supabase
               .from('page_registry')
               .update({ 
-                page_slug: newChildSlug,
-                parent_slug: newSlug 
+                page_slug: newDescendantSlug,
+                parent_slug: newParentSlug 
               })
-              .eq('page_id', child.page_id);
+              .eq('page_id', descendant.page_id);
 
-            if (childPageError) throw childPageError;
+            if (descendantPageError) throw descendantPageError;
 
-            // Update child's segment_registry
-            const { error: childSegmentError } = await supabase
+            // Update descendant's segment_registry
+            const { error: descendantSegmentError } = await supabase
               .from('segment_registry')
-              .update({ page_slug: newChildSlug })
-              .eq('page_slug', oldChildSlug);
+              .update({ page_slug: newDescendantSlug })
+              .eq('page_slug', oldDescendantSlug);
 
-            if (childSegmentError) throw childSegmentError;
+            if (descendantSegmentError) throw descendantSegmentError;
 
-            // Update child's page_content
-            const { error: childContentError } = await supabase
+            // Update descendant's page_content
+            const { error: descendantContentError } = await supabase
               .from('page_content')
-              .update({ page_slug: newChildSlug })
-              .eq('page_slug', oldChildSlug);
+              .update({ page_slug: newDescendantSlug })
+              .eq('page_slug', oldDescendantSlug);
 
-            if (childContentError) throw childContentError;
+            if (descendantContentError) throw descendantContentError;
 
-            // Update child's navigation_links
-            const { error: childNavError } = await supabase
+            // Update descendant's navigation_links
+            const { error: descendantNavError } = await supabase
               .from('navigation_links')
-              .update({ slug: newChildSlug })
-              .eq('slug', oldChildSlug);
+              .update({ slug: newDescendantSlug })
+              .eq('slug', oldDescendantSlug);
 
-            if (childNavError) {
-              console.warn(`[Cascading] Navigation update for ${oldChildSlug} failed:`, childNavError);
+            if (descendantNavError) {
+              console.warn(`[Cascading] Navigation update for ${oldDescendantSlug} failed:`, descendantNavError);
             }
 
             childPagesUpdated++;
           }
+        }
+        
+        // Also update direct children's parent_slug reference
+        const { error: directChildError } = await supabase
+          .from('page_registry')
+          .update({ parent_slug: newSlug })
+          .eq('parent_slug', currentSlug);
+
+        if (directChildError) {
+          console.warn('[Cascading] Direct children parent_slug update failed:', directChildError);
         }
       }
 
