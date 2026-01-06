@@ -1,6 +1,7 @@
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 
 interface IntroProps {
   title?: string;
@@ -58,14 +59,12 @@ const Intro = ({
                 fieldLabel={headingLabel}
               />
               {(description || isEditing) && (
-                <EditableText
+                <EditableRichText
                   value={displayDescription}
                   sectionKey={`${segmentKey}-description`}
                   pageSlug={pageSlug}
                   language={language}
                   className="text-xl text-black max-w-2xl mx-auto font-light"
-                  as="p"
-                  multiline
                   onUpdate={onContentUpdate}
                   fieldLabel="Intro Description"
                 />
