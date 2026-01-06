@@ -36,7 +36,7 @@ export function DesignElementDialog({
         </DialogHeader>
         <div className="space-y-4 mt-4">
           <p className="text-xs text-gray-500">
-            Design elements can only be selected for second-level navigation pages (direct children of main sections like "Your Solution" or "Products").
+            Design elements can only be selected for second-level navigation pages (direct children of main sections like "Industries" or "Products").
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {DESIGN_ICON_OPTIONS.map((option) => {

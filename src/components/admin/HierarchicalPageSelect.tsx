@@ -274,7 +274,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       });
     });
 
-    // Your Solution (industries in data structure)
+    // Industries (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
       // Special mapping for categories that have different slugs in the database
       const slugMapping: Record<string, string> = {
@@ -331,7 +331,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           url: subgroup.link,
           isCMS: fullSlug ? isPageInCMS(fullSlug, subgroup.link) : false,
           isStatic: false,
-          category: 'Your Solution',
+          category: 'Industries',
           subcategory: categoryName,
           isMainCategory: false,
           pageId: pageIdMap.get(fullSlug) || pageIdMap.get(displaySlug),
@@ -495,9 +495,9 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const static_pages = filteredStatuses.filter(p => p.isStatic);
   const styleGuidePages = filteredStatuses.filter(p => p.slug.startsWith('styleguide'));
   
-  // Group Your Solution by subcategory
-  const yourSolutionPages = filteredStatuses.filter(p => p.category === 'Your Solution');
-  const yourSolutionBySubcat = yourSolutionPages.reduce((acc, page) => {
+  // Group Industries by subcategory
+  const industriesPages = filteredStatuses.filter(p => p.category === 'Industries');
+  const industriesBySubcat = industriesPages.reduce((acc, page) => {
     const subcat = page.subcategory || 'Other';
     if (!acc[subcat]) acc[subcat] = [];
     acc[subcat].push(page);
@@ -628,13 +628,13 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
                 </SelectGroup>
               )}
 
-        {/* Your Solution */}
-        {Object.keys(yourSolutionBySubcat).length > 0 && (
+        {/* Industries */}
+        {Object.keys(industriesBySubcat).length > 0 && (
           <SelectGroup>
             <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
-              Your Solution
+              Industries
             </SelectLabel>
-            {Object.entries(yourSolutionBySubcat).map(([subcategory, pages]) => {
+            {Object.entries(industriesBySubcat).map(([subcategory, pages]) => {
               const mainPage = pages.find(p => p.isMainCategory);
               const subPages = pages.filter(p => !p.isMainCategory);
               
