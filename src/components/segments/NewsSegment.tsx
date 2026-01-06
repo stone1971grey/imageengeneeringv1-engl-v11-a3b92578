@@ -48,7 +48,19 @@ interface NewsConfig {
   categories: string[];
 }
 
-// No fallback categories - always use database categories
+// All standard categories (must match NewsSegmentEditor)
+const ALL_CATEGORIES = [
+  "Company",
+  "Product Launch",
+  "Technology",
+  "Standards",
+  "Innovation",
+  "Partnership",
+  "Event",
+  "Research",
+  "Technical Report",
+  "Industry News"
+];
 
 const NewsSegment = ({
   id,
@@ -191,8 +203,8 @@ const NewsSegment = ({
     },
   });
 
-  // Use database categories only
-  const availableCategories = dbCategories || [];
+  // Use ALL_CATEGORIES as the standard list (matching backend editor)
+  const availableCategories = ALL_CATEGORIES;
 
   const handleArticleLimitChange = (value: string) => {
     setEditArticleLimit(Number(value));
