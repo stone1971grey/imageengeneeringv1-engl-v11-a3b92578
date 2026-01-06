@@ -169,6 +169,10 @@ export function DataHubDialog({
           alt_text: mapping.alt_text || '',
           alt_text_translations: mapping.alt_text_translations as Record<string, string> | null
         });
+        // Debug log for segment mappings with multiple segments
+        if (mapping.segment_ids && mapping.segment_ids.length > 1) {
+          console.log(`[DataHub] Multi-segment mapping: ${mapping.file_path} → segments:`, mapping.segment_ids);
+        }
       });
 
       // Load files for each folder
