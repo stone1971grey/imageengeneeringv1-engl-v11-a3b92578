@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigationData } from "@/hooks/useNavigationData";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePageTitles } from "@/hooks/usePageTitles";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 
@@ -55,6 +56,7 @@ const Navigation = () => {
   const { t } = useTranslation();
   const navData = useNavigationData();
   const { language, setLanguage } = useLanguage();
+  const { getTitle: getDbTitle, getTitleMap } = usePageTitles();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
@@ -69,6 +71,16 @@ const Navigation = () => {
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
   const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; descriptions: Record<string, string> }>>({});
   const [pageCtaConfig, setPageCtaConfig] = useState<Record<string, { slug: string; label: string; icon: string | null }>>({});
+
+  /**
+   * Get navigation title from database with fallback to static translations
+   * This enables editors to modify navigation labels without code changes
+   */
+  const getNavTitle = (pageSlug: string, fallbackKey: keyof typeof t.nav): string => {
+    const dbTitle = getDbTitle(pageSlug);
+    if (dbTitle) return dbTitle;
+    return (t.nav as any)[fallbackKey] || fallbackKey;
+  };
 
   const defaultStyleguidePage = styleguidePages[0] || null;
   const activeStyleguideSlug = hoveredStyleguide || defaultStyleguidePage?.slug || null;
@@ -583,13 +595,13 @@ const Navigation = () => {
             ) : (
               /* Regular Navigation */
               <>
-            <SimpleDropdown trigger={t.nav.industries} disabled={isAdminDashboard} triggerLink={`/${language}/industries`}>
+            <SimpleDropdown trigger={getNavTitle('industries', 'industries')} disabled={isAdminDashboard} triggerLink={`/${language}/industries`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Industries */}
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.industries}</h4>
+                       <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('industries', 'industries')}</h4>
                        
                        <Link to={`/${language}/industries/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/industries/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
@@ -600,7 +612,7 @@ const Navigation = () => {
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
-                           <span>{t.nav.automotive}</span>
+                           <span>{getNavTitle('industries/automotive', 'automotive')}</span>
                        </Link>
                         
                         <Link to={`/${language}/industries/security-surveillance`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -612,7 +624,7 @@ const Navigation = () => {
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
-                          <span>{t.nav.securitySurveillance}</span>
+                          <span>{getNavTitle('industries/security-surveillance', 'securitySurveillance')}</span>
                        </Link>
                         
                        <Link to={getLink("mobile-phone", "/industries/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -624,7 +636,7 @@ const Navigation = () => {
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
-                          <span>{t.nav.mobilePhone}</span>
+                          <span>{getNavTitle('industries/mobile-phone', 'mobilePhone')}</span>
                        </Link>
                         
                          <Link to={getLink("web-camera", "/industries/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -636,7 +648,7 @@ const Navigation = () => {
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
-                           <span>{t.nav.webCamera}</span>
+                           <span>{getNavTitle('industries/web-camera', 'webCamera')}</span>
                         </Link>
                         
                         <Link to={getLink("machine-vision", "/industries/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -648,7 +660,7 @@ const Navigation = () => {
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
-                           <span>{t.nav.machineVision}</span>
+                           <span>{getNavTitle('industries/machine-vision', 'machineVision')}</span>
                         </Link>
                         
                         <Link to={getLink("medical-endoscopy", "/industries/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -660,7 +672,7 @@ const Navigation = () => {
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
-                           <span>{t.nav.medicalEndoscopy}</span>
+                           <span>{getNavTitle('industries/medical-endoscopy', 'medicalEndoscopy')}</span>
                         </Link>
                         
                         <Link to={getLink("scanners-archiving", "/industries/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -672,7 +684,7 @@ const Navigation = () => {
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
-                           <span>{t.nav.scannersArchiving}</span>
+                           <span>{getNavTitle('industries/scanners-archiving', 'scannersArchiving')}</span>
                         </Link>
                         
                         <Link to={getLink("photography", "/industries/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -684,7 +696,7 @@ const Navigation = () => {
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
-                          <span>{t.nav.photoVideo}</span>
+                          <span>{getNavTitle('industries/photography', 'photoVideo')}</span>
                         </Link>
                     </div>
                     
@@ -775,13 +787,13 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.products} disabled={isAdminDashboard} triggerLink={`/${language}/products`}>
+            <SimpleDropdown trigger={getNavTitle('products', 'products')} disabled={isAdminDashboard} triggerLink={`/${language}/products`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Product Groups */}
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.products}</h4>
+                      <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('products', 'products')}</h4>
                        
                        <Link to={`/${language}/products/test-charts`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/products/test-charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
@@ -792,7 +804,7 @@ const Navigation = () => {
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
-                          <span>{t.nav.testCharts}</span>
+                          <span>{getNavTitle('products/test-charts', 'testCharts')}</span>
                        </Link>
                        
                        <Link to={`/${language}/products/illumination-devices`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -804,7 +816,7 @@ const Navigation = () => {
                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
                          })()}
-                         <span>{t.nav.illuminationDevices}</span>
+                         <span>{getNavTitle('products/illumination-devices', 'illuminationDevices')}</span>
                        </Link>
                        
                        <Link to={`/${language}/products/measurement-devices`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -816,7 +828,7 @@ const Navigation = () => {
                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
                          })()}
-                         <span>{t.nav.measurementDevices}</span>
+                         <span>{getNavTitle('products/measurement-devices', 'measurementDevices')}</span>
                        </Link>
                        
                        <Link to={`/${language}/products/software`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -828,7 +840,7 @@ const Navigation = () => {
                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
                          })()}
-                         <span>{t.nav.softwareApis}</span>
+                         <span>{getNavTitle('products/software', 'softwareApis')}</span>
                        </Link>
                        
                        <Link to={`/${language}/products/bundles-services`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -840,7 +852,7 @@ const Navigation = () => {
                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
                          })()}
-                         <span>{t.nav.productAccessories}</span>
+                         <span>{getNavTitle('products/bundles-services', 'productAccessories')}</span>
                        </Link>
                     </div>
                     
@@ -921,13 +933,13 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.testServices} disabled={isAdminDashboard} triggerLink={`/${language}/test-lab`}>
+              <SimpleDropdown trigger={getNavTitle('test-services', 'testServices')} disabled={isAdminDashboard} triggerLink={`/${language}/test-lab`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Service Categories */}
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.testServices}</h4>
+                      <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('test-services', 'testServices')}</h4>
                       
                        <Link to={getLink('/test-lab/overview')} 
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
@@ -1077,11 +1089,11 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/training-events`}>
+              <SimpleDropdown trigger={getNavTitle('training-events', 'resources')} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/training-events`}>
                 <div className="flex flex-col gap-2 w-[280px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
                      <div className="space-y-3 flex-1">
-                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.resources}</h4>
+                       <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('training-events', 'resources')}</h4>
                        <Link to={getLink('training-events/webinars', `/${language}/training-events/webinars`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                          {(() => {
                            const key = pageDesignIcons['training-events/webinars'];
@@ -1137,11 +1149,11 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.infoHub} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/info-hub`}>
+              <SimpleDropdown trigger={getNavTitle('info-hub', 'infoHub')} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/info-hub`}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-4 p-4">
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-lg text-black">Resources</h4>
+                      <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('info-hub', 'infoHub')}</h4>
                       <Link to={getLink('info-hub/image-quality-factors', `/${language}/info-hub/image-quality-factors`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                         {(() => {
                           const key = pageDesignIcons['info-hub/image-quality-factors'];
@@ -1247,11 +1259,11 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/company`}>
+            <SimpleDropdown trigger={getNavTitle('company', 'company')} className="right-aligned" disabled={isAdminDashboard} triggerLink={`/${language}/company`}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
                        <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                         <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.aboutIE}</h4>
+                         <h4 className="font-semibold mb-2 text-lg text-black">{getNavTitle('company', 'company')}</h4>
                           <Link to={getLink('company/news', `/${language}/company/news`)} className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                             isActive('/company/news') || isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                           }`}>

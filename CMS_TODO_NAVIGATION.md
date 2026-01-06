@@ -1,8 +1,8 @@
 # Navigation Refactoring - TODO Liste
 
 > **Erstellt:** 2026-01-06  
-> **Status:** In Arbeit  
-> **Priorität:** Mittel (Backend ist bereit, Frontend nutzt noch statische Daten)
+> **Status:** ✅ Desktop Navigation vollständig dynamisch  
+> **Priorität:** Niedrig (Kernfunktionalität implementiert)
 
 ## ✅ Bereits erledigt
 
@@ -19,48 +19,41 @@
 - [x] `useNavigationChildren` Hook erstellt (lädt Kinder einer Seite)
 - [x] `usePageTitles` Hook erstellt (lädt lokalisierte Seitentitel)
 
-## 🔜 Nächste Schritte
+### Desktop Navigation (Navigation.tsx)
+- [x] `usePageTitles` Hook importiert und integriert
+- [x] `getNavTitle` Helper-Funktion erstellt (DB mit Fallback auf statische Übersetzungen)
+- [x] Alle 6 Top-Level Dropdown-Trigger dynamisch: industries, products, test-services, training-events, info-hub, company
+- [x] Industries-Flyout: 8 Untermenü-Links dynamisch
+- [x] Products-Flyout: 5 Untermenü-Links dynamisch
 
-### Phase 1: Hauptnavigation umstellen (Empfohlen als nächstes)
-- [ ] Navigation.tsx: `SimpleDropdown` Trigger-Labels aus DB laden statt aus `t.nav.*`
-- [ ] Navigation.tsx: Top-Level Menüpunkte dynamisch aus `useDynamicNavigation` rendern
-- [ ] Test: Überprüfen, dass Übersetzungen in allen Sprachen korrekt angezeigt werden
+## 🔜 Optionale Verbesserungen (Follow-up)
 
-### Phase 2: Flyout-Menüs dynamisch machen
-- [ ] Industries-Flyout: Links aus `page_registry` statt hardcoded
-- [ ] Products-Flyout: Links aus `page_registry` statt hardcoded
-- [ ] Test Services-Flyout: Links aus `page_registry` statt hardcoded
-- [ ] Entfernen der statischen `industrySlugMap`, `productSlugMap` etc.
+### Mobile Navigation
+- [ ] AccordionTrigger-Labels auf `getNavTitle` umstellen
+- [ ] Untermenü-Links in Accordions dynamisch machen
 
-### Phase 3: Übersetzungsdateien ablösen
-- [ ] `navigationData.ts` (EN) - Daten in DB migrieren
-- [ ] `navigationData.de.ts` - Daten in DB migrieren
-- [ ] `navigationData.ja.ts` - Daten in DB migrieren
-- [ ] `navigationData.ko.ts` - Daten in DB migrieren
-- [ ] `navigationData.zh.ts` - Daten in DB migrieren
-- [ ] `useNavigationData` Hook: Fallback auf statische Daten entfernen
-
-### Phase 4: Admin-UI für Navigation
-- [ ] Dashboard-Seite zum Verwalten der Navigation erstellen
-- [ ] Drag & Drop für Reihenfolge (`nav_position`)
-- [ ] Toggle für Sichtbarkeit (`nav_visible`)
-- [ ] Inline-Editing für Titel-Übersetzungen
-- [ ] Kategorie-Wechsel (main/footer/utility)
+### Weitere Flyouts
+- [ ] Test Services-Flyout: Links dynamisch machen
+- [ ] Training & Events-Flyout: Links dynamisch machen
+- [ ] Info Hub-Flyout: Links dynamisch machen
+- [ ] Company-Flyout: Links dynamisch machen
 
 ## 📝 Hinweise für Redakteure
 
-**Aktueller Stand:**
-Die Datenbank ist vorbereitet und enthält bereits die Navigationsdaten. Die Frontend-Navigation zeigt aber noch die alten statischen Übersetzungen an.
+**Aktueller Stand: ✅ Desktop Navigation ist dynamisch!**
 
-**Was funktioniert bereits:**
-- Änderungen an `flyout_image_url` und `flyout_description_translations` werden im Frontend angezeigt
-- Änderungen an `design_icon` werden im Frontend angezeigt
-- Änderungen an `cta_group`, `cta_label`, `cta_icon` werden angezeigt
+**Was jetzt funktioniert:**
+- ✅ Änderungen an `title_translations` werden in der **Desktop-Navigation** angezeigt
+  - Top-Level Menüs (Industries, Products, Test Services, etc.)
+  - Industries-Untermenü (Automotive, Security, Mobile Phone, etc.)
+  - Products-Untermenü (Test Charts, Illumination, etc.)
+- ✅ Änderungen an `flyout_image_url` und `flyout_description_translations`
+- ✅ Änderungen an `design_icon`
+- ✅ Änderungen an `cta_group`, `cta_label`, `cta_icon`
 
-**Was noch nicht funktioniert:**
-- Änderungen an `title_translations` werden noch NICHT im Hauptmenü angezeigt
-- Änderungen an `nav_visible` haben noch keine Wirkung
-- Änderungen an `nav_position` haben noch keine Wirkung
+**Was noch nicht dynamisch ist (Follow-up):**
+- Mobile Navigation (Accordion-Menüs)
+- `nav_visible` und `nav_position` für Sichtbarkeit/Reihenfolge
 
 ## 🏗️ Architektur-Entscheidungen
 
