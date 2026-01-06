@@ -626,7 +626,10 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
             )}
 
             <p className="text-xs text-gray-400">
-              Alt text is used for accessibility and SEO. Enter English first, then translate.
+              {altTextTranslations['en']?.trim() 
+                ? `✓ English alt text set: "${altTextTranslations['en'].substring(0, 40)}${altTextTranslations['en'].length > 40 ? '...' : ''}". Ready to translate.`
+                : 'Alt text is used for accessibility and SEO. Enter English first, then translate.'
+              }
             </p>
           </div>
 
