@@ -399,7 +399,46 @@ export async function deleteSegment(
   }
 }
 
-// Save segments with safety checks
+// CRITICAL: Validate and correct segment types against segment_registry
+// This prevents type inconsistencies that cause rendering errors
+export async function validateAndCorrectSegmentTypes(
+  pageSlug: string,
+  segments: any[]
+): Promise<any[]> {
+  try {
+    // Fetch authoritative types from segment_registry
+    const { data: registryData } = await supabase
+      .from("segment_registry")
+      .select("segment_id, segment_type")
+      .eq("page_slug", pageSlug)
+      .eq("deleted", false);
+
+    if (!registryData || registryData.length === 0) {
+      return segments;
+    }
+
+    // Build type map
+    const typeMap: Record<string, string> = {};
+    registryData.forEach((reg: any) => {
+      typeMap[String(reg.segment_id)] = reg.segment_type;
+    });
+
+    // Correct any mismatched types
+    return segments.map((seg: any) => {
+      const segId = String(seg.id || seg.segment_key);
+      const registryType = typeMap[segId];
+      
+      if (registryType && registryType !== seg.type) {
+        console.warn(`[TYPE GUARD] Correcting segment ${segId} type: ${seg.type} -> ${registryType}`);
+        return { ...seg, type: registryType };
+      }
+      return seg;
+    });
+  } catch (error) {
+    console.error('[TYPE GUARD] Error validating segment types:', error);
+    return segments;
+  }
+}
 export async function saveSegments(
   context: SegmentContext,
   pageSegments: any[],
@@ -462,8 +501,11 @@ export async function saveSegments(
     // Create backup
     await createMultipleBackups(currentPageSlug, ['page_segments', 'tab_order'], context.editorLanguage);
 
+    // CRITICAL: Validate and correct segment types against segment_registry
+    const validatedSegments = await validateAndCorrectSegmentTypes(currentPageSlug, pageSegments);
+
     // Ensure positions
-    const segmentsWithPositions = pageSegments.map((seg, idx) => ({
+    const segmentsWithPositions = validatedSegments.map((seg, idx) => ({
       ...seg,
       position: idx
     }));
@@ -541,7 +583,10 @@ export function autoSaveSegmentDebounced(
         return;
       }
 
-      const segmentsWithPositions = updatedSegments.map((seg, idx) => ({
+      // CRITICAL: Validate and correct segment types against segment_registry
+      const validatedSegments = await validateAndCorrectSegmentTypes(currentPageSlug, updatedSegments);
+
+      const segmentsWithPositions = validatedSegments.map((seg, idx) => ({
         ...seg,
         position: idx
       }));
