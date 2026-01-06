@@ -1034,7 +1034,11 @@ const DynamicCMSPage = () => {
       }
     }
 
-    const segmentDbId = segmentIdMap[segment.segment_key || segment.id];
+    // Look up segmentDbId using multiple key formats for robustness
+    const segmentDbId = segmentIdMap[segment.segment_key] 
+      || segmentIdMap[segment.id] 
+      || segmentIdMap[String(segment.id)]
+      || (segment.id ? parseInt(String(segment.id), 10) : undefined);
 
     switch (segment.type) {
       case "hero":
@@ -1482,12 +1486,6 @@ const DynamicCMSPage = () => {
       case "banner": {
         // Use segment.id as fallback if segmentDbId is undefined
         const bannerSegmentId = segmentDbId || segment.id || segment.segment_key;
-        console.log('[DynamicCMSPage] Rendering banner segment:', { 
-          segmentId, 
-          segmentDbId, 
-          bannerSegmentId,
-          segmentData: segment.data 
-        });
         return (
           <BannerSegment
             key={segmentId}

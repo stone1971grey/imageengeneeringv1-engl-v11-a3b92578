@@ -157,17 +157,6 @@ const BannerSegment = ({
   const segmentEdit = useSegmentEdit();
   const isEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
-  // Debug logging
-  console.log('[BannerSegment] Render:', {
-    id,
-    segmentKey,
-    isEditing,
-    editContextExists: !!editContext,
-    isEditMode: editContext?.isEditMode,
-    canEdit: editContext?.canEdit,
-    segmentEditExists: !!segmentEdit,
-    isSegmentEditing: segmentEdit?.isSegmentEditing
-  });
 
   // Local state for editing
   const [editImages, setEditImages] = useState<BannerImage[]>(images);
