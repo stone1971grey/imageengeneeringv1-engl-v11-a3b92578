@@ -1,6 +1,7 @@
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
+import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 
 interface ActionHeroProps {
   id?: string;
@@ -26,7 +27,9 @@ const ActionHero = ({
   onContentUpdate
 }: ActionHeroProps) => {
   const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || false;
+  const editContext = useFrontendEditOptional();
+  // Allow editing if segment is being edited OR if we're in general edit mode with permissions
+  const isEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
   return (
     <section 

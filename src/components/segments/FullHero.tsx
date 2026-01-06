@@ -6,6 +6,7 @@ import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { EditableButton } from '@/components/frontend-edit/EditableButton';
+import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 
 interface FullHeroProps {
   id?: string | number;
@@ -78,7 +79,9 @@ const FullHero = ({
   // Strip any HTML tags from subtitle (safety for legacy data)
   const subtitle = stripHtmlTags(rawSubtitle);
   const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || false;
+  const editContext = useFrontendEditOptional();
+  // Allow editing if segment is being edited OR if we're in general edit mode with permissions
+  const isEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
   
   const getTopPaddingClass = () => {
     // Navigation ist ~100-120px hoch, Meta Navigation (wenn vorhanden) ist ~60px hoch zusätzlich
