@@ -4,7 +4,7 @@ import { useSegmentEdit } from './EditableSegment';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Check, X, Loader2, Link as LinkIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface EditableButtonProps {
@@ -254,6 +254,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   }
 
   // Currently editing - show inline editor directly below button
+  // Styling matches ProductHeroGallery button editor: white bg, black input, yellow save, outline cancel
   return (
     <div ref={containerRef} className="inline-block">
       {/* The button itself */}
@@ -269,68 +270,63 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
         {editText || text}
       </Button>
       
-      {/* Inline Editor - directly below the button */}
+      {/* Inline Editor - directly below the button, matching ProductHeroGallery style */}
       <div 
-        className="mt-3 bg-white rounded-xl shadow-2xl p-5 border border-gray-200 min-w-[320px] relative z-[100]"
+        className="mt-3 bg-white p-4 rounded-lg border border-gray-300 shadow-2xl min-w-[280px] relative z-[100]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">Edit Button</h3>
-          
-          {/* Button Text */}
-          <div>
-            <label className="text-xs font-medium text-gray-600 mb-1 block">Button Text</label>
-            <input
-              type="text"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
-              placeholder="Button text..."
-              autoFocus
-            />
-          </div>
-          
-          {/* Button Link */}
-          <div>
-            <label className="text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
-              <LinkIcon className="h-3 w-3" />
-              Link URL
-            </label>
-            <input
-              type="text"
-              value={editLink}
-              onChange={(e) => setEditLink(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
-              placeholder="/path or https://..."
-            />
-            <p className="text-xs text-gray-400 mt-1">Use / for internal, # for anchor, or full URL</p>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2 border-t">
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
-            >
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Check className="h-4 w-4" />
-              )}
-              <span className="font-medium">Save</span>
-            </button>
-            <button
-              onClick={handleCancel}
-              disabled={isSaving}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
-            >
-              <X className="h-4 w-4" />
-              <span className="font-medium">Cancel</span>
-            </button>
-          </div>
+        {/* Text Editor */}
+        <div className="flex gap-2 items-center mb-3">
+          <span className="text-xs text-gray-600 w-10 font-medium">Text:</span>
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
+            placeholder="Button text..."
+            autoFocus
+          />
+        </div>
+        
+        {/* Link Editor */}
+        <div className="flex gap-2 items-center mb-3">
+          <span className="text-xs text-gray-600 w-10 font-medium">Link:</span>
+          <input
+            type="text"
+            value={editLink}
+            onChange={(e) => setEditLink(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="text-sm px-3 py-2 rounded flex-1 bg-gray-900 text-white border border-gray-600 placeholder:text-gray-400"
+            placeholder="/page-url or https://..."
+          />
+        </div>
+        
+        {/* Save / Cancel Buttons - matching ProductHeroGallery style */}
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-medium"
+          >
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              'Save'
+            )}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isSaving}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </div>
