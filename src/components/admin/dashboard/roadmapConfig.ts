@@ -24,7 +24,7 @@ export interface RoadmapVersion {
 // ============================================
 // CURRENT VERSION
 // ============================================
-export const CMS_VERSION = '1.1.0';
+export const CMS_VERSION = '1.1.1';
 
 // ============================================
 // ROADMAP VERSIONS
@@ -97,7 +97,7 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
   // Current Version
   {
     key: 'v1.1',
-    label: '🍾 v1.1 – Advanced AI SEO Suite',
+    label: '🍾 v1.1 – Advanced AI SEO Suite & Further Development',
     status: 'current',
     features: [
       { label: 'Smart Focus Keyword', status: 'done' },
@@ -120,11 +120,12 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
   // Roadmap Versions (Admin Only)
   {
     key: 'v1.2',
-    label: 'v1.2 – Frontend Editing',
+    label: 'v1.2 – Frontend Editing & Further Development',
     status: 'planned',
     isAdminOnly: true,
     features: [
       { label: 'Frontend Editing', status: 'planned' },
+      { label: 'Editor Activity Panel', status: 'done' },
     ]
   },
   {
