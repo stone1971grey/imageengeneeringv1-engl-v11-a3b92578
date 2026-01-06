@@ -334,7 +334,11 @@ const DynamicCMSPage = () => {
   }, [pageSlug, currentUrlLanguage]);
 
   const loadContent = async () => {
-    console.log('[DynamicCMSPage] loadContent started for:', pageSlug, 'language:', currentUrlLanguage);
+    // CRITICAL FIX: Use currentUrlLanguage as single source of truth (already calculated at component level)
+    // This prevents inconsistencies between URL language detection in different parts of the code
+    const urlLanguage = currentUrlLanguage;
+    
+    console.log('[DynamicCMSPage] loadContent started for:', pageSlug, 'language:', urlLanguage, 'pathname:', location.pathname);
     
     // CRITICAL: Use try-finally to ALWAYS set loading to false
     try {
@@ -343,11 +347,6 @@ const DynamicCMSPage = () => {
         setPageNotFound(true);
         return;
       }
-
-      // Extract language from URL
-      const pathParts = location.pathname.replace(/^\/+/, "").split('/');
-      const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-      const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
       // Check if page exists in page_registry and if it's a shortcut
       const { data: pageData, error: pageError } = await supabase
@@ -388,24 +387,30 @@ const DynamicCMSPage = () => {
       }
 
       // Try to load content in requested language first
+      console.log(`[DynamicCMSPage] Fetching page_content for ${pageSlug} in language: ${urlLanguage}`);
       let { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("language", urlLanguage);
 
-    // Fallback to English if no content found in requested language
-    if (!data || data.length === 0) {
-      console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
-      const fallback = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("language", 'en');
-      
-      data = fallback.data;
-      error = fallback.error;
-    }
+      console.log(`[DynamicCMSPage] Query result for ${urlLanguage}: ${data?.length || 0} rows`);
+
+      // Fallback to English ONLY if no content found in requested language
+      if (!data || data.length === 0) {
+        console.warn(`[DynamicCMSPage] FALLBACK: No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
+        const fallback = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("language", 'en');
+        
+        data = fallback.data;
+        error = fallback.error;
+        console.log(`[DynamicCMSPage] English fallback result: ${data?.length || 0} rows`);
+      } else {
+        console.log(`[DynamicCMSPage] SUCCESS: Using ${urlLanguage} content (${data.length} rows)`);
+      }
 
     const { data: segmentData } = await supabase
       .from("segment_registry")
