@@ -380,9 +380,10 @@ export const AUTOSAVE_KEY_PREFIX = 'cms_autosave_';
 // ============================================
 
 /**
- * CMS Version (displayed in welcome screen)
+ * CMS Version - DEPRECATED: Use CMS_VERSION from roadmapConfig.ts instead
+ * This export is kept for backward compatibility only.
  */
-export const CMS_VERSION = '1.0.8';
+export { CMS_VERSION } from './roadmapConfig';
 
 /**
  * Default number of columns for tiles segment
