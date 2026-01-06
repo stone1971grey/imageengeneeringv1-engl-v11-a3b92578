@@ -1084,16 +1084,28 @@ export function DataHubDialog({
                              {/* Segment Badges - support multiple segments on top-right */}
                              {segmentIds.length > 0 && (
                                <div className="absolute top-2 right-2 flex items-center gap-1">
-                                 {segmentIds.map((id: string, idx: number) => (
+                                 {segmentIds.length <= 2 ? (
+                                   // Show all badges if 2 or fewer
+                                   segmentIds.map((id: string, idx: number) => (
+                                     <div 
+                                       key={idx}
+                                       className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                       title={`Assigned to Segment ${id}`}
+                                     >
+                                       <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                       <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                     </div>
+                                   ))
+                                 ) : (
+                                   // Show condensed badge for 3+ segments
                                    <div 
-                                     key={idx}
                                      className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
-                                     title={`Assigned to Segment ${id}`}
+                                     title={`Assigned to Segments: ${segmentIds.join(', ')}`}
                                    >
                                      <Tag className="h-3 w-3 text-[#f9dc24]" />
-                                     <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                     <span className="text-[10px] font-semibold text-[#f9dc24]">{segmentIds.length} Segments</span>
                                    </div>
-                                 ))}
+                                 )}
                                </div>
                              )}
                           </div>
@@ -1172,16 +1184,26 @@ export function DataHubDialog({
                             {/* Segment Badges for videos */}
                             {segmentIds.length > 0 && (
                               <div className="absolute top-2 right-2 flex items-center gap-1">
-                                {segmentIds.map((id: string, idx: number) => (
+                                {segmentIds.length <= 2 ? (
+                                  segmentIds.map((id: string, idx: number) => (
+                                    <div 
+                                      key={idx}
+                                      className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                      title={`Assigned to Segment ${id}`}
+                                    >
+                                      <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                      <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                    </div>
+                                  ))
+                                ) : (
                                   <div 
-                                    key={idx}
                                     className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
-                                    title={`Assigned to Segment ${id}`}
+                                    title={`Assigned to Segments: ${segmentIds.join(', ')}`}
                                   >
                                     <Tag className="h-3 w-3 text-[#f9dc24]" />
-                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                    <span className="text-[10px] font-semibold text-[#f9dc24]">{segmentIds.length} Segments</span>
                                   </div>
-                                ))}
+                                )}
                               </div>
                             )}
                           </div>
@@ -1230,16 +1252,26 @@ export function DataHubDialog({
                             {/* Segment Badges for PDFs */}
                             {segmentIds.length > 0 && (
                               <div className="absolute top-2 right-2 flex items-center gap-1">
-                                {segmentIds.map((id: string, idx: number) => (
+                                {segmentIds.length <= 2 ? (
+                                  segmentIds.map((id: string, idx: number) => (
+                                    <div 
+                                      key={idx}
+                                      className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                      title={`Assigned to Segment ${id}`}
+                                    >
+                                      <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                      <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                    </div>
+                                  ))
+                                ) : (
                                   <div 
-                                    key={idx}
                                     className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
-                                    title={`Assigned to Segment ${id}`}
+                                    title={`Assigned to Segments: ${segmentIds.join(', ')}`}
                                   >
                                     <Tag className="h-3 w-3 text-[#f9dc24]" />
-                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                    <span className="text-[10px] font-semibold text-[#f9dc24]">{segmentIds.length} Segments</span>
                                   </div>
-                                ))}
+                                )}
                               </div>
                             )}
                           </div>
