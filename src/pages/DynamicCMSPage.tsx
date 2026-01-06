@@ -1347,6 +1347,10 @@ const DynamicCMSPage = () => {
             subtitle={segment.data?.subtitle || ""}
             columns={segment.data?.columns}
             items={segment.data?.items || []}
+            segmentKey={`industries-${segmentDbId}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
           />
         );
 
