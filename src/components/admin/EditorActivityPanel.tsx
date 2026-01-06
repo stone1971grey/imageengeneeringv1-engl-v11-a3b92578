@@ -662,11 +662,14 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                               className="flex items-start justify-between p-4 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-colors border border-gray-700/50"
                             >
                               <div className="flex-1 min-w-0">
-                                {/* Time and Type Badges */}
+                                {/* Date, Time and Type Badges */}
                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                                   <Clock className="h-3.5 w-3.5 text-gray-500" />
                                   <span className="text-sm font-bold text-[#f9dc24]">
-                                    {format(parseISO(entry.backup_created_at), "HH:mm")}
+                                    {format(parseISO(entry.backup_created_at), "dd.MM.yyyy")}
+                                  </span>
+                                  <span className="text-sm font-bold text-white">
+                                    {format(parseISO(entry.backup_created_at), "HH:mm:ss")}
                                   </span>
                                   <Badge className={`${changeType.color} text-white text-xs`}>
                                     {changeType.type}
@@ -688,16 +691,21 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                                   </Badge>
                                 </div>
                                 
-                                {/* Page & Segment */}
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-sm font-medium text-blue-400">
-                                    {entry.page_slug}
-                                  </span>
+                                {/* Page & Segment with IDs */}
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                  <Badge variant="outline" className="text-xs border-blue-500 text-blue-400 font-mono">
+                                    Page: {entry.page_slug}
+                                  </Badge>
                                   <span className="text-gray-500">→</span>
-                                  <span className="text-sm text-white">
-                                    {formatSegmentName(entry.section_key)}
-                                  </span>
+                                  <Badge variant="outline" className="text-xs border-purple-500 text-purple-400 font-mono">
+                                    {entry.section_key}
+                                  </Badge>
                                 </div>
+                                
+                                {/* Formatted segment name */}
+                                <p className="text-sm text-white font-medium mb-1">
+                                  {formatSegmentName(entry.section_key)}
+                                </p>
                                 
                                 {/* Content Summary */}
                                 <p className="text-sm text-gray-400 truncate max-w-[500px]">
@@ -707,7 +715,7 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                                 {/* Editor Info */}
                                 <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
                                   <User className="h-3 w-3" />
-                                  <span>{getEditorName(entry.original_updated_by)}</span>
+                                  <span className="font-medium text-gray-300">{getEditorName(entry.original_updated_by)}</span>
                                   {getEditorEmail(entry.original_updated_by) && (
                                     <span className="text-gray-600">
                                       ({getEditorEmail(entry.original_updated_by)})
