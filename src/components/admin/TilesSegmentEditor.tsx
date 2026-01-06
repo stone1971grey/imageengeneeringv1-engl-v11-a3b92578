@@ -553,32 +553,22 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                       toast.success('Image uploaded successfully');
                       console.log('=== TILE IMAGE UPLOAD COMPLETE ===');
                     }}
-                    onMediaSelect={async (url, metadata) => {
-                      console.log('=== MEDIA SELECT START ===', url);
+                    onMediaSelect={(url, metadata) => {
                       if (!url) {
-                        console.error('No URL provided from Media Management');
                         toast.error('Keine Bild-URL erhalten');
                         return;
                       }
                       
-                      handleTileChange(index, 'imageUrl', url);
-                      if (metadata) {
-                        handleTileChange(index, 'metadata', metadata);
-                      }
+                      // Update tile with image URL
+                      const newTiles = [...tiles];
+                      newTiles[index] = { 
+                        ...newTiles[index], 
+                        imageUrl: url,
+                        metadata: metadata || newTiles[index].metadata
+                      };
+                      setTiles(newTiles);
                       
-                      try {
-                        const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
-                        if (altFromMapping) {
-                          handleTileChange(index, 'altText', altFromMapping);
-                        }
-                        const { count } = await getSegmentCountForImage(url, 'page-images');
-                        handleTileChange(index, 'segmentCount', count);
-                      } catch (error) {
-                        console.error('Error loading metadata:', error);
-                      }
-                      
-                      toast.success('Bild aus Media Management ausgewählt');
-                      console.log('=== MEDIA SELECT COMPLETE ===');
+                      toast.success(`Bild für Tile ${index + 1} ausgewählt`);
                     }}
                   />
                 )}
