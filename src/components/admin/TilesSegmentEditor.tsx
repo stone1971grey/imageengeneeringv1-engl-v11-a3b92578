@@ -503,71 +503,72 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               </div>
 
               {/* Image Upload - Alternative to Icon */}
-              {(() => {
-                const hasIcon = tile.icon && tile.icon !== '' && tile.icon !== 'none';
-                return (
-                  <div className="space-y-3">
-                    <Label className="text-white flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4" />
-                      Image (Alternative to Icon)
-                    </Label>
-                    
-                    {hasIcon ? (
-                      <p className="text-sm text-gray-400 italic">
-                        Wählen Sie oben "No Icon", um ein Bild hochzuladen.
-                      </p>
-                    ) : (
-                      <MediaSelector
-                        label=""
-                        currentImageUrl={tile.imageUrl || ''}
-                        onFileSelect={async (file) => {
-                          // Upload file to storage using page slug as folder
-                          const fileExt = file.name.split('.').pop();
-                          const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
-                          const filePath = `${pageSlug}/${fileName}`;
-                          
-                          const { error: uploadError } = await supabase.storage
-                            .from('page-images')
-                            .upload(filePath, file);
-                          
-                          if (uploadError) {
-                            toast.error('Failed to upload image');
-                            return;
-                          }
-                          
-                          const { data: { publicUrl } } = supabase.storage
-                            .from('page-images')
-                            .getPublicUrl(filePath);
-                          
-                          handleTileChange(index, 'imageUrl', publicUrl);
-                          
-                          // Update segment mapping - extract numeric ID from segmentId string
-                          const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
-                          if (numericSegmentId > 0) {
-                            await updateSegmentMapping(publicUrl, numericSegmentId, 'page-images', true, `Tile ${index + 1} image`);
-                          }
-                          
-                          toast.success('Image uploaded successfully');
-                        }}
-                        onMediaSelect={async (url, metadata) => {
-                          handleTileChange(index, 'imageUrl', url);
-                          if (metadata) {
-                            handleTileChange(index, 'metadata', metadata);
-                          }
-                          // Load alt text from Media Management for selected image
-                          const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
-                          if (altFromMapping) {
-                            handleTileChange(index, 'altText', altFromMapping);
-                          }
-                          // Check segment count
-                          const { count } = await getSegmentCountForImage(url, 'page-images');
-                          handleTileChange(index, 'segmentCount', count);
-                        }}
-                      />
-                    )}
-                  </div>
-                );
-              })()}
+              <div className="space-y-3">
+                <Label className="text-white flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Image (Alternative to Icon)
+                </Label>
+                
+                {tile.icon && tile.icon !== '' && tile.icon !== 'none' ? (
+                  <p className="text-sm text-gray-400 italic">
+                    Wählen Sie oben "No Icon", um ein Bild hochzuladen.
+                  </p>
+                ) : (
+                  <MediaSelector
+                    label=""
+                    currentImageUrl={tile.imageUrl || ''}
+                    onFileSelect={async (file) => {
+                      console.log('=== TILE IMAGE UPLOAD START ===');
+                      console.log('File:', file.name, 'Size:', file.size);
+                      console.log('pageSlug:', pageSlug, 'segmentId:', segmentId, 'index:', index);
+                      
+                      const fileExt = file.name.split('.').pop();
+                      const fileName = `tile-${segmentId}-${index}-${Date.now()}.${fileExt}`;
+                      const filePath = `${pageSlug}/${fileName}`;
+                      
+                      console.log('Upload path:', filePath);
+                      
+                      const { error: uploadError } = await supabase.storage
+                        .from('page-images')
+                        .upload(filePath, file);
+                      
+                      if (uploadError) {
+                        console.error('Upload error:', uploadError);
+                        toast.error('Failed to upload image: ' + uploadError.message);
+                        return;
+                      }
+                      
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('page-images')
+                        .getPublicUrl(filePath);
+                      
+                      console.log('Public URL:', publicUrl);
+                      handleTileChange(index, 'imageUrl', publicUrl);
+                      
+                      const numericSegmentId = parseInt(segmentId.replace(/\D/g, '')) || 0;
+                      if (numericSegmentId > 0) {
+                        await updateSegmentMapping(publicUrl, numericSegmentId, 'page-images', true, `Tile ${index + 1} image`);
+                      }
+                      
+                      toast.success('Image uploaded successfully');
+                      console.log('=== TILE IMAGE UPLOAD COMPLETE ===');
+                    }}
+                    onMediaSelect={async (url, metadata) => {
+                      console.log('=== MEDIA SELECT ===', url);
+                      handleTileChange(index, 'imageUrl', url);
+                      if (metadata) {
+                        handleTileChange(index, 'metadata', metadata);
+                      }
+                      const altFromMapping = await loadAltTextFromMapping(url, 'page-images', language);
+                      if (altFromMapping) {
+                        handleTileChange(index, 'altText', altFromMapping);
+                      }
+                      const { count } = await getSegmentCountForImage(url, 'page-images');
+                      handleTileChange(index, 'segmentCount', count);
+                    }}
+                  />
+                )}
+              </div>
               {/* Alt-Text Field - only show when image is set */}
               {tile.imageUrl && !tile.icon && (
                 <div className="space-y-2">
