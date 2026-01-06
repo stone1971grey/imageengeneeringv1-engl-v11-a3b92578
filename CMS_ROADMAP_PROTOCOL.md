@@ -1,7 +1,7 @@
 # CMS Roadmap Protocol
 
 > Dokumentation der geplanten CMS-Versionen und Features
-> Stand: 2026-01-01
+> Stand: 2026-01-06
 
 ---
 
@@ -9,10 +9,10 @@
 
 | Version | Name | Status | Ziel |
 |---------|------|--------|------|
-| v1.0.0 | Release | ✅ Fertig | Produktionsreifer CMS-Kern |
-| v1.1 | Advanced AI SEO Suite | 🔜 Geplant | KI-gestützte SEO-Optimierung |
-| v1.2 | Frontend Editing | 🔜 Geplant | Inline-Bearbeitung im Frontend |
-| v1.3 | Content Automation | 🔜 Geplant | Automatisierter Content-Import |
+| v1.0.8 | Release | ✅ Fertig | Produktionsreifer CMS-Kern |
+| v1.1 | Advanced AI SEO Suite | ✅ Fertig | KI-gestützte SEO-Optimierung |
+| v1.2 | Frontend Editing | ✅ Fertig | Inline-Bearbeitung im Frontend |
+| v1.3 | Content Automation | ✅ Fertig | Automatisierter Content-Import |
 | v1.4 | Template System | 🔜 Geplant | CMS als Boilerplate |
 | v1.5 | Configuration Layer | 🔜 Geplant | Mandanten-Konfiguration |
 | v1.6 | Data Isolation | 🔜 Geplant | Datentrennung pro Mandant |
@@ -22,55 +22,64 @@
 
 ---
 
-## v1.0.0 – Release ✅
+## v1.0.8 – Release ✅
 
-**Status:** Fertiggestellt
+**Status:** Fertiggestellt (2026-01-06)
 
 ### Features
 - **Draft/Publish Workflow**: Entwurf-/Veröffentlichungs-System mit Berechtigungen
 - **Latest Edit**: Schnellzugriff auf zuletzt bearbeitete Seiten
 - **Copy Page**: Vollständige Seitenduplizierung inkl. aller Segmente
 - **Version History**: Versionierung mit Rollback-Funktion
-- **Segment-Registry**: Dynamische Segment-Verwaltung (bereits seit frühen Versionen stabil)
+- **Segment-Registry**: Dynamische Segment-Verwaltung
+- 🟢 **Cascading Slug Inheritance**: Umbenennung von Parent-Slugs aktualisiert automatisch alle Child-Seiten (page_slug, parent_slug, Registry, Navigation)
+- 🟢 **Multi-Segment Asset Badges**: Assets in Media Management zeigen Badges für alle zugewiesenen Segmente (1-2: individuelle IDs, 3+: "X Segments" Badge)
+- 🟢 **Segment Type Validation**: Automatische Typ-Korrektur gegen segment_registry beim Laden und Speichern
+- 🟢 **Language Switch Stability**: Robuster englischer Fallback für Segmente ohne Daten in Zielsprache
 
 ---
 
-## v1.1 – Advanced AI SEO Suite 🔜
+## v1.1 – Advanced AI SEO Suite ✅
 
-**Status:** Geplant
+**Status:** Fertiggestellt
 
 ### Features
-- KI-generierte Meta-Titles und Descriptions
-- Automatische H1-Headline-Vorschläge
-- Focus Keyword Analyse
-- Internal Linking Suggestions
-- SEO Score Dashboard
+- 🟢 KI-generierte Meta-Titles und Descriptions
+- 🟢 Automatische H1-Headline-Vorschläge
+- 🟢 Focus Keyword Analyse mit SISTRIX-Integration
+- 🟢 Internal Linking Suggestions
+- 🟢 SEO Score Dashboard
+- 🟢 Relaunch Dashboard mit Priority-Scoring
+- 🟢 Smart Content Creator
 
 ---
 
-## v1.2 – Frontend Editing 🔜
+## v1.2 – Frontend Editing ✅
 
-**Status:** Geplant
+**Status:** Fertiggestellt
 
 ### Features
-- Inline-Text-Bearbeitung direkt im Frontend
-- Bild-Austausch per Klick
-- Segment-Sortierung per Drag & Drop
-- Approval-Workflow für Änderungen
-- Edit-Mode Toggle
+- 🟢 Inline-Text-Bearbeitung direkt im Frontend
+- 🟢 Bild-Austausch per Klick (Upload + Media Management)
+- 🟢 Segment-spezifische Editoren (Hero, Intro, Tiles, Banner, etc.)
+- 🟢 Approval-Workflow für importierte Segmente (pending → approved)
+- 🟢 Edit-Mode Toggle mit Berechtigungsprüfung
+- 🟢 Layout-Stabilität (absolute Tooltips, keine Größenänderungen)
 
 ---
 
-## v1.3 – Content Automation 🔜
+## v1.3 – Content Automation ✅
 
-**Status:** Geplant
+**Status:** Fertiggestellt
 
 ### Features
-- Automatischer Content-Import von externen URLs
-- Media Management First Protocol
-- One Asset, One Segment Mapping
-- Automatische Segment-Erstellung
-- Redirect-Integration
+- 🟢 Automatischer Content-Import von externen URLs via Firecrawl
+- 🟢 Media Management First Protocol
+- 🟢 One Asset, One Segment Mapping
+- 🟢 Automatische Segment-Erstellung (Hero, Intro, Image-Text, Tiles, FAQ, Table)
+- 🟢 Redirect-Integration (301-Redirects bei Import)
+- 🟢 Language-specific Source URLs
+- 🟢 Frontend Approval Workflow für importierte Inhalte
 
 ---
 
