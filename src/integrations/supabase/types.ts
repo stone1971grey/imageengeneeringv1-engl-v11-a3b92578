@@ -739,6 +739,9 @@ export type Database = {
           flyout_image_url: string | null
           frontend_editing_enabled: boolean
           id: number
+          nav_category: string | null
+          nav_position: number | null
+          nav_visible: boolean | null
           page_id: number
           page_slug: string
           page_title: string
@@ -747,6 +750,7 @@ export type Database = {
           position: number | null
           status: string
           target_page_slug: string | null
+          title_translations: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -759,6 +763,9 @@ export type Database = {
           flyout_image_url?: string | null
           frontend_editing_enabled?: boolean
           id?: number
+          nav_category?: string | null
+          nav_position?: number | null
+          nav_visible?: boolean | null
           page_id: number
           page_slug: string
           page_title: string
@@ -767,6 +774,7 @@ export type Database = {
           position?: number | null
           status?: string
           target_page_slug?: string | null
+          title_translations?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -779,6 +787,9 @@ export type Database = {
           flyout_image_url?: string | null
           frontend_editing_enabled?: boolean
           id?: number
+          nav_category?: string | null
+          nav_position?: number | null
+          nav_visible?: boolean | null
           page_id?: number
           page_slug?: string
           page_title?: string
@@ -787,6 +798,7 @@ export type Database = {
           position?: number | null
           status?: string
           target_page_slug?: string | null
+          title_translations?: Json | null
         }
         Relationships: []
       }

@@ -1,7 +1,8 @@
 # CMS Multi-Tenancy Roadmap
 
-**Version:** Draft 1.0  
+**Version:** Draft 2.0  
 **Erstellt:** 2026-01-01  
+**Aktualisiert:** 2026-01-06  
 **Ziel:** Lovable CMS als mandantenfähige Lösung für externe Lovable-Projekte
 
 ---
@@ -9,6 +10,68 @@
 ## Executive Summary
 
 Dieses Dokument beschreibt die technische Roadmap, um das aktuelle CMS (v1.0) in eine mandantenfähige Lösung zu transformieren, die für andere Lovable-Projekte ausrollbar ist.
+
+**Status Update (2026-01-06):** Database-First Navigation implementiert.
+
+---
+
+## 0. Database-First Navigation (IMPLEMENTIERT ✅)
+
+### Architektur-Entscheidung
+
+Wir haben uns für **Ansatz A (Database-First)** entschieden, um maximale Flexibilität für Multi-Tenancy zu gewährleisten.
+
+### Kernprinzipien
+
+1. **`page_registry` ist die einzige Wahrheitsquelle** für Navigation
+2. **Keine statischen Übersetzungsdateien** für Navigation (navigationData.ts wird obsolet)
+3. **Hierarchie via `parent_slug`** - Slug-Änderungen propagieren automatisch
+4. **Mehrsprachige Titel via `title_translations` JSONB**
+
+### Neue Schema-Spalten in `page_registry`
+
+| Spalte | Typ | Beschreibung |
+|--------|-----|--------------|
+| `title_translations` | jsonb | Mehrsprachige Titel: `{"de": "Industrien", "ja": "産業"}` |
+| `nav_category` | text | Navigation-Zugehörigkeit: 'main', 'footer', 'utility', 'none' |
+| `nav_visible` | boolean | Sichtbar in Navigation? |
+| `nav_position` | integer | Sortierung innerhalb Navigation |
+
+### Neuer Hook: `useDynamicNavigation`
+
+```typescript
+import { useDynamicNavigation } from '@/hooks/useDynamicNavigation';
+
+function Navigation() {
+  const { navigation, getTitle, getPath, isLoading } = useDynamicNavigation();
+  
+  return (
+    <nav>
+      {navigation.mainNav.map(page => (
+        <Link to={getPath(page)} key={page.slug}>
+          {getTitle(page)}
+          {page.children?.map(child => (
+            <Link to={getPath(child)}>{getTitle(child)}</Link>
+          ))}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+```
+
+### Vorteile für Multi-Tenancy
+
+- **Gleicher Code, verschiedene Datenbanken** - keine Code-Anpassungen pro Mandant
+- **Redakteurs-Autonomie** - Struktur ändern ohne Deployment
+- **Automatische Slug-Vererbung** - Parent-Slug-Änderungen propagieren zu Kindern
+- **Kein Hardcoding** - Kategorien, Icons, Beschreibungen alle in DB
+
+### Migration bestehender Daten
+
+Titel-Übersetzungen wurden für alle Haupt-Navigationspunkte in `title_translations` hinterlegt:
+- Top-Level: industries, products, test-lab, training-events, info-hub, company
+- Sub-Level: Alle Industry-Pages, Product-Categories, etc.
 
 ---
 
@@ -40,7 +103,7 @@ cms-template/
 │   ├── migrations/           # Basis-Schema (leer, ohne Content)
 │   └── functions/            # Edge Functions
 ├── config/
-│   └── tenant.config.ts      # Mandanten-Konfiguration
+│   └── tenant.config.ts      # Mandanten-Konfiguration (nur Branding)
 └── README.md                 # Setup-Anleitung
 ```
 
@@ -50,6 +113,7 @@ cms-template/
    - Alle Tabellen (page_registry, page_content, segment_registry, etc.)
    - RLS Policies
    - Funktionen (has_role, get_next_page_id, etc.)
+   - **Navigation-Schema** (title_translations, nav_category, nav_visible, nav_position)
    - Leere Daten (keine Demo-Seiten)
 
 2. **Optional: Starter-Content-Migration**
