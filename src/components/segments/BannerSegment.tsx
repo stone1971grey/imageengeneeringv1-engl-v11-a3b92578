@@ -233,48 +233,49 @@ const SortableImageItem = ({
             <Loader2 className="h-5 w-5 animate-spin" />
             <span className="text-sm">Uploading...</span>
           </div>
+        ) : isEditing ? (
+          /* Edit mode: show image with upload buttons overlay */
+          <div className="relative flex flex-col items-center justify-center w-full h-full">
+            <img
+              src={image.url}
+              alt={image.alt || 'Banner image'}
+              className="max-h-12 max-w-full object-contain grayscale"
+            />
+            {/* Buttons always visible in edit mode - like Footer */}
+            <div className="flex gap-1 mt-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+              >
+                <Upload className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMediaDialog(true);
+                }}
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+              >
+                <FolderOpen className="h-3 w-3" />
+              </button>
+            </div>
+          </div>
         ) : (
           <img
             src={image.url}
             alt={image.alt || 'Banner image'}
-            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300 pointer-events-none"
+            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
           />
         )}
-
-        {/* Upload options overlay - shown on hover in edit mode */}
-        {isEditing && !isUploading && !showOptions && (
-          <div 
-            className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg z-20"
-          >
-            {/* Yellow - Upload from Computer */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                fileInputRef.current?.click();
-              }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#f9dc24] text-black text-xs font-medium hover:bg-[#e5c820] transition-colors"
-            >
-              <Upload className="h-3 w-3" />
-              Upload
-            </button>
-            
-            {/* Blue - Select from Media */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMediaDialog(true);
-              }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#1e6bb8] text-white text-xs font-medium hover:bg-[#1a5d9e] transition-colors"
-            >
-              <FolderOpen className="h-3 w-3" />
-              Media
-            </button>
-          </div>
-        )}
         
-        {/* Alt text editor on hover */}
+        {/* Alt text editor - always visible in edit mode */}
         {isEditing && (
-          <div className="absolute -bottom-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          <div className="absolute -bottom-8 left-0 right-0 z-10">
             <input
               type="text"
               value={image.alt || ''}
@@ -396,47 +397,39 @@ const AddImageButton = ({
 
   return (
     <>
-      <div className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] hover:bg-gray-50 transition-colors relative group">
+      <div className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] transition-colors">
         {isUploading ? (
           <div className="flex flex-col items-center">
-            <Loader2 className="h-8 w-8 mb-1 animate-spin" />
-            <span className="text-sm">Uploading...</span>
+            <Loader2 className="h-6 w-6 mb-1 animate-spin" />
+            <span className="text-xs">Uploading...</span>
           </div>
         ) : (
-          <>
-            {/* Default state */}
-            <div className="flex flex-col items-center group-hover:opacity-0 transition-opacity">
-              <Plus className="h-8 w-8 mb-1" />
-              <span className="text-sm">Add Image</span>
-            </div>
-            
-            {/* Hover state - show upload options */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              {/* Yellow - Upload from Computer */}
+          /* Always show buttons - like Footer pattern */
+          <div className="flex flex-col items-center">
+            <Plus className="h-6 w-6 mb-2" />
+            <div className="flex gap-1">
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#f9dc24] text-black text-xs font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
               >
                 <Upload className="h-3 w-3" />
-                Upload
               </button>
-              
-              {/* Blue - Select from Media */}
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#1e6bb8] text-white text-xs font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
               >
                 <FolderOpen className="h-3 w-3" />
-                Media
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
 
