@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -365,10 +365,12 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
           <div>
             <Label htmlFor="tiles-desc" className="text-white">Section Description</Label>
-            <SimpleRichTextEditor
+            <Textarea
+              id="tiles-desc"
               value={description}
-              onChange={setDescription}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Section description..."
+              className="border-2 border-gray-600 bg-gray-800 text-white min-h-[80px]"
             />
           </div>
 
@@ -594,10 +596,11 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
               <div>
                 <Label className="text-white">Description</Label>
-                <SimpleRichTextEditor
+                <Textarea
                   value={tile.description}
-                  onChange={(value) => handleTileChange(index, 'description', value)}
+                  onChange={(e) => handleTileChange(index, 'description', e.target.value)}
                   placeholder="Tile description..."
+                  className="border-2 border-gray-600 bg-gray-800 text-white min-h-[80px]"
                 />
               </div>
 
