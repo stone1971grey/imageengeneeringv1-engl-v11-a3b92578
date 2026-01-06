@@ -10,9 +10,16 @@ import { Button } from '@/components/ui/button';
 // Button style options matching ProductHeroGallery
 const buttonStyles = [
   { value: 'yellow', label: 'Yellow', color: '#f9dc24' },
-  { value: 'technical', label: 'Black', color: '#1f2937' },
+  { value: 'black', label: 'Black', color: '#1f2937' },
   { value: 'outline-white', label: 'Transparent', color: '#ffffff' },
 ];
+
+// Normalize style value - map different variations to canonical values
+const normalizeStyle = (style: string): string => {
+  if (style === 'technical' || style === 'black') return 'black';
+  if (style === 'white' || style === 'outline-white') return 'outline-white';
+  return style || 'yellow';
+};
 
 interface EditableButtonProps {
   text: string;
@@ -52,7 +59,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
   const [editLink, setEditLink] = useState(link);
-  const [editStyle, setEditStyle] = useState(initialButtonStyle);
+  const [editStyle, setEditStyle] = useState(normalizeStyle(initialButtonStyle));
   const [isSaving, setIsSaving] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +70,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   useEffect(() => {
     setEditText(text);
     setEditLink(link);
-    setEditStyle(initialButtonStyle);
+    setEditStyle(normalizeStyle(initialButtonStyle));
   }, [text, link, initialButtonStyle]);
 
   // Focus input when editing starts
@@ -93,12 +100,11 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
 
   // Get button style based on style value (matching ProductHeroGallery)
   const getComputedButtonStyle = (styleValue: string): React.CSSProperties => {
-    switch (styleValue) {
-      case 'technical':
+    const normalized = normalizeStyle(styleValue);
+    switch (normalized) {
       case 'black':
         return { backgroundColor: '#1f2937', color: 'white' };
       case 'outline-white':
-      case 'white':
         return { backgroundColor: 'white', color: 'black', border: '1px solid #e5e5e5' };
       case 'yellow':
       default:
@@ -107,7 +113,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   };
 
   const handleSave = useCallback(async () => {
-    if (editText === text && editLink === link && editStyle === initialButtonStyle) {
+    if (editText === text && editLink === link && editStyle === normalizeStyle(initialButtonStyle)) {
       setIsEditing(false);
       return;
     }
@@ -209,7 +215,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const handleCancel = useCallback(() => {
     setEditText(text);
     setEditLink(link);
-    setEditStyle(initialButtonStyle);
+    setEditStyle(normalizeStyle(initialButtonStyle));
     setIsEditing(false);
   }, [text, link, initialButtonStyle]);
 
