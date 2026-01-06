@@ -137,10 +137,10 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
                   
                   <VersionSection 
                     versionKey="v1.1"
-                    label="v1.1 – Advanced AI SEO Suite"
+                    label="✅ v1.1 – Advanced AI SEO Suite"
                     isOpen={openVersions["v1.1"]}
                     onToggle={() => toggleVersion("v1.1")}
-                    isPlanned
+                    isComplete
                   >
                     <FeatureItem icon={CheckCircle2} label="Smart Focus Keyword" isDone />
                     <FeatureItem icon={CheckCircle2} label="Smart Title Generator" isDone />
@@ -158,22 +158,22 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
 
                   <VersionSection 
                     versionKey="v1.2"
-                    label="v1.2 – Frontend Editing"
+                    label="✅ v1.2 – Frontend Editing"
                     isOpen={openVersions["v1.2"]}
                     onToggle={() => toggleVersion("v1.2")}
-                    isPlanned
+                    isComplete
                   >
-                    <FeatureItem icon={PenLine} label="Frontend Editing" isPlanned />
+                    <FeatureItem icon={CheckCircle2} label="Frontend Editing" isDone />
                   </VersionSection>
 
                   <VersionSection 
                     versionKey="v1.3"
-                    label="v1.3 – Content Automation"
+                    label="✅ v1.3 – Content Automation"
                     isOpen={openVersions["v1.3"]}
                     onToggle={() => toggleVersion("v1.3")}
-                    isPlanned
+                    isComplete
                   >
-                    <FeatureItem icon={Flame} label="Content Automation" isPlanned />
+                    <FeatureItem icon={CheckCircle2} label="Content Automation" isDone />
                   </VersionSection>
 
                   <VersionSection 
@@ -330,25 +330,29 @@ interface VersionSectionProps {
   onToggle: () => void;
   isCurrent?: boolean;
   isPlanned?: boolean;
+  isComplete?: boolean;
   children: React.ReactNode;
 }
 
-const VersionSection = ({ label, isOpen, onToggle, isCurrent, isPlanned, children }: VersionSectionProps) => (
+const VersionSection = ({ label, isOpen, onToggle, isCurrent, isPlanned, isComplete, children }: VersionSectionProps) => (
   <Collapsible open={isOpen} onOpenChange={onToggle}>
     <CollapsibleTrigger className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors ${
       isCurrent 
         ? 'bg-[#f9dc24]/20 hover:bg-[#f9dc24]/30' 
-        : isPlanned 
-          ? 'bg-gray-700/30 hover:bg-gray-700/50' 
-          : 'bg-gray-800/50 hover:bg-gray-800/70'
+        : isComplete
+          ? 'bg-green-900/30 hover:bg-green-900/50'
+          : isPlanned 
+            ? 'bg-gray-700/30 hover:bg-gray-700/50' 
+            : 'bg-gray-800/50 hover:bg-gray-800/70'
     }`}>
       <span className={`text-xs font-semibold uppercase tracking-wider ${
-        isCurrent ? 'text-[#f9dc24]' : 'text-white'
+        isCurrent ? 'text-[#f9dc24]' : isComplete ? 'text-green-400' : 'text-white'
       }`}>
         {label}
         {isPlanned && <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-gray-600 text-gray-300 rounded">Planned</span>}
+        {isComplete && <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-green-700 text-green-200 rounded">Complete</span>}
       </span>
-      <ChevronDown className={`h-4 w-4 ${isCurrent ? 'text-[#f9dc24]' : 'text-gray-500'} transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      <ChevronDown className={`h-4 w-4 ${isCurrent ? 'text-[#f9dc24]' : isComplete ? 'text-green-400' : 'text-gray-500'} transition-transform ${isOpen ? 'rotate-180' : ''}`} />
     </CollapsibleTrigger>
     <CollapsibleContent className="pt-2 pb-1">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pl-2">
