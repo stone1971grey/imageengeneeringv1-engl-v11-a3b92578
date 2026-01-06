@@ -1479,23 +1479,32 @@ const DynamicCMSPage = () => {
           />
         );
 
-      case "banner":
+      case "banner": {
+        // Use segment.id as fallback if segmentDbId is undefined
+        const bannerSegmentId = segmentDbId || segment.id || segment.segment_key;
+        console.log('[DynamicCMSPage] Rendering banner segment:', { 
+          segmentId, 
+          segmentDbId, 
+          bannerSegmentId,
+          segmentData: segment.data 
+        });
         return (
           <BannerSegment
             key={segmentId}
-            id={segmentDbId?.toString()}
+            id={bannerSegmentId?.toString()}
             title={segment.data?.title || ""}
             subtext={segment.data?.subtext || ""}
             images={segment.data?.images || []}
             buttonText={segment.data?.buttonText || ""}
             buttonLink={segment.data?.buttonLink || ""}
             buttonStyle={segment.data?.buttonStyle || "yellow"}
-            segmentKey={`banner-${segmentDbId}`}
+            segmentKey={`banner-${bannerSegmentId}`}
             pageSlug={pageSlug}
             language={currentUrlLanguage}
             onContentUpdate={refreshPageContent}
           />
         );
+      }
 
 
 
