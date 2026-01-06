@@ -347,6 +347,8 @@ interface SegmentPlugin {
 | 2026-01-01 | 1.0 | v1.7 umbenannt: "Deployment Pipeline" → "Tenant Onboarding Pipeline" |
 | 2026-01-01 | 1.0 | Multi-Tenancy auf v1.4–v1.7 aufgeteilt |
 | 2026-01-01 | 1.0 | v1.8 "Mautic Vision" hinzugefügt |
+| 2026-01-06 | 1.0.8 | v1.0.8 Features hinzugefügt: Cascading Slug Inheritance, Multi-Segment Asset Badges, Segment Type Validation, Language Switch Stability |
+| 2026-01-06 | 1.0.8 | v1.1–v1.3 als fertiggestellt markiert |
 
 ---
 
