@@ -15,6 +15,13 @@ import {
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import spadeCmsLogo from "@/assets/spade-cms-logo.png";
+import { 
+  ROADMAP_VERSIONS, 
+  getReleasedVersions, 
+  getRoadmapVersions,
+  type RoadmapVersion,
+  type RoadmapFeature
+} from "./roadmapConfig";
 
 interface WelcomeTabProps {
   version: string;
@@ -29,6 +36,9 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
   const toggleVersion = (key: string) => {
     setOpenVersions(prev => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const releasedVersions = getReleasedVersions();
+  const roadmapVersions = getRoadmapVersions();
 
   return (
     <div className="space-y-6">
@@ -55,206 +65,54 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
 
             {/* Version History - Collapsible */}
             <div className="space-y-2">
-              {/* v0.5 Foundation */}
-              <VersionSection 
-                versionKey="v0.5"
-                label="v0.5 – Foundation"
-                isOpen={openVersions["v0.5"]}
-                onToggle={() => toggleVersion("v0.5")}
-              >
-                <FeatureItem icon={Layers} label="Modular Segments" />
-                <FeatureItem icon={Languages} label="Multi-Language" />
-                <FeatureItem icon={GripVertical} label="Hierarchical Pages" />
-              </VersionSection>
-
-              {/* v0.6 Translation & SEO */}
-              <VersionSection 
-                versionKey="v0.6"
-                label="v0.6 – Translation & SEO"
-                isOpen={openVersions["v0.6"]}
-                onToggle={() => toggleVersion("v0.6")}
-              >
-                <FeatureItem icon={Book} label="Translation Glossary" />
-                <FeatureItem icon={Sparkles} label="Auto Translation" />
-                <FeatureItem icon={Eye} label="SEO Suite" />
-              </VersionSection>
-
-              {/* v0.7 Content Types */}
-              <VersionSection 
-                versionKey="v0.7"
-                label="v0.7 – Content Types"
-                isOpen={openVersions["v0.7"]}
-                onToggle={() => toggleVersion("v0.7")}
-              >
-                <FeatureItem icon={Newspaper} label="News Management" />
-                <FeatureItem icon={Calendar} label="Event Management" />
-                <FeatureItem icon={FolderOpen} label="Media Management" />
-                <FeatureItem icon={Settings} label="CMS-Managed Navigation" />
-              </VersionSection>
-
-              {/* v0.8 Extended Content */}
-              <VersionSection 
-                versionKey="v0.8"
-                label="v0.8 – Extended Content"
-                isOpen={openVersions["v0.8"]}
-                onToggle={() => toggleVersion("v0.8")}
-              >
-                <FeatureItem icon={Target} label="Product Management" />
-                <FeatureItem icon={Download} label="Download Management" />
-              </VersionSection>
-
-              {/* v0.9 Advanced Features */}
-              <VersionSection 
-                versionKey="v0.9"
-                label="v0.9 – Advanced Features"
-                isOpen={openVersions["v0.9"]}
-                onToggle={() => toggleVersion("v0.9")}
-              >
-                <FeatureItem icon={Shield} label="User Management" />
-                <FeatureItem icon={HistoryIcon} label="Versionsmanagement" />
-                <FeatureItem icon={Search} label="Smart Search" />
-              </VersionSection>
-
-              {/* v1.0 Release - Current */}
-              <VersionSection 
-                versionKey="v1.0"
-                label="🍾 v1.0.0 – Release"
-                isOpen={openVersions["v1.0"]}
-                onToggle={() => toggleVersion("v1.0")}
-                isCurrent
-              >
-                <FeatureItem icon={FileCheck} label="Draft/Publish Workflow" />
-                <FeatureItem icon={Clock} label="Latest Edit" />
-                <FeatureItem icon={Copy} label="Copy Page" />
-                <FeatureItem icon={HistoryIcon} label="Version History" />
-                <FeatureItem icon={Database} label="Segment-Registry" />
-              </VersionSection>
+              {/* Released Versions */}
+              {releasedVersions.map((v) => (
+                <VersionSection 
+                  key={v.key}
+                  versionKey={v.key}
+                  label={v.label}
+                  isOpen={openVersions[v.key] || false}
+                  onToggle={() => toggleVersion(v.key)}
+                  isCurrent={v.status === 'current'}
+                >
+                  {v.features.map((feature, idx) => (
+                    <FeatureItem 
+                      key={idx}
+                      icon={feature.status === 'done' ? CheckCircle2 : Circle} 
+                      label={feature.label} 
+                      isDone={feature.status === 'done'}
+                      isPlanned={feature.status === 'planned'}
+                    />
+                  ))}
+                </VersionSection>
+              ))}
 
               {/* Roadmap - Admin Only */}
-              {isAdmin && (
+              {isAdmin && roadmapVersions.length > 0 && (
                 <div className="pt-4 border-t border-gray-700/50 mt-4">
                   <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">Roadmap</p>
                   
-                  <VersionSection 
-                    versionKey="v1.1"
-                    label="v1.1 – Advanced AI SEO Suite & Further Development"
-                    isOpen={openVersions["v1.1"]}
-                    onToggle={() => toggleVersion("v1.1")}
-                    isPlanned
-                  >
-                    {/* AI SEO Features */}
-                    <FeatureItem icon={CheckCircle2} label="Smart Focus Keyword" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart Title Generator" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart Description Generator" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart H1 Generator" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart H2/H3 Generators" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart Content Optimizer" isDone />
-                    <FeatureItem icon={CheckCircle2} label="FKW Content Score" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Readability Analysis" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart Internal Links" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Smart External Links" isDone />
-                    <FeatureItem icon={Circle} label="Link Analysis Dashboard" isPlanned />
-                    <FeatureItem icon={Circle} label="Content Gap Analysis" isPlanned />
-                    {/* v1.0.8 Features */}
-                    <FeatureItem icon={CheckCircle2} label="Cascading Slug Inheritance" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Multi-Segment Asset Badges" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Segment Type Validation" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Language Switch Stability" isDone />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.2"
-                    label="v1.2 – Frontend Editing"
-                    isOpen={openVersions["v1.2"]}
-                    onToggle={() => toggleVersion("v1.2")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={Circle} label="Frontend Editing" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.3"
-                    label="v1.3 – Content Automation"
-                    isOpen={openVersions["v1.3"]}
-                    onToggle={() => toggleVersion("v1.3")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={Circle} label="Content Automation" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.4"
-                    label="v1.4 – Enterprise SEO"
-                    isOpen={openVersions["v1.4"]}
-                    onToggle={() => toggleVersion("v1.4")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={CheckCircle2} label="SISTRIX Integration" isDone />
-                    <FeatureItem icon={CheckCircle2} label="Relaunch Dashboard" isDone />
-                    <FeatureItem icon={Circle} label="Ranking Alerts" isPlanned />
-                    <FeatureItem icon={Circle} label="Competitor Analysis" isPlanned />
-                    <FeatureItem icon={Circle} label="Visibility Tracking" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.5"
-                    label="v1.5 – Template System"
-                    isOpen={openVersions["v1.5"]}
-                    onToggle={() => toggleVersion("v1.5")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={Package} label="Template/Boilerplate System" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.6"
-                    label="v1.6 – Configuration Layer"
-                    isOpen={openVersions["v1.6"]}
-                    onToggle={() => toggleVersion("v1.6")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={Sliders} label="Tenant Configuration Layer" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.7"
-                    label="v1.7 – Data Isolation"
-                    isOpen={openVersions["v1.7"]}
-                    onToggle={() => toggleVersion("v1.7")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={HardDrive} label="Multi-Tenant Data Isolation" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.8"
-                    label="v1.8 – Tenant Onboarding"
-                    isOpen={openVersions["v1.8"]}
-                    onToggle={() => toggleVersion("v1.8")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={GitBranch} label="Tenant Onboarding Pipeline" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v1.9"
-                    label="v1.9 – Mautic Vision"
-                    isOpen={openVersions["v1.9"]}
-                    onToggle={() => toggleVersion("v1.9")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={BarChart3} label="Marketing Automation KPIs" isPlanned />
-                  </VersionSection>
-
-                  <VersionSection 
-                    versionKey="v2.0"
-                    label="v2.0 – Plugin-Architektur"
-                    isOpen={openVersions["v2.0"]}
-                    onToggle={() => toggleVersion("v2.0")}
-                    isPlanned
-                  >
-                    <FeatureItem icon={Puzzle} label="Plugin-Architektur" isPlanned />
-                  </VersionSection>
+                  {roadmapVersions.map((v) => (
+                    <VersionSection 
+                      key={v.key}
+                      versionKey={v.key}
+                      label={v.label}
+                      isOpen={openVersions[v.key] || false}
+                      onToggle={() => toggleVersion(v.key)}
+                      isPlanned={v.status === 'planned'}
+                      isComplete={v.status === 'complete'}
+                    >
+                      {v.features.map((feature, idx) => (
+                        <FeatureItem 
+                          key={idx}
+                          icon={feature.status === 'done' ? CheckCircle2 : Circle} 
+                          label={feature.label} 
+                          isDone={feature.status === 'done'}
+                          isPlanned={feature.status === 'planned'}
+                        />
+                      ))}
+                    </VersionSection>
+                  ))}
                 </div>
               )}
             </div>
