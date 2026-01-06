@@ -24,6 +24,7 @@ import ProductListSegment from "@/components/segments/ProductListSegment";
 import DownloadsSegment from "@/components/segments/DownloadsSegment";
 import Tiles from "@/components/segments/Tiles";
 import ImageTextSegment from "@/components/segments/ImageTextSegment";
+import BannerSegment from "@/components/segments/BannerSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { extractFilePathFromUrl } from "@/utils/updateSegmentMapping";
@@ -1480,76 +1481,20 @@ const DynamicCMSPage = () => {
 
       case "banner":
         return (
-          <section
+          <BannerSegment
             key={segmentId}
             id={segmentDbId?.toString()}
-            data-segment-key={segment.segment_key || segment.id}
-            data-segment-id={segmentDbId?.toString()}
-            className="pt-[50px] pb-16 bg-gray-100"
-          >
-            <div className="container mx-auto px-6">
-              <div className="max-w-4xl mx-auto text-center">
-                {segment.data?.title && (
-                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.title}
-                  </h2>
-                )}
-
-                {segment.data?.subtext && (
-                  <p className="text-lg text-gray-700 mb-8 whitespace-pre-line">
-                    {segment.data.subtext}
-                  </p>
-                )}
-
-                {segment.data?.images && segment.data.images.length > 0 && (
-                  <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
-                    {segment.data.images.map((image: any) => 
-                      image.url ? (
-                        <div key={image.id} className="bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center">
-                          <img
-                            src={image.url}
-                            alt={image.alt || 'Banner image'}
-                            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                          />
-                        </div>
-                      ) : null
-                    )}
-                  </div>
-                )}
-
-                {segment.data?.buttonText && segment.data?.buttonLink && (() => {
-                  const buttonClasses = 
-                    segment.data.buttonStyle === 'technical'
-                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-gray-800 text-white hover:bg-gray-900'
-                      : segment.data.buttonStyle === 'outline-white'
-                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-white text-black border border-gray-300 hover:bg-black hover:text-white'
-                      : 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90';
-
-                  const buttonLink = segment.data.buttonLink || '#';
-                  const isExternal = buttonLink.startsWith('http://') || buttonLink.startsWith('https://');
-
-                  if (isExternal) {
-                    return (
-                      <a
-                        href={buttonLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={buttonClasses}
-                      >
-                        {segment.data.buttonText}
-                      </a>
-                    );
-                  }
-
-                  return (
-                    <Link to={buttonLink} className={buttonClasses}>
-                      {segment.data.buttonText}
-                    </Link>
-                  );
-                })()}
-              </div>
-            </div>
-          </section>
+            title={segment.data?.title || ""}
+            subtext={segment.data?.subtext || ""}
+            images={segment.data?.images || []}
+            buttonText={segment.data?.buttonText || ""}
+            buttonLink={segment.data?.buttonLink || ""}
+            buttonStyle={segment.data?.buttonStyle || "yellow"}
+            segmentKey={`banner-${segmentDbId}`}
+            pageSlug={pageSlug}
+            language={currentUrlLanguage}
+            onContentUpdate={refreshPageContent}
+          />
         );
 
 

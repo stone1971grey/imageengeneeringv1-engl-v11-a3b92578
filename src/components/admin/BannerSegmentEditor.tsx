@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Languages } from "lucide-react";
+import { Plus, Trash2, Languages, ChevronUp, ChevronDown } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -345,6 +345,24 @@ const BannerSegmentEditorComponent = ({
     setImages(updatedImages);
     onChange({ ...data, images: updatedImages });
     setDeleteId(null);
+  };
+
+  // Move image up in the list
+  const handleMoveImageUp = (index: number) => {
+    if (index === 0) return;
+    const newImages = [...images];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setImages(newImages);
+    onChange({ ...data, images: newImages });
+  };
+
+  // Move image down in the list
+  const handleMoveImageDown = (index: number) => {
+    if (index >= images.length - 1) return;
+    const newImages = [...images];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setImages(newImages);
+    onChange({ ...data, images: newImages });
   };
 
   const handleImageChange = (imageId: string, field: keyof BannerImage, value: string, isTarget: boolean = false, index?: number) => {
@@ -739,15 +757,42 @@ const BannerSegmentEditorComponent = ({
                     )}
                   </div>
                   {!isTarget && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeleteId(image.id)}
-                      className="h-8 w-8 p-0 hover:bg-red-900 hover:text-red-400 text-gray-400"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      {/* Move Up Button */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveImageUp(index)}
+                        disabled={index === 0}
+                        className="h-8 w-8 p-0 hover:bg-gray-700 text-gray-400 disabled:opacity-30"
+                        title="Move up"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      {/* Move Down Button */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveImageDown(index)}
+                        disabled={index >= (isTarget ? currentData.images : images).length - 1}
+                        className="h-8 w-8 p-0 hover:bg-gray-700 text-gray-400 disabled:opacity-30"
+                        title="Move down"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                      {/* Delete Button */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeleteId(image.id)}
+                        className="h-8 w-8 p-0 hover:bg-red-900 hover:text-red-400 text-gray-400"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   )}
                 </div>
 
