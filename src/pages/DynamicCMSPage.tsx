@@ -645,6 +645,26 @@ const DynamicCMSPage = () => {
           if (parsedEn.tabs && parsedEn.tabs.length > 0) {
             loadedTabOrder = parsedEn.tabs;
           }
+          
+          // CRITICAL FIX: Merge English segment data as fallback for segments missing data
+          // This prevents React errors when non-EN segments have empty data objects
+          loadedSegments = loadedSegments.map((seg: any) => {
+            const segId = String(seg.id || seg.segment_key);
+            const enSegment = englishSegmentsForFallback.find(
+              (enSeg: any) => String(enSeg.id || enSeg.segment_key) === segId
+            );
+            
+            // If current segment has no data or empty data, use English as fallback
+            const hasValidData = seg.data && Object.keys(seg.data).length > 0;
+            if (!hasValidData && enSegment?.data) {
+              console.log(`[DynamicCMSPage] Using EN fallback data for segment ${segId}`);
+              return {
+                ...seg,
+                data: { ...enSegment.data },
+              };
+            }
+            return seg;
+          });
         }
       }
 
