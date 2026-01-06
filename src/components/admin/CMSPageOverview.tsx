@@ -153,15 +153,19 @@ export const CMSPageOverview = () => {
         .from("page_content")
         .select("page_slug, section_key, updated_at")
         .order("updated_at", { ascending: false })
-        .limit(50);
+        .limit(200); // Increased limit to ensure we find diverse pages
       
       // Filter to only include actual content edits (page_segments or segment-* entries)
+      // Also exclude meta entries and system updates
       const contentEditPatterns = ['page_segments', 'segment-'];
-      const actualContentEdits = (latestEditDataList || []).filter(edit => 
-        contentEditPatterns.some(pattern => edit.section_key.startsWith(pattern))
-      );
+      const excludePatterns = ['seo', 'tab_order', 'footer', 'contact'];
+      const actualContentEdits = (latestEditDataList || []).filter(edit => {
+        const isContentEdit = contentEditPatterns.some(pattern => edit.section_key.startsWith(pattern));
+        const isExcluded = excludePatterns.some(pattern => edit.section_key.toLowerCase().includes(pattern));
+        return isContentEdit && !isExcluded;
+      });
       
-      // Get unique page slugs from recent content edits
+      // Get unique page slugs from recent content edits - show the MOST RECENT one
       const uniqueRecentEdits: { page_slug: string; updated_at: string }[] = [];
       const seenSlugs = new Set<string>();
       for (const edit of actualContentEdits) {
@@ -169,13 +173,15 @@ export const CMSPageOverview = () => {
           seenSlugs.add(edit.page_slug);
           uniqueRecentEdits.push(edit);
         }
-        if (uniqueRecentEdits.length >= 2) break;
+        if (uniqueRecentEdits.length >= 5) break; // Get top 5 for debugging
       }
       
-      // Use the second unique page (the one edited before the current), or first if only one
-      const latestEditData = uniqueRecentEdits.length >= 2 ? uniqueRecentEdits[1] : uniqueRecentEdits[0] || null;
+      // FIXED: Use the FIRST (most recent) edit, not the second
+      const latestEditData = uniqueRecentEdits[0] || null;
       const latestEditedSlug = latestEditData?.page_slug || null;
       const latestEditedTime = latestEditData?.updated_at || null;
+      
+      console.log('[CMS Hub] Latest edits:', uniqueRecentEdits.map(e => `${e.page_slug} @ ${e.updated_at}`));
 
       // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
       const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
