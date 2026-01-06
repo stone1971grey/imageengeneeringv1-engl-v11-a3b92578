@@ -11,6 +11,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { Eye, EyeOff } from "lucide-react";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 import spadeCmsLogo from "@/assets/spade-cms-logo.png";
+import { CMS_VERSION } from "@/components/admin/dashboard/config";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -157,7 +158,7 @@ const Auth = () => {
                 className="h-20 w-auto"
               />
               <Badge variant="outline" className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-[10px] font-semibold px-2 py-0.5">
-                v1.0.7
+                v{CMS_VERSION}
               </Badge>
             </div>
           </div>
