@@ -338,7 +338,8 @@ const Tiles: React.FC<TilesProps> = ({
         {/* Tiles Grid */}
         <div className={`grid gap-8 ${getGridColumns()}`}>
           {localItems.map((tile, idx) => {
-            const Icon = iconMap[tile.icon || 'FileText'] || FileText;
+            const hasIcon = tile.icon && tile.icon !== 'none' && tile.icon !== '';
+            const Icon = hasIcon ? (iconMap[tile.icon!] || null) : null;
             const hasImage = tile.imageUrl;
 
             return (
@@ -372,7 +373,7 @@ const Tiles: React.FC<TilesProps> = ({
                           }}
                         />
                       </div>
-                    ) : (
+                    ) : hasIcon && Icon ? (
                       <div className="flex flex-col items-center pt-8 gap-2 flex-shrink-0">
                         <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20">
                           <Icon className="h-8 w-8 text-gray-900" />
@@ -380,10 +381,30 @@ const Tiles: React.FC<TilesProps> = ({
                         {/* Icon Selector Dropdown */}
                         <div className="relative">
                           <select
-                            value={tile.icon || 'FileText'}
-                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value)}
+                            value={tile.icon || ''}
+                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
                             className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
                           >
+                            <option value="">No Icon</option>
+                            {iconOptions.map((iconName) => (
+                              <option key={iconName} value={iconName}>
+                                {iconName}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </div>
+                      </div>
+                    ) : (
+                      // No icon and no image - show selector to add icon
+                      <div className="flex flex-col items-center pt-8 gap-2 flex-shrink-0">
+                        <div className="relative">
+                          <select
+                            value={tile.icon || ''}
+                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
+                            className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
+                          >
+                            <option value="">No Icon</option>
                             {iconOptions.map((iconName) => (
                               <option key={iconName} value={iconName}>
                                 {iconName}
@@ -404,13 +425,13 @@ const Tiles: React.FC<TilesProps> = ({
                           className="w-full h-full max-h-[200px] object-cover hover:scale-105 transition-transform duration-300"
                         />
                       </div>
-                    ) : (
+                    ) : hasIcon && Icon ? (
                       <div className="flex justify-center pt-8 flex-shrink-0">
                         <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
                           <Icon className="h-8 w-8 text-gray-900" />
                         </div>
                       </div>
-                    )
+                    ) : null
                   )}
                   
                   {/* Content area - flex-grow to push button down */}
@@ -501,10 +522,9 @@ const Tiles: React.FC<TilesProps> = ({
                       ) : (
                         <>
                           <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
-                          <div 
-                            className="text-gray-600 leading-relaxed [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-2"
-                            dangerouslySetInnerHTML={{ __html: tile.description || '' }}
-                          />
+                          <p className="text-gray-600 leading-relaxed">
+                            {tile.description || ''}
+                          </p>
                         </>
                       )}
                     </div>
