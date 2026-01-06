@@ -1307,10 +1307,14 @@ export function DataHubDialog({
                                 <Button
                                   size="sm"
                                   className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log('=== SELECT BUTTON CLICKED ===');
+                                    console.log('fileUrl:', fileUrl);
+                                    console.log('onSelect exists:', !!onSelect);
                                     if (onSelect) {
                                       const fileExtension = file.name.split('.').pop()?.toUpperCase() || '';
-                                      onSelect(fileUrl, {
+                                      const metadata = {
                                         name: getDisplayFileName(file.name),
                                         originalFileName: getDisplayFileName(file.name),
                                         folder: folder.storage_path,
@@ -1324,7 +1328,12 @@ export function DataHubDialog({
                                         alt_text_translations: file.metadata?.alt_text_translations || null,
                                         width: 0,
                                         height: 0
-                                      });
+                                      };
+                                      console.log('Calling onSelect with metadata:', metadata);
+                                      onSelect(fileUrl, metadata);
+                                      console.log('=== SELECT COMPLETE ===');
+                                    } else {
+                                      console.error('onSelect is undefined!');
                                     }
                                   }}
                                 >
