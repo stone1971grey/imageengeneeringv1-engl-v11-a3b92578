@@ -459,12 +459,12 @@ const Tiles: React.FC<TilesProps> = ({
                             className="text-2xl font-bold text-gray-900 w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
                             placeholder="Tile title..."
                           />
-                          {/* Rich Text Description Editor */}
-                          <FrontendRichTextEditor
-                            value={tile.description || ''}
-                            onChange={(newValue) => handleItemChange(idx, 'description', newValue)}
+                          {/* Plain Text Description Editor */}
+                          <textarea
+                            value={stripHtml(tile.description || '')}
+                            onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
                             placeholder="Tile description..."
-                            minHeight="120px"
+                            className="w-full min-h-[120px] text-gray-600 leading-relaxed text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-2 hover:bg-[#f9dc24]/10 transition-colors resize-none rounded"
                           />
                           
                           {/* Button Editor with Style Selector */}
