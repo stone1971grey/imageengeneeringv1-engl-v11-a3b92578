@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPortal } from 'react-dom';
 import { 
@@ -102,19 +102,24 @@ const SortableImageItem = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleImageClick = (e: React.MouseEvent) => {
-    if (!isEditing || isUploading) return;
+  const handleImageClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setOptionsPosition({
-        top: rect.top + rect.height / 2 + window.scrollY,
-        left: rect.left + rect.width / 2 + window.scrollX
-      });
-      setShowOptions(true);
+    if (!isEditing || isUploading) {
+      console.log('[SortableImageItem] Click ignored - isEditing:', isEditing, 'isUploading:', isUploading);
+      return;
     }
-  };
+    
+    // Calculate position for the options dialog
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const top = rect.top + rect.height / 2 + window.scrollY;
+    const left = rect.left + rect.width / 2 + window.scrollX;
+    
+    console.log('[SortableImageItem] Opening options at:', { top, left });
+    setOptionsPosition({ top, left });
+    setShowOptions(true);
+  }, [isEditing, isUploading]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -188,11 +193,10 @@ const SortableImageItem = ({
           "bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
           isEditing && "cursor-pointer hover:ring-2 hover:ring-[#f9dc24]"
         )}
-        onClick={handleImageClick}
       >
         {isEditing && (
           <>
-            {/* Drag handle */}
+            {/* Drag handle - only this has dnd listeners */}
             <div 
               {...attributes} 
               {...listeners}
@@ -233,13 +237,16 @@ const SortableImageItem = ({
           <img
             src={image.url}
             alt={image.alt || 'Banner image'}
-            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300 pointer-events-none"
           />
         )}
 
-        {/* Change Image hint on hover */}
+        {/* Change Image overlay - CLICKABLE */}
         {isEditing && !isUploading && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg pointer-events-none">
+          <div 
+            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg cursor-pointer z-20"
+            onClick={handleImageClick}
+          >
             <div className="text-[#f9dc24] text-xs font-medium flex items-center gap-1">
               <Upload className="h-4 w-4" />
               Change
@@ -249,7 +256,7 @@ const SortableImageItem = ({
         
         {/* Alt text editor on hover */}
         {isEditing && (
-          <div className="absolute -bottom-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute -bottom-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity z-10">
             <input
               type="text"
               value={image.alt || ''}
@@ -345,19 +352,24 @@ const AddImageButton = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLButtonElement>(null);
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (isUploading) return;
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setOptionsPosition({
-        top: rect.top + rect.height / 2 + window.scrollY,
-        left: rect.left + rect.width / 2 + window.scrollX
-      });
-      setShowOptions(true);
+    if (isUploading) {
+      console.log('[AddImageButton] Click ignored - isUploading:', isUploading);
+      return;
     }
-  };
+    
+    // Calculate position for the options dialog
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const top = rect.top + rect.height / 2 + window.scrollY;
+    const left = rect.left + rect.width / 2 + window.scrollX;
+    
+    console.log('[AddImageButton] Opening options at:', { top, left });
+    setOptionsPosition({ top, left });
+    setShowOptions(true);
+  }, [isUploading]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
