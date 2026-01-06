@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { createPortal } from 'react-dom';
 import { 
   Check, 
   X, 
@@ -8,8 +9,11 @@ import {
   Trash2, 
   ChevronDown,
   GripVertical,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Upload,
+  FolderOpen
 } from "lucide-react";
+import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
@@ -56,20 +60,33 @@ interface BannerSegmentProps {
   onContentUpdate?: () => void;
 }
 
-// Sortable Image Item Component
+// Sortable Image Item Component with Upload Options
 const SortableImageItem = ({ 
   image, 
   index,
   isEditing,
   onRemove,
-  onAltChange
+  onAltChange,
+  onImageChange,
+  pageSlug,
+  segmentKey
 }: { 
   image: BannerImage; 
   index: number;
   isEditing: boolean;
   onRemove: (index: number) => void;
   onAltChange: (index: number, alt: string) => void;
+  onImageChange: (index: number, url: string) => void;
+  pageSlug: string;
+  segmentKey: string;
 }) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const {
     attributes,
     listeners,
@@ -85,62 +102,418 @@ const SortableImageItem = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (!isEditing || isUploading) return;
+    e.stopPropagation();
+    
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setOptionsPosition({
+        top: rect.top + rect.height / 2 + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX
+      });
+      setShowOptions(true);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be max 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+    setShowOptions(false);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${pageSlug}/${segmentKey}-banner-${index}-${Date.now()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('cms-media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('[BannerSegment] Upload error:', uploadError);
+        toast.error('Upload failed');
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('cms-media')
+        .getPublicUrl(uploadData.path);
+
+      onImageChange(index, urlData.publicUrl);
+      toast.success('Image uploaded!');
+    } catch (error) {
+      console.error('[BannerSegment] Upload error:', error);
+      toast.error('Upload failed');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleMediaSelect = (url: string) => {
+    setShowMediaDialog(false);
+    setShowOptions(false);
+    onImageChange(index, url);
+    toast.success('Image selected!');
+  };
+
   if (!image.url) return null;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
-        isEditing && "cursor-grab active:cursor-grabbing"
-      )}
-    >
-      {isEditing && (
-        <>
-          {/* Drag handle */}
-          <div 
-            {...attributes} 
-            {...listeners}
-            className="absolute top-1 left-1 p-1 bg-black/70 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-grab"
-          >
-            <GripVertical className="h-4 w-4 text-white" />
+    <>
+      <div
+        ref={(node) => {
+          setNodeRef(node);
+          (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }}
+        style={style}
+        className={cn(
+          "bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
+          isEditing && "cursor-pointer hover:ring-2 hover:ring-[#f9dc24]"
+        )}
+        onClick={handleImageClick}
+      >
+        {isEditing && (
+          <>
+            {/* Drag handle */}
+            <div 
+              {...attributes} 
+              {...listeners}
+              className="absolute top-1 left-1 p-1 bg-black/70 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-grab z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVertical className="h-4 w-4 text-white" />
+            </div>
+            
+            {/* Delete button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(index);
+              }}
+              className="absolute top-1 right-1 p-1 bg-red-500 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
+            >
+              <Trash2 className="h-4 w-4 text-white" />
+            </button>
+
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+          </>
+        )}
+        
+        {isUploading ? (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">Uploading...</span>
           </div>
-          
-          {/* Delete button */}
-          <button
-            onClick={() => onRemove(index)}
-            className="absolute top-1 right-1 p-1 bg-red-500 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-          >
-            <Trash2 className="h-4 w-4 text-white" />
-          </button>
-        </>
-      )}
-      
-      <img
-        src={image.url}
-        alt={image.alt || 'Banner image'}
-        className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-      />
-      
-      {/* Alt text editor on hover */}
-      {isEditing && (
-        <div className="absolute -bottom-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-          <input
-            type="text"
-            value={image.alt || ''}
-            onChange={(e) => onAltChange(index, e.target.value)}
-            placeholder="Alt text..."
-            className="w-full text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-[#f9dc24] outline-none"
-            onClick={(e) => e.stopPropagation()}
+        ) : (
+          <img
+            src={image.url}
+            alt={image.alt || 'Banner image'}
+            className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
           />
-        </div>
+        )}
+
+        {/* Change Image hint on hover */}
+        {isEditing && !isUploading && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg pointer-events-none">
+            <div className="text-[#f9dc24] text-xs font-medium flex items-center gap-1">
+              <Upload className="h-4 w-4" />
+              Change
+            </div>
+          </div>
+        )}
+        
+        {/* Alt text editor on hover */}
+        {isEditing && (
+          <div className="absolute -bottom-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <input
+              type="text"
+              value={image.alt || ''}
+              onChange={(e) => onAltChange(index, e.target.value)}
+              placeholder="Alt text..."
+              className="w-full text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-[#f9dc24] outline-none"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Options Portal - Upload buttons */}
+      {showOptions && createPortal(
+        <div 
+          className="fixed inset-0 z-[99998]" 
+          onClick={() => setShowOptions(false)}
+        >
+          <div 
+            className="absolute bg-white rounded-xl shadow-2xl p-4 border border-gray-200"
+            style={{
+              top: optionsPosition.top,
+              left: optionsPosition.left,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99999
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3 min-w-[280px]">
+              <p className="text-sm text-gray-600 font-medium text-center mb-1">Select image source</p>
+              
+              {/* Upload from Computer - Yellow */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+                Upload from Computer
+              </button>
+              
+              {/* Select from Media Management - Blue */}
+              <button
+                onClick={() => {
+                  setShowOptions(false);
+                  setShowMediaDialog(true);
+                }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+              >
+                <FolderOpen className="h-5 w-5" />
+                Select from Media
+              </button>
+              
+              {/* Cancel */}
+              <button
+                onClick={() => setShowOptions(false)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors mt-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
-    </div>
+
+      {/* Media Management Dialog */}
+      {showMediaDialog && (
+        <DataHubDialog
+          isOpen={showMediaDialog}
+          onClose={() => setShowMediaDialog(false)}
+          selectionMode={true}
+          onSelect={(url) => handleMediaSelect(url)}
+        />
+      )}
+    </>
   );
 };
 
-const BannerSegment = ({ 
+// Add Image Button Component with Upload Options
+const AddImageButton = ({
+  onImageAdd,
+  pageSlug,
+  segmentKey
+}: {
+  onImageAdd: (url: string) => void;
+  pageSlug: string;
+  segmentKey: string;
+}) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isUploading) return;
+    e.stopPropagation();
+    
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setOptionsPosition({
+        top: rect.top + rect.height / 2 + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX
+      });
+      setShowOptions(true);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be max 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+    setShowOptions(false);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${pageSlug}/${segmentKey}-banner-new-${Date.now()}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('cms-media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('[BannerSegment] Upload error:', uploadError);
+        toast.error('Upload failed');
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('cms-media')
+        .getPublicUrl(uploadData.path);
+
+      onImageAdd(urlData.publicUrl);
+      toast.success('Image uploaded!');
+    } catch (error) {
+      console.error('[BannerSegment] Upload error:', error);
+      toast.error('Upload failed');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleMediaSelect = (url: string) => {
+    setShowMediaDialog(false);
+    setShowOptions(false);
+    onImageAdd(url);
+    toast.success('Image selected!');
+  };
+
+  return (
+    <>
+      <button
+        ref={containerRef}
+        onClick={handleClick}
+        disabled={isUploading}
+        className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] hover:text-gray-600 transition-colors"
+      >
+        {isUploading ? (
+          <>
+            <Loader2 className="h-8 w-8 mb-1 animate-spin" />
+            <span className="text-sm">Uploading...</span>
+          </>
+        ) : (
+          <>
+            <Plus className="h-8 w-8 mb-1" />
+            <span className="text-sm">Add Image</span>
+          </>
+        )}
+      </button>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* Options Portal - Upload buttons */}
+      {showOptions && createPortal(
+        <div 
+          className="fixed inset-0 z-[99998]" 
+          onClick={() => setShowOptions(false)}
+        >
+          <div 
+            className="absolute bg-white rounded-xl shadow-2xl p-4 border border-gray-200"
+            style={{
+              top: optionsPosition.top,
+              left: optionsPosition.left,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 99999
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3 min-w-[280px]">
+              <p className="text-sm text-gray-600 font-medium text-center mb-1">Select image source</p>
+              
+              {/* Upload from Computer - Yellow */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+                Upload from Computer
+              </button>
+              
+              {/* Select from Media Management - Blue */}
+              <button
+                onClick={() => {
+                  setShowOptions(false);
+                  setShowMediaDialog(true);
+                }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+              >
+                <FolderOpen className="h-5 w-5" />
+                Select from Media
+              </button>
+              
+              {/* Cancel */}
+              <button
+                onClick={() => setShowOptions(false)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors mt-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Media Management Dialog */}
+      {showMediaDialog && (
+        <DataHubDialog
+          isOpen={showMediaDialog}
+          onClose={() => setShowMediaDialog(false)}
+          selectionMode={true}
+          onSelect={(url) => handleMediaSelect(url)}
+        />
+      )}
+    </>
+  );
+};
+
+const BannerSegment = ({
   id,
   title = "",
   subtext = "",
@@ -217,17 +590,23 @@ const BannerSegment = ({
     setHasChanges(true);
   };
 
+  const handleImageChange = (index: number, url: string) => {
+    setEditImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, url } : img
+    ));
+    setHasChanges(true);
+  };
+
   const handleAddImage = () => {
-    const url = window.prompt('Image URL:');
-    if (url) {
-      const newImage: BannerImage = {
-        id: `banner-img-${Date.now()}`,
-        url,
-        alt: ''
-      };
-      setEditImages(prev => [...prev, newImage]);
-      setHasChanges(true);
-    }
+    // Open a simple prompt - could be replaced with proper upload dialog later
+    const newImage: BannerImage = {
+      id: `banner-img-${Date.now()}`,
+      url: '',
+      alt: ''
+    };
+    // Add empty placeholder that user can click to upload
+    setEditImages(prev => [...prev, newImage]);
+    setHasChanges(true);
   };
 
   const handleSave = useCallback(async () => {
@@ -407,17 +786,26 @@ const BannerSegment = ({
                           isEditing={isEditing}
                           onRemove={handleRemoveImage}
                           onAltChange={handleAltChange}
+                          onImageChange={handleImageChange}
+                          pageSlug={pageSlug}
+                          segmentKey={segmentKey}
                         />
                       ))}
                       
                       {/* Add Image Button */}
-                      <button
-                        onClick={handleAddImage}
-                        className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] hover:text-gray-600 transition-colors"
-                      >
-                        <Plus className="h-8 w-8 mb-1" />
-                        <span className="text-sm">Add Image</span>
-                      </button>
+                      <AddImageButton 
+                        onImageAdd={(url) => {
+                          const newImage: BannerImage = {
+                            id: `banner-img-${Date.now()}`,
+                            url,
+                            alt: ''
+                          };
+                          setEditImages(prev => [...prev, newImage]);
+                          setHasChanges(true);
+                        }}
+                        pageSlug={pageSlug}
+                        segmentKey={segmentKey}
+                      />
                     </div>
                   </SortableContext>
                 </DndContext>
