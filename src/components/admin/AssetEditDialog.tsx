@@ -35,6 +35,14 @@ const SUPPORTED_LANGUAGES = [
   { code: 'zh', label: '中文', flag: '🇨🇳' },
 ];
 
+// Type for segment info with page data
+interface SegmentInfo {
+  segmentId: string;
+  pageId: number | null;
+  pageSlug: string | null;
+  segmentType: string | null;
+}
+
 export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDialogProps) {
   const [altTextTranslations, setAltTextTranslations] = useState<Record<string, string>>({});
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -42,6 +50,63 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [segmentInfos, setSegmentInfos] = useState<SegmentInfo[]>([]);
+
+  // Load segment info with page IDs
+  const loadSegmentInfos = async (segmentIds: string[]) => {
+    if (!segmentIds || segmentIds.length === 0) {
+      setSegmentInfos([]);
+      return;
+    }
+
+    try {
+      // Fetch segment registry entries for these segment IDs
+      const { data: segmentData, error: segmentError } = await supabase
+        .from('segment_registry')
+        .select('segment_id, page_slug, segment_type')
+        .in('segment_id', segmentIds.map(id => parseInt(id)));
+
+      if (segmentError) {
+        console.error('Error fetching segment info:', segmentError);
+        // Fallback: just show segment IDs without page info
+        setSegmentInfos(segmentIds.map(id => ({ segmentId: id, pageId: null, pageSlug: null, segmentType: null })));
+        return;
+      }
+
+      // Get unique page slugs
+      const pageSlugs = [...new Set(segmentData?.map(s => s.page_slug) || [])];
+      
+      // Fetch page IDs from page_registry
+      const { data: pageData, error: pageError } = await supabase
+        .from('page_registry')
+        .select('page_slug, page_id')
+        .in('page_slug', pageSlugs);
+
+      if (pageError) {
+        console.error('Error fetching page info:', pageError);
+      }
+
+      // Create a map of page_slug -> page_id
+      const pageIdMap = new Map<string, number>();
+      pageData?.forEach(p => pageIdMap.set(p.page_slug, p.page_id));
+
+      // Build segment infos
+      const infos: SegmentInfo[] = segmentIds.map(segmentId => {
+        const segmentEntry = segmentData?.find(s => String(s.segment_id) === segmentId);
+        return {
+          segmentId,
+          pageId: segmentEntry?.page_slug ? pageIdMap.get(segmentEntry.page_slug) || null : null,
+          pageSlug: segmentEntry?.page_slug || null,
+          segmentType: segmentEntry?.segment_type || null
+        };
+      });
+
+      setSegmentInfos(infos);
+    } catch (error) {
+      console.error('Error loading segment infos:', error);
+      setSegmentInfos(segmentIds.map(id => ({ segmentId: id, pageId: null, pageSlug: null, segmentType: null })));
+    }
+  };
 
   // Load alt text translations and visibility when dialog opens
   const loadAssetData = async () => {
@@ -73,6 +138,11 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         setAltTextTranslations({ en: data.alt_text });
       } else {
         setAltTextTranslations({});
+      }
+
+      // Load segment infos with page IDs
+      if (asset.segmentIds && asset.segmentIds.length > 0) {
+        await loadSegmentInfos(asset.segmentIds);
       }
     } catch (error: any) {
       console.error('Error loading asset data:', error);
@@ -380,14 +450,40 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
             <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
               <div className="text-xs text-gray-400 mb-2">Used in Segments:</div>
               <div className="flex flex-wrap gap-2">
-                {asset.segmentIds.map(segmentId => (
-                  <Badge 
-                    key={segmentId}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                  >
-                    #{segmentId}
-                  </Badge>
-                ))}
+                {segmentInfos.length > 0 ? (
+                  segmentInfos.map(info => (
+                    <div 
+                      key={info.segmentId}
+                      className="flex items-center gap-1"
+                      title={info.pageSlug ? `Page: ${info.pageSlug}` : undefined}
+                    >
+                      <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        #{info.segmentId}
+                        {info.segmentType && (
+                          <span className="ml-1 opacity-70">({info.segmentType})</span>
+                        )}
+                      </Badge>
+                      {info.pageId && (
+                        <Badge 
+                          variant="outline" 
+                          className="border-gray-600 text-gray-300 text-[10px] px-1.5 py-0"
+                        >
+                          P{info.pageId}
+                        </Badge>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  // Fallback while loading or if no info available
+                  asset.segmentIds.map(segmentId => (
+                    <Badge 
+                      key={segmentId}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                    >
+                      #{segmentId}
+                    </Badge>
+                  ))
+                )}
               </div>
             </div>
           )}
