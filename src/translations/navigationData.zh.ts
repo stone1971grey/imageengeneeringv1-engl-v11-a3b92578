@@ -5,7 +5,7 @@ export const navigationDataZh = {
       description: "车辆摄像系统、驾驶辅助和自动驾驶",
       subgroups: [
         { name: "高级驾驶辅助系统(ADAS)", link: "/automotive" },
-        { name: "车内测试", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "车内测试", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020测试", link: "#" },
         { name: "高动态范围(HDR)", link: "#" },
         { name: "近红外(NIR)", link: "#" },
@@ -15,7 +15,7 @@ export const navigationDataZh = {
     "Security & Surveillance": {
       description: "闭路电视系统、视频监控",
       subgroups: [
-        { name: "IEC 62676-5测试", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+        { name: "IEC 62676-5测试", link: "/industries/security-surveillance/iec-62676-5-testing" },
         { name: "低照度(ISO 19093)", link: "#" },
         { name: "高动态范围(HDR)", link: "#" },
         { name: "ISP调优", link: "#" },
@@ -26,16 +26,16 @@ export const navigationDataZh = {
       description: "根据VCX标准进行图像质量测试",
       subgroups: [
         { name: "VCX手机摄像头", link: "#" },
-        { name: "色彩校准", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "相机防抖", link: "/your-solution/mobile-phone/camera-stabilization" },
-        { name: "ISP调优", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "时序测量", link: "/your-solution/mobile-phone/timing-measurements" }
+        { name: "色彩校准", link: "/industries/mobile-phone/color-calibration" },
+        { name: "相机防抖", link: "/industries/mobile-phone/camera-stabilization" },
+        { name: "ISP调优", link: "/industries/mobile-phone/isp-tuning" },
+        { name: "时序测量", link: "/industries/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
       description: "用于视频会议和流媒体应用的网络摄像头",
       subgroups: [
-        { name: "VCX网络摄像头", link: "/your-solution/web-camera/vcx-webcam" },
+        { name: "VCX网络摄像头", link: "/industries/web-camera/vcx-webcam" },
         { name: "ISP调优", link: "#" },
         { name: "色彩校准", link: "#" },
         { name: "时序测量", link: "#" }
@@ -53,7 +53,7 @@ export const navigationDataZh = {
     "Medical & Endoscopy": {
       description: "医学成像和诊断系统中的图像质量",
       subgroups: [
-        { name: "色彩校准", link: "/your-solution/medical-endoscopy/color-calibration" },
+        { name: "色彩校准", link: "/industries/medical-endoscopy/color-calibration" },
         { name: "低照度测试", link: "#" },
         { name: "光学畸变", link: "#" },
         { name: "ISP调优", link: "#" },
@@ -63,7 +63,7 @@ export const navigationDataZh = {
     "Scanners & Archiving": {
       description: "文档扫描、归档和数字化系统",
       subgroups: [
-        { name: "多光谱照明", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+        { name: "多光谱照明", link: "/industries/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
@@ -206,7 +206,7 @@ export const navigationDataZh = {
       description: "汽车摄像系统和ADAS应用的专业测试服务",
       services: [
         { name: "camPAS", link: "/test-lab/automotive/campas" },
-        { name: "车内测试", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "车内测试", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "HDR测试", link: "/test-lab/automotive/hdr-testing" },
         { name: "几何校准", link: "/test-lab/automotive/geometric-calibration" },
         { name: "基准评估", link: "/test-lab/automotive/baseline-evaluations" }
