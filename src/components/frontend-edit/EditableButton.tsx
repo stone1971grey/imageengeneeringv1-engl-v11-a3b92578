@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Check, X, Loader2, Link as LinkIcon } from 'lucide-react';
-import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 
 interface EditableButtonProps {
@@ -43,9 +42,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const [editText, setEditText] = useState(text);
   const [editLink, setEditLink] = useState(link);
   const [isSaving, setIsSaving] = useState(false);
-  const [editorPosition, setEditorPosition] = useState({ top: 0, left: 0 });
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
@@ -58,9 +55,12 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (editorRef.current && !editorRef.current.contains(e.target as Node) && 
-          buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
-        setIsEditing(false);
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (isEditing && (editText !== text || editLink !== link)) {
+          handleSave();
+        } else {
+          setIsEditing(false);
+        }
       }
     };
 
@@ -71,7 +71,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isEditing]);
+  }, [isEditing, editText, editLink, text, link]);
 
   const handleSave = useCallback(async () => {
     if (editText === text && editLink === link) {
@@ -189,25 +189,25 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     if (isSegmentEditing && editContext?.canEdit) {
       e.preventDefault();
       e.stopPropagation();
-      
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setEditorPosition({
-          top: rect.bottom + window.scrollY + 8,
-          left: rect.left + window.scrollX
-        });
-      }
       setIsEditing(true);
     } else if (onClick) {
       onClick();
     }
   }, [isSegmentEditing, editContext?.canEdit, onClick]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleCancel();
+    } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSave();
+    }
+  }, [handleCancel, handleSave]);
+
   // If not in edit mode, render normal button
   if (!isSegmentEditing) {
     return (
       <Button
-        ref={buttonRef}
         size={size}
         className={className}
         style={style}
@@ -218,23 +218,25 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     );
   }
 
-  return (
-    <>
-      <Button
-        ref={buttonRef}
-        size={size}
-        className={cn(
-          className,
-          "relative cursor-pointer",
-          editContext?.canEdit && "hover:ring-2 hover:ring-[#f9dc24] hover:ring-offset-2 transition-all"
-        )}
-        style={style}
-        onClick={handleClick}
-      >
-        {text}
+  // In edit mode but not currently editing - show button with hover effect
+  if (!isEditing) {
+    return (
+      <div className="relative group inline-block">
+        <Button
+          size={size}
+          className={cn(
+            className,
+            "relative cursor-pointer",
+            editContext?.canEdit && "hover:ring-2 hover:ring-[#f9dc24] hover:ring-offset-2 transition-all"
+          )}
+          style={style}
+          onClick={handleClick}
+        >
+          {text}
+        </Button>
         {editContext?.canEdit && (
           <span 
-            className="z-[9999] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-normal whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]"
+            className="z-[200] opacity-0 group-hover:opacity-100 transition-opacity bg-black text-[#f9dc24] text-sm px-4 py-2 rounded-lg font-normal whitespace-nowrap pointer-events-none shadow-xl border border-[#f9dc24]"
             style={{
               position: 'absolute',
               left: '50%',
@@ -247,84 +249,90 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
             Click to edit button
           </span>
         )}
-      </Button>
+      </div>
+    );
+  }
 
-      {/* Editor Portal */}
-      {isEditing && createPortal(
-        <div 
-          className="fixed inset-0 z-[99998]" 
-          onClick={handleCancel}
-        >
-          <div 
-            ref={editorRef}
-            className="absolute bg-white rounded-xl shadow-2xl p-5 border border-gray-200 min-w-[320px]"
-            style={{
-              top: editorPosition.top,
-              left: editorPosition.left,
-              zIndex: 99999
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">Edit Button</h3>
-              
-              {/* Button Text */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 block">Button Text</label>
-                <input
-                  type="text"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
-                  placeholder="Button text..."
-                  autoFocus
-                />
-              </div>
-              
-              {/* Button Link */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <LinkIcon className="h-3 w-3" />
-                  Link URL
-                </label>
-                <input
-                  type="text"
-                  value={editLink}
-                  onChange={(e) => setEditLink(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
-                  placeholder="/path or https://..."
-                />
-                <p className="text-xs text-gray-400 mt-1">Use / for internal, # for anchor, or full URL</p>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2 border-t">
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
-                >
-                  {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Check className="h-4 w-4" />
-                  )}
-                  <span className="font-medium">Save</span>
-                </button>
-                <button
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
-                >
-                  <X className="h-4 w-4" />
-                  <span className="font-medium">Cancel</span>
-                </button>
-              </div>
-            </div>
+  // Currently editing - show inline editor directly below button
+  return (
+    <div ref={containerRef} className="inline-block">
+      {/* The button itself */}
+      <Button
+        size={size}
+        className={cn(
+          className,
+          "ring-2 ring-[#f9dc24] ring-offset-2"
+        )}
+        style={style}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {editText || text}
+      </Button>
+      
+      {/* Inline Editor - directly below the button */}
+      <div 
+        className="mt-3 bg-white rounded-xl shadow-2xl p-5 border border-gray-200 min-w-[320px] relative z-[100]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col gap-4">
+          <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">Edit Button</h3>
+          
+          {/* Button Text */}
+          <div>
+            <label className="text-xs font-medium text-gray-600 mb-1 block">Button Text</label>
+            <input
+              type="text"
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
+              placeholder="Button text..."
+              autoFocus
+            />
           </div>
-        </div>,
-        document.body
-      )}
-    </>
+          
+          {/* Button Link */}
+          <div>
+            <label className="text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <LinkIcon className="h-3 w-3" />
+              Link URL
+            </label>
+            <input
+              type="text"
+              value={editLink}
+              onChange={(e) => setEditLink(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-transparent"
+              placeholder="/path or https://..."
+            />
+            <p className="text-xs text-gray-400 mt-1">Use / for internal, # for anchor, or full URL</p>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-2 border-t">
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4" />
+              )}
+              <span className="font-medium">Save</span>
+            </button>
+            <button
+              onClick={handleCancel}
+              disabled={isSaving}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+            >
+              <X className="h-4 w-4" />
+              <span className="font-medium">Cancel</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
