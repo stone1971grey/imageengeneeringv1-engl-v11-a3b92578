@@ -5,7 +5,7 @@ export const navigationDataDe = {
       description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
       subgroups: [
         { name: "Fahrerassistenzsysteme (ADAS)", link: "/automotive" },
-        { name: "Innenraumtests", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "Innenraumtests", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020-Tests", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "Nahinfrarot (NIR)", link: "#" },
@@ -15,7 +15,7 @@ export const navigationDataDe = {
     "Security & Surveillance": {
       description: "CCTV-Systeme, Videoüberwachung",
       subgroups: [
-        { name: "IEC 62676-5-Tests", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+        { name: "IEC 62676-5-Tests", link: "/industries/security-surveillance/iec-62676-5-testing" },
         { name: "Schwachlicht (ISO 19093)", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "ISP-Tuning", link: "#" },
@@ -26,16 +26,16 @@ export const navigationDataDe = {
       description: "Bildqualitätsprüfung nach VCX-Standards",
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
-        { name: "Farbkalibrierung", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "Kamerastabilisierung", link: "/your-solution/mobile-phone/camera-stabilization" },
-        { name: "ISP-Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "Timing-Messungen", link: "/your-solution/mobile-phone/timing-measurements" }
+        { name: "Farbkalibrierung", link: "/industries/mobile-phone/color-calibration" },
+        { name: "Kamerastabilisierung", link: "/industries/mobile-phone/camera-stabilization" },
+        { name: "ISP-Tuning", link: "/industries/mobile-phone/isp-tuning" },
+        { name: "Timing-Messungen", link: "/industries/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
       description: "Webkameras für Videokonferenzen und Streaming-Anwendungen",
       subgroups: [
-        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
+        { name: "VCX WebCam", link: "/industries/web-camera/vcx-webcam" },
         { name: "ISP-Tuning", link: "#" },
         { name: "Farbkalibrierung", link: "#" },
         { name: "Timing-Messungen", link: "#" }
@@ -53,7 +53,7 @@ export const navigationDataDe = {
     "Medical & Endoscopy": {
       description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen",
       subgroups: [
-        { name: "Farbkalibrierung", link: "/your-solution/medical-endoscopy/color-calibration" },
+        { name: "Farbkalibrierung", link: "/industries/medical-endoscopy/color-calibration" },
         { name: "Schwachlichttests", link: "#" },
         { name: "Optische Verzerrung", link: "#" },
         { name: "ISP-Tuning", link: "#" },
@@ -63,7 +63,7 @@ export const navigationDataDe = {
     "Scanners & Archiving": {
       description: "Dokumentenscanning, Archivierung und Digitalisierungssysteme",
       subgroups: [
-        { name: "Multispektrale Beleuchtung", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+        { name: "Multispektrale Beleuchtung", link: "/industries/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
@@ -206,7 +206,7 @@ export const navigationDataDe = {
       description: "Spezialisierte Testdienstleistungen für Automotive-Kamerasysteme und ADAS-Anwendungen",
       services: [
         { name: "camPAS", link: "/test-lab/automotive/campas" },
-        { name: "Innenraumtests", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "Innenraumtests", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "HDR-Tests", link: "/test-lab/automotive/hdr-testing" },
         { name: "Geometrische Kalibrierung", link: "/test-lab/automotive/geometric-calibration" },
         { name: "Basis-Evaluierungen", link: "/test-lab/automotive/baseline-evaluations" }

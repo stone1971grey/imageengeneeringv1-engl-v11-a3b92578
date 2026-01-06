@@ -5,7 +5,7 @@ export const navigationDataJa = {
       description: "車両カメラシステム、運転支援、自動運転",
       subgroups: [
         { name: "先進運転支援システム(ADAS)", link: "/automotive" },
-        { name: "キャビン内テスト", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "キャビン内テスト", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020テスト", link: "#" },
         { name: "ハイダイナミックレンジ(HDR)", link: "#" },
         { name: "近赤外線(NIR)", link: "#" },
@@ -15,7 +15,7 @@ export const navigationDataJa = {
     "Security & Surveillance": {
       description: "CCTVシステム、ビデオ監視",
       subgroups: [
-        { name: "IEC 62676-5テスト", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+        { name: "IEC 62676-5テスト", link: "/industries/security-surveillance/iec-62676-5-testing" },
         { name: "低照度(ISO 19093)", link: "#" },
         { name: "ハイダイナミックレンジ(HDR)", link: "#" },
         { name: "ISPチューニング", link: "#" },
@@ -26,16 +26,16 @@ export const navigationDataJa = {
       description: "VCX標準に基づく画質テスト",
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
-        { name: "色較正", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "カメラ手ブレ補正", link: "/your-solution/mobile-phone/camera-stabilization" },
-        { name: "ISPチューニング", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "タイミング測定", link: "/your-solution/mobile-phone/timing-measurements" }
+        { name: "色較正", link: "/industries/mobile-phone/color-calibration" },
+        { name: "カメラ手ブレ補正", link: "/industries/mobile-phone/camera-stabilization" },
+        { name: "ISPチューニング", link: "/industries/mobile-phone/isp-tuning" },
+        { name: "タイミング測定", link: "/industries/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
       description: "ビデオ会議およびストリーミングアプリケーション用Webカメラ",
       subgroups: [
-        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
+        { name: "VCX WebCam", link: "/industries/web-camera/vcx-webcam" },
         { name: "ISPチューニング", link: "#" },
         { name: "色較正", link: "#" },
         { name: "タイミング測定", link: "#" }
@@ -53,7 +53,7 @@ export const navigationDataJa = {
     "Medical & Endoscopy": {
       description: "医用画像および診断システムの画質",
       subgroups: [
-        { name: "色較正", link: "/your-solution/medical-endoscopy/color-calibration" },
+        { name: "色較正", link: "/industries/medical-endoscopy/color-calibration" },
         { name: "低照度テスト", link: "#" },
         { name: "光学歪み", link: "#" },
         { name: "ISPチューニング", link: "#" },
@@ -63,7 +63,7 @@ export const navigationDataJa = {
     "Scanners & Archiving": {
       description: "文書スキャン、アーカイブ、デジタル化システム",
       subgroups: [
-        { name: "マルチスペクトル照明", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+        { name: "マルチスペクトル照明", link: "/industries/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
@@ -206,7 +206,7 @@ export const navigationDataJa = {
       description: "自動車カメラシステムとADASアプリケーション用の専門テストサービス",
       services: [
         { name: "camPAS", link: "/test-lab/automotive/campas" },
-        { name: "キャビン内テスト", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "キャビン内テスト", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "HDRテスト", link: "/test-lab/automotive/hdr-testing" },
         { name: "幾何学的キャリブレーション", link: "/test-lab/automotive/geometric-calibration" },
         { name: "ベースライン評価", link: "/test-lab/automotive/baseline-evaluations" }

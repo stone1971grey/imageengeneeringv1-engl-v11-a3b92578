@@ -5,7 +5,7 @@ export const navigationDataKo = {
       description: "차량 카메라 시스템, 운전 보조 및 자율 주행",
       subgroups: [
         { name: "첨단 운전자 보조 시스템(ADAS)", link: "/automotive" },
-        { name: "차량 내부 테스트", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "차량 내부 테스트", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020 테스트", link: "#" },
         { name: "하이 다이내믹 레인지(HDR)", link: "#" },
         { name: "근적외선(NIR)", link: "#" },
@@ -15,7 +15,7 @@ export const navigationDataKo = {
     "Security & Surveillance": {
       description: "CCTV 시스템, 비디오 감시",
       subgroups: [
-        { name: "IEC 62676-5 테스트", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+        { name: "IEC 62676-5 테스트", link: "/industries/security-surveillance/iec-62676-5-testing" },
         { name: "저조도(ISO 19093)", link: "#" },
         { name: "하이 다이내믹 레인지(HDR)", link: "#" },
         { name: "ISP 튜닝", link: "#" },
@@ -26,16 +26,16 @@ export const navigationDataKo = {
       description: "VCX 표준에 따른 이미지 품질 테스트",
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
-        { name: "색상 보정", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "카메라 안정화", link: "/your-solution/mobile-phone/camera-stabilization" },
-        { name: "ISP 튜닝", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "타이밍 측정", link: "/your-solution/mobile-phone/timing-measurements" }
+        { name: "색상 보정", link: "/industries/mobile-phone/color-calibration" },
+        { name: "카메라 안정화", link: "/industries/mobile-phone/camera-stabilization" },
+        { name: "ISP 튜닝", link: "/industries/mobile-phone/isp-tuning" },
+        { name: "타이밍 측정", link: "/industries/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
       description: "화상 회의 및 스트리밍 애플리케이션용 웹 카메라",
       subgroups: [
-        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
+        { name: "VCX WebCam", link: "/industries/web-camera/vcx-webcam" },
         { name: "ISP 튜닝", link: "#" },
         { name: "색상 보정", link: "#" },
         { name: "타이밍 측정", link: "#" }
@@ -53,7 +53,7 @@ export const navigationDataKo = {
     "Medical & Endoscopy": {
       description: "의료 영상 및 진단 시스템의 이미지 품질",
       subgroups: [
-        { name: "색상 보정", link: "/your-solution/medical-endoscopy/color-calibration" },
+        { name: "색상 보정", link: "/industries/medical-endoscopy/color-calibration" },
         { name: "저조도 테스트", link: "#" },
         { name: "광학 왜곡", link: "#" },
         { name: "ISP 튜닝", link: "#" },
@@ -63,7 +63,7 @@ export const navigationDataKo = {
     "Scanners & Archiving": {
       description: "문서 스캔, 아카이빙 및 디지털화 시스템",
       subgroups: [
-        { name: "다분광 조명", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+        { name: "다분광 조명", link: "/industries/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
@@ -206,7 +206,7 @@ export const navigationDataKo = {
       description: "자동차 카메라 시스템 및 ADAS 애플리케이션용 전문 테스트 서비스",
       services: [
         { name: "camPAS", link: "/test-lab/automotive/campas" },
-        { name: "차량 내부 테스트", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "차량 내부 테스트", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "HDR 테스트", link: "/test-lab/automotive/hdr-testing" },
         { name: "기하학적 캘리브레이션", link: "/test-lab/automotive/geometric-calibration" },
         { name: "기준선 평가", link: "/test-lab/automotive/baseline-evaluations" }

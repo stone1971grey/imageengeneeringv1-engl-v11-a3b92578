@@ -4,18 +4,18 @@ export const navigationDataEn = {
     "Automotive": {
       description: "Camera systems in vehicles, driver assistance and autonomous driving",
       subgroups: [
-        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/your-solution/automotive/adas" },
-        { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/industries/automotive/adas" },
+        { name: "In-Cabin Testing", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020 Testing", link: "/products/standards/ieee-p2020" },
-        { name: "High Dynamic Range (HDR)", link: "/your-solution/automotive/hdr-automotive" },
-        { name: "Near-Infrared (NIR)", link: "/your-solution/automotive/nir-automotive" },
-        { name: "Geometric Calibration", link: "/your-solution/automotive/geometric-calibration-automotive" }
+        { name: "High Dynamic Range (HDR)", link: "/industries/automotive/hdr-automotive" },
+        { name: "Near-Infrared (NIR)", link: "/industries/automotive/nir-automotive" },
+        { name: "Geometric Calibration", link: "/industries/automotive/geometric-calibration-automotive" }
       ]
     },
     "Security & Surveillance": {
       description: "CCTV systems, video surveillance",
       subgroups: [
-        { name: "IEC 62676-5 Testing", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+        { name: "IEC 62676-5 Testing", link: "/industries/security-surveillance/iec-62676-5-testing" },
         { name: "Low-light (ISO 19093)", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "ISP Tuning", link: "#" },
@@ -26,16 +26,16 @@ export const navigationDataEn = {
       description: "Image quality testing according to VCX standards",
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
-        { name: "Color Calibration", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "Camera Stabilization", link: "/your-solution/mobile-phone/camera-stabilization" },
-        { name: "ISP Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "Timing Measurements", link: "/your-solution/mobile-phone/timing-measurements" }
+        { name: "Color Calibration", link: "/industries/mobile-phone/color-calibration" },
+        { name: "Camera Stabilization", link: "/industries/mobile-phone/camera-stabilization" },
+        { name: "ISP Tuning", link: "/industries/mobile-phone/isp-tuning" },
+        { name: "Timing Measurements", link: "/industries/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
       description: "Web cameras for video conferencing and streaming applications",
       subgroups: [
-        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
+        { name: "VCX WebCam", link: "/industries/web-camera/vcx-webcam" },
         { name: "ISP Tuning", link: "#" },
         { name: "Color Calibration", link: "#" },
         { name: "Timing Measurements", link: "#" }
@@ -53,7 +53,7 @@ export const navigationDataEn = {
     "Medical & Endoscopy": {
       description: "Image quality in medical imaging and diagnostic systems",
       subgroups: [
-        { name: "Color Calibration", link: "/your-solution/medical-endoscopy/color-calibration" },
+        { name: "Color Calibration", link: "/industries/medical-endoscopy/color-calibration" },
         { name: "Low-Light Testing", link: "#" },
         { name: "Optical Distortion", link: "#" },
         { name: "ISP Tuning", link: "#" },
@@ -63,7 +63,7 @@ export const navigationDataEn = {
     "Scanners & Archiving": {
       description: "Document scanning, archiving, and digitalization systems",
       subgroups: [
-        { name: "Multispectral Illumination", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+        { name: "Multispectral Illumination", link: "/industries/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
@@ -206,7 +206,7 @@ export const navigationDataEn = {
       description: "Specialized testing services for automotive camera systems and ADAS applications",
       services: [
         { name: "camPAS", link: "/test-lab/automotive/campas" },
-        { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
+        { name: "In-Cabin Testing", link: "/industries/automotive/in-cabin-testing", active: true },
         { name: "HDR Testing", link: "/test-lab/automotive/hdr-testing" },
         { name: "Geometric Calibration", link: "/test-lab/automotive/geometric-calibration" },
         { name: "Baseline Evaluations", link: "/test-lab/automotive/baseline-evaluations" }
