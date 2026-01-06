@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   Camera, 
@@ -26,23 +26,14 @@ import {
   Loader2,
   Plus,
   Trash2,
-  GripVertical,
-  Link as LinkIcon
+  ChevronDown
 } from "lucide-react";
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 // Available icons mapping
 export const availableIcons = {
@@ -69,6 +60,7 @@ export const availableIcons = {
 } as const;
 
 export type IconName = keyof typeof availableIcons;
+const iconOptions = Object.keys(availableIcons) as IconName[];
 
 export interface IndustryItem {
   icon: IconName;
@@ -105,7 +97,6 @@ const IndustriesSegment = ({
   // Local state for editing
   const [editColumns, setEditColumns] = useState(columns);
   const [editItems, setEditItems] = useState<IndustryItem[]>(items);
-  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -116,6 +107,13 @@ const IndustriesSegment = ({
     setHasChanges(false);
   }, [columns, items]);
 
+  // Enable save button when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setHasChanges(true);
+    }
+  }, [isEditing]);
+
   const gridColsClass = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
@@ -123,8 +121,8 @@ const IndustriesSegment = ({
     4: 'grid-cols-2 md:grid-cols-4'
   }[isEditing ? editColumns : columns] || 'grid-cols-2 md:grid-cols-4';
 
-  const handleColumnsChange = (value: string) => {
-    setEditColumns(Number(value));
+  const handleColumnsChange = (newColumns: number) => {
+    setEditColumns(newColumns);
     setHasChanges(true);
   };
 
@@ -138,19 +136,17 @@ const IndustriesSegment = ({
   const handleAddItem = () => {
     const newItem: IndustryItem = {
       icon: 'Camera',
-      title: 'New Item',
-      description: 'Description here',
+      title: '',
+      description: '',
       link: ''
     };
     setEditItems([...editItems, newItem]);
-    setEditingItemIndex(editItems.length);
     setHasChanges(true);
   };
 
   const handleRemoveItem = (index: number) => {
     const newItems = editItems.filter((_, i) => i !== index);
     setEditItems(newItems);
-    setEditingItemIndex(null);
     setHasChanges(true);
   };
 
@@ -226,9 +222,8 @@ const IndustriesSegment = ({
         }
       }
 
-      toast.success('Saved!');
+      toast.success('Industries saved!');
       setHasChanges(false);
-      setEditingItemIndex(null);
       onContentUpdate?.();
     } catch (error) {
       console.error('[IndustriesSegment] Save error:', error);
@@ -241,7 +236,6 @@ const IndustriesSegment = ({
   const handleCancel = () => {
     setEditColumns(columns);
     setEditItems(items);
-    setEditingItemIndex(null);
     setHasChanges(false);
   };
 
@@ -294,63 +288,26 @@ const IndustriesSegment = ({
           )}
         </div>
 
-        {/* Edit Controls */}
+        {/* Column Selector (Edit Mode Only) - matches Tiles style */}
         {isEditing && (
-          <div className="bg-black/90 rounded-xl p-4 mb-8 flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-[#f9dc24] text-sm font-medium">Columns:</span>
-              <Select value={String(editColumns)} onValueChange={handleColumnsChange}>
-                <SelectTrigger className="w-20 bg-gray-800 border-gray-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+              <span className="text-xs text-gray-500 font-medium px-2">Columns:</span>
+              {[1, 2, 3, 4].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => handleColumnsChange(num)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    editColumns === num 
+                      ? 'bg-[#f9dc24] text-black' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
             </div>
-
-            <Button
-              onClick={handleAddItem}
-              variant="outline"
-              size="sm"
-              className="bg-transparent border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24] hover:text-black"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Item
-            </Button>
-
-            <div className="flex-1" />
-
-            {hasChanges && (
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={handleCancel}
-                  variant="ghost"
-                  size="sm"
-                  disabled={isSaving}
-                  className="text-gray-300 hover:text-white hover:bg-gray-700"
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  size="sm"
-                  disabled={isSaving}
-                  className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
-                >
-                  {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  ) : (
-                    <Check className="h-4 w-4 mr-1" />
-                  )}
-                  Save Changes
-                </Button>
-              </div>
-            )}
           </div>
         )}
 
@@ -358,190 +315,155 @@ const IndustriesSegment = ({
         <div className={`grid ${gridColsClass} gap-8 md:gap-12 max-w-6xl mx-auto`}>
           {displayItems.map((item, index) => {
             const IconComponent = availableIcons[item.icon] || Camera;
-            const isItemEditing = isEditing && editingItemIndex === index;
 
-            if (isItemEditing) {
-              // Editing mode for this item
-              return (
-                <div key={index} className="bg-white rounded-xl shadow-lg p-4 border-2 border-[#f9dc24]">
-                  <div className="space-y-4">
-                    {/* Icon Selection */}
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Icon</label>
-                      <Select 
-                        value={item.icon} 
-                        onValueChange={(value) => handleItemChange(index, 'icon', value)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue>
-                            <div className="flex items-center gap-2">
-                              <IconComponent className="h-4 w-4" />
-                              <span>{item.icon}</span>
-                            </div>
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="max-h-60">
-                          {Object.keys(availableIcons).map((iconName) => {
-                            const Icon = availableIcons[iconName as IconName];
-                            return (
-                              <SelectItem key={iconName} value={iconName}>
-                                <div className="flex items-center gap-2">
-                                  <Icon className="h-4 w-4" />
-                                  <span>{iconName}</span>
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Title */}
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Title</label>
-                      <input
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => handleItemChange(index, 'title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
-                        placeholder="Item title"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Description</label>
-                      <textarea
-                        value={item.description}
-                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none resize-none"
-                        rows={2}
-                        placeholder="Item description"
-                      />
-                    </div>
-
-                    {/* Link */}
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block flex items-center gap-1">
-                        <LinkIcon className="h-3 w-3" />
-                        Link (optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={item.link || ''}
-                        onChange={(e) => handleItemChange(index, 'link', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
-                        placeholder="/en/page-slug or #anchor"
-                      />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <Button
-                        onClick={() => handleRemoveItem(index)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                      <Button
-                        onClick={() => setEditingItemIndex(null)}
-                        size="sm"
-                        className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Done
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-
-            // Display mode (with click to edit in edit mode)
-            const content = (
+            return (
               <div
-                className={cn(
-                  "group flex flex-col items-center",
-                  isEditing && "cursor-pointer hover:bg-[#f9dc24]/10 rounded-xl p-4 transition-colors"
-                )}
+                key={index}
+                className="group flex flex-col items-center relative"
                 style={{ 
                   animationDelay: `${index * 100}ms`,
                   animation: 'slide-in-up 0.6s ease-out both'
                 }}
-                onClick={isEditing ? () => setEditingItemIndex(index) : undefined}
               >
+                {/* Delete button in edit mode */}
+                {isEditing && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveItem(index)}
+                    className="absolute -top-2 -right-2 text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white rounded-full shadow"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+
                 {/* Icon Circle */}
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg hover:shadow-xl hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
-                      <IconComponent 
-                        size={36} 
-                        className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
-                        strokeWidth={1.8}
-                      />
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg hover:shadow-xl hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105">
+                    <IconComponent 
+                      size={36} 
+                      className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                      strokeWidth={1.8}
+                    />
                   </div>
                   
                   {/* Glow Effect */}
                   <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
                 </div>
 
+                {/* Icon Selector in edit mode - simple dropdown like Tiles */}
+                {isEditing && (
+                  <div className="relative mb-4">
+                    <select
+                      value={item.icon}
+                      onChange={(e) => handleItemChange(index, 'icon', e.target.value)}
+                      className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
+                    >
+                      {iconOptions.map((iconName) => (
+                        <option key={iconName} value={iconName}>
+                          {iconName}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                  </div>
+                )}
+
                 {/* Text Content */}
-                <div className="text-center space-y-1">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed px-2 whitespace-pre-line">
-                    {item.description}
-                  </p>
+                <div className="text-center space-y-2 w-full">
+                  {isEditing ? (
+                    <>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => handleItemChange(index, 'title', e.target.value)}
+                        className="text-lg md:text-xl font-bold text-gray-900 w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
+                        placeholder="Title..."
+                      />
+                      <textarea
+                        value={item.description}
+                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                        className="text-sm md:text-base text-gray-600 font-light w-full text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-2 hover:bg-[#f9dc24]/10 transition-colors resize-none rounded min-h-[60px]"
+                        placeholder="Description..."
+                        rows={2}
+                      />
+                      <input
+                        type="text"
+                        value={item.link || ''}
+                        onChange={(e) => handleItemChange(index, 'link', e.target.value)}
+                        className="text-xs text-gray-500 w-full text-center bg-gray-50 border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 px-2 hover:bg-[#f9dc24]/10 transition-colors rounded"
+                        placeholder="Link (optional): /en/page or #anchor"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm md:text-base text-gray-600 font-light leading-relaxed px-2 whitespace-pre-line">
+                        {item.description}
+                      </p>
+                    </>
+                  )}
                 </div>
 
-                {/* Edit indicator */}
-                {isEditing && (
-                  <span className="mt-2 text-xs text-[#f9dc24] bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                    Click to edit
-                  </span>
+                {/* Wrap in Link only in view mode */}
+                {!isEditing && item.link && (
+                  <Link 
+                    to={item.link}
+                    className="absolute inset-0 z-10"
+                    aria-label={item.title}
+                  />
                 )}
               </div>
             );
-
-            // In edit mode, don't wrap with Link
-            if (isEditing) {
-              return <div key={index}>{content}</div>;
-            }
-
-            if (item.link) {
-              return (
-                <Link 
-                  key={index}
-                  to={item.link}
-                  className="block hover:scale-105 transition-transform duration-300"
-                >
-                  {content}
-                </Link>
-              );
-            }
-
-            return (
-              <div key={index}>
-                {content}
-              </div>
-            );
           })}
+
+          {/* Add Item Button in edit mode */}
+          {isEditing && (
+            <div 
+              onClick={handleAddItem}
+              className="flex flex-col items-center justify-center min-h-[200px] border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#f9dc24] hover:bg-[#f9dc24]/5 transition-all group"
+            >
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-[#f9dc24]/20 transition-colors">
+                <Plus className="h-8 w-8 text-gray-400 group-hover:text-[#f9dc24]" />
+              </div>
+              <span className="mt-3 text-sm text-gray-500 group-hover:text-gray-700">Add Item</span>
+            </div>
+          )}
         </div>
+
+        {/* Save/Cancel Bar - matches Tiles style */}
+        {isEditing && hasChanges && (
+          <div className="flex justify-center gap-3 mt-8">
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              disabled={isSaving}
+              className="bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Check className="h-4 w-4 mr-2" />
+              )}
+              Save Industries
+            </Button>
+          </div>
+        )}
 
         {/* Empty state for editing */}
         {isEditing && displayItems.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">No items configured yet</p>
-            <Button
-              onClick={handleAddItem}
-              className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add First Item
-            </Button>
           </div>
         )}
       </div>
