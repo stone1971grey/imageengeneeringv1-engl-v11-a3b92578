@@ -147,13 +147,14 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
       
-      // Find the most recently edited page based on actual content changes
-      // Exclude technical entries like seo_settings, seo_fkw_*, footer_*, tab_order etc.
+      // Find the most recently edited page based on actual USER content changes
+      // Only consider edits with updated_by set (excludes system/migration updates)
       const { data: latestEditDataList } = await supabase
         .from("page_content")
-        .select("page_slug, section_key, updated_at")
+        .select("page_slug, section_key, updated_at, updated_by")
+        .not("updated_by", "is", null) // Only user edits
         .order("updated_at", { ascending: false })
-        .limit(200); // Increased limit to ensure we find diverse pages
+        .limit(200);
       
       // Filter to only include actual content edits (page_segments or segment-* entries)
       // Also exclude meta entries and system updates
@@ -173,15 +174,15 @@ export const CMSPageOverview = () => {
           seenSlugs.add(edit.page_slug);
           uniqueRecentEdits.push(edit);
         }
-        if (uniqueRecentEdits.length >= 5) break; // Get top 5 for debugging
+        if (uniqueRecentEdits.length >= 5) break;
       }
       
-      // FIXED: Use the FIRST (most recent) edit, not the second
+      // Use the FIRST (most recent) user edit
       const latestEditData = uniqueRecentEdits[0] || null;
       const latestEditedSlug = latestEditData?.page_slug || null;
       const latestEditedTime = latestEditData?.updated_at || null;
       
-      console.log('[CMS Hub] Latest edits:', uniqueRecentEdits.map(e => `${e.page_slug} @ ${e.updated_at}`));
+      console.log('[CMS Hub] Latest user edits:', uniqueRecentEdits.slice(0, 3).map(e => `${e.page_slug} @ ${e.updated_at}`));
 
       // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
       const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
