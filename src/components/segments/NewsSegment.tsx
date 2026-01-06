@@ -48,16 +48,7 @@ interface NewsConfig {
   categories: string[];
 }
 
-// Available categories for news articles
-const AVAILABLE_CATEGORIES = [
-  'Company News',
-  'Product Updates', 
-  'Industry Insights',
-  'Events',
-  'Technology',
-  'Partnerships',
-  'Awards'
-];
+// No fallback categories - always use database categories
 
 const NewsSegment = ({
   id,
@@ -194,13 +185,14 @@ const NewsSegment = ({
       
       if (error) throw error;
       
-      // Get unique categories
-      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
+      // Get unique categories and sort alphabetically
+      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))].sort();
       return uniqueCategories as string[];
     },
   });
 
-  const availableCategories = dbCategories && dbCategories.length > 0 ? dbCategories : AVAILABLE_CATEGORIES;
+  // Use database categories only
+  const availableCategories = dbCategories || [];
 
   const handleArticleLimitChange = (value: string) => {
     setEditArticleLimit(Number(value));
