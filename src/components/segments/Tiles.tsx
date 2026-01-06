@@ -298,7 +298,7 @@ const Tiles: React.FC<TilesProps> = ({
               ) : (
                 description && (
                   <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
-                    {description}
+                    {stripHtml(description)}
                   </p>
                 )
               )
