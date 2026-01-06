@@ -137,11 +137,12 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
                   
                   <VersionSection 
                     versionKey="v1.1"
-                    label="✅ v1.1 – Advanced AI SEO Suite"
+                    label="v1.1 – Advanced AI SEO Suite & Further Development"
                     isOpen={openVersions["v1.1"]}
                     onToggle={() => toggleVersion("v1.1")}
-                    isComplete
+                    isPlanned
                   >
+                    {/* AI SEO Features */}
                     <FeatureItem icon={CheckCircle2} label="Smart Focus Keyword" isDone />
                     <FeatureItem icon={CheckCircle2} label="Smart Title Generator" isDone />
                     <FeatureItem icon={CheckCircle2} label="Smart Description Generator" isDone />
@@ -154,26 +155,31 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
                     <FeatureItem icon={CheckCircle2} label="Smart External Links" isDone />
                     <FeatureItem icon={Circle} label="Link Analysis Dashboard" isPlanned />
                     <FeatureItem icon={Circle} label="Content Gap Analysis" isPlanned />
+                    {/* v1.0.8 Features */}
+                    <FeatureItem icon={CheckCircle2} label="Cascading Slug Inheritance" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Multi-Segment Asset Badges" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Segment Type Validation" isDone />
+                    <FeatureItem icon={CheckCircle2} label="Language Switch Stability" isDone />
                   </VersionSection>
 
                   <VersionSection 
                     versionKey="v1.2"
-                    label="✅ v1.2 – Frontend Editing"
+                    label="v1.2 – Frontend Editing"
                     isOpen={openVersions["v1.2"]}
                     onToggle={() => toggleVersion("v1.2")}
-                    isComplete
+                    isPlanned
                   >
-                    <FeatureItem icon={CheckCircle2} label="Frontend Editing" isDone />
+                    <FeatureItem icon={Circle} label="Frontend Editing" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
                     versionKey="v1.3"
-                    label="✅ v1.3 – Content Automation"
+                    label="v1.3 – Content Automation"
                     isOpen={openVersions["v1.3"]}
                     onToggle={() => toggleVersion("v1.3")}
-                    isComplete
+                    isPlanned
                   >
-                    <FeatureItem icon={CheckCircle2} label="Content Automation" isDone />
+                    <FeatureItem icon={Circle} label="Content Automation" isPlanned />
                   </VersionSection>
 
                   <VersionSection 
