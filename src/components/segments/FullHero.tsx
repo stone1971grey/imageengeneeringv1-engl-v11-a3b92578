@@ -318,13 +318,14 @@ const FullHero = ({
                   <EditableButton
                     text={button1Text}
                     link={button1Link}
+                    buttonStyle={button1Color === 'yellow' ? 'yellow' : button1Color === 'black' ? 'technical' : 'outline-white'}
                     sectionKey={`${segmentKey}`}
                     pageSlug={pageSlug}
                     language={language}
                     textFieldName="button1Text"
                     linkFieldName="button1Link"
+                    styleFieldName="button1Color"
                     className="border-0 px-12 py-4 w-full md:w-auto"
-                    style={getButtonStyle(button1Color)}
                     onUpdate={onContentUpdate}
                   />
                 ) : (
@@ -344,13 +345,14 @@ const FullHero = ({
                   <EditableButton
                     text={button2Text}
                     link={button2Link}
+                    buttonStyle={button2Color === 'yellow' ? 'yellow' : button2Color === 'black' ? 'technical' : 'outline-white'}
                     sectionKey={`${segmentKey}`}
                     pageSlug={pageSlug}
                     language={language}
                     textFieldName="button2Text"
                     linkFieldName="button2Link"
-                    className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
-                    style={getButtonStyle(button2Color)}
+                    styleFieldName="button2Color"
+                    className="px-12 py-4 w-full md:w-auto"
                     onUpdate={onContentUpdate}
                   />
                 ) : (
