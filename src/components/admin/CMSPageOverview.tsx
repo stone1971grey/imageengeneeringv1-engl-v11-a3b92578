@@ -394,7 +394,7 @@ export const CMSPageOverview = () => {
   };
 
   // Category order for navigation hierarchy sorting
-  const CATEGORY_ORDER = ['Home', 'Your Solution', 'Products', 'Test Lab', 'Training & Events', 'Info Hub', 'Company', 'Styleguide'];
+  const CATEGORY_ORDER = ['Home', 'Industries', 'Products', 'Test Lab', 'Training & Events', 'Info Hub', 'Company', 'Styleguide'];
 
   // Static pages - these are React components that don't use CMS segments
   // Only truly static pages that have hardcoded React components

@@ -583,7 +583,7 @@ const Navigation = () => {
             ) : (
               /* Regular Navigation */
               <>
-            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard} triggerLink={`/${language}/industries`}>
+            <SimpleDropdown trigger={t.nav.industries} disabled={isAdminDashboard} triggerLink={`/${language}/industries`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-4 p-4">
@@ -1514,10 +1514,10 @@ const Navigation = () => {
                     className={isStyleguideOrBacklog ? "space-y-0 hidden" : "space-y-0"}
                   >
                     
-                    {/* Your Solution */}
+                    {/* Industries */}
                     <AccordionItem value="solutions" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          {t.nav.yourSolution}
+                          {t.nav.industries}
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
