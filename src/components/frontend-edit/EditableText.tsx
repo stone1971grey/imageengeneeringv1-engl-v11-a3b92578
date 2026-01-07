@@ -308,6 +308,41 @@ export const EditableText: React.FC<EditableTextProps> = ({
     };
   }, [performSave]);
 
+  // CRITICAL: Intercept link clicks to save before navigation
+  useEffect(() => {
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      // If clicking on a navigation link while editing with unsaved changes
+      if (link && link.href && isEditingRef.current) {
+        const currentValue = editValueRef.current;
+        const lastSaved = lastSavedValueRef.current;
+        
+        if (currentValue !== lastSaved && !saveInProgressRef.current) {
+          console.log('[EditableText] Saving before link navigation...');
+          saveInProgressRef.current = true;
+          
+          // Perform synchronous-like save before navigation
+          performSave(currentValue, true).then((success) => {
+            if (success) {
+              console.log('[EditableText] Saved before navigation');
+              lastSavedValueRef.current = currentValue;
+            }
+            saveInProgressRef.current = false;
+          });
+        }
+      }
+    };
+
+    // Use capture phase to intercept before navigation
+    document.addEventListener('click', handleLinkClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, true);
+    };
+  }, [performSave]);
+
   // Handle click outside to save and close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
