@@ -23,8 +23,11 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
   // Loading states
   const [isLoadingCredits, setIsLoadingCredits] = useState(false);
   
-  // Data states
-  const [credits, setCredits] = useState<number | null>(null);
+  // Data states - persist credits in localStorage
+  const [credits, setCredits] = useState<number | null>(() => {
+    const cached = localStorage.getItem('sistrix-credits');
+    return cached ? parseInt(cached) : null;
+  });
   
   // Collapsible states with localStorage persistence
   const [isVisibilityOpen, setIsVisibilityOpen] = useState(() => {
@@ -72,6 +75,10 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
         : null;
       const creditsNumber = typeof creditsValue === 'number' ? creditsValue : parseInt(String(creditsValue)) || null;
       setCredits(creditsNumber);
+      // Persist to localStorage
+      if (creditsNumber !== null) {
+        localStorage.setItem('sistrix-credits', String(creditsNumber));
+      }
       console.log('[SISTRIX] Credits raw:', data?.answer?.[0]?.credits);
       console.log('[SISTRIX] Credits parsed:', creditsNumber);
       toast.success(`SISTRIX Credits: ${creditsNumber?.toLocaleString() || 'Unknown'}`);
@@ -85,8 +92,8 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
 
   return (
     <div className="space-y-6">
-      {/* Credits Check - Always visible (sticky) */}
-      <div className="sticky top-0 z-10 p-3 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg backdrop-blur-sm">
+      {/* Credits Check - Always visible */}
+      <div className="p-3 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
