@@ -55,9 +55,11 @@ const FAQ: React.FC<FAQProps> = ({
   useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
   useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync local items with props
+  // Sync local items with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    setLocalItems(items);
+    if (!hasChangesRef.current) {
+      setLocalItems(items);
+    }
   }, [items]);
 
   // Auto-save when leaving edit mode

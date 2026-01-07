@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
@@ -43,14 +43,22 @@ const Table = ({
   const [localRows, setLocalRows] = useState<string[][]>(rows);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Ref to track changes for prop sync protection
+  const hasChangesRef = useRef(hasChanges);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync local state with props
+  // Sync local state with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    setLocalHeaders(effectiveHeaders);
+    if (!hasChangesRef.current) {
+      setLocalHeaders(effectiveHeaders);
+    }
   }, [effectiveHeaders]);
 
   useEffect(() => {
-    setLocalRows(rows);
+    if (!hasChangesRef.current) {
+      setLocalRows(rows);
+    }
   }, [rows]);
 
   // Enable save button when entering edit mode

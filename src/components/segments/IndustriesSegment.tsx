@@ -112,11 +112,12 @@ const IndustriesSegment = ({
   useEffect(() => { editItemsRef.current = editItems; }, [editItems]);
   useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync with props
+  // Sync with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    setEditColumns(columns);
-    setEditItems(items);
-    setHasChanges(false);
+    if (!hasChangesRef.current) {
+      setEditColumns(columns);
+      setEditItems(items);
+    }
   }, [columns, items]);
 
   const gridColsClass = {

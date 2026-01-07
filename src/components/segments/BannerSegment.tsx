@@ -500,14 +500,15 @@ const BannerSegment = ({
     })
   );
 
-  // Sync with props
+  // Sync with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    const imagesWithIds = images.map((img, idx) => ({
-      ...img,
-      id: img.id || `banner-img-${idx}-${Date.now()}`
-    }));
-    setEditImages(imagesWithIds);
-    setHasChanges(false);
+    if (!hasChangesRef.current) {
+      const imagesWithIds = images.map((img, idx) => ({
+        ...img,
+        id: img.id || `banner-img-${idx}-${Date.now()}`
+      }));
+      setEditImages(imagesWithIds);
+    }
   }, [images]);
 
   const handleDragEnd = (event: DragEndEvent) => {
