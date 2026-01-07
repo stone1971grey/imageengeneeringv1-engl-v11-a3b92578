@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +59,98 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
+  
+  // Refs für Auto-Save
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const tilesRef = useRef(tiles);
+  const titleRef = useRef(title);
+  const descriptionRef = useRef(description);
+  const columnsRef = useRef(columns);
+  
+  // Halte Refs synchron
+  useEffect(() => { tilesRef.current = tiles; }, [tiles]);
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { descriptionRef.current = description; }, [description]);
+  useEffect(() => { columnsRef.current = columns; }, [columns]);
+  
+  // ========= DEBOUNCED AUTO-SAVE FUNKTION =========
+  const performAutoSave = useCallback(async () => {
+    console.log('[TilesSegmentEditor] 🔄 Auto-Save startet...');
+    
+    try {
+      const { data: existingData, error: loadError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (loadError) throw loadError;
+      if (!existingData) {
+        console.error('[TilesSegmentEditor] Keine page_segments gefunden');
+        return;
+      }
+      
+      let segments = JSON.parse(existingData.content_value || '[]');
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+      
+      if (segmentIndex === -1) {
+        console.error('[TilesSegmentEditor] Segment nicht gefunden:', segmentId);
+        return;
+      }
+      
+      // Aktualisiere mit den neuesten Ref-Werten
+      segments[segmentIndex].data = {
+        ...segments[segmentIndex].data,
+        title: titleRef.current,
+        description: descriptionRef.current,
+        columns: columnsRef.current,
+        items: tilesRef.current
+      };
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq("id", existingData.id);
+      
+      if (updateError) throw updateError;
+      
+      console.log('[TilesSegmentEditor] ✅ Auto-Save erfolgreich');
+      toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+      
+    } catch (error) {
+      console.error('[TilesSegmentEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  }, [pageSlug, segmentId, language]);
+  
+  // Debounced Trigger für Auto-Save (1 Sekunde nach letzter Änderung)
+  const triggerAutoSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      performAutoSave();
+    }, 1000);
+  }, [performAutoSave]);
+  
+  // Cleanup beim Unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        // Speichere noch ausstehende Änderungen
+        performAutoSave();
+      }
+    };
+  }, [performAutoSave]);
 
   useEffect(() => {
     loadContent();
@@ -388,13 +480,20 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
   };
 
   const handleDeleteTile = (index: number) => {
-    setTiles(tiles.filter((_, i) => i !== index));
+    const newTiles = tiles.filter((_, i) => i !== index);
+    setTiles(newTiles);
+    tilesRef.current = newTiles;
+    toast.info('🗑️ Kachel gelöscht', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const handleTileChange = (index: number, field: keyof TileItem, value: any) => {
     const newTiles = [...tiles];
     newTiles[index] = { ...newTiles[index], [field]: value };
     setTiles(newTiles);
+    tilesRef.current = newTiles;
+    // Debounced Auto-Save
+    triggerAutoSave();
   };
 
   const iconMap: Record<string, any> = {
@@ -432,7 +531,11 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
             <Input
               id="tiles-title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                titleRef.current = e.target.value;
+                triggerAutoSave();
+              }}
               className="border-2 border-gray-600 bg-gray-800 text-white"
             />
           </div>
@@ -442,7 +545,11 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
             <Textarea
               id="tiles-desc"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                descriptionRef.current = e.target.value;
+                triggerAutoSave();
+              }}
               placeholder="Section description..."
               className="border-2 border-gray-600 bg-gray-800 text-white min-h-[80px]"
             />
@@ -450,7 +557,11 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
           <div>
             <Label htmlFor="tiles-columns" className="text-white">Number of Columns</Label>
-            <Select value={columns} onValueChange={setColumns}>
+            <Select value={columns} onValueChange={(val) => {
+              setColumns(val);
+              columnsRef.current = val;
+              triggerAutoSave();
+            }}>
               <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                 <SelectValue />
               </SelectTrigger>
