@@ -1185,6 +1185,362 @@ const DOCS_FILES: Record<string, string> = {
   "docs/tenant-database-migration.sql": DATABASE_MIGRATION_CONTENT,
 };
 
+const INDEX_CSS_CONTENT = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 220 20% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 25% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 25% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 211 77% 28%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 15% 12%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 211 77% 28%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 15% 15%;
+    --input: 220 15% 15%;
+    --ring: 211 77% 28%;
+
+    /* Custom design tokens */
+    --primary-glow: 211 77% 38%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(220 25% 8%) 0%, hsl(220 20% 10%) 50%, hsl(220 25% 8%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(220 25% 9%), hsl(220 20% 11%));
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 8px 32px hsl(220 30% 3% / 0.3);
+    --shadow-lift: 0 10px 40px hsl(220 30% 5% / 0.15);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Light section tokens */
+    --light-background: 30 15% 95%;
+    --light-foreground: 30 8% 35%;
+    --light-muted: 30 6% 55%;
+    --light-card: 30 20% 97%;
+    --light-border: 30 12% 88%;
+    --accent-violet: 261 83% 65%;
+    --accent-soft-blue: 215 100% 70%;
+    
+    /* Scandinavian design tokens */
+    --scandi-grey: 220 6% 55%;
+    --scandi-light-grey: 220 4% 88%;
+    --scandi-white: 0 0% 100%;
+    --shadow-soft: 0 4px 20px hsl(220 15% 20% / 0.06);
+    --shadow-gentle: 0 2px 12px hsl(220 10% 40% / 0.08);
+    --shadow-warm: 0 6px 25px hsl(220 8% 30% / 0.12);
+    
+    /* Navigation tokens */
+    --nav-surface: 240 9% 96%;
+    
+    /* Downloads section tokens */
+    --downloads-bg: 220 3% 98%;
+    --downloads-text: 220 12% 20%;
+    --downloads-border: 220 6% 92%;
+    --downloads-hover: 220 3% 96%;
+
+    /* Icon background tokens */
+    --icon-camera: 215 30% 85%;
+    --icon-camera-fg: 215 100% 45%;
+    --icon-testing: 261 25% 85%;
+    --icon-testing-fg: 261 83% 50%;
+    --icon-performance: 193 28% 85%;
+    --icon-performance-fg: 193 93% 45%;
+    --icon-general: 220 18% 85%;
+    --icon-general-fg: 220 60% 45%;
+    
+    /* Automotive button colors */
+    --automotive-button: 77 56% 37%;
+    --automotive-icon-bg: 77 30% 75%;
+    --automotive-tests-bg: 77 30% 90%;
+    --training-button: 45 95% 49%;
+    --training-bg: 45 60% 85%;
+
+    /* SEO button color */
+    --seo-button: 34 96% 52%;
+    
+    /* Button variants */
+    --decision-button: 77 56% 37%;
+    --decision-icon-bg: 77 30% 75%;
+    --academia-button: 45 95% 49%;
+    --academia-button-hover: 45 95% 60%;
+    --academia-icon-bg: 45 60% 85%;
+
+    /* Events & Products buttons */
+    --events-button: 211 77% 42%;
+    --accent-blue: 195 85% 45%;
+    
+    /* Admin dashboard control buttons */
+    --admin-control-1: 48 96% 46%;
+    --admin-control-2: 48 96% 54%;
+    --admin-control-3: 48 96% 62%;
+
+    /* Admin utility buttons */
+    --admin-utility-1: 280 86% 60%;
+    --admin-utility-2: 190 90% 45%;
+    --admin-utility-3: 340 82% 58%;
+    
+    /* Hotspot color */
+    --hotspot-primary: 205 45% 44%;
+    
+    /* Standard Yellow #f9dc24 */
+    --explore-button: 52 95% 56%;
+    --orange: 52 95% 56%;
+    --orange-foreground: 0 0% 0%;
+    --orange-accent: 52 95% 56%;
+    --orange-accent-foreground: 0 0% 0%;
+    --yellow: 52 95% 56%;
+    --yellow-foreground: 0 0% 0%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground; }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+`;
+
+const TAILWIND_CONFIG_CONTENT = `import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: { '2xl': '1400px' }
+    },
+    extend: {
+      fontFamily: {
+        'roboto': ['Roboto', 'sans-serif'],
+        'roboto-thin': ['Roboto', 'sans-serif'],
+        'roboto-regular': ['Roboto', 'sans-serif'],
+        'roboto-bold': ['Roboto', 'sans-serif'],
+      },
+      colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+          glow: 'hsl(var(--primary-glow))'
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        light: {
+          background: 'hsl(var(--light-background))',
+          foreground: 'hsl(var(--light-foreground))',
+          muted: 'hsl(var(--light-muted))',
+          card: 'hsl(var(--light-card))',
+          border: 'hsl(var(--light-border))'
+        },
+        'accent-violet': 'hsl(var(--accent-violet))',
+        'accent-soft-blue': 'hsl(var(--accent-soft-blue))',
+        'soft-blue': 'hsl(var(--accent-soft-blue))',
+        scandi: {
+          grey: 'hsl(var(--scandi-grey))',
+          'light-grey': 'hsl(var(--scandi-light-grey))',
+          white: 'hsl(var(--scandi-white))'
+        },
+        nav: { surface: 'hsl(var(--nav-surface))' },
+        downloads: {
+          bg: 'hsl(var(--downloads-bg))',
+          text: 'hsl(var(--downloads-text))',
+          border: 'hsl(var(--downloads-border))',
+          hover: 'hsl(var(--downloads-hover))'
+        },
+        icon: {
+          camera: 'hsl(var(--icon-camera))',
+          'camera-fg': 'hsl(var(--icon-camera-fg))',
+          testing: 'hsl(var(--icon-testing))',
+          'testing-fg': 'hsl(var(--icon-testing-fg))',
+          performance: 'hsl(var(--icon-performance))',
+          'performance-fg': 'hsl(var(--icon-performance-fg))',
+          general: 'hsl(var(--icon-general))',
+          'general-fg': 'hsl(var(--icon-general-fg))'
+        },
+        automotive: {
+          button: 'hsl(var(--automotive-button))',
+          'icon-bg': 'hsl(var(--automotive-icon-bg))',
+          'tests-bg': 'hsl(var(--automotive-tests-bg))'
+        },
+        yellow: {
+          DEFAULT: 'hsl(var(--yellow))',
+          foreground: 'hsl(var(--yellow-foreground))'
+        },
+        training: {
+          button: 'hsl(var(--training-button))',
+          bg: 'hsl(var(--training-bg))'
+        },
+        decision: {
+          button: 'hsl(var(--decision-button))',
+          'icon-bg': 'hsl(var(--decision-icon-bg))'
+        },
+        academia: {
+          button: 'hsl(var(--academia-button))',
+          'icon-bg': 'hsl(var(--academia-icon-bg))'
+        },
+        hotspot: { primary: 'hsl(var(--hotspot-primary))' },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))'
+        }
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-card': 'var(--gradient-card)'
+      },
+      boxShadow: {
+        'glow': 'var(--shadow-glow)',
+        'card': 'var(--shadow-card)',
+        'lift': 'var(--shadow-lift)',
+        'soft': 'var(--shadow-soft)',
+        'gentle': 'var(--shadow-gentle)',
+        'warm': 'var(--shadow-warm)'
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      keyframes: {
+        'accordion-down': { from: { height: '0' }, to: { height: 'var(--radix-accordion-content-height)' } },
+        'accordion-up': { from: { height: 'var(--radix-accordion-content-height)' }, to: { height: '0' } },
+        'slide-in-up': { "0%": { transform: "translateY(20px)", opacity: "0" }, "100%": { transform: "translateY(0)", opacity: "1" } },
+        'fade-in': { "0%": { opacity: "0", transform: "scale(1.05)" }, "100%": { opacity: "1", transform: "scale(1)" } },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'slide-in-up': 'slide-in-up 0.4s ease-out',
+        'fade-in': 'fade-in 1.2s ease-out',
+      }
+    }
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;`;
+
+const STYLING_FILES: Record<string, string> = {
+  "src/index.css": INDEX_CSS_CONTENT,
+  "tailwind.config.ts": TAILWIND_CONFIG_CONTENT,
+};
+
 const FOLDER_STRUCTURE = `aftermarket-update/
 ├── docs/
 │   ├── TENANT_ONBOARDING_CHECKLIST.md  📋 Setup-Guide
@@ -1198,12 +1554,14 @@ const FOLDER_STRUCTURE = `aftermarket-update/
 │   ├── components/
 │   │   └── admin/dashboard/
 │   │       └── roadmapConfig.ts  ✅ CMS Version
+│   ├── index.css              🎨 Design System
 │   └── assets/
 │       ├── spade-cms-logo.png    📦 Aus Haupt-Projekt
 │       └── [dein-logo].svg       📦 Eigenes Logo
 ├── supabase/
 │   ├── config.toml            ✅ Edge Function Config
 │   └── functions/             📦 Aus Haupt-Projekt
+├── tailwind.config.ts         🎨 Tailwind Tokens
 └── README.md`;
 
 const AftermarketDownload = () => {
@@ -1234,7 +1592,7 @@ const AftermarketDownload = () => {
   };
 
   const downloadAll = () => {
-    const allFiles = { ...FILES, ...DOCS_FILES };
+    const allFiles = { ...FILES, ...DOCS_FILES, ...STYLING_FILES };
     Object.entries(allFiles).forEach(([filename, content], index) => {
       setTimeout(() => downloadFile(filename, content), index * 200);
     });
@@ -1293,6 +1651,52 @@ const AftermarketDownload = () => {
                 <div key={filename} className="flex items-center justify-between bg-zinc-900 p-3 rounded-lg">
                   <div className="flex items-center gap-2">
                     <FileCode className="h-4 w-4 text-blue-400" />
+                    <span className="text-white font-mono text-sm">{filename}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(filename, content)}
+                      className="border-zinc-700 hover:bg-zinc-800"
+                    >
+                      {copiedFile === filename ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => downloadFile(filename, content)}
+                      className="border-zinc-700 hover:bg-zinc-800"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Styling-Dateien Sektion */}
+        <Card className="bg-purple-950/30 border-purple-800 mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              🎨 Design System (Styling)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-zinc-300 mb-4">
+              Diese Dateien definieren das komplette visuelle Design (Farben, Tokens, Animationen):
+            </p>
+            <div className="space-y-3">
+              {Object.entries(STYLING_FILES).map(([filename, content]) => (
+                <div key={filename} className="flex items-center justify-between bg-zinc-900 p-3 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileCode className="h-4 w-4 text-purple-400" />
                     <span className="text-white font-mono text-sm">{filename}</span>
                   </div>
                   <div className="flex gap-2">
