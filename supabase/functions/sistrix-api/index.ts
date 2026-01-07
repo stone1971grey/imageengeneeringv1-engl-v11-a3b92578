@@ -277,15 +277,15 @@ serve(async (req) => {
         
         console.log(`[Content Gap] Analyzing gap between ${domain} and ${requestBody.competitorDomain}`);
         
-        // Fetch competitor's top-10 keywords using to_pos=10 filter
+        // Fetch competitor's top-3 keywords using to_pos=3 filter (TEST MODE - saves credits)
         const competitorParams = new URLSearchParams();
         competitorParams.append('api_key', SISTRIX_API_KEY);
         competitorParams.append('format', 'json');
         competitorParams.append('domain', requestBody.competitorDomain);
         competitorParams.append('country', country);
         competitorParams.append('mobile', 'false');
-        competitorParams.append('to_pos', '10'); // Only positions 1-10
-        competitorParams.append('limit', '100'); // Get up to 100 top-10 keywords
+        competitorParams.append('to_pos', '3'); // Only positions 1-3 for testing
+        competitorParams.append('limit', '10'); // Max 10 keywords for testing
         
         const competitorUrl = `${SISTRIX_BASE_URL}/keyword.domain.seo?${competitorParams.toString()}`;
         console.log(`[Content Gap] API URL: ${competitorUrl.replace(SISTRIX_API_KEY, 'HIDDEN')}`);
