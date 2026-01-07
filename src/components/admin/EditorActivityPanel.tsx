@@ -732,18 +732,19 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                                   </Badge>
                                   
                                   {/* Page Slug Badge - Clickable to Backend */}
-                                  <Badge 
-                                    variant="outline" 
-                                    className="text-xs border-blue-500 text-blue-400 font-mono cursor-pointer hover:bg-blue-500/20 transition-colors"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.open(`/admin?page=${entry.page_slug}`, '_blank');
-                                    }}
+                                  <a
+                                    href={`/admin?page=${entry.page_slug}`}
+                                    onClick={(e) => e.stopPropagation()}
                                     title="Open in Admin Dashboard"
                                   >
-                                    <Settings className="h-3 w-3 mr-1" />
-                                    {entry.page_slug}
-                                  </Badge>
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-xs border-blue-500 text-blue-400 font-mono cursor-pointer hover:bg-blue-500/20 transition-colors"
+                                    >
+                                      <Settings className="h-3 w-3 mr-1" />
+                                      {entry.page_slug}
+                                    </Badge>
+                                  </a>
                                   
                                   <span className="text-gray-500">→</span>
                                   
