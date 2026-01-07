@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -329,22 +330,21 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
         
         {(displaySubtext || isEditing) && (
           isEditing ? (
-            <EditableText
+            <EditableRichText
               value={displaySubtext}
               sectionKey={`${segmentKey}-subtext`}
               pageSlug={pageSlug}
               language={language}
-              className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto whitespace-pre-line"
-              as="p"
-              multiline
+              className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto"
               onUpdate={onContentUpdate}
               fieldLabel="Feature Overview Subtext"
             />
           ) : (
             subtext && (
-              <p className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto whitespace-pre-line">
-                {subtext}
-              </p>
+              <div 
+                className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto"
+                dangerouslySetInnerHTML={{ __html: subtext }}
+              />
             )
           )
         )}

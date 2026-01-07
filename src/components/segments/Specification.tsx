@@ -1,6 +1,7 @@
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -282,14 +283,12 @@ const Specification = ({
           {(description || isEditing) && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               {isEditing ? (
-                <EditableText
-                  value={description || '[Click to add description/links]'}
+                <EditableRichText
+                  value={description || ''}
                   sectionKey={`${segmentKey}-description`}
                   pageSlug={pageSlug}
                   language={language}
                   className="text-[#555] [&_a]:inline-block [&_a]:font-semibold [&_a]:text-[#2D2D2D] [&_a]:underline [&_a]:decoration-2 [&_a]:bg-[#f9dc24]/60 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-[#f9dc24]/90 [&_a]:transition-colors"
-                  as="div"
-                  multiline
                   onUpdate={onContentUpdate}
                   fieldLabel="Specification Description"
                 />

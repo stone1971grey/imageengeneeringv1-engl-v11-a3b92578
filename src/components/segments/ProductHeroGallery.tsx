@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -640,17 +641,14 @@ const ProductHeroGallery = ({
         
         {/* Description - same container structure in both modes */}
         {isEditing ? (
-          <EditableText
+          <EditableRichText
             value={data.description}
             sectionKey={`${segmentKey}-description`}
             pageSlug={pageSlug}
             language={language}
             className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
-            as="div"
-            multiline
             onUpdate={onContentUpdate}
             fieldLabel="Description"
-            renderAsHtml
           />
         ) : (
           <div 
