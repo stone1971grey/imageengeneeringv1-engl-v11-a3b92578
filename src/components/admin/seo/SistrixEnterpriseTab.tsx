@@ -336,29 +336,15 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
 
   return (
     <div className="space-y-6">
-      {/* Visibility Index Widget - New! */}
-      <VisibilityIndexWidget domain={domain || 'image-engineering.de'} country={country} />
-      
-      {/* Relaunch Dashboard - Primary Feature */}
-      <RelaunchDashboard editorLanguage={editorLanguage} />
-      
-      {/* Content Gap Analysis - NEW! */}
-      <ContentGapAnalysis 
-        domain={domain || 'image-engineering.de'} 
-        country={country} 
-        competitors={competitors.map(c => ({ domain: c.domain, visibilityIndex: c.visibilityIndex }))}
-      />
-      
-      {/* Header with SISTRIX Branding */}
-      <div className="p-4 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg">
+      {/* Credits Check - Top Priority */}
+      <div className="p-3 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#00a1ff] rounded-lg flex items-center justify-center">
-              <SistrixIcon className="h-5 w-5 text-white" />
+            <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
+              <SistrixIcon className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">SISTRIX Enterprise SEO</h3>
-              <p className="text-sm text-muted-foreground">Live SEO data powered by SISTRIX API</p>
+              <h3 className="text-sm font-bold text-foreground">SISTRIX API Credits</h3>
             </div>
           </div>
           
@@ -378,10 +364,24 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
               className="border-[#00a1ff]/30 text-[#00a1ff] hover:bg-[#00a1ff]/10"
             >
               {isLoadingCredits ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              <span className="ml-2">Check Credits</span>
             </Button>
           </div>
         </div>
       </div>
+      
+      {/* Visibility Index Widget */}
+      <VisibilityIndexWidget domain={domain || 'image-engineering.de'} country={country} />
+      
+      {/* Relaunch Dashboard - Primary Feature */}
+      <RelaunchDashboard editorLanguage={editorLanguage} />
+      
+      {/* Content Gap Analysis */}
+      <ContentGapAnalysis 
+        domain={domain || 'image-engineering.de'} 
+        country={country} 
+        competitors={competitors.map(c => ({ domain: c.domain, visibilityIndex: c.visibilityIndex }))}
+      />
       
       {/* Domain Input */}
       <Card className="p-4 bg-muted/20 border-border">
