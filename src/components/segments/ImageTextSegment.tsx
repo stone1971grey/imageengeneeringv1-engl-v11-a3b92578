@@ -389,7 +389,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
     };
   }, [isEditing, performAutoSave]);
 
-  // PERIODIC AUTO-SAVE: Save every 5 seconds while editing if there are changes
+  // PERIODIC AUTO-SAVE: Save every 3 seconds while editing if there are changes
   useEffect(() => {
     if (!isEditing) return;
 
@@ -398,10 +398,48 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
         console.log('[ImageTextSegment] Periodic auto-save triggered...');
         await performAutoSave();
       }
-    }, 5000); // 5 seconds
+    }, 3000); // 3 seconds for faster saves
 
     return () => {
       clearInterval(intervalId);
+    };
+  }, [isEditing, performAutoSave]);
+
+  // CRITICAL: Save when tab loses focus (user switches tabs or minimizes)
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && hasChangesRef.current && !saveInProgressRef.current) {
+        console.log('[ImageTextSegment] Saving on tab hidden...');
+        performAutoSave();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isEditing, performAutoSave]);
+
+  // CRITICAL: Save when page is about to unload (close tab, refresh, navigate away)
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        console.log('[ImageTextSegment] Saving on beforeunload...');
+        performAutoSave();
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isEditing, performAutoSave]);
 
