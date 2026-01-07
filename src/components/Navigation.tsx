@@ -185,6 +185,16 @@ const Navigation = () => {
     };
 
     loadDesignIcons();
+
+    // Listen for design icon updates from admin dashboard
+    const handleDesignIconUpdate = () => {
+      loadDesignIcons();
+    };
+    window.addEventListener('designIconUpdated', handleDesignIconUpdate);
+    
+    return () => {
+      window.removeEventListener('designIconUpdated', handleDesignIconUpdate);
+    };
   }, [isAdminOrEditor]);
 
   // Load flyout images and descriptions for pages (used for enriched navigation hover)

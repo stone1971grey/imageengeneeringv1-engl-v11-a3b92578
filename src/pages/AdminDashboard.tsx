@@ -858,7 +858,10 @@ const AdminDashboard = () => {
     const success = await saveDesignElement(pageInfo.pageId, pendingDesignIcon);
     if (success) {
       setPageInfo(prev => prev ? { ...prev, designIcon: pendingDesignIcon } : prev);
+      setPendingDesignIcon(null); // Reset pending icon after successful save
       setIsDesignElementDialogOpen(false);
+      // Notify navigation to reload design icons
+      window.dispatchEvent(new CustomEvent('designIconUpdated'));
     }
   };
 
@@ -871,6 +874,8 @@ const AdminDashboard = () => {
       setPageInfo(prev => prev ? { ...prev, designIcon: null } : prev);
       setPendingDesignIcon(null);
       setIsDesignElementDialogOpen(false);
+      // Notify navigation to reload design icons
+      window.dispatchEvent(new CustomEvent('designIconUpdated'));
     }
   };
 
@@ -1504,7 +1509,10 @@ const AdminDashboard = () => {
           pageInfo={pageInfo}
           hasDesignButtons={hasDesignButtons}
           onAddSegmentClick={() => setIsTemplateDialogOpen(true)}
-          onDesignElementClick={() => setIsDesignElementDialogOpen(true)}
+          onDesignElementClick={() => {
+            setPendingDesignIcon(pageInfo?.designIcon ?? null); // Reset to current value when opening
+            setIsDesignElementDialogOpen(true);
+          }}
           onCtaClick={() => setIsCtaDialogOpen(true)}
           onFlyoutClick={() => setIsFlyoutDialogOpen(true)}
           onCreatePageClick={() => setIsCreateCMSDialogOpen(true)}
