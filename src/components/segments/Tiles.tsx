@@ -279,7 +279,12 @@ const Tiles: React.FC<TilesProps> = ({
 
       if (!updateError) {
         console.log('[Tiles] ✅ ERFOLGREICH GESPEICHERT!', { updateData });
-        toast.success('Gespeichert', { duration: 1500 });
+        
+        // SICHTBARE Erfolgsmeldung mit Details
+        toast.success(`✅ Tiles gespeichert! (${localItemsRef.current.length} Kacheln)`, { 
+          duration: 3000,
+          description: `Segment ${segmentKey} auf ${pageSlug}`
+        });
         
         // KRITISCH: Setze Flag um Props-Überschreibung zu verhindern
         justSavedRef.current = true;
@@ -289,6 +294,10 @@ const Tiles: React.FC<TilesProps> = ({
         
         hasChangesRef.current = false;
         setHasChanges(false);
+        
+        // Callback für Page-Refresh
+        onContentUpdate?.();
+        
         return true;
       } else {
         console.error('[Tiles] ❌ Update-Fehler:', updateError);
