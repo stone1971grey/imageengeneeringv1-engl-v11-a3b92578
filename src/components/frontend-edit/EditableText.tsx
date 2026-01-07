@@ -402,6 +402,25 @@ export const EditableText: React.FC<EditableTextProps> = ({
     }
   }, [handleCancel, handleSave, multiline]);
 
+  // CRITICAL: Save on blur (when user clicks away or navigates)
+  const handleBlur = useCallback(() => {
+    const currentValue = editValueRef.current;
+    const lastSaved = lastSavedValueRef.current;
+    
+    if (currentValue !== lastSaved && !saveInProgressRef.current) {
+      console.log('[EditableText] Saving on blur...');
+      saveInProgressRef.current = true;
+      performSave(currentValue, true).then((success) => {
+        if (success) {
+          setLastSavedValue(currentValue);
+          lastSavedValueRef.current = currentValue;
+          toast.success('Auto-saved', { duration: 2000, description: fieldLabel || sectionKey });
+        }
+        saveInProgressRef.current = false;
+      });
+    }
+  }, [performSave, fieldLabel, sectionKey]);
+
   const handleClick = useCallback(() => {
     if (isSegmentEditing && editContext?.canEdit && !isEditing) {
       setIsEditing(true);
@@ -569,8 +588,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
         <textarea
           ref={inputRef as React.RefObject<HTMLTextAreaElement>}
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={(e) => {
+            setEditValue(e.target.value);
+            editValueRef.current = e.target.value;
+          }}
           onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
           disabled={isSaving}
           className={cn(
             "w-full bg-black/90 border-2 border-[#f9dc24] rounded-lg p-4",
@@ -585,8 +608,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
           ref={inputRef as React.RefObject<HTMLInputElement>}
           type="text"
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={(e) => {
+            setEditValue(e.target.value);
+            editValueRef.current = e.target.value;
+          }}
           onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
           disabled={isSaving}
           className={cn(
             "w-full bg-black/90 border-2 border-[#f9dc24] rounded-lg px-3 py-2",
