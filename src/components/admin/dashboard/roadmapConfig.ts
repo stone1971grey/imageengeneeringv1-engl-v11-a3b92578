@@ -118,46 +118,11 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
   },
   
   // Roadmap Versions (Admin Only)
+  // v1.2-v1.5: Multi-Tenancy (Complete)
   {
     key: 'v1.2',
-    label: 'v1.2 – Frontend Editing & Further Development',
-    status: 'planned',
-    isAdminOnly: true,
-    features: [
-      { label: 'Frontend Editing', status: 'planned' },
-      { label: 'Editor Activity Panel', status: 'done' },
-      { label: 'Segment Auto-Save', status: 'done' },
-    ]
-  },
-  {
-    key: 'v1.3',
-    label: 'v1.3 – Content Automation',
-    status: 'planned',
-    isAdminOnly: true,
-    features: [
-      { label: 'Content Automation', status: 'planned' },
-    ]
-  },
-  {
-    key: 'v1.4',
-    label: 'v1.4 – Enterprise SEO',
-    status: 'planned',
-    isAdminOnly: true,
-    features: [
-      { label: 'SISTRIX Integration', status: 'done' },
-      { label: 'Relaunch Dashboard', status: 'done' },
-      { label: 'Visibility Tracking', status: 'done' },
-      { label: 'Content Gap Analysis', status: 'done' },
-      { label: 'SEO Language Variants', status: 'planned' },
-      { label: 'Link Analysis Dashboard', status: 'planned' },
-      { label: 'Ranking Alerts', status: 'planned' },
-      { label: 'Competitor Analysis', status: 'planned' },
-    ]
-  },
-  {
-    key: 'v1.5',
-    label: 'v1.5 – Template System',
-    status: 'planned',
+    label: 'v1.2 – Tenant Foundation',
+    status: 'complete',
     isAdminOnly: true,
     features: [
       { label: 'Projekt-Starter Presets', status: 'done' },
@@ -169,9 +134,9 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.6',
-    label: 'v1.6 – Configuration Layer',
-    status: 'planned',
+    key: 'v1.3',
+    label: 'v1.3 – Configuration Layer',
+    status: 'complete',
     isAdminOnly: true,
     features: [
       { label: 'siteConfig Zod-Validierung', status: 'done' },
@@ -182,9 +147,9 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.7',
-    label: 'v1.7 – Data Isolation',
-    status: 'planned',
+    key: 'v1.4',
+    label: 'v1.4 – Data Isolation',
+    status: 'complete',
     isAdminOnly: true,
     features: [
       { label: 'Config-Schutzmechanismus', status: 'done' },
@@ -196,9 +161,9 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.8',
-    label: 'v1.8 – Tenant Onboarding',
-    status: 'planned',
+    key: 'v1.5',
+    label: 'v1.5 – Tenant Onboarding',
+    status: 'complete',
     isAdminOnly: true,
     features: [
       { label: 'Interaktiver Setup-Wizard', status: 'done' },
@@ -207,6 +172,44 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
       { label: 'Tenant-Status-Übersicht', status: 'done' },
       { label: 'Live-Systemprüfung', status: 'done' },
       { label: 'Schnellzugriff-Aktionen', status: 'done' },
+    ]
+  },
+  
+  // v1.6-v1.8: Planned Features
+  {
+    key: 'v1.6',
+    label: 'v1.6 – Frontend Editing',
+    status: 'planned',
+    isAdminOnly: true,
+    features: [
+      { label: 'Frontend Editing', status: 'planned' },
+      { label: 'Editor Activity Panel', status: 'done' },
+      { label: 'Segment Auto-Save', status: 'done' },
+    ]
+  },
+  {
+    key: 'v1.7',
+    label: 'v1.7 – Content Automation',
+    status: 'planned',
+    isAdminOnly: true,
+    features: [
+      { label: 'Content Automation', status: 'planned' },
+    ]
+  },
+  {
+    key: 'v1.8',
+    label: 'v1.8 – Enterprise SEO',
+    status: 'planned',
+    isAdminOnly: true,
+    features: [
+      { label: 'SISTRIX Integration', status: 'done' },
+      { label: 'Relaunch Dashboard', status: 'done' },
+      { label: 'Visibility Tracking', status: 'done' },
+      { label: 'Content Gap Analysis', status: 'done' },
+      { label: 'SEO Language Variants', status: 'planned' },
+      { label: 'Link Analysis Dashboard', status: 'planned' },
+      { label: 'Ranking Alerts', status: 'planned' },
+      { label: 'Competitor Analysis', status: 'planned' },
     ]
   },
   {
