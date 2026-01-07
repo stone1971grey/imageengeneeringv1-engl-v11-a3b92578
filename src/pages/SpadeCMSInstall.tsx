@@ -1784,7 +1784,7 @@ const SpadeCMSInstall = () => {
               </h1>
               <p className="text-zinc-400 mt-1 text-lg">Komplettes Setup-Paket für neue Projekte</p>
             </div>
-            <Badge className="bg-[#4B7BF5] text-white border-0 text-base px-4 py-1.5">
+            <Badge className="bg-[#f9dc24] text-black border-0 text-base font-semibold px-4 py-1.5 rounded-lg">
               v1.2
             </Badge>
           </div>
