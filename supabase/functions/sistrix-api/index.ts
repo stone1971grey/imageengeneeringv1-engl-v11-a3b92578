@@ -321,11 +321,12 @@ serve(async (req) => {
           );
         }
         
-        // Parse keywords from response - SISTRIX returns flat array of keyword objects
-        const rawKeywords = competitorData?.answer || [];
-        console.log(`[Content Gap] Processing ${rawKeywords.length} keywords`);
+        // Parse keywords from response - SISTRIX wraps keywords in answer[0].result
+        // Structure: { answer: [{ result: [{kw, position, traffic, ...}] }] }
+        const resultArray = competitorData?.answer?.[0]?.result || competitorData?.answer || [];
+        console.log(`[Content Gap] Processing ${resultArray.length} keywords from result array`);
         
-        const competitorKeywords = rawKeywords.map((item: any) => ({
+        const competitorKeywords = resultArray.map((item: any) => ({
           keyword: item.kw || item.keyword || '',
           position: parseInt(item.position) || 0,
           traffic: parseInt(item.traffic) || 0,
@@ -341,7 +342,7 @@ serve(async (req) => {
             answer: [{
               competitorDomain: requestBody.competitorDomain,
               keywords: competitorKeywords,
-              rawCount: rawKeywords.length,
+              rawCount: resultArray.length,
               analyzedAt: new Date().toISOString()
             }]
           }),

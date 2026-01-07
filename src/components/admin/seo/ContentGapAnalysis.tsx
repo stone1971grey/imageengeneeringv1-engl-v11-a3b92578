@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ChevronDown, Loader2, Target, TrendingUp, Search, AlertCircle, 
-  CheckCircle2, ExternalLink, Filter, ArrowUpRight, Sparkles, Plus, RefreshCw
+  CheckCircle2, ExternalLink, Filter, ArrowUpRight, Sparkles, Plus, RefreshCw, X
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,6 +52,10 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   const [isLoadingCompetitors, setIsLoadingCompetitors] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>('');
   const [customCompetitor, setCustomCompetitor] = useState<string>('');
+  const [savedCustomCompetitors, setSavedCustomCompetitors] = useState<string[]>(() => {
+    const cached = localStorage.getItem('seo-content-gap-custom-competitors');
+    return cached ? JSON.parse(cached) : [];
+  });
   const [sistrixCompetitors, setSistrixCompetitors] = useState<SistrixCompetitor[]>([]);
   const [gapKeywords, setGapKeywords] = useState<GapKeyword[]>([]);
   const [ownKeywords, setOwnKeywords] = useState<OwnKeyword[]>([]);
@@ -63,6 +67,11 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   useEffect(() => {
     localStorage.setItem('seo-content-gap-open', String(isOpen));
   }, [isOpen]);
+  
+  // Persist saved custom competitors
+  useEffect(() => {
+    localStorage.setItem('seo-content-gap-custom-competitors', JSON.stringify(savedCustomCompetitors));
+  }, [savedCustomCompetitors]);
   
   // Load SISTRIX suggested competitors
   const loadSistrixCompetitors = async () => {
@@ -107,12 +116,20 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     }
   }, [isOpen, domain]);
   
-  // Combine SISTRIX suggestions with passed competitors (deduplicated)
+  // Combine SISTRIX suggestions with passed competitors and saved custom competitors (deduplicated)
   const allCompetitors = useMemo(() => {
     const seen = new Set<string>();
-    const result: { domain: string; visibilityIndex: number; source: 'sistrix' | 'passed' }[] = [];
+    const result: { domain: string; visibilityIndex: number; source: 'sistrix' | 'passed' | 'custom' }[] = [];
     
-    // Add SISTRIX suggestions first
+    // Add saved custom competitors first (user's priority)
+    savedCustomCompetitors.forEach(d => {
+      if (!seen.has(d)) {
+        seen.add(d);
+        result.push({ domain: d, visibilityIndex: 0, source: 'custom' });
+      }
+    });
+    
+    // Add SISTRIX suggestions
     sistrixCompetitors.forEach(c => {
       if (!seen.has(c.domain)) {
         seen.add(c.domain);
@@ -129,9 +146,9 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     });
     
     return result;
-  }, [sistrixCompetitors, competitors]);
+  }, [sistrixCompetitors, competitors, savedCustomCompetitors]);
   
-  // Handle custom competitor add
+  // Handle custom competitor add - saves to localStorage
   const handleAddCustomCompetitor = () => {
     if (!customCompetitor.trim()) return;
     
@@ -146,9 +163,23 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
       return;
     }
     
+    // Save to localStorage if not already there
+    if (!savedCustomCompetitors.includes(cleanDomain)) {
+      setSavedCustomCompetitors(prev => [...prev, cleanDomain]);
+    }
+    
     setSelectedCompetitor(cleanDomain);
     setCustomCompetitor('');
-    toast.success(`Custom competitor set: ${cleanDomain}`);
+    toast.success(`Custom competitor saved: ${cleanDomain}`);
+  };
+  
+  // Remove a saved custom competitor
+  const handleRemoveCustomCompetitor = (domainToRemove: string) => {
+    setSavedCustomCompetitors(prev => prev.filter(d => d !== domainToRemove));
+    if (selectedCompetitor === domainToRemove) {
+      setSelectedCompetitor('');
+    }
+    toast.success(`Removed: ${domainToRemove}`);
   };
   
   // Load own keywords from relaunch_url_mappings (no API cost)
@@ -354,12 +385,19 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                           <SelectItem key={comp.domain} value={comp.domain}>
                             <div className="flex items-center gap-2">
                               <span>{comp.domain}</span>
-                              <Badge variant="outline" className="text-xs">
-                                VI: {comp.visibilityIndex.toFixed(2)}
-                              </Badge>
+                              {comp.source !== 'custom' && (
+                                <Badge variant="outline" className="text-xs">
+                                  VI: {comp.visibilityIndex.toFixed(2)}
+                                </Badge>
+                              )}
                               {comp.source === 'sistrix' && (
                                 <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] text-xs border-[#00a1ff]/30">
                                   SISTRIX
+                                </Badge>
+                              )}
+                              {comp.source === 'custom' && (
+                                <Badge className="bg-purple-500/20 text-purple-400 text-xs border-purple-500/30">
+                                  Custom
                                 </Badge>
                               )}
                             </div>
@@ -407,6 +445,39 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                       Add
                     </Button>
                   </div>
+                  
+                  {/* Saved Custom Competitors */}
+                  {savedCustomCompetitors.length > 0 && (
+                    <div className="mt-2">
+                      <Label className="text-xs text-muted-foreground mb-1 block">Saved competitors:</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {savedCustomCompetitors.map((comp) => (
+                          <Badge 
+                            key={comp} 
+                            variant="outline" 
+                            className={`text-xs cursor-pointer transition-colors ${
+                              selectedCompetitor === comp 
+                                ? 'bg-[#00a1ff]/20 border-[#00a1ff] text-[#00a1ff]' 
+                                : 'hover:bg-muted'
+                            }`}
+                            onClick={() => setSelectedCompetitor(comp)}
+                          >
+                            {comp}
+                            <button
+                              className="ml-1 hover:text-red-400 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveCustomCompetitor(comp);
+                              }}
+                              title="Remove saved competitor"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Selected Competitor Display */}
