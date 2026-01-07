@@ -327,14 +327,64 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
     }
   };
 
-  const handleAddTile = () => {
-    setTiles([...tiles, { 
+  const handleAddTile = async () => {
+    // SOFORT Toast zeigen
+    toast.info('🔄 Kachel wird hinzugefügt...', { duration: 2000 });
+    console.log('[TilesSegmentEditor] ADD TILE clicked');
+    
+    const newTiles = [...tiles, { 
       title: 'New Tile', 
       description: 'Description here...', 
       showButton: true, 
       ctaStyle: 'standard',
       ctaText: 'Learn More'
-    }]);
+    }];
+    setTiles(newTiles);
+    
+    // AUTO-SAVE: Sofort in DB speichern
+    try {
+      const { data: existingData, error: loadError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (loadError) throw loadError;
+      
+      let segments = existingData?.content_value ? JSON.parse(existingData.content_value) : [];
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+      
+      if (segmentIndex !== -1) {
+        segments[segmentIndex].data = {
+          ...segments[segmentIndex].data,
+          title,
+          description,
+          columns,
+          items: newTiles
+        };
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        await supabase
+          .from("page_content")
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
+          })
+          .eq("id", existingData.id);
+        
+        toast.success(`✅ Kachel hinzugefügt! (${newTiles.length} Kacheln total)`, { duration: 3000 });
+        console.log('[TilesSegmentEditor] AUTO-SAVE erfolgreich');
+      } else {
+        toast.error('Segment nicht gefunden');
+      }
+    } catch (error) {
+      console.error('[TilesSegmentEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
   };
 
   const handleDeleteTile = (index: number) => {
