@@ -78,6 +78,16 @@ export const CMSPageOverview = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [hasChildren, setHasChildren] = useState(false);
   const [latestEditedPage, setLatestEditedPage] = useState<{ page: CMSPage; updatedAt: string } | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Fetch current user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    fetchUser();
+  }, []);
 
   // Load saved search query from localStorage on mount
   useEffect(() => {
@@ -147,42 +157,36 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
       
-      // Find the most recently edited page based on actual USER content changes
-      // Only consider edits with updated_by set (excludes system/migration updates)
-      const { data: latestEditDataList } = await supabase
-        .from("page_content")
-        .select("page_slug, section_key, updated_at, updated_by")
-        .not("updated_by", "is", null) // Only user edits
-        .order("updated_at", { ascending: false })
-        .limit(200);
+      // Find the most recently edited page for the CURRENT USER only
+      // Each user has their own "latest edit" - filtered by updated_by = currentUserId
+      let latestEditedSlug: string | null = null;
+      let latestEditedTime: string | null = null;
       
-      // Filter to only include actual content edits (page_segments or segment-* entries)
-      // Also exclude meta entries and system updates
-      const contentEditPatterns = ['page_segments', 'segment-'];
-      const excludePatterns = ['seo', 'tab_order', 'footer', 'contact'];
-      const actualContentEdits = (latestEditDataList || []).filter(edit => {
-        const isContentEdit = contentEditPatterns.some(pattern => edit.section_key.startsWith(pattern));
-        const isExcluded = excludePatterns.some(pattern => edit.section_key.toLowerCase().includes(pattern));
-        return isContentEdit && !isExcluded;
-      });
-      
-      // Get unique page slugs from recent content edits - show the MOST RECENT one
-      const uniqueRecentEdits: { page_slug: string; updated_at: string }[] = [];
-      const seenSlugs = new Set<string>();
-      for (const edit of actualContentEdits) {
-        if (!seenSlugs.has(edit.page_slug)) {
-          seenSlugs.add(edit.page_slug);
-          uniqueRecentEdits.push(edit);
-        }
-        if (uniqueRecentEdits.length >= 5) break;
+      if (currentUserId) {
+        const { data: latestEditDataList } = await supabase
+          .from("page_content")
+          .select("page_slug, section_key, updated_at, updated_by")
+          .eq("updated_by", currentUserId) // Only edits by THIS user
+          .order("updated_at", { ascending: false })
+          .limit(100);
+        
+        // Filter to only include actual content edits (page_segments or segment-* entries)
+        // Also exclude meta entries and system updates
+        const contentEditPatterns = ['page_segments', 'segment-'];
+        const excludePatterns = ['seo', 'tab_order', 'footer', 'contact'];
+        const actualContentEdits = (latestEditDataList || []).filter(edit => {
+          const isContentEdit = contentEditPatterns.some(pattern => edit.section_key.startsWith(pattern));
+          const isExcluded = excludePatterns.some(pattern => edit.section_key.toLowerCase().includes(pattern));
+          return isContentEdit && !isExcluded;
+        });
+        
+        // Get the most recent edit for this user
+        const latestEditData = actualContentEdits[0] || null;
+        latestEditedSlug = latestEditData?.page_slug || null;
+        latestEditedTime = latestEditData?.updated_at || null;
+        
+        console.log('[CMS Hub] Latest edit for user', currentUserId.slice(0, 8), ':', latestEditedSlug, '@', latestEditedTime);
       }
-      
-      // Use the FIRST (most recent) user edit
-      const latestEditData = uniqueRecentEdits[0] || null;
-      const latestEditedSlug = latestEditData?.page_slug || null;
-      const latestEditedTime = latestEditData?.updated_at || null;
-      
-      console.log('[CMS Hub] Latest user edits:', uniqueRecentEdits.slice(0, 3).map(e => `${e.page_slug} @ ${e.updated_at}`));
 
       // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
       const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
