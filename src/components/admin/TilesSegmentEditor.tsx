@@ -74,8 +74,13 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
   useEffect(() => { columnsRef.current = columns; }, [columns]);
   
   // ========= DEBOUNCED AUTO-SAVE FUNKTION =========
-  const performAutoSave = useCallback(async () => {
-    console.log('[TilesSegmentEditor] 🔄 Auto-Save startet...');
+  const performAutoSave = async () => {
+    console.log('[TilesSegmentEditor] 🔄 Auto-Save startet...', {
+      pageSlug,
+      segmentId,
+      language,
+      tilesCount: tilesRef.current.length
+    });
     
     try {
       const { data: existingData, error: loadError } = await supabase
@@ -86,17 +91,24 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         .eq("language", language)
         .maybeSingle();
       
-      if (loadError) throw loadError;
+      if (loadError) {
+        console.error('[TilesSegmentEditor] Load Error:', loadError);
+        throw loadError;
+      }
       if (!existingData) {
-        console.error('[TilesSegmentEditor] Keine page_segments gefunden');
+        console.error('[TilesSegmentEditor] Keine page_segments gefunden für:', pageSlug);
+        toast.error('Segment-Daten nicht gefunden');
         return;
       }
       
       let segments = JSON.parse(existingData.content_value || '[]');
+      console.log('[TilesSegmentEditor] Suche Segment:', segmentId, 'in', segments.map((s: any) => s.id));
+      
       const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
       
       if (segmentIndex === -1) {
         console.error('[TilesSegmentEditor] Segment nicht gefunden:', segmentId);
+        toast.error(`Segment ${segmentId} nicht gefunden`);
         return;
       }
       
@@ -109,6 +121,12 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         items: tilesRef.current
       };
       
+      console.log('[TilesSegmentEditor] Speichere:', {
+        title: titleRef.current,
+        itemsCount: tilesRef.current.length,
+        firstItem: tilesRef.current[0]
+      });
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       const { error: updateError } = await supabase
@@ -120,7 +138,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         })
         .eq("id", existingData.id);
       
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('[TilesSegmentEditor] Update Error:', updateError);
+        throw updateError;
+      }
       
       console.log('[TilesSegmentEditor] ✅ Auto-Save erfolgreich');
       toast.success('✅ Änderungen gespeichert', { duration: 1500 });
@@ -129,17 +150,19 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
       console.error('[TilesSegmentEditor] Auto-Save Fehler:', error);
       toast.error('Auto-Save fehlgeschlagen');
     }
-  }, [pageSlug, segmentId, language]);
+  };
   
   // Debounced Trigger für Auto-Save (1 Sekunde nach letzter Änderung)
-  const triggerAutoSave = useCallback(() => {
+  const triggerAutoSave = () => {
+    console.log('[TilesSegmentEditor] triggerAutoSave aufgerufen');
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
     saveTimeoutRef.current = setTimeout(() => {
+      console.log('[TilesSegmentEditor] Timeout abgelaufen, speichere...');
       performAutoSave();
     }, 1000);
-  }, [performAutoSave]);
+  };
   
   // Cleanup beim Unmount
   useEffect(() => {
@@ -150,7 +173,8 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
         performAutoSave();
       }
     };
-  }, [performAutoSave]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageSlug, segmentId, language]);
 
   useEffect(() => {
     loadContent();
