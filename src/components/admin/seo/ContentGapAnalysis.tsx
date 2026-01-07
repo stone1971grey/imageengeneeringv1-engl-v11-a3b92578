@@ -744,11 +744,10 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                       <div className="p-2 space-y-2">
                         {/* Table Header */}
                         <div className="grid grid-cols-12 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border bg-muted/30 rounded-t-md">
-                          <div className="col-span-4">Keyword</div>
+                          <div className="col-span-3">Keyword</div>
                           <div className="col-span-1 text-center">Pos.</div>
                           <div className="col-span-1 text-center">Traffic</div>
-                          <div className="col-span-1 text-center">Priority</div>
-                          <div className="col-span-5">Competitor URL</div>
+                          <div className="col-span-7">Competitor URL</div>
                         </div>
                         
                         {filteredKeywords.map((kw, idx) => (
@@ -757,7 +756,7 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                             className="grid grid-cols-12 gap-2 items-center p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
                           >
                             {/* Keyword */}
-                            <div className="col-span-4">
+                            <div className="col-span-3">
                               <span className="font-medium text-foreground text-sm">{kw.keyword}</span>
                               {kw.ourPosition && (
                                 <div className="mt-1">
@@ -780,18 +779,12 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                               {kw.traffic.toLocaleString()}
                             </div>
                             
-                            {/* Priority */}
-                            <div className="col-span-1 text-center">
-                              {getOpportunityBadge(kw.opportunity)}
-                            </div>
-                            
-                            {/* URL */}
-                            <div className="col-span-5 flex items-center gap-2">
+                            {/* URL - Full width, no truncation */}
+                            <div className="col-span-7 flex items-center gap-2">
                               {kw.competitorUrl ? (
                                 <>
-                                  <span className="text-xs text-muted-foreground truncate flex-1" title={kw.competitorUrl}>
-                                    {kw.competitorUrl.replace(/^https?:\/\//, '').substring(0, 50)}
-                                    {kw.competitorUrl.length > 60 ? '...' : ''}
+                                  <span className="text-xs text-muted-foreground break-all flex-1">
+                                    {kw.competitorUrl.replace(/^https?:\/\//, '')}
                                   </span>
                                   <Button
                                     variant="ghost"
