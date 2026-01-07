@@ -41,17 +41,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
   const [editValue, setEditValue] = useState(value);
   const [isSaving, setIsSaving] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [lastSavedValue, setLastSavedValue] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const saveInProgressRef = useRef(false);
 
   // Allow editing if segment is being edited OR if we're in general edit mode
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
   const needsApproval = contentStatus === 'draft' || contentStatus === 'pending';
   const isStage2Import = importStage >= 2;
 
-  // Update editValue when value prop changes
+  // Update editValue and lastSavedValue when value prop changes
   useEffect(() => {
     setEditValue(value);
+    setLastSavedValue(value);
   }, [value]);
 
   // Focus input when entering edit mode
@@ -62,7 +66,71 @@ export const EditableText: React.FC<EditableTextProps> = ({
     }
   }, [isEditing]);
 
-  // Handle click outside to cancel
+  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      // Clear timer when not editing
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    // Start auto-save timer
+    autoSaveTimerRef.current = setInterval(async () => {
+      // Only save if value has changed since last save and not currently saving
+      if (editValue !== lastSavedValue && !saveInProgressRef.current) {
+        console.log('[EditableText] Auto-saving...');
+        saveInProgressRef.current = true;
+        
+        try {
+          await performSave(editValue, true);
+          setLastSavedValue(editValue);
+          toast.success('Auto-gespeichert', { 
+            duration: 2000,
+            description: fieldLabel || sectionKey
+          });
+        } catch (error) {
+          console.error('[EditableText] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 10000); // 10 seconds
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, editValue, lastSavedValue, sectionKey, fieldLabel]);
+
+  // BEFOREUNLOAD: Save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isEditing && editValue !== lastSavedValue) {
+        // Try to save synchronously (may not complete)
+        console.log('[EditableText] Attempting save on page leave');
+        // Perform the save operation - can't await here but at least try
+        performSave(editValue, true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    if (isEditing) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isEditing, editValue, lastSavedValue]);
+
+  // Handle click outside to save and close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -83,37 +151,28 @@ export const EditableText: React.FC<EditableTextProps> = ({
     };
   }, [isEditing, editValue, value]);
 
-  const handleSave = useCallback(async () => {
-    if (editValue === value) {
-      setIsEditing(false);
-      return;
+  // Core save function - reusable for manual save and auto-save
+  const performSave = useCallback(async (valueToSave: string, isAutoSave: boolean = false): Promise<boolean> => {
+    if (valueToSave === value && !isAutoSave) {
+      return true; // No changes
     }
-
-    setIsSaving(true);
 
     try {
       // Parse sectionKey to extract segmentKey (without field) and field name
-      // Format: "{segmentKey}-{fieldName}" e.g., "product-hero-gallery-549-title"
-      // The fieldName is the last part, segmentKey is everything before it
       const lastDashIndex = sectionKey.lastIndexOf('-');
       if (lastDashIndex === -1) {
         console.error('[EditableText] Invalid sectionKey format:', sectionKey);
-        toast.error('Error saving');
-        setIsSaving(false);
-        return;
+        return false;
       }
       
       const fieldName = sectionKey.substring(lastDashIndex + 1);
       const segmentKey = sectionKey.substring(0, lastDashIndex);
-      
-      // Extract segment ID from segmentKey - it's the last part after the last dash
-      // e.g., "product-hero-gallery-549" -> "549"
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId, 'pageSlug:', pageSlug, 'language:', language);
+      console.log('[EditableText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName);
 
-      // First, try to find page_segments JSON (newer CMS format)
+      // Try to find page_segments JSON (newer CMS format)
       let { data: pageSegmentsData, error: loadError } = await supabase
         .from('page_content')
         .select('id, content_value')
@@ -124,49 +183,33 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
       if (loadError) {
         console.error('[EditableText] Error loading page_segments:', loadError);
-        toast.error('Error loading content');
-        setIsSaving(false);
-        return;
+        return false;
       }
 
-      // If page_segments exists, use it
       if (pageSegmentsData) {
-        console.log('[EditableText] Using page_segments format');
-        
-        // Parse and update the segments array
         let segments: any[] = [];
         try {
           segments = JSON.parse(pageSegmentsData.content_value || '[]');
         } catch (e) {
           console.error('[EditableText] Error parsing page_segments:', e);
-          toast.error('Error parsing content');
-          setIsSaving(false);
-          return;
+          return false;
         }
 
-        // Find the segment by matching id (trying multiple formats)
         const segmentIndex = segments.findIndex((seg: any) => {
           const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-          // Match against segmentId directly, or the full segmentKey contains it
           return segId === segmentId || segmentKey === `${seg.type}-${segId}`;
         });
 
         if (segmentIndex === -1) {
-          console.error('[EditableText] Segment not found. segmentId:', segmentId, 'segmentKey:', segmentKey, 'Available segments:', segments.map(s => ({ id: s.id, type: s.type })));
-          toast.error('Segment not found');
-          setIsSaving(false);
-          return;
+          console.error('[EditableText] Segment not found:', segmentId);
+          return false;
         }
 
-        console.log('[EditableText] Found segment at index:', segmentIndex, 'type:', segments[segmentIndex].type, 'Updating field:', fieldName);
-
-        // Update the specific field in the segment data
         if (!segments[segmentIndex].data) {
           segments[segmentIndex].data = {};
         }
-        segments[segmentIndex].data[fieldName] = editValue;
+        segments[segmentIndex].data[fieldName] = valueToSave;
 
-        // Save the updated page_segments JSON
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
@@ -177,19 +220,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
         if (updateError) {
           console.error('[EditableText] Error updating page_segments:', updateError);
-          toast.error('Error saving');
-          setIsSaving(false);
-          return;
+          return false;
         }
       } else {
-        // Fallback: Try to find individual segment entry (older CMS format)
-        // Try multiple section_key formats:
-        // 1. segmentKey directly (e.g., "news-config-394")
-        // 2. segmentId only (e.g., "394")
-        console.log('[EditableText] page_segments not found, trying individual section_keys:', segmentKey, 'or', segmentId);
-        
-        // First try segmentKey (without fieldName)
-        let { data: segmentData, error: segmentError } = await supabase
+        // Fallback: Individual segment entry (older CMS format)
+        let { data: segmentData } = await supabase
           .from('page_content')
           .select('id, content_value, content_type')
           .eq('page_slug', pageSlug)
@@ -197,13 +232,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           .eq('language', language)
           .maybeSingle();
         
-        if (segmentError) {
-          console.error('[EditableText] Error loading segment by segmentKey:', segmentError);
-        }
-        
-        // If not found with segmentKey, try with segmentId only
         if (!segmentData && segmentKey !== segmentId) {
-          console.log('[EditableText] Not found with segmentKey, trying segmentId:', segmentId);
           const result = await supabase
             .from('page_content')
             .select('id, content_value, content_type')
@@ -211,37 +240,23 @@ export const EditableText: React.FC<EditableTextProps> = ({
             .eq('section_key', segmentId)
             .eq('language', language)
             .maybeSingle();
-          
-          if (result.error) {
-            console.error('[EditableText] Error loading segment by segmentId:', result.error);
-          }
           segmentData = result.data;
         }
         
         if (!segmentData) {
-          console.error('[EditableText] Segment not found with section_key:', segmentKey, 'or', segmentId);
-          toast.error('Content not found');
-          setIsSaving(false);
-          return;
+          console.error('[EditableText] Segment not found');
+          return false;
         }
         
-        console.log('[EditableText] Found individual segment, updating field:', fieldName);
-        
-        // Parse the content_value JSON and update the field
         let contentObj: any = {};
         try {
           contentObj = JSON.parse(segmentData.content_value || '{}');
         } catch (e) {
-          console.error('[EditableText] Error parsing segment content:', e);
-          toast.error('Error parsing content');
-          setIsSaving(false);
-          return;
+          return false;
         }
         
-        // Update the field
-        contentObj[fieldName] = editValue;
+        contentObj[fieldName] = valueToSave;
         
-        // Save back
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
@@ -252,23 +267,40 @@ export const EditableText: React.FC<EditableTextProps> = ({
         
         if (updateError) {
           console.error('[EditableText] Error updating segment:', updateError);
-          toast.error('Error saving');
-          setIsSaving(false);
-          return;
+          return false;
         }
       }
 
-      toast.success('Saved!');
-      // Call onUpdate with new value to refresh the component
-      onUpdate?.(editValue);
-      setIsEditing(false);
+      return true;
     } catch (error) {
       console.error('[EditableText] Save error:', error);
-      toast.error('Error saving');
+      return false;
+    }
+  }, [value, pageSlug, sectionKey, language]);
+
+  // Manual save handler (triggered by user action)
+  const handleSave = useCallback(async () => {
+    if (editValue === value) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const success = await performSave(editValue, false);
+      if (success) {
+        toast.success('Saved!');
+        setLastSavedValue(editValue);
+        onUpdate?.(editValue);
+        setIsEditing(false);
+      } else {
+        toast.error('Error saving');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [editValue, value, pageSlug, sectionKey, language, onUpdate]);
+  }, [editValue, value, performSave, onUpdate]);
 
   const handleApprove = useCallback(async () => {
     setIsApproving(true);
