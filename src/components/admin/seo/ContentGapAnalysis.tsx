@@ -473,15 +473,15 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
             ) : (
               /* Tabs for competitors */
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/30 p-1">
+                <TabsList className="justify-start h-auto gap-2 bg-transparent p-0 mb-4">
                   {savedCompetitors.map((comp) => (
                     <TabsTrigger 
                       key={comp.id} 
                       value={comp.id}
-                      className="flex items-center gap-2 text-xs data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-border bg-muted/30 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white data-[state=active]:border-[#00a1ff] hover:bg-muted/50 transition-colors"
                     >
-                      <span className="max-w-[120px] truncate">{comp.competitor_domain}</span>
-                      <Badge variant="outline" className="text-[10px] px-1">
+                      <span className="max-w-[180px] truncate">{comp.competitor_domain}</span>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0.5 bg-background/50">
                         {comp.keywords.length}
                       </Badge>
                       <button
@@ -491,15 +491,15 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                         }}
                         className="ml-1 hover:text-red-400 transition-colors"
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-4 w-4" />
                       </button>
                     </TabsTrigger>
                   ))}
                   <TabsTrigger 
                     value="add-new"
-                    className="flex items-center gap-1 text-xs data-[state=active]:bg-green-600 data-[state=active]:text-white"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-border bg-muted/30 data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:border-green-600 hover:bg-muted/50 transition-colors"
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-4 w-4" />
                     Add New
                   </TabsTrigger>
                 </TabsList>
