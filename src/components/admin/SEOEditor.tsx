@@ -7590,12 +7590,6 @@ export const SEOEditor = ({
               <GeminiIcon className="h-4 w-4" />
             </TabsTrigger>
           )}
-          {showEnterpriseTab && (
-            <TabsTrigger value="enterprise" className="text-base font-medium py-3 data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white flex items-center gap-2">
-              Enterprise
-              <SistrixIcon className="h-4 w-4" />
-            </TabsTrigger>
-          )}
         </TabsList>
 
         {/* Basics Tab */}
@@ -11598,15 +11592,6 @@ export const SEOEditor = ({
         </TabsContent>
         )}
         
-        {/* Enterprise Tab - SISTRIX Integration */}
-        {isAdvancedMode && (
-        <TabsContent value="enterprise" className="space-y-4">
-          <SistrixEnterpriseTab 
-            pageSlug={pageSlug}
-            editorLanguage={editorLanguage}
-          />
-        </TabsContent>
-        )}
         
         {/* Redirect Manager Dialog */}
         <RedirectManager 

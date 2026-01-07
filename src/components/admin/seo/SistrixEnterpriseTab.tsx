@@ -67,9 +67,10 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       // SISTRIX API returns credits in response.answer.credits
       const creditsValue = data?.answer?.[0]?.credits ?? data?.credits ?? null;
-      setCredits(creditsValue);
-      console.log('[SISTRIX] Credits:', creditsValue);
-      toast.success(`SISTRIX Credits: ${creditsValue?.toLocaleString() || 'Unknown'}`);
+      const creditsNumber = typeof creditsValue === 'number' ? creditsValue : parseInt(String(creditsValue)) || null;
+      setCredits(creditsNumber);
+      console.log('[SISTRIX] Credits:', creditsNumber);
+      toast.success(`SISTRIX Credits: ${creditsNumber?.toLocaleString() || 'Unknown'}`);
     } catch (e) {
       console.error('[SISTRIX] Credits error:', e);
       toast.error('Failed to check SISTRIX credits');
@@ -116,14 +117,14 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       {/* Visibility Index Widget - Collapsible */}
       <Collapsible open={isVisibilityOpen} onOpenChange={setIsVisibilityOpen}>
-        <div className="border border-border rounded-lg overflow-hidden">
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-muted/30 hover:bg-muted/50 transition-colors">
+        <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-[#00a1ff]/10 hover:bg-[#00a1ff]/20 transition-colors">
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-[#00a1ff]" />
               <span className="font-semibold text-foreground">Sichtbarkeitsindex</span>
               <Badge variant="outline" className="text-xs ml-2">{domain}</Badge>
             </div>
-            <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isVisibilityOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-5 w-5 text-[#00a1ff] transition-transform ${isVisibilityOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           
           <CollapsibleContent>
@@ -136,13 +137,13 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       {/* Relaunch Dashboard - Collapsible */}
       <Collapsible open={isRelaunchOpen} onOpenChange={setIsRelaunchOpen}>
-        <div className="border border-border rounded-lg overflow-hidden">
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-muted/30 hover:bg-muted/50 transition-colors">
+        <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-[#00a1ff]/10 hover:bg-[#00a1ff]/20 transition-colors">
             <div className="flex items-center gap-2">
               <SistrixIcon className="h-5 w-5" />
               <span className="font-semibold text-foreground">Relaunch Dashboard</span>
             </div>
-            <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isRelaunchOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-5 w-5 text-[#00a1ff] transition-transform ${isRelaunchOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           
           <CollapsibleContent>
@@ -155,13 +156,13 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       {/* Content Gap Analysis - Collapsible */}
       <Collapsible open={isContentGapOpen} onOpenChange={setIsContentGapOpen}>
-        <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden bg-gradient-to-br from-[#00a1ff]/5 to-transparent">
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/30 transition-colors">
+        <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-[#00a1ff]/10 hover:bg-[#00a1ff]/20 transition-colors">
             <div className="flex items-center gap-2">
               <SistrixIcon className="h-5 w-5" />
               <span className="font-semibold text-foreground">Content Gap Analysis</span>
             </div>
-            <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isContentGapOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-5 w-5 text-[#00a1ff] transition-transform ${isContentGapOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           
           <CollapsibleContent>
