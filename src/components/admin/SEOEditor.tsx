@@ -7568,9 +7568,7 @@ export const SEOEditor = ({
 
       {/* Tabs for different sections - visibility controlled by seoPermissions */}
       <Tabs defaultValue={initialTab || (showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "readability")} className="w-full">
-        <TabsList className={`grid w-full mb-6 bg-muted h-12`} style={{ 
-          gridTemplateColumns: `repeat(${[showBasicsTab, showSocialTab, showAdvancedTab, showReadabilityTab].filter(Boolean).length}, 1fr)` 
-        }}>
+        <TabsList className="grid w-full mb-6 bg-muted h-12 grid-cols-4">
           {showBasicsTab && (
             <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
           )}
