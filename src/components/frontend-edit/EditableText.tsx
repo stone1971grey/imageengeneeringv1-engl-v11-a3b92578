@@ -66,7 +66,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
     }
   }, [isEditing]);
 
-  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
   useEffect(() => {
     if (!isEditing) {
       // Clear timer when not editing
@@ -97,7 +97,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           saveInProgressRef.current = false;
         }
       }
-    }, 10000); // 10 seconds
+    }, 5000); // 5 seconds
 
     return () => {
       if (autoSaveTimerRef.current) {
@@ -106,6 +106,22 @@ export const EditableText: React.FC<EditableTextProps> = ({
       }
     };
   }, [isEditing, editValue, lastSavedValue, sectionKey, fieldLabel]);
+
+  // Save on editing mode exit (cleanup effect)
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    // When transitioning from editing to not editing, save if there are unsaved changes
+    if (prevIsEditingRef.current && !isEditing && editValue !== lastSavedValue && !saveInProgressRef.current) {
+      console.log('[EditableText] Saving on edit mode exit...');
+      saveInProgressRef.current = true;
+      performSave(editValue, true).then(() => {
+        setLastSavedValue(editValue);
+        toast.success('Auto-saved', { duration: 2000, description: fieldLabel || sectionKey });
+        saveInProgressRef.current = false;
+      });
+    }
+    prevIsEditingRef.current = isEditing;
+  }, [isEditing, editValue, lastSavedValue, fieldLabel, sectionKey]);
 
   // BEFOREUNLOAD: Save on page leave
   useEffect(() => {

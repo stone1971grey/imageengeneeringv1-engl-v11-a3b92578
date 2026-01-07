@@ -111,7 +111,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     return editText !== lastSavedText || editLink !== lastSavedLink || editStyle !== lastSavedStyle;
   }, [editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
 
-  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
   useEffect(() => {
     if (!isEditing) {
       if (autoSaveTimerRef.current) {
@@ -143,7 +143,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           saveInProgressRef.current = false;
         }
       }
-    }, 10000);
+    }, 5000); // 5 seconds
 
     return () => {
       if (autoSaveTimerRef.current) {
@@ -151,6 +151,25 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
         autoSaveTimerRef.current = null;
       }
     };
+  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
+
+  // Save on editing mode exit (cleanup effect)
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    if (prevIsEditingRef.current && !isEditing && hasChanges() && !saveInProgressRef.current) {
+      console.log('[EditableButton] Saving on edit mode exit...');
+      saveInProgressRef.current = true;
+      performSave(true).then((success) => {
+        if (success) {
+          setLastSavedText(editText);
+          setLastSavedLink(editLink);
+          setLastSavedStyle(editStyle);
+          toast.success('Auto-saved', { duration: 2000, description: 'Button' });
+        }
+        saveInProgressRef.current = false;
+      });
+    }
+    prevIsEditingRef.current = isEditing;
   }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
 
   // BEFOREUNLOAD: Warn on page leave

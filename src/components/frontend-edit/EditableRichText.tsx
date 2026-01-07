@@ -81,7 +81,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     }
   }, [value, editor, isEditing]);
 
-  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
   useEffect(() => {
     if (!isEditing) {
       if (autoSaveTimerRef.current) {
@@ -111,7 +111,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           saveInProgressRef.current = false;
         }
       }
-    }, 10000);
+    }, 5000); // 5 seconds
 
     return () => {
       if (autoSaveTimerRef.current) {
@@ -121,11 +121,33 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     };
   }, [isEditing, editValue, lastSavedValue, fieldLabel]);
 
-  // BEFOREUNLOAD: Warn on page leave
+  // Save on editing mode exit (cleanup effect)
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    // When transitioning from editing to not editing, save if there are unsaved changes
+    if (prevIsEditingRef.current && !isEditing && editValue !== lastSavedValue && !saveInProgressRef.current) {
+      console.log('[EditableRichText] Saving on edit mode exit...');
+      saveInProgressRef.current = true;
+      performSave(editValue, true).then((success) => {
+        if (success) {
+          setLastSavedValue(editValue);
+          toast.success('Auto-saved', { duration: 2000, description: fieldLabel || 'Rich Text' });
+        }
+        saveInProgressRef.current = false;
+      });
+    }
+    prevIsEditingRef.current = isEditing;
+  }, [isEditing, editValue, lastSavedValue, fieldLabel]);
+
+  // BEFOREUNLOAD: Warn on page leave and attempt save
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isEditing && editValue !== lastSavedValue) {
         console.log('[EditableRichText] Attempting save on page leave');
+        // Use sendBeacon for reliable async save on unload
+        const saveData = { editValue, sectionKey, pageSlug, language };
+        navigator.sendBeacon?.('/api/autosave-beacon', JSON.stringify(saveData));
+        // Also try the regular save
         performSave(editValue, true);
         e.preventDefault();
         e.returnValue = 'Unsaved changes will be lost';
@@ -140,7 +162,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [isEditing, editValue, lastSavedValue]);
+  }, [isEditing, editValue, lastSavedValue, sectionKey, pageSlug, language]);
 
   // Update editor editable state
   useEffect(() => {
