@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ChevronDown, Loader2, Target, TrendingUp, Search, AlertCircle, 
-  CheckCircle2, ExternalLink, Filter, ArrowUpRight, Sparkles, Plus, RefreshCw, X
+  CheckCircle2, ExternalLink, Filter, Sparkles, Plus, RefreshCw, X, Trash2
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,8 @@ interface GapKeyword {
   competitorPosition: number;
   competitorUrl: string;
   traffic: number;
+  searchVolume?: number;
+  competition?: number;
   ourPosition: number | null;
   opportunity: 'high' | 'medium' | 'low';
 }
@@ -42,6 +45,13 @@ interface SistrixCompetitor {
   competition: number;
 }
 
+interface SavedCompetitor {
+  id: string;
+  competitor_domain: string;
+  analyzed_at: string | null;
+  keywords: GapKeyword[];
+}
+
 export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapAnalysisProps) => {
   const [isOpen, setIsOpen] = useState(() => {
     const cached = localStorage.getItem('seo-content-gap-open');
@@ -50,28 +60,97 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCompetitors, setIsLoadingCompetitors] = useState(false);
+  const [isLoadingSaved, setIsLoadingSaved] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>('');
   const [customCompetitor, setCustomCompetitor] = useState<string>('');
-  const [savedCustomCompetitors, setSavedCustomCompetitors] = useState<string[]>(() => {
-    const cached = localStorage.getItem('seo-content-gap-custom-competitors');
-    return cached ? JSON.parse(cached) : [];
-  });
   const [sistrixCompetitors, setSistrixCompetitors] = useState<SistrixCompetitor[]>([]);
-  const [gapKeywords, setGapKeywords] = useState<GapKeyword[]>([]);
+  const [savedCompetitors, setSavedCompetitors] = useState<SavedCompetitor[]>([]);
+  const [activeTab, setActiveTab] = useState<string>('add-new');
   const [ownKeywords, setOwnKeywords] = useState<OwnKeyword[]>([]);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [lastAnalyzedAt, setLastAnalyzedAt] = useState<string | null>(null);
+  
+  // Get current competitor's keywords based on active tab
+  const currentCompetitor = useMemo(() => {
+    return savedCompetitors.find(c => c.id === activeTab);
+  }, [savedCompetitors, activeTab]);
+  
+  const gapKeywords = useMemo(() => {
+    return currentCompetitor?.keywords || [];
+  }, [currentCompetitor]);
   
   // Persist open state
   useEffect(() => {
     localStorage.setItem('seo-content-gap-open', String(isOpen));
   }, [isOpen]);
   
-  // Persist saved custom competitors
-  useEffect(() => {
-    localStorage.setItem('seo-content-gap-custom-competitors', JSON.stringify(savedCustomCompetitors));
-  }, [savedCustomCompetitors]);
+  // Load saved competitors from database
+  const loadSavedCompetitors = async () => {
+    if (!domain) return;
+    
+    setIsLoadingSaved(true);
+    try {
+      // First, get all saved competitors for this domain
+      const { data: competitorData, error: competitorError } = await supabase
+        .from('content_gap_competitors')
+        .select('id, competitor_domain, analyzed_at')
+        .eq('domain', domain)
+        .eq('country', country)
+        .order('created_at', { ascending: false });
+      
+      if (competitorError) throw competitorError;
+      
+      if (!competitorData || competitorData.length === 0) {
+        setSavedCompetitors([]);
+        return;
+      }
+      
+      // Load keywords for each competitor
+      const competitorsWithKeywords: SavedCompetitor[] = [];
+      
+      for (const comp of competitorData) {
+        const { data: keywordData, error: keywordError } = await supabase
+          .from('content_gap_keywords')
+          .select('*')
+          .eq('competitor_id', comp.id)
+          .order('traffic', { ascending: false });
+        
+        if (keywordError) {
+          console.error(`Error loading keywords for ${comp.competitor_domain}:`, keywordError);
+          continue;
+        }
+        
+        competitorsWithKeywords.push({
+          id: comp.id,
+          competitor_domain: comp.competitor_domain,
+          analyzed_at: comp.analyzed_at,
+          keywords: (keywordData || []).map(kw => ({
+            keyword: kw.keyword,
+            competitorPosition: kw.competitor_position || 0,
+            competitorUrl: kw.competitor_url || '',
+            traffic: kw.traffic || 0,
+            searchVolume: kw.search_volume,
+            competition: kw.competition ? parseFloat(String(kw.competition)) : undefined,
+            ourPosition: kw.our_position,
+            opportunity: (kw.opportunity as 'high' | 'medium' | 'low') || 'low'
+          }))
+        });
+      }
+      
+      setSavedCompetitors(competitorsWithKeywords);
+      
+      // Set first tab if we have saved competitors
+      if (competitorsWithKeywords.length > 0 && activeTab === 'add-new') {
+        setActiveTab(competitorsWithKeywords[0].id);
+      }
+      
+      console.log(`[Content Gap] Loaded ${competitorsWithKeywords.length} saved competitors`);
+    } catch (e) {
+      console.error('[Content Gap] Error loading saved competitors:', e);
+    } finally {
+      setIsLoadingSaved(false);
+    }
+  };
   
   // Load SISTRIX suggested competitors
   const loadSistrixCompetitors = async () => {
@@ -91,7 +170,7 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
       
       const answer = data?.answer || [];
       const competitorData = answer
-        .slice(0, 15) // Top 15 competitors
+        .slice(0, 15)
         .map((item: any) => ({
           domain: item.domain,
           visibility: parseFloat(item.visibility) || 0,
@@ -109,50 +188,45 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     }
   };
   
-  // Load competitors on open
+  // Load data on open
   useEffect(() => {
-    if (isOpen && domain && sistrixCompetitors.length === 0) {
-      loadSistrixCompetitors();
+    if (isOpen && domain) {
+      loadSavedCompetitors();
+      if (sistrixCompetitors.length === 0) {
+        loadSistrixCompetitors();
+      }
     }
   }, [isOpen, domain]);
   
-  // Combine SISTRIX suggestions with passed competitors and saved custom competitors (deduplicated)
+  // Combine SISTRIX suggestions with passed competitors (excluding already saved ones)
   const allCompetitors = useMemo(() => {
+    const savedDomains = new Set(savedCompetitors.map(c => c.competitor_domain));
     const seen = new Set<string>();
-    const result: { domain: string; visibilityIndex: number; source: 'sistrix' | 'passed' | 'custom' }[] = [];
+    const result: { domain: string; visibilityIndex: number; source: 'sistrix' | 'passed' }[] = [];
     
-    // Add saved custom competitors first (user's priority)
-    savedCustomCompetitors.forEach(d => {
-      if (!seen.has(d)) {
-        seen.add(d);
-        result.push({ domain: d, visibilityIndex: 0, source: 'custom' });
-      }
-    });
-    
-    // Add SISTRIX suggestions
+    // Add SISTRIX suggestions (excluding saved)
     sistrixCompetitors.forEach(c => {
-      if (!seen.has(c.domain)) {
+      if (!seen.has(c.domain) && !savedDomains.has(c.domain)) {
         seen.add(c.domain);
         result.push({ domain: c.domain, visibilityIndex: c.visibility, source: 'sistrix' });
       }
     });
     
-    // Add passed competitors
+    // Add passed competitors (excluding saved)
     competitors.forEach(c => {
-      if (!seen.has(c.domain)) {
+      if (!seen.has(c.domain) && !savedDomains.has(c.domain)) {
         seen.add(c.domain);
         result.push({ domain: c.domain, visibilityIndex: c.visibilityIndex, source: 'passed' });
       }
     });
     
     return result;
-  }, [sistrixCompetitors, competitors, savedCustomCompetitors]);
+  }, [sistrixCompetitors, competitors, savedCompetitors]);
   
-  // Handle custom competitor add - saves to localStorage
+  // Handle custom competitor add
   const handleAddCustomCompetitor = () => {
     if (!customCompetitor.trim()) return;
     
-    // Clean up domain
     let cleanDomain = customCompetitor.trim()
       .replace(/^https?:\/\//, '')
       .replace(/^www\./, '')
@@ -163,26 +237,17 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
       return;
     }
     
-    // Save to localStorage if not already there
-    if (!savedCustomCompetitors.includes(cleanDomain)) {
-      setSavedCustomCompetitors(prev => [...prev, cleanDomain]);
+    // Check if already saved
+    if (savedCompetitors.some(c => c.competitor_domain === cleanDomain)) {
+      toast.error('This competitor is already saved');
+      return;
     }
     
     setSelectedCompetitor(cleanDomain);
     setCustomCompetitor('');
-    toast.success(`Custom competitor saved: ${cleanDomain}`);
   };
   
-  // Remove a saved custom competitor
-  const handleRemoveCustomCompetitor = (domainToRemove: string) => {
-    setSavedCustomCompetitors(prev => prev.filter(d => d !== domainToRemove));
-    if (selectedCompetitor === domainToRemove) {
-      setSelectedCompetitor('');
-    }
-    toast.success(`Removed: ${domainToRemove}`);
-  };
-  
-  // Load own keywords from relaunch_url_mappings (no API cost)
+  // Load own keywords from relaunch_url_mappings
   const loadOwnKeywords = async () => {
     try {
       const { data, error } = await supabase
@@ -199,14 +264,13 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     }
   };
   
-  // Load own keywords on mount
   useEffect(() => {
     if (domain) {
       loadOwnKeywords();
     }
   }, [domain]);
   
-  // Analyze content gap
+  // Analyze and save content gap
   const analyzeGap = async () => {
     if (!selectedCompetitor) {
       toast.error('Please select a competitor first');
@@ -235,20 +299,18 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
         ownKeywords.map(k => k.focus_keyword?.toLowerCase().trim()).filter(Boolean)
       );
       
-      // Find gaps: Keywords competitor ranks for but we don't have
+      // Find gaps
       const gaps: GapKeyword[] = competitorKeywords
         .filter((ck: any) => {
           const kwLower = ck.keyword?.toLowerCase().trim();
           return kwLower && !ownKeywordSet.has(kwLower);
         })
         .map((ck: any) => {
-          // Check if we have a similar keyword (partial match)
           const ourMatch = ownKeywords.find(ok => 
             ok.focus_keyword?.toLowerCase().includes(ck.keyword?.toLowerCase()) ||
             ck.keyword?.toLowerCase().includes(ok.focus_keyword?.toLowerCase() || '')
           );
           
-          // Calculate opportunity based on competitor position and traffic
           let opportunity: 'high' | 'medium' | 'low' = 'low';
           if (ck.position <= 3 && ck.traffic >= 100) {
             opportunity = 'high';
@@ -259,14 +321,15 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
           return {
             keyword: ck.keyword,
             competitorPosition: ck.position,
-            competitorUrl: ck.competitorUrl,
+            competitorUrl: ck.competitorUrl || ck.url || '',
             traffic: ck.traffic,
+            searchVolume: ck.searchVolume,
+            competition: ck.competition,
             ourPosition: ourMatch?.current_position || null,
             opportunity
           };
         })
         .sort((a: GapKeyword, b: GapKeyword) => {
-          // Sort by opportunity, then by traffic
           const opOrder = { high: 0, medium: 1, low: 2 };
           if (opOrder[a.opportunity] !== opOrder[b.opportunity]) {
             return opOrder[a.opportunity] - opOrder[b.opportunity];
@@ -274,11 +337,58 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
           return b.traffic - a.traffic;
         });
       
-      setGapKeywords(gaps);
-      setLastAnalyzedAt(new Date().toISOString());
+      // Save to database
+      const { data: competitorRecord, error: insertError } = await supabase
+        .from('content_gap_competitors')
+        .upsert({
+          domain,
+          competitor_domain: selectedCompetitor,
+          country,
+          analyzed_at: new Date().toISOString()
+        }, { onConflict: 'domain,competitor_domain,country' })
+        .select('id')
+        .single();
       
-      toast.success(`Found ${gaps.length} keyword opportunities`);
-      console.log(`[Content Gap] Analysis complete: ${gaps.length} gaps found`);
+      if (insertError) throw insertError;
+      
+      const competitorId = competitorRecord.id;
+      
+      // Delete old keywords for this competitor
+      await supabase
+        .from('content_gap_keywords')
+        .delete()
+        .eq('competitor_id', competitorId);
+      
+      // Insert new keywords
+      if (gaps.length > 0) {
+        const keywordInserts = gaps.map(gap => ({
+          competitor_id: competitorId,
+          keyword: gap.keyword,
+          competitor_position: gap.competitorPosition,
+          competitor_url: gap.competitorUrl,
+          traffic: gap.traffic,
+          search_volume: gap.searchVolume,
+          competition: gap.competition,
+          our_position: gap.ourPosition,
+          opportunity: gap.opportunity
+        }));
+        
+        const { error: keywordError } = await supabase
+          .from('content_gap_keywords')
+          .insert(keywordInserts);
+        
+        if (keywordError) {
+          console.error('[Content Gap] Error saving keywords:', keywordError);
+        }
+      }
+      
+      // Reload saved competitors and switch to new tab
+      await loadSavedCompetitors();
+      setActiveTab(competitorId);
+      setSelectedCompetitor('');
+      
+      toast.success(`Saved ${gaps.length} keyword opportunities for ${selectedCompetitor}`);
+      console.log(`[Content Gap] Analysis complete: ${gaps.length} gaps saved`);
     } catch (e) {
       console.error('[Content Gap] Analysis error:', e);
       toast.error('Failed to analyze content gap');
@@ -287,17 +397,45 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     }
   };
   
+  // Delete a saved competitor
+  const handleDeleteCompetitor = async (competitorId: string) => {
+    try {
+      const { error } = await supabase
+        .from('content_gap_competitors')
+        .delete()
+        .eq('id', competitorId);
+      
+      if (error) throw error;
+      
+      setSavedCompetitors(prev => prev.filter(c => c.id !== competitorId));
+      
+      // Switch to add-new or next competitor
+      if (activeTab === competitorId) {
+        const remaining = savedCompetitors.filter(c => c.id !== competitorId);
+        setActiveTab(remaining.length > 0 ? remaining[0].id : 'add-new');
+      }
+      
+      toast.success('Competitor removed');
+    } catch (e) {
+      console.error('[Content Gap] Delete error:', e);
+      toast.error('Failed to remove competitor');
+    }
+  };
+  
+  // Re-analyze a saved competitor
+  const handleReanalyze = async (competitorDomain: string) => {
+    setSelectedCompetitor(competitorDomain);
+    setActiveTab('add-new');
+  };
+  
   // Filter and search keywords
   const filteredKeywords = useMemo(() => {
     return gapKeywords.filter(kw => {
-      // Filter by opportunity level
       if (filter !== 'all' && kw.opportunity !== filter) return false;
-      
-      // Filter by search query
       if (searchQuery) {
-        return kw.keyword.toLowerCase().includes(searchQuery.toLowerCase());
+        return kw.keyword.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               kw.competitorUrl?.toLowerCase().includes(searchQuery.toLowerCase());
       }
-      
       return true;
     });
   }, [gapKeywords, filter, searchQuery]);
@@ -338,9 +476,9 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {gapKeywords.length > 0 && (
+            {savedCompetitors.length > 0 && (
               <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30">
-                {gapKeywords.length} Opportunities
+                {savedCompetitors.length} Competitor{savedCompetitors.length !== 1 ? 's' : ''}
               </Badge>
             )}
             <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -349,284 +487,345 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
         
         <CollapsibleContent>
           <div className="p-4 pt-0 space-y-4">
-            {/* Competitor Selection */}
-            <Card className="p-4 bg-muted/20 border-border">
-              <div className="space-y-4">
-                {/* SISTRIX Suggested Competitors */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                      <SistrixIcon className="h-4 w-4" />
-                      SISTRIX Competitor Suggestions
-                    </Label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={loadSistrixCompetitors}
-                      disabled={isLoadingCompetitors}
-                      className="h-7 text-xs"
-                    >
-                      {isLoadingCompetitors ? (
-                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                      ) : (
-                        <RefreshCw className="h-3 w-3 mr-1" />
-                      )}
-                      Refresh
-                    </Button>
-                  </div>
-                  
-                  {allCompetitors.length > 0 ? (
-                    <Select value={selectedCompetitor} onValueChange={setSelectedCompetitor}>
-                      <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Choose a competitor..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allCompetitors.map((comp) => (
-                          <SelectItem key={comp.domain} value={comp.domain}>
-                            <div className="flex items-center gap-2">
-                              <span>{comp.domain}</span>
-                              {comp.source !== 'custom' && (
-                                <Badge variant="outline" className="text-xs">
-                                  VI: {comp.visibilityIndex.toFixed(2)}
-                                </Badge>
-                              )}
-                              {comp.source === 'sistrix' && (
-                                <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] text-xs border-[#00a1ff]/30">
-                                  SISTRIX
-                                </Badge>
-                              )}
-                              {comp.source === 'custom' && (
-                                <Badge className="bg-purple-500/20 text-purple-400 text-xs border-purple-500/30">
-                                  Custom
-                                </Badge>
-                              )}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : isLoadingCompetitors ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Loading competitor suggestions...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
-                      <AlertCircle className="h-4 w-4" />
-                      No competitors found. Use the custom URL field below.
-                    </div>
-                  )}
-                </div>
-                
-                {/* Custom Competitor Input */}
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    Or enter competitor URL manually
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="competitor-domain.com"
-                      value={customCompetitor}
-                      onChange={(e) => setCustomCompetitor(e.target.value)}
-                      className="flex-1 bg-background"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddCustomCompetitor();
-                        }
-                      }}
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={handleAddCustomCompetitor}
-                      disabled={!customCompetitor.trim()}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add
-                    </Button>
-                  </div>
-                  
-                  {/* Saved Custom Competitors */}
-                  {savedCustomCompetitors.length > 0 && (
-                    <div className="mt-2">
-                      <Label className="text-xs text-muted-foreground mb-1 block">Saved competitors:</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {savedCustomCompetitors.map((comp) => (
-                          <Badge 
-                            key={comp} 
-                            variant="outline" 
-                            className={`text-xs cursor-pointer transition-colors ${
-                              selectedCompetitor === comp 
-                                ? 'bg-[#00a1ff]/20 border-[#00a1ff] text-[#00a1ff]' 
-                                : 'hover:bg-muted'
-                            }`}
-                            onClick={() => setSelectedCompetitor(comp)}
-                          >
-                            {comp}
-                            <button
-                              className="ml-1 hover:text-red-400 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveCustomCompetitor(comp);
-                              }}
-                              title="Remove saved competitor"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Selected Competitor Display */}
-                {selectedCompetitor && (
-                  <div className="flex items-center gap-2 p-2 bg-[#00a1ff]/10 rounded-md border border-[#00a1ff]/30">
-                    <Target className="h-4 w-4 text-[#00a1ff]" />
-                    <span className="text-sm font-medium">Selected:</span>
-                    <Badge className="bg-[#00a1ff] text-white">{selectedCompetitor}</Badge>
-                  </div>
-                )}
-                
-                {/* Analyze Button */}
-                <Button
-                  onClick={analyzeGap}
-                  disabled={!selectedCompetitor || isLoading}
-                  className="w-full h-10 bg-[#00a1ff] hover:bg-[#0088dd] text-white"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <Sparkles className="h-4 w-4 mr-2" />
-                  )}
-                  Analyze Content Gap
-                </Button>
+            {/* Loading State */}
+            {isLoadingSaved ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">Loading saved competitors...</span>
               </div>
-              
-              {/* Own Keywords Info */}
-              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <CheckCircle2 className="h-3 w-3 text-green-400" />
-                {ownKeywords.length} own keywords loaded from database (no API cost)
-              </div>
-            </Card>
-            
-            {/* Results */}
-            {gapKeywords.length > 0 && (
-              <>
-                {/* Statistics */}
-                <div className="grid grid-cols-5 gap-3">
-                  <Card className="p-3 bg-muted/20 text-center">
-                    <div className="text-2xl font-bold text-[#00a1ff]">{stats.total}</div>
-                    <div className="text-xs text-muted-foreground">Total Gaps</div>
-                  </Card>
-                  <Card className="p-3 bg-green-500/10 text-center cursor-pointer hover:bg-green-500/20 transition-colors" onClick={() => setFilter('high')}>
-                    <div className="text-2xl font-bold text-green-400">{stats.high}</div>
-                    <div className="text-xs text-muted-foreground">High Priority</div>
-                  </Card>
-                  <Card className="p-3 bg-yellow-500/10 text-center cursor-pointer hover:bg-yellow-500/20 transition-colors" onClick={() => setFilter('medium')}>
-                    <div className="text-2xl font-bold text-yellow-400">{stats.medium}</div>
-                    <div className="text-xs text-muted-foreground">Medium</div>
-                  </Card>
-                  <Card className="p-3 bg-muted/20 text-center cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setFilter('low')}>
-                    <div className="text-2xl font-bold text-gray-400">{stats.low}</div>
-                    <div className="text-xs text-muted-foreground">Low</div>
-                  </Card>
-                  <Card className="p-3 bg-muted/20 text-center">
-                    <div className="text-2xl font-bold text-foreground">{stats.totalTraffic.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">Est. Traffic</div>
-                  </Card>
-                </div>
-                
-                {/* Filter & Search */}
-                <div className="flex gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search keywords..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
-                  <Select value={filter} onValueChange={(v) => setFilter(v as any)}>
-                    <SelectTrigger className="w-[150px]">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All ({stats.total})</SelectItem>
-                      <SelectItem value="high">High ({stats.high})</SelectItem>
-                      <SelectItem value="medium">Medium ({stats.medium})</SelectItem>
-                      <SelectItem value="low">Low ({stats.low})</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Keyword List */}
-                <ScrollArea className="h-[400px] rounded-lg border border-border">
-                  <div className="p-2 space-y-2">
-                    {filteredKeywords.map((kw, idx) => (
-                      <div 
-                        key={`${kw.keyword}-${idx}`}
-                        className="flex items-center justify-between p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
+            ) : (
+              /* Tabs for competitors */
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/30 p-1">
+                  {savedCompetitors.map((comp) => (
+                    <TabsTrigger 
+                      key={comp.id} 
+                      value={comp.id}
+                      className="flex items-center gap-2 text-xs data-[state=active]:bg-[#00a1ff] data-[state=active]:text-white"
+                    >
+                      <span className="max-w-[120px] truncate">{comp.competitor_domain}</span>
+                      <Badge variant="outline" className="text-[10px] px-1">
+                        {comp.keywords.length}
+                      </Badge>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCompetitor(comp.id);
+                        }}
+                        className="ml-1 hover:text-red-400 transition-colors"
                       >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-foreground truncate">{kw.keyword}</span>
-                            {getOpportunityBadge(kw.opportunity)}
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <TrendingUp className="h-3 w-3" />
-                              Pos #{kw.competitorPosition}
-                            </span>
-                            <span>Traffic: {kw.traffic}</span>
-                            {kw.ourPosition && (
-                              <Badge variant="outline" className="text-xs border-yellow-500/30 text-yellow-400">
-                                We rank #{kw.ourPosition}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {kw.competitorUrl && (
+                        <X className="h-3 w-3" />
+                      </button>
+                    </TabsTrigger>
+                  ))}
+                  <TabsTrigger 
+                    value="add-new"
+                    className="flex items-center gap-1 text-xs data-[state=active]:bg-green-600 data-[state=active]:text-white"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add New
+                  </TabsTrigger>
+                </TabsList>
+                
+                {/* Add New Tab */}
+                <TabsContent value="add-new" className="mt-4">
+                  <Card className="p-4 bg-muted/20 border-border">
+                    <div className="space-y-4">
+                      {/* SISTRIX Suggested Competitors */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                            <SistrixIcon className="h-4 w-4" />
+                            SISTRIX Competitor Suggestions
+                          </Label>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => window.open(kw.competitorUrl, '_blank')}
-                            className="text-muted-foreground hover:text-foreground"
+                            onClick={loadSistrixCompetitors}
+                            disabled={isLoadingCompetitors}
+                            className="h-7 text-xs"
                           >
-                            <ExternalLink className="h-4 w-4" />
+                            {isLoadingCompetitors ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <RefreshCw className="h-3 w-3 mr-1" />
+                            )}
+                            Refresh
                           </Button>
+                        </div>
+                        
+                        {allCompetitors.length > 0 ? (
+                          <Select value={selectedCompetitor} onValueChange={setSelectedCompetitor}>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="Choose a competitor..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {allCompetitors.map((comp) => (
+                                <SelectItem key={comp.domain} value={comp.domain}>
+                                  <div className="flex items-center gap-2">
+                                    <span>{comp.domain}</span>
+                                    <Badge variant="outline" className="text-xs">
+                                      VI: {comp.visibilityIndex.toFixed(2)}
+                                    </Badge>
+                                    {comp.source === 'sistrix' && (
+                                      <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] text-xs border-[#00a1ff]/30">
+                                        SISTRIX
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : isLoadingCompetitors ? (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Loading competitor suggestions...
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
+                            <AlertCircle className="h-4 w-4" />
+                            {savedCompetitors.length > 0 
+                              ? 'All suggested competitors are already saved. Use the custom URL field.'
+                              : 'No competitors found. Use the custom URL field below.'}
+                          </div>
                         )}
                       </div>
-                    ))}
-                    
-                    {filteredKeywords.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Target className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                        <p>No keywords match your filter</p>
+                      
+                      {/* Custom Competitor Input */}
+                      <div>
+                        <Label className="text-sm font-medium text-foreground mb-2 block">
+                          Or enter competitor URL manually
+                        </Label>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="competitor-domain.com"
+                            value={customCompetitor}
+                            onChange={(e) => setCustomCompetitor(e.target.value)}
+                            className="flex-1 bg-background"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddCustomCompetitor();
+                              }
+                            }}
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={handleAddCustomCompetitor}
+                            disabled={!customCompetitor.trim()}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Set
+                          </Button>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </ScrollArea>
+                      
+                      {/* Selected Competitor Display */}
+                      {selectedCompetitor && (
+                        <div className="flex items-center gap-2 p-2 bg-[#00a1ff]/10 rounded-md border border-[#00a1ff]/30">
+                          <Target className="h-4 w-4 text-[#00a1ff]" />
+                          <span className="text-sm font-medium">Selected:</span>
+                          <Badge className="bg-[#00a1ff] text-white">{selectedCompetitor}</Badge>
+                        </div>
+                      )}
+                      
+                      {/* Analyze Button */}
+                      <Button
+                        onClick={analyzeGap}
+                        disabled={!selectedCompetitor || isLoading}
+                        className="w-full h-10 bg-[#00a1ff] hover:bg-[#0088dd] text-white"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                          <Sparkles className="h-4 w-4 mr-2" />
+                        )}
+                        Analyze & Save Content Gap
+                      </Button>
+                    </div>
+                    
+                    {/* Own Keywords Info */}
+                    <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                      {ownKeywords.length} own keywords loaded from database (no API cost)
+                    </div>
+                  </Card>
+                </TabsContent>
                 
-                {/* Last Analyzed */}
-                {lastAnalyzedAt && (
-                  <div className="text-xs text-muted-foreground text-center">
-                    Last analyzed: {new Date(lastAnalyzedAt).toLocaleString('de-DE')}
-                  </div>
-                )}
-              </>
+                {/* Saved Competitor Tabs */}
+                {savedCompetitors.map((comp) => (
+                  <TabsContent key={comp.id} value={comp.id} className="mt-4 space-y-4">
+                    {/* Header with competitor info */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Badge className="bg-[#00a1ff] text-white text-sm px-3 py-1">
+                          {comp.competitor_domain}
+                        </Badge>
+                        {comp.analyzed_at && (
+                          <span className="text-xs text-muted-foreground">
+                            Analyzed: {new Date(comp.analyzed_at).toLocaleString('de-DE')}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleReanalyze(comp.competitor_domain)}
+                          className="text-xs"
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          Re-analyze
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteCompetitor(comp.id)}
+                          className="text-xs text-red-400 hover:text-red-500 hover:border-red-400"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Statistics */}
+                    <div className="grid grid-cols-5 gap-3">
+                      <Card className="p-3 bg-muted/20 text-center">
+                        <div className="text-2xl font-bold text-[#00a1ff]">{stats.total}</div>
+                        <div className="text-xs text-muted-foreground">Total Gaps</div>
+                      </Card>
+                      <Card className="p-3 bg-green-500/10 text-center cursor-pointer hover:bg-green-500/20 transition-colors" onClick={() => setFilter('high')}>
+                        <div className="text-2xl font-bold text-green-400">{stats.high}</div>
+                        <div className="text-xs text-muted-foreground">High Priority</div>
+                      </Card>
+                      <Card className="p-3 bg-yellow-500/10 text-center cursor-pointer hover:bg-yellow-500/20 transition-colors" onClick={() => setFilter('medium')}>
+                        <div className="text-2xl font-bold text-yellow-400">{stats.medium}</div>
+                        <div className="text-xs text-muted-foreground">Medium</div>
+                      </Card>
+                      <Card className="p-3 bg-muted/20 text-center cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setFilter('low')}>
+                        <div className="text-2xl font-bold text-gray-400">{stats.low}</div>
+                        <div className="text-xs text-muted-foreground">Low</div>
+                      </Card>
+                      <Card className="p-3 bg-muted/20 text-center">
+                        <div className="text-2xl font-bold text-foreground">{stats.totalTraffic.toLocaleString()}</div>
+                        <div className="text-xs text-muted-foreground">Est. Traffic</div>
+                      </Card>
+                    </div>
+                    
+                    {/* Filter & Search */}
+                    <div className="flex gap-4">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search keywords or URLs..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                      <Select value={filter} onValueChange={(v) => setFilter(v as any)}>
+                        <SelectTrigger className="w-[150px]">
+                          <Filter className="h-4 w-4 mr-2" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All ({stats.total})</SelectItem>
+                          <SelectItem value="high">High ({stats.high})</SelectItem>
+                          <SelectItem value="medium">Medium ({stats.medium})</SelectItem>
+                          <SelectItem value="low">Low ({stats.low})</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Keyword List - Enhanced with URL */}
+                    <ScrollArea className="h-[400px] rounded-lg border border-border">
+                      <div className="p-2 space-y-2">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border bg-muted/30 rounded-t-md">
+                          <div className="col-span-4">Keyword</div>
+                          <div className="col-span-1 text-center">Pos.</div>
+                          <div className="col-span-1 text-center">Traffic</div>
+                          <div className="col-span-1 text-center">Priority</div>
+                          <div className="col-span-5">Competitor URL</div>
+                        </div>
+                        
+                        {filteredKeywords.map((kw, idx) => (
+                          <div 
+                            key={`${kw.keyword}-${idx}`}
+                            className="grid grid-cols-12 gap-2 items-center p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
+                          >
+                            {/* Keyword */}
+                            <div className="col-span-4">
+                              <span className="font-medium text-foreground text-sm">{kw.keyword}</span>
+                              {kw.ourPosition && (
+                                <div className="mt-1">
+                                  <Badge variant="outline" className="text-[10px] border-yellow-500/30 text-yellow-400">
+                                    We rank #{kw.ourPosition}
+                                  </Badge>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Position */}
+                            <div className="col-span-1 text-center">
+                              <Badge variant="outline" className="text-xs">
+                                #{kw.competitorPosition}
+                              </Badge>
+                            </div>
+                            
+                            {/* Traffic */}
+                            <div className="col-span-1 text-center text-sm text-muted-foreground">
+                              {kw.traffic.toLocaleString()}
+                            </div>
+                            
+                            {/* Priority */}
+                            <div className="col-span-1 text-center">
+                              {getOpportunityBadge(kw.opportunity)}
+                            </div>
+                            
+                            {/* URL */}
+                            <div className="col-span-5 flex items-center gap-2">
+                              {kw.competitorUrl ? (
+                                <>
+                                  <span className="text-xs text-muted-foreground truncate flex-1" title={kw.competitorUrl}>
+                                    {kw.competitorUrl.replace(/^https?:\/\//, '').substring(0, 50)}
+                                    {kw.competitorUrl.length > 60 ? '...' : ''}
+                                  </span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => window.open(kw.competitorUrl, '_blank')}
+                                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground shrink-0"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                  </Button>
+                                </>
+                              ) : (
+                                <span className="text-xs text-muted-foreground/50 italic">No URL</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {filteredKeywords.length === 0 && (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Target className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>No keywords match your filter</p>
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </TabsContent>
+                ))}
+              </Tabs>
             )}
             
-            {/* Empty State */}
-            {gapKeywords.length === 0 && !isLoading && (
-              <div className="text-center py-8 text-muted-foreground">
-                <Target className="h-16 w-16 mx-auto mb-4 opacity-30" />
-                <p className="font-medium">No content gaps analyzed yet</p>
-                <p className="text-sm mt-2">Select a competitor and click "Analyze Gap" to find opportunities</p>
+            {/* Empty State for no saved competitors */}
+            {!isLoadingSaved && savedCompetitors.length === 0 && activeTab === 'add-new' && (
+              <div className="text-center py-4 text-muted-foreground">
+                <p className="text-sm">Add your first competitor above to start analyzing content gaps</p>
               </div>
             )}
           </div>
