@@ -165,10 +165,15 @@ const Tiles: React.FC<TilesProps> = ({
   const displayDescription = description || (isEditing ? '[Click to add description]' : '');
 
   // Hide if no content and not editing
-  if (!title && !description && localItems.length === 0 && !isEditing) {
+  // WICHTIG: Zeige immer wenn ?edit=true in URL (auch wenn isEditing false ist)
+  const shouldShow = title || description || localItems.length > 0 || isEditing || urlHasEditParam;
+  if (!shouldShow) {
     console.log('[Tiles] ⚠️ VERSTECKT - keine Inhalte und nicht im Edit-Modus');
     return null;
   }
+  
+  // Für Edit-Buttons: Zeige wenn isEditing ODER URL hat edit=true
+  const showEditControls = isEditing || urlHasEditParam;
 
   const getGridColumns = () => {
     switch (localColumns) {
@@ -606,7 +611,7 @@ const Tiles: React.FC<TilesProps> = ({
         )}
 
         {/* Column Selector (Edit Mode Only) */}
-        {isEditing && (
+        {showEditControls && (
           <div className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
               <span className="text-xs text-gray-500 font-medium px-2">Columns:</span>
@@ -656,7 +661,7 @@ const Tiles: React.FC<TilesProps> = ({
 
             return (
               <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden relative group h-full flex flex-col">
-                {isEditing && (
+                {showEditControls && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -880,7 +885,7 @@ const Tiles: React.FC<TilesProps> = ({
         </div>
 
         {/* Add Tile Button */}
-        {isEditing && (
+        {showEditControls && (
           <div className="flex justify-center mt-8">
             <Button
               variant="outline"
@@ -895,7 +900,7 @@ const Tiles: React.FC<TilesProps> = ({
         )}
 
         {/* Save/Cancel buttons */}
-        {isEditing && (
+        {showEditControls && (
           <div className="mt-8 flex justify-center gap-3">
             <Button
               variant="outline"
