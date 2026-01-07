@@ -102,6 +102,17 @@ const Tiles: React.FC<TilesProps> = ({
   const [localColumns, setLocalColumns] = useState<'2' | '3' | '4'>(columns);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Refs for auto-save on navigation
+  const localItemsRef = useRef(localItems);
+  const localColumnsRef = useRef(localColumns);
+  const hasChangesRef = useRef(hasChanges);
+  const saveInProgressRef = useRef(false);
+
+  // Keep refs in sync
+  useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
+  useEffect(() => { localColumnsRef.current = localColumns; }, [localColumns]);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
   // Sync local items with props
   useEffect(() => {
@@ -260,6 +271,96 @@ const Tiles: React.FC<TilesProps> = ({
       setIsSaving(false);
     }
   }, [hasChanges, localItems, localColumns, pageSlug, language, segmentKey, onContentUpdate]);
+
+  // AUTO-SAVE: Save when clicking on links (before navigation)
+  useEffect(() => {
+    const performAutoSave = async () => {
+      if (!hasChangesRef.current || saveInProgressRef.current) return;
+      
+      saveInProgressRef.current = true;
+      console.log('[Tiles] Auto-saving before navigation...');
+      
+      try {
+        const { data: pageSegmentsData, error: loadError } = await supabase
+          .from('page_content')
+          .select('id, content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+
+        if (loadError || !pageSegmentsData) {
+          console.error('[Tiles] Auto-save load error:', loadError);
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsData.content_value || '[]');
+        } catch (e) {
+          console.error('[Tiles] Auto-save parse error:', e);
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        const segmentIndex = segments.findIndex((seg: any) => {
+          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+          return segId === segmentKey;
+        });
+
+        if (segmentIndex === -1) {
+          console.error('[Tiles] Auto-save segment not found:', segmentKey);
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        if (!segments[segmentIndex].data) {
+          segments[segmentIndex].data = {};
+        }
+        segments[segmentIndex].data.items = localItemsRef.current;
+        segments[segmentIndex].data.columns = localColumnsRef.current;
+
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsData.id);
+
+        if (!updateError) {
+          console.log('[Tiles] Auto-saved successfully');
+          toast.success('Auto-saved', { duration: 2000, description: 'Tiles' });
+          hasChangesRef.current = false;
+        }
+      } catch (e) {
+        console.error('[Tiles] Auto-save error:', e);
+      } finally {
+        saveInProgressRef.current = false;
+      }
+    };
+
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+
+    // Use capture phase to intercept before navigation
+    document.addEventListener('click', handleLinkClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, true);
+      // Also save on unmount if there are changes
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, language, segmentKey]);
 
   return (
     <section id={id} className="pt-8 pb-16 bg-gray-50">
