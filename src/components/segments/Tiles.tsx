@@ -290,7 +290,9 @@ const Tiles: React.FC<TilesProps> = ({
     triggerDebouncedSave();
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
+    console.log('[Tiles] === ADD TILE CLICKED ===');
+    
     const newItems = [...localItems, { 
       title: '', 
       description: '', 
@@ -304,8 +306,14 @@ const Tiles: React.FC<TilesProps> = ({
     localItemsRef.current = newItems;
     hasChangesRef.current = true;
     setHasChanges(true);
-    // SOFORT speichern
-    performAutoSave();
+    
+    // SOFORT speichern und auf Ergebnis warten
+    const saved = await performAutoSave();
+    console.log('[Tiles] Add Tile - Save Result:', saved);
+    
+    if (!saved) {
+      toast.error('Speichern fehlgeschlagen - siehe Konsole');
+    }
   };
 
   const handleDeleteItem = (index: number) => {
