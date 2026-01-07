@@ -1772,7 +1772,7 @@ const SpadeCMSInstall = () => {
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-zinc-950 text-white text-base">
       {/* Header */}
       <header className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-6">
@@ -1782,24 +1782,57 @@ const SpadeCMSInstall = () => {
                 <Package className="h-8 w-8 text-[#f9dc24]" />
                 Spade CMS Installation
               </h1>
-              <p className="text-zinc-400 mt-1">Komplettes Setup-Paket für neue Projekte</p>
+              <p className="text-zinc-400 mt-1 text-lg">Komplettes Setup-Paket für neue Projekte</p>
             </div>
-            <Badge className="bg-[#4B7BF5] text-white border-0 text-sm px-3 py-1">
-              v1.1.2
+            <Badge className="bg-[#4B7BF5] text-white border-0 text-base px-4 py-1.5">
+              v1.2
             </Badge>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {/* Introduction */}
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardHeader>
+            <CardTitle className="text-xl text-white flex items-center gap-2">
+              <Info className="h-5 w-5 text-blue-400" />
+              Was ist das?
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base text-zinc-300 leading-relaxed">
+            <p>
+              <strong className="text-white">Diese Seite ist dein Startpunkt</strong> für die Einrichtung eines neuen Spade CMS Projekts. 
+              Hier findest du alle Dateien, Templates und Anleitungen, die du brauchst.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 pt-2">
+              <div className="bg-zinc-800/50 p-4 rounded-lg">
+                <div className="text-2xl mb-2">1️⃣</div>
+                <p className="font-medium text-white mb-1">Template wählen</p>
+                <p className="text-sm text-zinc-400">Wähle ein passendes Starter-Template für dein Projekt</p>
+              </div>
+              <div className="bg-zinc-800/50 p-4 rounded-lg">
+                <div className="text-2xl mb-2">2️⃣</div>
+                <p className="font-medium text-white mb-1">Dateien kopieren</p>
+                <p className="text-sm text-zinc-400">Lade die Konfigurationsdateien herunter und kopiere sie</p>
+              </div>
+              <div className="bg-zinc-800/50 p-4 rounded-lg">
+                <div className="text-2xl mb-2">3️⃣</div>
+                <p className="font-medium text-white mb-1">Wizard folgen</p>
+                <p className="text-sm text-zinc-400">Der interaktive Wizard führt dich durch alle Schritte</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Start */}
         <Card className="bg-gradient-to-br from-[#4B7BF5]/20 to-zinc-900 border-[#4B7BF5]/30">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center gap-2 text-white text-xl">
               <Zap className="h-5 w-5 text-[#f9dc24]" />
               Quick Start
             </CardTitle>
-            <CardDescription className="text-zinc-300">
+            <CardDescription className="text-zinc-300 text-base">
               Alles herunterladen und der Onboarding-Checkliste folgen
             </CardDescription>
           </CardHeader>
@@ -1807,7 +1840,7 @@ const SpadeCMSInstall = () => {
             <Button 
               onClick={downloadAllFiles}
               size="lg"
-              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold"
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold text-base"
             >
               <Download className="h-5 w-5 mr-2" />
               Alle Dateien herunterladen
@@ -1816,7 +1849,7 @@ const SpadeCMSInstall = () => {
               variant="outline"
               size="lg"
               onClick={() => downloadFile("docs/TENANT_ONBOARDING_CHECKLIST.md", ONBOARDING_CHECKLIST)}
-              className="border-zinc-600 hover:bg-zinc-800"
+              className="border-zinc-600 hover:bg-zinc-800 text-base"
             >
               <BookOpen className="h-5 w-5 mr-2" />
               Setup-Anleitung
@@ -2226,8 +2259,8 @@ const SpadeCMSInstall = () => {
 
         {/* Footer */}
         <footer className="text-center py-8 border-t border-zinc-800">
-          <p className="text-zinc-500">
-            Spade CMS v1.1.2 • Vollständiges Export-Paket für Multi-Tenancy
+          <p className="text-zinc-500 text-base">
+            Spade CMS v1.2 • Vollständiges Export-Paket für Multi-Tenancy
           </p>
         </footer>
       </main>
