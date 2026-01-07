@@ -72,13 +72,17 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
   useEffect(() => { localLayoutRef.current = localLayout; }, [localLayout]);
   useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync local items with props
+  // Sync local items with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    setLocalItems(items);
+    if (!hasChangesRef.current) {
+      setLocalItems(items);
+    }
   }, [items]);
 
   useEffect(() => {
-    setLocalLayout(layout);
+    if (!hasChangesRef.current) {
+      setLocalLayout(layout);
+    }
   }, [layout]);
 
   const displayTitle = title || (isEditing ? '[Click to add section title]' : '');

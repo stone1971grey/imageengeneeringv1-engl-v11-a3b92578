@@ -3,7 +3,7 @@ import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -44,9 +44,15 @@ const Specification = ({
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Sync local rows with props
+  // Ref to track changes for prop sync protection
+  const hasChangesRef = useRef(hasChanges);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
+  
+  // Sync local rows with props - BUT ONLY if there are no pending changes!
   useEffect(() => {
-    setLocalRows(rows);
+    if (!hasChangesRef.current) {
+      setLocalRows(rows);
+    }
   }, [rows]);
   
   // Enable save button when entering edit mode

@@ -115,13 +115,18 @@ const Tiles: React.FC<TilesProps> = ({
   useEffect(() => { localColumnsRef.current = localColumns; }, [localColumns]);
   useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync local items with props
+  // Sync local items with props - BUT ONLY if there are no pending changes!
+  // This prevents props from overwriting unsaved local edits
   useEffect(() => {
-    setLocalItems(items);
+    if (!hasChangesRef.current) {
+      setLocalItems(items);
+    }
   }, [items]);
 
   useEffect(() => {
-    setLocalColumns(columns);
+    if (!hasChangesRef.current) {
+      setLocalColumns(columns);
+    }
   }, [columns]);
 
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
