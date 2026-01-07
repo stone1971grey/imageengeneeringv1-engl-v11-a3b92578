@@ -252,77 +252,92 @@ const FAQ: React.FC<FAQProps> = ({
     }
   }, [hasChanges, localItems, pageSlug, language, segmentKey, onContentUpdate]);
 
-  // AUTO-SAVE: Save when clicking on links (before navigation)
-  useEffect(() => {
-    const performAutoSave = async () => {
-      if (!hasChangesRef.current || saveInProgressRef.current) return;
-      
-      saveInProgressRef.current = true;
-      console.log('[FAQ] Auto-saving before navigation...');
-      
-      try {
-        const { data: pageSegmentsData, error: loadError } = await supabase
-          .from('page_content')
-          .select('id, content_value')
-          .eq('page_slug', pageSlug)
-          .eq('section_key', 'page_segments')
-          .eq('language', language)
-          .maybeSingle();
+  // AUTO-SAVE: Core save function
+  const performAutoSave = useCallback(async (): Promise<boolean> => {
+    if (!hasChangesRef.current || saveInProgressRef.current) return false;
+    
+    saveInProgressRef.current = true;
+    console.log('[FAQ] Auto-saving...');
+    
+    try {
+      const { data: pageSegmentsData, error: loadError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
 
-        if (loadError || !pageSegmentsData) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        let segments: any[] = [];
-        try {
-          segments = JSON.parse(pageSegmentsData.content_value || '[]');
-        } catch (e) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        const segmentIndex = segments.findIndex((seg: any) => {
-          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-          return segId === segmentKey;
-        });
-
-        if (segmentIndex === -1) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        if (!segments[segmentIndex].data) {
-          segments[segmentIndex].data = {};
-        }
-        segments[segmentIndex].data.items = localItemsRef.current;
-
-        const { error: updateError } = await supabase
-          .from('page_content')
-          .update({
-            content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', pageSegmentsData.id);
-
-        if (!updateError) {
-          console.log('[FAQ] Auto-saved successfully');
-          toast.success('Auto-saved', { duration: 2000, description: 'FAQ' });
-          hasChangesRef.current = false;
-        }
-      } catch (e) {
-        console.error('[FAQ] Auto-save error:', e);
-      } finally {
-        saveInProgressRef.current = false;
+      if (loadError || !pageSegmentsData) {
+        return false;
       }
-    };
 
-    const handleLinkClick = (e: MouseEvent) => {
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        return false;
+      }
+
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        return segId === segmentKey;
+      });
+
+      if (segmentIndex === -1) {
+        return false;
+      }
+
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data.items = localItemsRef.current;
+
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (!updateError) {
+        console.log('[FAQ] Auto-saved successfully');
+        toast.success('Auto-saved', { duration: 2000, description: 'FAQ' });
+        hasChangesRef.current = false;
+        setHasChanges(false);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('[FAQ] Auto-save error:', e);
+      return false;
+    } finally {
+      saveInProgressRef.current = false;
+    }
+  }, [pageSlug, language, segmentKey]);
+
+  // CRITICAL: Intercept link clicks and BLOCK navigation until save completes
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleLinkClick = async (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const link = target.closest('a');
       
       if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
-        performAutoSave();
+        // BLOCK the default navigation
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('[FAQ] Blocking navigation to save first...');
+        
+        // Save first, then navigate
+        await performAutoSave();
+        
+        // Now navigate
+        console.log('[FAQ] Save complete, navigating to:', link.href);
+        window.location.href = link.href;
       }
     };
 
@@ -330,11 +345,18 @@ const FAQ: React.FC<FAQProps> = ({
 
     return () => {
       document.removeEventListener('click', handleLinkClick, true);
+    };
+  }, [isEditing, performAutoSave]);
+
+  // Save on unmount
+  useEffect(() => {
+    return () => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
+        console.log('[FAQ] Saving on unmount...');
         performAutoSave();
       }
     };
-  }, [pageSlug, language, segmentKey]);
+  }, [performAutoSave]);
 
   return (
     <section id={id} className="pt-[50px] pb-16 bg-background">

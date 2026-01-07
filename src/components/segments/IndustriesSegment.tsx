@@ -251,81 +251,96 @@ const IndustriesSegment = ({
     }
   }, [hasChanges, segmentKey, pageSlug, language, editColumns, editItems, onContentUpdate]);
 
-  // AUTO-SAVE: Save when clicking on links (before navigation)
-  useEffect(() => {
-    const performAutoSave = async () => {
-      if (!hasChangesRef.current || saveInProgressRef.current) return;
-      
-      saveInProgressRef.current = true;
-      console.log('[IndustriesSegment] Auto-saving before navigation...');
-      
-      try {
-        const segmentKeyParts = segmentKey.split('-');
-        const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
+  // AUTO-SAVE: Core save function
+  const performAutoSave = useCallback(async (): Promise<boolean> => {
+    if (!hasChangesRef.current || saveInProgressRef.current) return false;
+    
+    saveInProgressRef.current = true;
+    console.log('[IndustriesSegment] Auto-saving...');
+    
+    try {
+      const segmentKeyParts = segmentKey.split('-');
+      const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
 
-        const { data: pageSegmentsData, error: loadError } = await supabase
-          .from('page_content')
-          .select('id, content_value')
-          .eq('page_slug', pageSlug)
-          .eq('section_key', 'page_segments')
-          .eq('language', language)
-          .maybeSingle();
+      const { data: pageSegmentsData, error: loadError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
 
-        if (loadError || !pageSegmentsData) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        let segments: any[] = [];
-        try {
-          segments = JSON.parse(pageSegmentsData.content_value || '[]');
-        } catch (e) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        const segmentIndex = segments.findIndex((seg: any) => {
-          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-          return segId === segmentId;
-        });
-
-        if (segmentIndex === -1) {
-          saveInProgressRef.current = false;
-          return;
-        }
-
-        if (!segments[segmentIndex].data) {
-          segments[segmentIndex].data = {};
-        }
-        segments[segmentIndex].data.columns = editColumnsRef.current;
-        segments[segmentIndex].data.items = editItemsRef.current;
-
-        const { error: updateError } = await supabase
-          .from('page_content')
-          .update({
-            content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', pageSegmentsData.id);
-
-        if (!updateError) {
-          console.log('[IndustriesSegment] Auto-saved successfully');
-          toast.success('Auto-saved', { duration: 2000, description: 'Industries' });
-          hasChangesRef.current = false;
-        }
-      } catch (e) {
-        console.error('[IndustriesSegment] Auto-save error:', e);
-      } finally {
-        saveInProgressRef.current = false;
+      if (loadError || !pageSegmentsData) {
+        return false;
       }
-    };
 
-    const handleLinkClick = (e: MouseEvent) => {
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        return false;
+      }
+
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        return segId === segmentId;
+      });
+
+      if (segmentIndex === -1) {
+        return false;
+      }
+
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data.columns = editColumnsRef.current;
+      segments[segmentIndex].data.items = editItemsRef.current;
+
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (!updateError) {
+        console.log('[IndustriesSegment] Auto-saved successfully');
+        toast.success('Auto-saved', { duration: 2000, description: 'Industries' });
+        hasChangesRef.current = false;
+        setHasChanges(false);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('[IndustriesSegment] Auto-save error:', e);
+      return false;
+    } finally {
+      saveInProgressRef.current = false;
+    }
+  }, [pageSlug, language, segmentKey]);
+
+  // CRITICAL: Intercept link clicks and BLOCK navigation until save completes
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleLinkClick = async (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const link = target.closest('a');
       
       if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
-        performAutoSave();
+        // BLOCK the default navigation
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('[IndustriesSegment] Blocking navigation to save first...');
+        
+        // Save first, then navigate
+        await performAutoSave();
+        
+        // Now navigate
+        console.log('[IndustriesSegment] Save complete, navigating to:', link.href);
+        window.location.href = link.href;
       }
     };
 
@@ -333,11 +348,18 @@ const IndustriesSegment = ({
 
     return () => {
       document.removeEventListener('click', handleLinkClick, true);
+    };
+  }, [isEditing, performAutoSave]);
+
+  // Save on unmount
+  useEffect(() => {
+    return () => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
+        console.log('[IndustriesSegment] Saving on unmount...');
         performAutoSave();
       }
     };
-  }, [pageSlug, language, segmentKey]);
+  }, [performAutoSave]);
 
   const handleCancel = () => {
     setEditColumns(columns);

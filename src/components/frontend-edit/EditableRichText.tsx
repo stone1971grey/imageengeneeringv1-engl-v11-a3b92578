@@ -347,9 +347,9 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     };
   }, [performSave]);
 
-  // CRITICAL: Intercept link clicks to save before navigation
+  // CRITICAL: Intercept link clicks and BLOCK navigation until save completes
   useEffect(() => {
-    const handleLinkClick = (e: MouseEvent) => {
+    const handleLinkClick = async (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const link = target.closest('a');
       
@@ -359,17 +359,25 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         const lastSaved = lastSavedValueRef.current;
         
         if (currentValue !== lastSaved && !saveInProgressRef.current) {
-          console.log('[EditableRichText] Saving before link navigation...');
+          // BLOCK the default navigation
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('[EditableRichText] Blocking navigation to save first...');
           saveInProgressRef.current = true;
           
-          // Perform save before navigation
-          performSave(currentValue, true).then((success) => {
-            if (success) {
-              console.log('[EditableRichText] Saved before navigation');
-              lastSavedValueRef.current = currentValue;
-            }
-            saveInProgressRef.current = false;
-          });
+          // Save first, then navigate
+          const success = await performSave(currentValue, true);
+          if (success) {
+            console.log('[EditableRichText] Saved before navigation');
+            lastSavedValueRef.current = currentValue;
+            setLastSavedValue(currentValue);
+          }
+          saveInProgressRef.current = false;
+          
+          // Now navigate
+          console.log('[EditableRichText] Save complete, navigating to:', link.href);
+          window.location.href = link.href;
         }
       }
     };
