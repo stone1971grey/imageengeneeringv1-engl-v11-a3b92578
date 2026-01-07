@@ -108,7 +108,6 @@ const Tiles: React.FC<TilesProps> = ({
   const localColumnsRef = useRef(localColumns);
   const hasChangesRef = useRef(hasChanges);
   const saveInProgressRef = useRef(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
@@ -148,35 +147,125 @@ const Tiles: React.FC<TilesProps> = ({
     }
   };
 
+  // ========= KERNFUNKTION: Sofortiges Speichern =========
+  // Diese Funktion MUSS zuerst definiert werden, da sie von anderen Funktionen aufgerufen wird
+  const performAutoSave = useCallback(async (): Promise<boolean> => {
+    if (saveInProgressRef.current) return false;
+    
+    saveInProgressRef.current = true;
+    console.log('[Tiles] SOFORT-SPEICHERN...');
+    
+    try {
+      const { data: pageSegmentsData, error: loadError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+
+      if (loadError || !pageSegmentsData) {
+        console.error('[Tiles] Lade-Fehler:', loadError);
+        return false;
+      }
+
+      let segments: any[] = [];
+      try {
+        segments = JSON.parse(pageSegmentsData.content_value || '[]');
+      } catch (e) {
+        console.error('[Tiles] Parse-Fehler:', e);
+        return false;
+      }
+
+      const segmentIndex = segments.findIndex((seg: any) => {
+        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+        return segId === segmentKey;
+      });
+
+      if (segmentIndex === -1) {
+        console.error('[Tiles] Segment nicht gefunden:', segmentKey);
+        return false;
+      }
+
+      if (!segments[segmentIndex].data) {
+        segments[segmentIndex].data = {};
+      }
+      segments[segmentIndex].data.items = localItemsRef.current;
+      segments[segmentIndex].data.columns = localColumnsRef.current;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error: updateError } = await supabase
+        .from('page_content')
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq('id', pageSegmentsData.id);
+
+      if (!updateError) {
+        console.log('[Tiles] ✅ GESPEICHERT');
+        toast.success('Gespeichert', { duration: 1500 });
+        hasChangesRef.current = false;
+        setHasChanges(false);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('[Tiles] Speicher-Fehler:', e);
+      return false;
+    } finally {
+      saveInProgressRef.current = false;
+    }
+  }, [pageSlug, language, segmentKey]);
+
+  // ========= Handler-Funktionen mit sofortigem Speichern =========
   const handleColumnsChange = (newColumns: '2' | '3' | '4') => {
     setLocalColumns(newColumns);
+    localColumnsRef.current = newColumns;
+    hasChangesRef.current = true;
     setHasChanges(true);
+    // SOFORT speichern
+    performAutoSave();
   };
 
   const handleItemChange = (index: number, field: keyof TileItem, newValue: any) => {
     const updatedItems = [...localItems];
     updatedItems[index] = { ...updatedItems[index], [field]: newValue };
     setLocalItems(updatedItems);
+    localItemsRef.current = updatedItems;
+    hasChangesRef.current = true;
     setHasChanges(true);
+    // SOFORT speichern
+    performAutoSave();
   };
 
   const handleAddItem = () => {
-    setLocalItems([...localItems, { 
+    const newItems = [...localItems, { 
       title: '', 
       description: '', 
       icon: 'FileText',
       showButton: true,
       ctaText: '',
       ctaLink: '',
-      ctaStyle: 'standard'
-    }]);
+      ctaStyle: 'standard' as const
+    }];
+    setLocalItems(newItems);
+    localItemsRef.current = newItems;
+    hasChangesRef.current = true;
     setHasChanges(true);
+    // SOFORT speichern
+    performAutoSave();
   };
 
   const handleDeleteItem = (index: number) => {
     const updatedItems = localItems.filter((_, i) => i !== index);
     setLocalItems(updatedItems);
+    localItemsRef.current = updatedItems;
+    hasChangesRef.current = true;
     setHasChanges(true);
+    // SOFORT speichern
+    performAutoSave();
   };
 
   const handleCancel = () => {
@@ -273,159 +362,28 @@ const Tiles: React.FC<TilesProps> = ({
     }
   }, [hasChanges, localItems, localColumns, pageSlug, language, segmentKey, onContentUpdate]);
 
-  // AUTO-SAVE: Core save function
-  const performAutoSave = useCallback(async (): Promise<boolean> => {
-    if (!hasChangesRef.current || saveInProgressRef.current) return false;
-    
-    saveInProgressRef.current = true;
-    console.log('[Tiles] Auto-saving...');
-    
-    try {
-      const { data: pageSegmentsData, error: loadError } = await supabase
-        .from('page_content')
-        .select('id, content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'page_segments')
-        .eq('language', language)
-        .maybeSingle();
-
-      if (loadError || !pageSegmentsData) {
-        console.error('[Tiles] Auto-save load error:', loadError);
-        return false;
-      }
-
-      let segments: any[] = [];
-      try {
-        segments = JSON.parse(pageSegmentsData.content_value || '[]');
-      } catch (e) {
-        console.error('[Tiles] Auto-save parse error:', e);
-        return false;
-      }
-
-      const segmentIndex = segments.findIndex((seg: any) => {
-        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-        return segId === segmentKey;
-      });
-
-      if (segmentIndex === -1) {
-        console.error('[Tiles] Auto-save segment not found:', segmentKey);
-        return false;
-      }
-
-      if (!segments[segmentIndex].data) {
-        segments[segmentIndex].data = {};
-      }
-      segments[segmentIndex].data.items = localItemsRef.current;
-      segments[segmentIndex].data.columns = localColumnsRef.current;
-
-      // Include updated_by for proper tracking
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error: updateError } = await supabase
-        .from('page_content')
-        .update({
-          content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        })
-        .eq('id', pageSegmentsData.id);
-
-      if (!updateError) {
-        console.log('[Tiles] Auto-saved successfully');
-        toast.success('Auto-saved', { duration: 2000, description: 'Tiles' });
-        hasChangesRef.current = false;
-        setHasChanges(false);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      console.error('[Tiles] Auto-save error:', e);
-      return false;
-    } finally {
-      saveInProgressRef.current = false;
-    }
-  }, [pageSlug, language, segmentKey]);
-
-  // CRITICAL: Intercept link clicks and BLOCK navigation until save completes
-  useEffect(() => {
-    if (!isEditing) return;
-
-    const handleLinkClick = async (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a');
-      
-      if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
-        // BLOCK the default navigation
-        e.preventDefault();
-        e.stopPropagation();
-        
-        console.log('[Tiles] Blocking navigation to save first...');
-        
-        // Save first, then navigate
-        await performAutoSave();
-        
-        // Now navigate
-        console.log('[Tiles] Save complete, navigating to:', link.href);
-        window.location.href = link.href;
-      }
-    };
-
-    // Use capture phase to intercept before navigation
-    document.addEventListener('click', handleLinkClick, true);
-
-    return () => {
-      document.removeEventListener('click', handleLinkClick, true);
-    };
-  }, [isEditing, performAutoSave]);
-
-  // IMMEDIATE AUTO-SAVE: Save 1 second after any change (debounced)
-  useEffect(() => {
-    if (!isEditing || !hasChanges) return;
-
-    // Clear any existing timeout
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    // Set new timeout for 1 second
-    saveTimeoutRef.current = setTimeout(async () => {
-      if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[Tiles] Immediate auto-save triggered (1s after change)...');
-        await performAutoSave();
-      }
-    }, 1000); // 1 second after change
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [isEditing, hasChanges, localItems, localColumns, performAutoSave]);
-
-  // CRITICAL: Save when tab loses focus (user switches tabs or minimizes)
+  // Visibility change - Speichere wenn Tab versteckt wird (als Backup)
   useEffect(() => {
     if (!isEditing) return;
 
     const handleVisibilityChange = () => {
       if (document.hidden && hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[Tiles] Saving on tab hidden...');
+        console.log('[Tiles] Tab hidden - speichere als Backup...');
         performAutoSave();
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [isEditing, performAutoSave]);
 
-  // CRITICAL: Save when page is about to unload (close tab, refresh, navigate away)
+  // beforeunload - Speichere beim Schließen des Tabs
   useEffect(() => {
     if (!isEditing) return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[Tiles] Saving on beforeunload...');
+        console.log('[Tiles] beforeunload - speichere...');
         performAutoSave();
         e.preventDefault();
         e.returnValue = '';
@@ -433,20 +391,14 @@ const Tiles: React.FC<TilesProps> = ({
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isEditing, performAutoSave]);
 
-  // Save on unmount (component leaving DOM)
+  // Unmount - Speichere beim Verlassen der Komponente
   useEffect(() => {
     return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
       if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[Tiles] Saving on unmount...');
+        console.log('[Tiles] Unmount - speichere...');
         performAutoSave();
       }
     };
