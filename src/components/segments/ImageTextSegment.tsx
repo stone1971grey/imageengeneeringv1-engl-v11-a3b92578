@@ -389,6 +389,22 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
     };
   }, [isEditing, performAutoSave]);
 
+  // PERIODIC AUTO-SAVE: Save every 5 seconds while editing if there are changes
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const intervalId = setInterval(async () => {
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        console.log('[ImageTextSegment] Periodic auto-save triggered...');
+        await performAutoSave();
+      }
+    }, 5000); // 5 seconds
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isEditing, performAutoSave]);
+
   // Save on unmount
   useEffect(() => {
     return () => {
