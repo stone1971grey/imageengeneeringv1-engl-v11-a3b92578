@@ -52,6 +52,15 @@ async function performAutoSave(): Promise<boolean> {
     return false;
   }
 
+  // CRITICAL: Get current user ID for attribution
+  const { data: { user } } = await supabase.auth.getUser();
+  const currentUserId = user?.id;
+  
+  if (!currentUserId) {
+    console.error('[AutoSave] No authenticated user - cannot save');
+    return false;
+  }
+
   let savedCount = 0;
   const entries = Array.from(pendingChangesMap.entries());
 
@@ -77,7 +86,7 @@ async function performAutoSave(): Promise<boolean> {
         position: idx
       }));
 
-      // Save to database
+      // Save to database WITH user attribution
       const { error } = await supabase
         .from('page_content')
         .upsert({
@@ -86,7 +95,8 @@ async function performAutoSave(): Promise<boolean> {
           content_type: 'json',
           content_value: JSON.stringify(segmentsWithPositions),
           language,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: currentUserId
         }, { onConflict: 'page_slug,section_key,language' });
 
       if (error) {
@@ -97,7 +107,7 @@ async function performAutoSave(): Promise<boolean> {
       // Success - remove from pending
       pendingChangesMap.delete(key);
       savedCount++;
-      console.log('[AutoSave] Saved:', key);
+      console.log('[AutoSave] Saved:', key, 'by user:', currentUserId);
 
     } catch (error) {
       console.error('[AutoSave] Exception for', key, error);
