@@ -174,10 +174,11 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'siteConfig Validierung', status: 'planned' },
-      { label: 'Feature-Flag Management UI', status: 'planned' },
-      { label: 'Branding-Editor', status: 'planned' },
-      { label: 'Module Aktivierung/Deaktivierung', status: 'planned' },
+      { label: 'siteConfig Zod-Validierung', status: 'done' },
+      { label: 'Feature-Flag Management UI', status: 'done' },
+      { label: 'Branding-Preview', status: 'done' },
+      { label: 'Integrations-Übersicht', status: 'done' },
+      { label: 'Config Dashboard', status: 'done' },
     ]
   },
   {
