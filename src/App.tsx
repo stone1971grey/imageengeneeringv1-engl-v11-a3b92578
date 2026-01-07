@@ -63,7 +63,6 @@ import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
-import AftermarketDownload from "./pages/AftermarketDownload";
 import SpadeCMSInstall from "./pages/SpadeCMSInstall";
 import { MauticTracker } from "./components/MauticTracker";
 
@@ -273,8 +272,9 @@ const App = () => (
             <Route path="/:lang/:category/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/:category/:subcategory/:slug" element={<DynamicCMSPage />} />
             
-            {/* Aftermarket Download Page */}
-            <Route path="/aftermarket-update" element={<AftermarketDownload />} />
+            {/* CMS Installation Pages */}
+            <Route path="/spade-cms-install" element={<SpadeCMSInstall />} />
+            <Route path="/aftermarket-update" element={<SpadeCMSInstall />} />
             
             {/* Catch-all 404 */}
             <Route path="*" element={<NotFound />} />
