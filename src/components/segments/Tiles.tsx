@@ -108,22 +108,32 @@ const Tiles: React.FC<TilesProps> = ({
   const localColumnsRef = useRef(localColumns);
   const hasChangesRef = useRef(hasChanges);
   const saveInProgressRef = useRef(false);
+  // KRITISCH: Flag um Props-Überschreibung nach Save zu verhindern
+  const justSavedRef = useRef(false);
+  const saveDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
   useEffect(() => { localColumnsRef.current = localColumns; }, [localColumns]);
   useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
-  // Sync local items with props - BUT ONLY if there are no pending changes!
-  // This prevents props from overwriting unsaved local edits
+  // Sync local items with props - BUT ONLY if:
+  // 1. There are no pending changes
+  // 2. We didn't just save (verhindert Race Condition)
   useEffect(() => {
-    if (!hasChangesRef.current) {
+    // Wenn wir gerade gespeichert haben, ignoriere Props für 2 Sekunden
+    if (justSavedRef.current) {
+      console.log('[Tiles] Ignoriere Props-Update nach Save');
+      return;
+    }
+    if (!hasChangesRef.current && !saveInProgressRef.current) {
       setLocalItems(items);
     }
   }, [items]);
 
   useEffect(() => {
-    if (!hasChangesRef.current) {
+    if (justSavedRef.current) return;
+    if (!hasChangesRef.current && !saveInProgressRef.current) {
       setLocalColumns(columns);
     }
   }, [columns]);
@@ -150,10 +160,17 @@ const Tiles: React.FC<TilesProps> = ({
   // ========= KERNFUNKTION: Sofortiges Speichern =========
   // Diese Funktion MUSS zuerst definiert werden, da sie von anderen Funktionen aufgerufen wird
   const performAutoSave = useCallback(async (): Promise<boolean> => {
-    if (saveInProgressRef.current) return false;
+    if (saveInProgressRef.current) {
+      console.log('[Tiles] Save bereits aktiv, überspringe...');
+      return false;
+    }
     
     saveInProgressRef.current = true;
-    console.log('[Tiles] SOFORT-SPEICHERN...');
+    console.log('[Tiles] SPEICHERE...', { 
+      items: localItemsRef.current.length, 
+      columns: localColumnsRef.current,
+      segmentKey 
+    });
     
     try {
       const { data: pageSegmentsData, error: loadError } = await supabase
@@ -183,15 +200,24 @@ const Tiles: React.FC<TilesProps> = ({
       });
 
       if (segmentIndex === -1) {
-        console.error('[Tiles] Segment nicht gefunden:', segmentKey);
+        console.error('[Tiles] Segment nicht gefunden. Suche nach:', segmentKey, 'Verfügbare IDs:', segments.map(s => s.id));
         return false;
       }
 
+      // Stelle sicher dass data existiert
       if (!segments[segmentIndex].data) {
         segments[segmentIndex].data = {};
       }
+      
+      // Speichere die aktuellen Ref-Werte
       segments[segmentIndex].data.items = localItemsRef.current;
       segments[segmentIndex].data.columns = localColumnsRef.current;
+
+      console.log('[Tiles] Speichere Segment-Daten:', {
+        index: segmentIndex,
+        itemCount: localItemsRef.current.length,
+        columns: localColumnsRef.current
+      });
 
       const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
@@ -206,9 +232,18 @@ const Tiles: React.FC<TilesProps> = ({
       if (!updateError) {
         console.log('[Tiles] ✅ GESPEICHERT');
         toast.success('Gespeichert', { duration: 1500 });
+        
+        // KRITISCH: Setze Flag um Props-Überschreibung zu verhindern
+        justSavedRef.current = true;
+        setTimeout(() => {
+          justSavedRef.current = false;
+        }, 3000); // 3 Sekunden Schutz
+        
         hasChangesRef.current = false;
         setHasChanges(false);
         return true;
+      } else {
+        console.error('[Tiles] Update-Fehler:', updateError);
       }
       return false;
     } catch (e) {
@@ -219,14 +254,29 @@ const Tiles: React.FC<TilesProps> = ({
     }
   }, [pageSlug, language, segmentKey]);
 
-  // ========= Handler-Funktionen mit sofortigem Speichern =========
+  // ========= DEBOUNCED SAVE: Verhindert zu viele Saves bei schnellem Tippen =========
+  const triggerDebouncedSave = useCallback(() => {
+    // Lösche vorherigen Timeout
+    if (saveDebounceRef.current) {
+      clearTimeout(saveDebounceRef.current);
+    }
+    
+    // Setze neuen Timeout - speichere nach 500ms Inaktivität
+    saveDebounceRef.current = setTimeout(() => {
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    }, 500);
+  }, [performAutoSave]);
+
+  // ========= Handler-Funktionen mit debounced Speichern =========
   const handleColumnsChange = (newColumns: '2' | '3' | '4') => {
     setLocalColumns(newColumns);
     localColumnsRef.current = newColumns;
     hasChangesRef.current = true;
     setHasChanges(true);
-    // SOFORT speichern
-    performAutoSave();
+    // Debounced speichern
+    triggerDebouncedSave();
   };
 
   const handleItemChange = (index: number, field: keyof TileItem, newValue: any) => {
@@ -236,8 +286,8 @@ const Tiles: React.FC<TilesProps> = ({
     localItemsRef.current = updatedItems;
     hasChangesRef.current = true;
     setHasChanges(true);
-    // SOFORT speichern
-    performAutoSave();
+    // Debounced speichern (500ms nach letzter Änderung)
+    triggerDebouncedSave();
   };
 
   const handleAddItem = () => {
