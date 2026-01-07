@@ -38,177 +38,19 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const saveInProgressRef = useRef(false);
+  // Track current values in refs for use in cleanup/unmount
+  const editValueRef = useRef(editValue);
+  const lastSavedValueRef = useRef(lastSavedValue);
+  const isEditingRef = useRef(isEditing);
+
+  // Keep refs in sync with state
+  useEffect(() => { editValueRef.current = editValue; }, [editValue]);
+  useEffect(() => { lastSavedValueRef.current = lastSavedValue; }, [lastSavedValue]);
+  useEffect(() => { isEditingRef.current = isEditing; }, [isEditing]);
 
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
-  // Tiptap editor - only bold and link, no lists
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-        codeBlock: false,
-        blockquote: false,
-        horizontalRule: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-blue-600 underline hover:text-blue-800',
-        },
-      }),
-    ],
-    content: value || '',
-    onUpdate: ({ editor }) => {
-      setEditValue(editor.getHTML());
-    },
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none p-3 text-black',
-      },
-    },
-    editable: isEditing,
-  });
-
-  // Update editor content when value changes externally
-  useEffect(() => {
-    if (editor && value !== editor.getHTML() && !isEditing) {
-      editor.commands.setContent(value || '');
-      setEditValue(value);
-      setLastSavedValue(value);
-    }
-  }, [value, editor, isEditing]);
-
-  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
-  useEffect(() => {
-    if (!isEditing) {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-      return;
-    }
-
-    autoSaveTimerRef.current = setInterval(async () => {
-      if (editValue !== lastSavedValue && !saveInProgressRef.current) {
-        console.log('[EditableRichText] Auto-saving...');
-        saveInProgressRef.current = true;
-        
-        try {
-          const success = await performSave(editValue, true);
-          if (success) {
-            setLastSavedValue(editValue);
-            toast.success('Auto-saved', { 
-              duration: 2000,
-              description: fieldLabel || 'Rich Text'
-            });
-          }
-        } catch (error) {
-          console.error('[EditableRichText] Auto-save error:', error);
-        } finally {
-          saveInProgressRef.current = false;
-        }
-      }
-    }, 5000); // 5 seconds
-
-    return () => {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-    };
-  }, [isEditing, editValue, lastSavedValue, fieldLabel]);
-
-  // Save on editing mode exit (cleanup effect)
-  const prevIsEditingRef = useRef(isEditing);
-  useEffect(() => {
-    // When transitioning from editing to not editing, save if there are unsaved changes
-    if (prevIsEditingRef.current && !isEditing && editValue !== lastSavedValue && !saveInProgressRef.current) {
-      console.log('[EditableRichText] Saving on edit mode exit...');
-      saveInProgressRef.current = true;
-      performSave(editValue, true).then((success) => {
-        if (success) {
-          setLastSavedValue(editValue);
-          toast.success('Auto-saved', { duration: 2000, description: fieldLabel || 'Rich Text' });
-        }
-        saveInProgressRef.current = false;
-      });
-    }
-    prevIsEditingRef.current = isEditing;
-  }, [isEditing, editValue, lastSavedValue, fieldLabel]);
-
-  // BEFOREUNLOAD: Warn on page leave and attempt save
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isEditing && editValue !== lastSavedValue) {
-        console.log('[EditableRichText] Attempting save on page leave');
-        // Use sendBeacon for reliable async save on unload
-        const saveData = { editValue, sectionKey, pageSlug, language };
-        navigator.sendBeacon?.('/api/autosave-beacon', JSON.stringify(saveData));
-        // Also try the regular save
-        performSave(editValue, true);
-        e.preventDefault();
-        e.returnValue = 'Unsaved changes will be lost';
-        return e.returnValue;
-      }
-    };
-
-    if (isEditing) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isEditing, editValue, lastSavedValue, sectionKey, pageSlug, language]);
-
-  // Update editor editable state
-  useEffect(() => {
-    if (editor) {
-      editor.setEditable(isEditing);
-    }
-  }, [isEditing, editor]);
-
-  // Handle click outside to save
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        if (isEditing && editValue !== value) {
-          handleSave();
-        } else {
-          setIsEditing(false);
-        }
-      }
-    };
-
-    if (isEditing) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isEditing, editValue, value]);
-
-  const setLink = useCallback(() => {
-    if (!editor) return;
-    
-    const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('URL eingeben:', previousUrl);
-
-    if (url === null) return;
-
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
-      return;
-    }
-
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-  }, [editor]);
-
-  // Core save function - reusable for manual save and auto-save
+  // Core save function - defined early so it can be used in effects
   const performSave = useCallback(async (valueToSave: string, isAutoSave: boolean = false): Promise<boolean> => {
     try {
       const lastDashIndex = sectionKey.lastIndexOf('-');
@@ -222,7 +64,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableRichText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName);
+      console.log('[EditableRichText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName, 'value length:', valueToSave.length);
 
       // Try to find page_segments JSON
       let { data: pageSegmentsData, error: loadError } = await supabase
@@ -253,7 +95,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         });
 
         if (segmentIndex === -1) {
-          console.error('[EditableRichText] Segment not found');
+          console.error('[EditableRichText] Segment not found for segmentId:', segmentId);
           return false;
         }
 
@@ -274,6 +116,8 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           console.error('[EditableRichText] Error updating page_segments:', updateError);
           return false;
         }
+        
+        console.log('[EditableRichText] Successfully saved to page_segments');
       } else {
         // Fallback to individual segment
         let { data: segmentData } = await supabase
@@ -329,6 +173,207 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
       return false;
     }
   }, [pageSlug, sectionKey, language]);
+
+  // Tiptap editor - only bold and link, no lists
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+        codeBlock: false,
+        blockquote: false,
+        horizontalRule: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 underline hover:text-blue-800',
+        },
+      }),
+    ],
+    content: value || '',
+    onUpdate: ({ editor }) => {
+      const newValue = editor.getHTML();
+      setEditValue(newValue);
+      editValueRef.current = newValue;
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm max-w-none focus:outline-none p-3 text-black',
+      },
+    },
+    editable: isEditing,
+  });
+
+  // Update editor content when value changes externally
+  useEffect(() => {
+    if (editor && value !== editor.getHTML() && !isEditing) {
+      editor.commands.setContent(value || '');
+      setEditValue(value);
+      setLastSavedValue(value);
+      editValueRef.current = value;
+      lastSavedValueRef.current = value;
+    }
+  }, [value, editor, isEditing]);
+
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    autoSaveTimerRef.current = setInterval(async () => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableRichText] Auto-saving...', { currentValue: currentValue.substring(0, 50), lastSaved: lastSaved.substring(0, 50) });
+        saveInProgressRef.current = true;
+        
+        try {
+          const success = await performSave(currentValue, true);
+          if (success) {
+            setLastSavedValue(currentValue);
+            lastSavedValueRef.current = currentValue;
+            toast.success('Auto-saved', { 
+              duration: 2000,
+              description: fieldLabel || 'Rich Text'
+            });
+          }
+        } catch (error) {
+          console.error('[EditableRichText] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 5000); // 5 seconds
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, performSave, fieldLabel]);
+
+  // CRITICAL: Save on component unmount if there are unsaved changes
+  useEffect(() => {
+    return () => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      const wasEditing = isEditingRef.current;
+      
+      if (wasEditing && currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableRichText] Saving on unmount...');
+        saveInProgressRef.current = true;
+        // Fire and forget - component is unmounting
+        performSave(currentValue, true).then((success) => {
+          if (success) {
+            console.log('[EditableRichText] Successfully saved on unmount');
+          }
+        });
+      }
+    };
+  }, [performSave]);
+
+  // Save on editing mode exit (cleanup effect)
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    // When transitioning from editing to not editing, save if there are unsaved changes
+    if (prevIsEditingRef.current && !isEditing) {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableRichText] Saving on edit mode exit...');
+        saveInProgressRef.current = true;
+        performSave(currentValue, true).then((success) => {
+          if (success) {
+            setLastSavedValue(currentValue);
+            lastSavedValueRef.current = currentValue;
+            toast.success('Auto-saved', { duration: 2000, description: fieldLabel || 'Rich Text' });
+          }
+          saveInProgressRef.current = false;
+        });
+      }
+    }
+    prevIsEditingRef.current = isEditing;
+  }, [isEditing, performSave, fieldLabel]);
+
+  // BEFOREUNLOAD: Warn on page leave and attempt save
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (isEditingRef.current && currentValue !== lastSaved) {
+        console.log('[EditableRichText] Attempting save on page leave');
+        // Try the save
+        performSave(currentValue, true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [performSave]);
+
+  // Update editor editable state
+  useEffect(() => {
+    if (editor) {
+      editor.setEditable(isEditing);
+    }
+  }, [isEditing, editor]);
+
+  // Handle click outside to save
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (isEditing && editValue !== value) {
+          handleSave();
+        } else {
+          setIsEditing(false);
+        }
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing, editValue, value]);
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
+    
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL eingeben:', previousUrl);
+
+    if (url === null) return;
+
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
+
+  // performSave is already defined above - using that definition
 
   // Manual save handler
   const handleSave = useCallback(async () => {
