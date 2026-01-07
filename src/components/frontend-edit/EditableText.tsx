@@ -46,135 +46,29 @@ export const EditableText: React.FC<EditableTextProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const saveInProgressRef = useRef(false);
+  
+  // Track current values in refs for use in cleanup/unmount
+  const editValueRef = useRef(editValue);
+  const lastSavedValueRef = useRef(lastSavedValue);
+  const isEditingRef = useRef(isEditing);
+
+  // Keep refs in sync with state
+  useEffect(() => { editValueRef.current = editValue; }, [editValue]);
+  useEffect(() => { lastSavedValueRef.current = lastSavedValue; }, [lastSavedValue]);
+  useEffect(() => { isEditingRef.current = isEditing; }, [isEditing]);
 
   // Allow editing if segment is being edited OR if we're in general edit mode
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
   const needsApproval = contentStatus === 'draft' || contentStatus === 'pending';
   const isStage2Import = importStage >= 2;
 
-  // Update editValue and lastSavedValue when value prop changes
-  useEffect(() => {
-    setEditValue(value);
-    setLastSavedValue(value);
-  }, [value]);
-
-  // Focus input when entering edit mode
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditing]);
-
-  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
-  useEffect(() => {
-    if (!isEditing) {
-      // Clear timer when not editing
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-      return;
-    }
-
-    // Start auto-save timer
-    autoSaveTimerRef.current = setInterval(async () => {
-      // Only save if value has changed since last save and not currently saving
-      if (editValue !== lastSavedValue && !saveInProgressRef.current) {
-        console.log('[EditableText] Auto-saving...');
-        saveInProgressRef.current = true;
-        
-        try {
-          await performSave(editValue, true);
-          setLastSavedValue(editValue);
-          toast.success('Auto-saved', { 
-            duration: 2000,
-            description: fieldLabel || sectionKey
-          });
-        } catch (error) {
-          console.error('[EditableText] Auto-save error:', error);
-        } finally {
-          saveInProgressRef.current = false;
-        }
-      }
-    }, 5000); // 5 seconds
-
-    return () => {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-    };
-  }, [isEditing, editValue, lastSavedValue, sectionKey, fieldLabel]);
-
-  // Save on editing mode exit (cleanup effect)
-  const prevIsEditingRef = useRef(isEditing);
-  useEffect(() => {
-    // When transitioning from editing to not editing, save if there are unsaved changes
-    if (prevIsEditingRef.current && !isEditing && editValue !== lastSavedValue && !saveInProgressRef.current) {
-      console.log('[EditableText] Saving on edit mode exit...');
-      saveInProgressRef.current = true;
-      performSave(editValue, true).then(() => {
-        setLastSavedValue(editValue);
-        toast.success('Auto-saved', { duration: 2000, description: fieldLabel || sectionKey });
-        saveInProgressRef.current = false;
-      });
-    }
-    prevIsEditingRef.current = isEditing;
-  }, [isEditing, editValue, lastSavedValue, fieldLabel, sectionKey]);
-
-  // BEFOREUNLOAD: Save on page leave
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isEditing && editValue !== lastSavedValue) {
-        // Try to save synchronously (may not complete)
-        console.log('[EditableText] Attempting save on page leave');
-        // Perform the save operation - can't await here but at least try
-        performSave(editValue, true);
-        e.preventDefault();
-        e.returnValue = 'Unsaved changes will be lost';
-        return e.returnValue;
-      }
-    };
-
-    if (isEditing) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isEditing, editValue, lastSavedValue]);
-
-  // Handle click outside to save and close
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        if (isEditing && editValue !== value) {
-          handleSave();
-        } else {
-          setIsEditing(false);
-        }
-      }
-    };
-
-    if (isEditing) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isEditing, editValue, value]);
-
-  // Core save function - reusable for manual save and auto-save
+  // Core save function - defined early so it can be used in effects
   const performSave = useCallback(async (valueToSave: string, isAutoSave: boolean = false): Promise<boolean> => {
     if (valueToSave === value && !isAutoSave) {
       return true; // No changes
     }
 
     try {
-      // Parse sectionKey to extract segmentKey (without field) and field name
       const lastDashIndex = sectionKey.lastIndexOf('-');
       if (lastDashIndex === -1) {
         console.error('[EditableText] Invalid sectionKey format:', sectionKey);
@@ -186,9 +80,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName);
+      console.log('[EditableText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName, 'value:', valueToSave.substring(0, 50));
 
-      // Try to find page_segments JSON (newer CMS format)
       let { data: pageSegmentsData, error: loadError } = await supabase
         .from('page_content')
         .select('id, content_value')
@@ -238,8 +131,9 @@ export const EditableText: React.FC<EditableTextProps> = ({
           console.error('[EditableText] Error updating page_segments:', updateError);
           return false;
         }
+        
+        console.log('[EditableText] Successfully saved to page_segments');
       } else {
-        // Fallback: Individual segment entry (older CMS format)
         let { data: segmentData } = await supabase
           .from('page_content')
           .select('id, content_value, content_type')
@@ -293,6 +187,149 @@ export const EditableText: React.FC<EditableTextProps> = ({
       return false;
     }
   }, [value, pageSlug, sectionKey, language]);
+
+  // Update editValue and lastSavedValue when value prop changes
+  useEffect(() => {
+    setEditValue(value);
+    setLastSavedValue(value);
+    editValueRef.current = value;
+    lastSavedValueRef.current = value;
+  }, [value]);
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    autoSaveTimerRef.current = setInterval(async () => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableText] Auto-saving...', { currentValue: currentValue.substring(0, 30), lastSaved: lastSaved.substring(0, 30) });
+        saveInProgressRef.current = true;
+        
+        try {
+          const success = await performSave(currentValue, true);
+          if (success) {
+            setLastSavedValue(currentValue);
+            lastSavedValueRef.current = currentValue;
+            toast.success('Auto-saved', { 
+              duration: 2000,
+              description: fieldLabel || sectionKey
+            });
+          }
+        } catch (error) {
+          console.error('[EditableText] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 5000);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, performSave, sectionKey, fieldLabel]);
+
+  // CRITICAL: Save on component unmount if there are unsaved changes
+  useEffect(() => {
+    return () => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      const wasEditing = isEditingRef.current;
+      
+      if (wasEditing && currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableText] Saving on unmount...');
+        saveInProgressRef.current = true;
+        performSave(currentValue, true);
+      }
+    };
+  }, [performSave]);
+
+  // Save on editing mode exit
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    if (prevIsEditingRef.current && !isEditing) {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableText] Saving on edit mode exit...');
+        saveInProgressRef.current = true;
+        performSave(currentValue, true).then((success) => {
+          if (success) {
+            setLastSavedValue(currentValue);
+            lastSavedValueRef.current = currentValue;
+            toast.success('Auto-saved', { duration: 2000, description: fieldLabel || sectionKey });
+          }
+          saveInProgressRef.current = false;
+        });
+      }
+    }
+    prevIsEditingRef.current = isEditing;
+  }, [isEditing, performSave, fieldLabel, sectionKey]);
+
+  // BEFOREUNLOAD: Save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (isEditingRef.current && currentValue !== lastSaved) {
+        console.log('[EditableText] Attempting save on page leave');
+        performSave(currentValue, true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [performSave]);
+
+  // Handle click outside to save and close
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (isEditing && editValue !== value) {
+          handleSave();
+        } else {
+          setIsEditing(false);
+        }
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing, editValue, value]);
+
+  // performSave is already defined above
 
   // Manual save handler (triggered by user action)
   const handleSave = useCallback(async () => {

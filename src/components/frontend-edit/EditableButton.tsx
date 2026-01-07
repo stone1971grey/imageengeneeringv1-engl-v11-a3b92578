@@ -69,146 +69,32 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const saveInProgressRef = useRef(false);
 
+  // Track current values in refs for use in cleanup/unmount
+  const editTextRef = useRef(editText);
+  const editLinkRef = useRef(editLink);
+  const editStyleRef = useRef(editStyle);
+  const lastSavedTextRef = useRef(lastSavedText);
+  const lastSavedLinkRef = useRef(lastSavedLink);
+  const lastSavedStyleRef = useRef(lastSavedStyle);
+  const isEditingRef = useRef(isEditing);
+
+  // Keep refs in sync with state
+  useEffect(() => { editTextRef.current = editText; }, [editText]);
+  useEffect(() => { editLinkRef.current = editLink; }, [editLink]);
+  useEffect(() => { editStyleRef.current = editStyle; }, [editStyle]);
+  useEffect(() => { lastSavedTextRef.current = lastSavedText; }, [lastSavedText]);
+  useEffect(() => { lastSavedLinkRef.current = lastSavedLink; }, [lastSavedLink]);
+  useEffect(() => { lastSavedStyleRef.current = lastSavedStyle; }, [lastSavedStyle]);
+  useEffect(() => { isEditingRef.current = isEditing; }, [isEditing]);
+
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
-  // Update values when props change
-  useEffect(() => {
-    setEditText(text);
-    setEditLink(link);
-    setEditStyle(normalizeStyle(initialButtonStyle));
-    setLastSavedText(text);
-    setLastSavedLink(link);
-    setLastSavedStyle(normalizeStyle(initialButtonStyle));
-  }, [text, link, initialButtonStyle]);
-
-  // Focus input when editing starts
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditing]);
-
-  // Handle click outside to close
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        handleCancel();
-      }
-    };
-
-    if (isEditing) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isEditing]);
-
-  // Check if values changed since last save
-  const hasChanges = useCallback(() => {
-    return editText !== lastSavedText || editLink !== lastSavedLink || editStyle !== lastSavedStyle;
-  }, [editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
-
-  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
-  useEffect(() => {
-    if (!isEditing) {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-      return;
-    }
-
-    autoSaveTimerRef.current = setInterval(async () => {
-      if (hasChanges() && !saveInProgressRef.current) {
-        console.log('[EditableButton] Auto-saving...');
-        saveInProgressRef.current = true;
-        
-        try {
-          const success = await performSave(true);
-          if (success) {
-            setLastSavedText(editText);
-            setLastSavedLink(editLink);
-            setLastSavedStyle(editStyle);
-            toast.success('Auto-saved', { 
-              duration: 2000,
-              description: 'Button'
-            });
-          }
-        } catch (error) {
-          console.error('[EditableButton] Auto-save error:', error);
-        } finally {
-          saveInProgressRef.current = false;
-        }
-      }
-    }, 5000); // 5 seconds
-
-    return () => {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-    };
-  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
-
-  // Save on editing mode exit (cleanup effect)
-  const prevIsEditingRef = useRef(isEditing);
-  useEffect(() => {
-    if (prevIsEditingRef.current && !isEditing && hasChanges() && !saveInProgressRef.current) {
-      console.log('[EditableButton] Saving on edit mode exit...');
-      saveInProgressRef.current = true;
-      performSave(true).then((success) => {
-        if (success) {
-          setLastSavedText(editText);
-          setLastSavedLink(editLink);
-          setLastSavedStyle(editStyle);
-          toast.success('Auto-saved', { duration: 2000, description: 'Button' });
-        }
-        saveInProgressRef.current = false;
-      });
-    }
-    prevIsEditingRef.current = isEditing;
-  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
-
-  // BEFOREUNLOAD: Warn on page leave
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isEditing && hasChanges()) {
-        console.log('[EditableButton] Attempting save on page leave');
-        performSave(true);
-        e.preventDefault();
-        e.returnValue = 'Unsaved changes will be lost';
-        return e.returnValue;
-      }
-    };
-
-    if (isEditing) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
-
-  // Get button style based on style value (matching ProductHeroGallery)
-  const getComputedButtonStyle = (styleValue: string): React.CSSProperties => {
-    const normalized = normalizeStyle(styleValue);
-    switch (normalized) {
-      case 'black':
-        return { backgroundColor: '#1f2937', color: 'white' };
-      case 'outline-white':
-        return { backgroundColor: 'white', color: 'black', border: '1px solid #e5e5e5' };
-      case 'yellow':
-      default:
-        return { backgroundColor: '#f9dc24', color: 'black' };
-    }
-  };
-
-  // Core save function - reusable for manual save and auto-save
-  const performSave = useCallback(async (isAutoSave: boolean = false): Promise<boolean> => {
+  // Core save function - defined early so it can be used in effects
+  const performSave = useCallback(async (isAutoSave: boolean = false, textVal?: string, linkVal?: string, styleVal?: string): Promise<boolean> => {
+    const currentText = textVal ?? editTextRef.current;
+    const currentLink = linkVal ?? editLinkRef.current;
+    const currentStyle = styleVal ?? editStyleRef.current;
+    
     try {
       const segmentKey = sectionKey;
       const segmentKeyParts = segmentKey.split('-');
@@ -216,7 +102,6 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
       
       console.log('[EditableButton]', isAutoSave ? 'Auto-saving' : 'Saving', 'button for segmentKey:', segmentKey);
 
-      // Load page_segments JSON
       let { data: pageSegmentsData, error: loadError } = await supabase
         .from('page_content')
         .select('id, content_value')
@@ -252,11 +137,11 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
         if (!segments[segmentIndex].data) {
           segments[segmentIndex].data = {};
         }
-        segments[segmentIndex].data[textFieldName] = editText;
-        segments[segmentIndex].data[linkFieldName] = editLink;
+        segments[segmentIndex].data[textFieldName] = currentText;
+        segments[segmentIndex].data[linkFieldName] = currentLink;
         
         if (styleFieldName) {
-          segments[segmentIndex].data[styleFieldName] = editStyle;
+          segments[segmentIndex].data[styleFieldName] = currentStyle;
         }
 
         const { error: updateError } = await supabase
@@ -271,6 +156,8 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           console.error('[EditableButton] Error updating page_segments:', updateError);
           return false;
         }
+        
+        console.log('[EditableButton] Successfully saved to page_segments');
       } else {
         console.error('[EditableButton] page_segments not found');
         return false;
@@ -281,7 +168,179 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
       console.error('[EditableButton] Save error:', error);
       return false;
     }
-  }, [editText, editLink, editStyle, pageSlug, sectionKey, language, textFieldName, linkFieldName, styleFieldName]);
+  }, [pageSlug, sectionKey, language, textFieldName, linkFieldName, styleFieldName]);
+
+  // Check if values changed since last save (using refs for reliability)
+  const hasChangesRef = useCallback(() => {
+    return editTextRef.current !== lastSavedTextRef.current || 
+           editLinkRef.current !== lastSavedLinkRef.current || 
+           editStyleRef.current !== lastSavedStyleRef.current;
+  }, []);
+
+  // Update values when props change
+  useEffect(() => {
+    setEditText(text);
+    setEditLink(link);
+    setEditStyle(normalizeStyle(initialButtonStyle));
+    setLastSavedText(text);
+    setLastSavedLink(link);
+    setLastSavedStyle(normalizeStyle(initialButtonStyle));
+    editTextRef.current = text;
+    editLinkRef.current = link;
+    editStyleRef.current = normalizeStyle(initialButtonStyle);
+    lastSavedTextRef.current = text;
+    lastSavedLinkRef.current = link;
+    lastSavedStyleRef.current = normalizeStyle(initialButtonStyle);
+  }, [text, link, initialButtonStyle]);
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  // Handle click outside to close
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        handleCancel();
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing]);
+
+  // AUTO-SAVE: Trigger save every 5 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    autoSaveTimerRef.current = setInterval(async () => {
+      if (hasChangesRef() && !saveInProgressRef.current) {
+        console.log('[EditableButton] Auto-saving...');
+        saveInProgressRef.current = true;
+        
+        try {
+          const success = await performSave(true);
+          if (success) {
+            const currText = editTextRef.current;
+            const currLink = editLinkRef.current;
+            const currStyle = editStyleRef.current;
+            setLastSavedText(currText);
+            setLastSavedLink(currLink);
+            setLastSavedStyle(currStyle);
+            lastSavedTextRef.current = currText;
+            lastSavedLinkRef.current = currLink;
+            lastSavedStyleRef.current = currStyle;
+            toast.success('Auto-saved', { 
+              duration: 2000,
+              description: 'Button'
+            });
+          }
+        } catch (error) {
+          console.error('[EditableButton] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 5000);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, performSave, hasChangesRef]);
+
+  // CRITICAL: Save on component unmount if there are unsaved changes
+  useEffect(() => {
+    return () => {
+      if (isEditingRef.current && hasChangesRef() && !saveInProgressRef.current) {
+        console.log('[EditableButton] Saving on unmount...');
+        saveInProgressRef.current = true;
+        performSave(true);
+      }
+    };
+  }, [performSave, hasChangesRef]);
+
+  // Save on editing mode exit
+  const prevIsEditingRef = useRef(isEditing);
+  useEffect(() => {
+    if (prevIsEditingRef.current && !isEditing && hasChangesRef() && !saveInProgressRef.current) {
+      console.log('[EditableButton] Saving on edit mode exit...');
+      saveInProgressRef.current = true;
+      performSave(true).then((success) => {
+        if (success) {
+          const currText = editTextRef.current;
+          const currLink = editLinkRef.current;
+          const currStyle = editStyleRef.current;
+          setLastSavedText(currText);
+          setLastSavedLink(currLink);
+          setLastSavedStyle(currStyle);
+          lastSavedTextRef.current = currText;
+          lastSavedLinkRef.current = currLink;
+          lastSavedStyleRef.current = currStyle;
+          toast.success('Auto-saved', { duration: 2000, description: 'Button' });
+        }
+        saveInProgressRef.current = false;
+      });
+    }
+    prevIsEditingRef.current = isEditing;
+  }, [isEditing, performSave, hasChangesRef]);
+
+  // BEFOREUNLOAD: Save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isEditingRef.current && hasChangesRef()) {
+        console.log('[EditableButton] Attempting save on page leave');
+        performSave(true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [performSave, hasChangesRef]);
+
+  // Get button style based on style value (matching ProductHeroGallery)
+  const getComputedButtonStyle = (styleValue: string): React.CSSProperties => {
+    const normalized = normalizeStyle(styleValue);
+    switch (normalized) {
+      case 'black':
+        return { backgroundColor: '#1f2937', color: 'white' };
+      case 'outline-white':
+        return { backgroundColor: 'white', color: 'black', border: '1px solid #e5e5e5' };
+      case 'yellow':
+      default:
+        return { backgroundColor: '#f9dc24', color: 'black' };
+    }
+  };
+
+  // performSave is already defined above
+
+  // Check if values changed (using state for UI)
+  const hasChanges = useCallback(() => {
+    return editText !== lastSavedText || editLink !== lastSavedLink || editStyle !== lastSavedStyle;
+  }, [editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
 
   // Manual save handler
   const handleSave = useCallback(async () => {
