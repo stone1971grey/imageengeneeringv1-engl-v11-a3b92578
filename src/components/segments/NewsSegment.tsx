@@ -16,6 +16,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Check, X, Loader2, Settings } from 'lucide-react';
@@ -356,14 +357,12 @@ const NewsSegment = ({
                 onUpdate={onContentUpdate}
                 fieldLabel="News Section Title"
               />
-              <EditableText
+              <EditableRichText
                 value={sectionDescription}
                 sectionKey={`${segmentKey}-description`}
                 pageSlug={pageSlug}
                 language={normalizedLang}
                 className="text-xl text-white/80 max-w-3xl mx-auto"
-                as="p"
-                multiline
                 onUpdate={onContentUpdate}
                 fieldLabel="News Section Description"
               />
@@ -486,14 +485,12 @@ const NewsSegment = ({
                   <Settings className="h-4 w-4" />
                 </Button>
               </div>
-              <EditableText
+              <EditableRichText
                 value={sectionDescription}
                 sectionKey={`${segmentKey}-description`}
                 pageSlug={pageSlug}
                 language={normalizedLang}
                 className="text-xl text-white/80 max-w-3xl mx-auto"
-                as="p"
-                multiline
                 onUpdate={onContentUpdate}
                 fieldLabel="News Section Description"
               />
@@ -501,9 +498,10 @@ const NewsSegment = ({
           ) : (
             <>
               <h2 className="text-4xl font-bold text-white mb-4">{sectionTitle}</h2>
-              <p className="text-xl text-white/80 max-w-3xl mx-auto">
-                {sectionDescription}
-              </p>
+              <div 
+                className="text-xl text-white/80 max-w-3xl mx-auto"
+                dangerouslySetInnerHTML={{ __html: sectionDescription }}
+              />
             </>
           )}
         </div>

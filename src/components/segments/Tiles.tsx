@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { FrontendRichTextEditor } from '@/components/frontend-edit/FrontendRichTextEditor';
 import { Plus, Trash2, Loader2, FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Settings, Camera, Clock, Globe, Mail, MapPin, Search, Star, Users, Wrench, Target, Activity, Award, BookOpen, Briefcase, Calendar, ChevronDown } from 'lucide-react';
@@ -588,22 +589,21 @@ const Tiles: React.FC<TilesProps> = ({
             
             {(displayDescription || isEditing) && (
               isEditing ? (
-                <EditableText
+                <EditableRichText
                   value={displayDescription}
                   sectionKey={`${segmentKey}-description`}
                   pageSlug={pageSlug}
                   language={language}
-                  className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line"
-                  as="p"
-                  multiline
+                  className="text-xl text-gray-600 max-w-3xl mx-auto"
                   onUpdate={onContentUpdate}
                   fieldLabel="Tiles Description"
                 />
               ) : (
                 description && (
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
-                    {stripHtml(description)}
-                  </p>
+                  <div 
+                    className="text-xl text-gray-600 max-w-3xl mx-auto"
+                    dangerouslySetInnerHTML={{ __html: stripHtml(description) }}
+                  />
                 )
               )
             )}

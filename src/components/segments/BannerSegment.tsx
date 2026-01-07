@@ -17,6 +17,7 @@ import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableButton } from '@/components/frontend-edit/EditableButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -871,22 +872,21 @@ const BannerSegment = ({
 
           {/* Subtext */}
           {isEditing ? (
-            <EditableText
+            <EditableRichText
               value={subtext || ''}
               sectionKey={`${segmentKey}-subtext`}
               pageSlug={pageSlug}
               language={language}
               className="text-lg text-gray-700 mb-8"
-              as="p"
-              multiline
               onUpdate={onContentUpdate}
               fieldLabel="Banner Description"
             />
           ) : (
             subtext && (
-              <p className="text-lg text-gray-700 mb-8 whitespace-pre-line">
-                {subtext}
-              </p>
+              <div 
+                className="text-lg text-gray-700 mb-8"
+                dangerouslySetInnerHTML={{ __html: subtext }}
+              />
             )
           )}
 

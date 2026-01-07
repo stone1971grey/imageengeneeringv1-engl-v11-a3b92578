@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { FrontendRichTextEditor } from '@/components/frontend-edit/FrontendRichTextEditor';
 import { Plus, Trash2, Loader2, Upload, FolderOpen, ImageIcon } from 'lucide-react';
@@ -489,22 +490,21 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
             
             {(displaySubtext || isEditing) && (
               isEditing ? (
-                <EditableText
+                <EditableRichText
                   value={displaySubtext}
                   sectionKey={`${segmentKey}-subtext`}
                   pageSlug={pageSlug}
                   language={language}
-                  className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line"
-                  as="p"
-                  multiline
+                  className="text-xl text-gray-600 max-w-3xl mx-auto"
                   onUpdate={onContentUpdate}
                   fieldLabel="Section Description"
                 />
               ) : (
                 subtext && (
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
-                    {subtext}
-                  </p>
+                  <div 
+                    className="text-xl text-gray-600 max-w-3xl mx-auto"
+                    dangerouslySetInnerHTML={{ __html: subtext }}
+                  />
                 )
               )
             )}

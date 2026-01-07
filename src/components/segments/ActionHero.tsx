@@ -1,5 +1,6 @@
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
+import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 
@@ -75,15 +76,14 @@ const ActionHero = ({
                 as="h1"
                 onUpdate={onContentUpdate}
               />
-              <EditableText
+              <EditableRichText
                 value={description}
                 sectionKey={`${segmentKey}-description`}
                 pageSlug={pageSlug}
                 language={language}
                 className="text-xl lg:text-2xl text-white max-w-2xl"
-                as="p"
-                multiline
                 onUpdate={onContentUpdate}
+                fieldLabel="Description"
               />
             </>
           ) : (
@@ -91,9 +91,10 @@ const ActionHero = ({
               <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">
                 {title}
               </h1>
-              <p className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-2 whitespace-pre-line">
-                {description}
-              </p>
+              <div 
+                className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-2"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
             </>
           )}
         </div>
