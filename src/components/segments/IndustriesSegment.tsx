@@ -105,6 +105,7 @@ const IndustriesSegment = ({
   const editItemsRef = useRef(editItems);
   const hasChangesRef = useRef(hasChanges);
   const saveInProgressRef = useRef(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => { editColumnsRef.current = editColumns; }, [editColumns]);
@@ -117,20 +118,6 @@ const IndustriesSegment = ({
     setEditItems(items);
     setHasChanges(false);
   }, [columns, items]);
-
-  // Enable save button when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setHasChanges(true);
-    }
-  }, [isEditing]);
-
-  // Enable save button when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setHasChanges(true);
-    }
-  }, [isEditing]);
 
   const gridColsClass = {
     1: 'grid-cols-1',
@@ -351,21 +338,29 @@ const IndustriesSegment = ({
     };
   }, [isEditing, performAutoSave]);
 
-  // PERIODIC AUTO-SAVE: Save every 3 seconds while editing if there are changes
+  // IMMEDIATE AUTO-SAVE: Save 1 second after any change (debounced)
   useEffect(() => {
-    if (!isEditing) return;
+    if (!isEditing || !hasChanges) return;
 
-    const intervalId = setInterval(async () => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout for 1 second
+    saveTimeoutRef.current = setTimeout(async () => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[IndustriesSegment] Periodic auto-save triggered...');
+        console.log('[IndustriesSegment] Immediate auto-save triggered (1s after change)...');
         await performAutoSave();
       }
-    }, 3000); // 3 seconds for faster saves
+    }, 1000); // 1 second after change
 
     return () => {
-      clearInterval(intervalId);
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
-  }, [isEditing, performAutoSave]);
+  }, [isEditing, hasChanges, editItems, editColumns, performAutoSave]);
 
   // CRITICAL: Save when tab loses focus (user switches tabs or minimizes)
   useEffect(() => {
@@ -408,6 +403,9 @@ const IndustriesSegment = ({
   // Save on unmount
   useEffect(() => {
     return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
       if (hasChangesRef.current && !saveInProgressRef.current) {
         console.log('[IndustriesSegment] Saving on unmount...');
         performAutoSave();
