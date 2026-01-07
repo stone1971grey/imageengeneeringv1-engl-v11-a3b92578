@@ -63,6 +63,7 @@ import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
+import AftermarketDownload from "./pages/AftermarketDownload";
 import { MauticTracker } from "./components/MauticTracker";
 
 const queryClient = new QueryClient();
@@ -270,6 +271,9 @@ const App = () => (
             {/* Catch-all for hierarchical CMS pages */}
             <Route path="/:lang/:category/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/:category/:subcategory/:slug" element={<DynamicCMSPage />} />
+            
+            {/* Aftermarket Download Page */}
+            <Route path="/aftermarket-update" element={<AftermarketDownload />} />
             
             {/* Catch-all 404 */}
             <Route path="*" element={<NotFound />} />
