@@ -65,11 +65,15 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       if (error) throw error;
       
-      // SISTRIX API returns credits in response.answer.credits
-      const creditsValue = data?.answer?.[0]?.credits ?? data?.credits ?? null;
+      // SISTRIX API returns credits in: data.answer[0].credits[0].value
+      const creditsArray = data?.answer?.[0]?.credits;
+      const creditsValue = Array.isArray(creditsArray) && creditsArray[0]?.value 
+        ? creditsArray[0].value 
+        : null;
       const creditsNumber = typeof creditsValue === 'number' ? creditsValue : parseInt(String(creditsValue)) || null;
       setCredits(creditsNumber);
-      console.log('[SISTRIX] Credits:', creditsNumber);
+      console.log('[SISTRIX] Credits raw:', data?.answer?.[0]?.credits);
+      console.log('[SISTRIX] Credits parsed:', creditsNumber);
       toast.success(`SISTRIX Credits: ${creditsNumber?.toLocaleString() || 'Unknown'}`);
     } catch (e) {
       console.error('[SISTRIX] Credits error:', e);
