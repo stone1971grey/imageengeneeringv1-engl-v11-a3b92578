@@ -1,202 +1,297 @@
-# Tenant Onboarding Checkliste
+# Tenant Onboarding Checklist
 
-## Übersicht
+## Spade CMS – Multi-Tenancy Setup Guide (v1.1.2)
 
-Diese Checkliste beschreibt alle Schritte, um ein neues CMS-Projekt (Tenant) basierend auf dem Spade-CMS aufzusetzen.
-
----
-
-## 1. Neues Lovable-Projekt erstellen
-
-- [ ] Neues Projekt auf [lovable.dev](https://lovable.dev) erstellen
-- [ ] Projektname vergeben (z.B. `kunde-xyz-cms`)
+Diese Checkliste beschreibt alle Schritte, um ein neues Tenant-Projekt (z.B. aftermarket-update.de) basierend auf dem Spade CMS Core aufzusetzen.
 
 ---
 
-## 2. Zu kopierende Dateien & Ordner
+## Phase 1: Lovable Projekt erstellen
 
-### Kritisch (MUSS kopiert werden)
-
-| Pfad | Beschreibung |
-|------|--------------|
-| `src/config/siteConfig.ts` | **Haupt-Konfigurationsdatei** - ANPASSEN für neuen Tenant! |
-| `src/config/index.ts` | Config-Exports |
-| `src/components/` | Alle UI-Komponenten |
-| `src/hooks/` | Custom Hooks (CMS, Auth, Navigation) |
-| `src/pages/` | Alle Seiten-Komponenten |
-| `src/lib/` | Utility-Funktionen |
-| `src/types/` | TypeScript Typen |
-| `src/contexts/` | React Contexts |
-
-### Styling
-
-| Pfad | Beschreibung |
-|------|--------------|
-| `src/index.css` | Globale Styles & CSS-Variablen |
-| `tailwind.config.ts` | Tailwind-Konfiguration |
-
-### Supabase/Backend
-
-| Pfad | Beschreibung |
-|------|--------------|
-| `supabase/functions/` | Edge Functions |
-| `supabase/migrations/` | DB-Migrationen (als Referenz) |
+- [ ] Neues Lovable-Projekt erstellen auf [lovable.dev](https://lovable.dev)
+- [ ] Lovable Cloud aktivieren (Supabase-Backend)
+- [ ] Projekt-URL notieren: `https://preview--[PROJECT_NAME].lovable.app`
 
 ---
 
-## 3. siteConfig.ts anpassen
+## Phase 2: Konfigurationsdateien hochladen
 
-Die wichtigste Datei! Öffne `src/config/siteConfig.ts` und passe an:
+Diese 5 Dateien aus dem Download-Hub (`/aftermarket-update`) in das neue Projekt hochladen:
 
-```typescript
-export const siteConfig: SiteConfig = {
-  // === TENANT IDENTIFIKATION ===
-  tenant: {
-    id: 'neuer-tenant-slug',        // Eindeutige ID
-    name: 'Neuer Kunde',            // Anzeigename
-    legalName: 'Neue Kunde GmbH',   // Rechtlicher Name
-    tagline: 'Slogan des Kunden',
-  },
+| Datei | Zielort | Beschreibung |
+|-------|---------|--------------|
+| `siteConfig.ts` | `src/config/siteConfig.ts` | Tenant-spezifische Konfiguration |
+| `Auth.tsx` | `src/pages/Auth.tsx` | Login-Seite mit Tenant-Branding |
+| `config.toml` | `supabase/config.toml` | Edge Function Konfiguration |
+| `index.ts` | `src/config/index.ts` | Config-Export |
+| `LoginOverlay.tsx` | `src/components/LoginOverlay.tsx` | Login-Overlay Komponente |
 
-  // === BRANDING ===
-  branding: {
-    logos: {
-      primary: '/logo-kunde.svg',
-      // ... weitere Logos
-    },
-    colors: {
-      primary: '220 80% 50%',       // HSL-Werte anpassen!
-      // ... weitere Farben
-    },
-    fonts: {
-      heading: 'Ihre Schriftart',
-      body: 'Ihre Schriftart',
-    },
-  },
+---
 
-  // === KONTAKT ===
-  contact: {
-    email: 'info@neuer-kunde.de',
-    phone: '+49 123 456789',
-    // ... weitere Kontaktdaten
-  },
+## Phase 3: Core-Ordner kopieren (1:1)
 
-  // === FEATURES ===
-  features: {
-    modules: {
-      news: true,           // Welche Module aktiviert?
-      events: false,
-      products: true,
-      downloads: false,
-      // ...
-    },
-    languages: ['de'],      // Verfügbare Sprachen
-  },
+Diese Ordner müssen **komplett** vom Haupt-Projekt kopiert werden:
 
-  // === INTEGRATIONEN ===
-  integrations: {
-    mautic: {
-      enabled: false,       // Nur wenn benötigt
-    },
-    // ...
-  },
-};
+### Pflicht-Ordner
+
+```
+src/components/          → Alle UI-Komponenten inkl. Segment-Editoren
+src/hooks/               → Alle Custom Hooks
+src/lib/                 → Utility-Funktionen
+src/assets/              → Icons, Bilder (außer tenant-spezifische Logos)
+src/types/               → TypeScript Typen
+src/contexts/            → React Contexts
+supabase/functions/      → Alle Edge Functions
+```
+
+### Styling-Dateien
+
+```
+src/index.css            → Design Tokens (CSS Variables)
+tailwind.config.ts       → Tailwind-Konfiguration
+```
+
+### Teilweise kopieren (mit Anpassungen)
+
+```
+src/pages/               → Nur benötigte Seiten (je nach aktivierten Modulen)
+src/App.tsx              → Routing-Anpassungen
+src/main.tsx             → Entry Point
 ```
 
 ---
 
-## 4. Datenbank einrichten
+## Phase 4: Datenbank-Migration ausführen
 
-### Option A: Migrations ausführen (empfohlen)
+Die SQL-Migration `docs/tenant-database-migration.sql` im neuen Projekt ausführen.
 
-Die Migrations aus `supabase/migrations/` enthalten das komplette DB-Schema.
+**Reihenfolge:**
+1. Enum-Typen erstellen
+2. Hilfsfunktionen erstellen (`has_role`, `get_next_page_id`)
+3. Core-Tabellen erstellen
+4. RLS aktivieren
+5. RLS-Policies erstellen
+6. Storage Buckets erstellen
+7. Trigger für Profile-Erstellung
 
-Lovable wird beim Projekt-Start automatisch nach fehlenden Tabellen fragen.
-
-### Option B: Manuell Tabellen erstellen
-
-Benötigte Kern-Tabellen:
-- `page_registry` - Seiten-Verwaltung
-- `page_content` - Inhalte
-- `segment_registry` - Segmente
+**Benötigte Kern-Tabellen:**
 - `profiles` - Benutzerprofile
 - `user_roles` - Rollen-Zuordnung
-- `navigation_links` - Navigation (optional, wenn DB-First)
+- `user_seo_permissions` - SEO-Berechtigungen
+- `editor_page_access` - Editor-Zugriffsrechte
+- `page_id_sequence` - ID-Generator
+- `page_registry` - Seiten-Verwaltung
+- `segment_registry` - Segmente
+- `page_content` - Inhalte
+- `page_content_backups` - Backup-System
+- `media_folders` - Medien-Ordner
+- `file_segment_mappings` - Datei-Segment-Zuordnungen
+- `navigation_links` - Navigation (Legacy)
+- `glossary` - Übersetzungs-Glossar
+- `redirects` - URL-Weiterleitungen
+
+**Content-Module (je nach Feature-Flags):**
+- `news_articles` - News-Modul
+- `events` + `event_registrations` - Events-Modul
+- `products` - Produkte-Modul
+- `downloads` + `download_requests` - Downloads-Modul
+- `newsletter_subscriptions` - Newsletter-Modul
+- `contact_submissions` - Kontaktformular
+- `backlog_tasks` - Backlog/Tasks
 
 ---
 
-## 5. Secrets konfigurieren
+## Phase 5: Konfiguration anpassen
 
-In Lovable unter **Settings → Secrets** eintragen:
+### siteConfig.ts anpassen
 
-| Secret | Benötigt für |
-|--------|-------------|
-| `MAUTIC_BASE_URL` | Mautic-Integration |
-| `MAUTIC_USERNAME` | Mautic-Integration |
-| `MAUTIC_PASSWORD` | Mautic-Integration |
-| `RESEND_API_KEY` | E-Mail-Versand |
-| `SISTRIX_API_KEY` | SEO-Tools |
-| `FIRECRAWL_API_KEY` | Web-Scraping |
+```typescript
+// Tenant-spezifische Werte
+tenant: {
+  id: 'aftermarket-update',
+  name: 'Aftermarket Update',
+  legalName: 'Aftermarket Update Media GmbH',
+  tagline: 'Das Fachportal für den freien Kfz-Teilehandel',
+  // ...
+}
 
-**Hinweis:** Nur Secrets eintragen, die für aktivierte Features benötigt werden!
+// Feature-Flags aktivieren/deaktivieren
+features: {
+  enabledModules: ['news', 'newsletter', 'events'], // Keine 'products'
+  // ...
+}
 
----
+// Branding
+branding: {
+  logos: {
+    primary: '/logos/aftermarket-update-logo.svg',
+    // ...
+  },
+  colors: {
+    primary: '220 14% 28%',  // Newspaper-Look (HSL!)
+    accent: '43 96% 56%',    // Gelb-Akzent
+    // ...
+  },
+  fonts: {
+    heading: 'Playfair Display',
+    body: 'Source Sans Pro',
+  }
+}
+```
 
-## 6. Storage Buckets erstellen
+### Logos hochladen
 
-Falls File-Upload benötigt wird:
-
-```sql
--- In Lovable Cloud ausführen
-INSERT INTO storage.buckets (id, name, public) 
-VALUES ('cms-media', 'cms-media', true);
+```
+public/logos/aftermarket-update-logo.svg
+public/logos/aftermarket-update-logo-dark.svg
+public/favicon.ico
 ```
 
 ---
 
-## 7. Admin-User einrichten
+## Phase 6: Edge Functions konfigurieren
 
-1. Ersten User über die App registrieren
-2. In der Datenbank Admin-Rolle zuweisen:
+### config.toml anpassen
+
+```toml
+project_id = "NEUE_SUPABASE_PROJECT_ID"
+
+[functions.lookup-username]
+verify_jwt = false
+
+[functions.admin-create-user]
+verify_jwt = false
+
+[functions.upload-image]
+verify_jwt = false
+
+[functions.generate-og-image]
+verify_jwt = false
+
+# ... weitere Functions nach Bedarf
+```
+
+### Secrets konfigurieren (in Lovable Settings → Secrets)
+
+| Secret | Benötigt für | Pflicht? |
+|--------|-------------|----------|
+| `MAUTIC_BASE_URL` | Mautic-Integration | Nein |
+| `MAUTIC_USER` | Mautic-Integration | Nein |
+| `MAUTIC_PASS` | Mautic-Integration | Nein |
+| `RESEND_API_KEY` | E-Mail-Versand | Nein |
+| `SISTRIX_API_KEY` | SEO-Tools | Nein |
+| `FIRECRAWL_API_KEY` | Web-Scraping | Nein |
+
+**Hinweis:** Nur Secrets eintragen, die für aktivierte Integrationen benötigt werden!
+
+---
+
+## Phase 7: Storage Buckets erstellen
+
+In Lovable Cloud → Storage:
+
+| Bucket | Public? | Beschreibung |
+|--------|---------|--------------|
+| `page-images` | Ja | Seiten-Bilder |
+| `cms-media` | Ja | CMS-Medien |
+| `user-uploads` | Nein | Private Uploads |
+
+---
+
+## Phase 8: Ersten Admin-User anlegen
+
+1. Registrierung über `/auth` durchführen
+2. User-UUID aus der `auth.users` Tabelle kopieren
+3. Admin-Rolle zuweisen:
 
 ```sql
-INSERT INTO public.user_roles (user_id, role)
+INSERT INTO user_roles (user_id, role)
 VALUES ('USER_UUID_HIER', 'admin');
 ```
 
 ---
 
-## 8. Erste Inhalte anlegen
+## Phase 9: Initiale Seiten anlegen
 
-1. Als Admin einloggen
-2. Erste Seite im CMS anlegen
-3. Navigation konfigurieren
+Mindestens diese Einträge in `page_registry`:
+
+```sql
+INSERT INTO page_registry (page_id, page_slug, page_title, status, nav_visible)
+VALUES 
+  (1, 'home', 'Startseite', 'published', true),
+  (2, 'news', 'News', 'published', true),
+  (3, 'contact', 'Kontakt', 'published', true);
+```
 
 ---
 
-## 9. Go-Live Checkliste
+## Phase 10: Verifizierung
+
+- [ ] Login als Admin funktioniert
+- [ ] Dashboard ist erreichbar (`/admin`)
+- [ ] Seiten-Editor funktioniert
+- [ ] Segment-Erstellung funktioniert
+- [ ] Frontend-Editing (`?edit=true`) funktioniert
+- [ ] Branding (Logo, Farben) korrekt angezeigt
+- [ ] Feature-Flags werden respektiert (keine deaktivierten Module sichtbar)
+- [ ] Navigation zeigt korrekte Seiten
+
+---
+
+## Phase 11: Go-Live Checkliste
 
 - [ ] Domain verbinden (Settings → Domains)
 - [ ] SSL-Zertifikat aktiv
 - [ ] SEO-Defaults in siteConfig geprüft
 - [ ] Favicon & OG-Images hochgeladen
 - [ ] Impressum & Datenschutz angelegt
-- [ ] Cookie-Banner konfiguriert
+- [ ] Cookie-Banner konfiguriert (wenn benötigt)
 - [ ] Analytics eingerichtet (wenn gewünscht)
+- [ ] Produktiv-Publish durchführen
+
+---
+
+## NIEMALS synchronisieren
+
+Diese Dateien/Ordner sind **tenant-spezifisch** und dürfen NIE vom Haupt-Projekt überschrieben werden:
+
+| Datei/Ordner | Grund |
+|--------------|-------|
+| `src/config/siteConfig.ts` | Tenant-Branding & Feature-Flags |
+| `supabase/migrations/` | Eigene Datenbank-Struktur |
+| `.env` | Eigene Secrets |
+| `public/logos/` | Tenant-Logos |
+| `supabase/config.toml` (project_id) | Eigene Supabase-Instanz |
+| Datenbank-Inhalte | Tenant-Content |
 
 ---
 
 ## Geschätzte Zeit
 
-| Schritt | Dauer |
-|---------|-------|
+| Phase | Dauer |
+|-------|-------|
 | Projekt erstellen | 2 Min |
-| Dateien kopieren | 10 Min |
-| siteConfig anpassen | 15 Min |
-| DB einrichten | 5 Min |
-| Secrets konfigurieren | 5 Min |
+| Config-Dateien hochladen | 5 Min |
+| Core-Ordner kopieren | 15 Min |
+| DB-Migration ausführen | 10 Min |
+| Konfiguration anpassen | 15 Min |
+| Edge Functions & Secrets | 10 Min |
 | Admin einrichten | 5 Min |
-| **Gesamt** | **~45 Min** |
+| Initiale Seiten | 10 Min |
+| Verifizierung | 10 Min |
+| **Gesamt** | **~80 Min** |
+
+---
+
+## Wartung & Updates
+
+Siehe `TENANT_UPDATE_CHECKLIST.md` für das Protokoll bei Core-Updates.
+
+Bei Updates des Haupt-Projekts:
+1. Changelog prüfen
+2. Core-Ordner aktualisieren (components, hooks, lib)
+3. Neue Migrations separat ausführen
+4. Kompatibilität testen
 
 ---
 
