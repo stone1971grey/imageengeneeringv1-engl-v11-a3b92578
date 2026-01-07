@@ -277,59 +277,71 @@ serve(async (req) => {
         
         console.log(`[Content Gap] Analyzing gap between ${domain} and ${requestBody.competitorDomain}`);
         
-        // Fetch competitor's top keywords (positions 1-10, limit 50 to save credits)
+        // Fetch competitor's top-10 keywords using to_pos=10 filter
         const competitorParams = new URLSearchParams();
         competitorParams.append('api_key', SISTRIX_API_KEY);
         competitorParams.append('format', 'json');
         competitorParams.append('domain', requestBody.competitorDomain);
         competitorParams.append('country', country);
         competitorParams.append('mobile', 'false');
-        competitorParams.append('limit', '50');
+        competitorParams.append('to_pos', '10'); // Only positions 1-10
+        competitorParams.append('limit', '100'); // Get up to 100 top-10 keywords
         
         const competitorUrl = `${SISTRIX_BASE_URL}/keyword.domain.seo?${competitorParams.toString()}`;
-        console.log(`[Content Gap] Fetching competitor keywords from ${requestBody.competitorDomain}`);
+        console.log(`[Content Gap] API URL: ${competitorUrl.replace(SISTRIX_API_KEY, 'HIDDEN')}`);
         
         const competitorResp = await fetch(competitorUrl);
         const competitorData = await competitorResp.json();
         
-        console.log(`[Content Gap] Raw SISTRIX response keys:`, Object.keys(competitorData || {}));
-        console.log(`[Content Gap] Answer length:`, competitorData?.answer?.length || 0);
-        if (competitorData?.answer?.[0]) {
-          console.log(`[Content Gap] First answer sample:`, JSON.stringify(competitorData.answer[0]).substring(0, 300));
+        console.log(`[Content Gap] Response status: ${competitorResp.status}`);
+        console.log(`[Content Gap] Response keys:`, Object.keys(competitorData || {}));
+        console.log(`[Content Gap] Answer array length:`, competitorData?.answer?.length || 0);
+        
+        // Log first few items for debugging
+        if (competitorData?.answer?.length > 0) {
+          console.log(`[Content Gap] First 3 items:`, JSON.stringify(competitorData.answer.slice(0, 3)));
         }
         
-        if (!competitorResp.ok || competitorData.status === 'error') {
-          console.error('[Content Gap] Competitor fetch error:', competitorData);
+        if (!competitorResp.ok) {
+          console.error('[Content Gap] HTTP error:', competitorResp.status, competitorData);
           return new Response(
-            JSON.stringify({ error: 'Failed to fetch competitor keywords', details: competitorData }),
+            JSON.stringify({ error: 'SISTRIX API request failed', status: competitorResp.status, details: competitorData }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
         
-        // SISTRIX returns keyword data in different formats
+        if (competitorData.status === 'error' || competitorData.error) {
+          console.error('[Content Gap] SISTRIX error response:', competitorData);
+          return new Response(
+            JSON.stringify({ 
+              error: competitorData.error_message || 'SISTRIX returned an error',
+              details: competitorData 
+            }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        // Parse keywords from response - SISTRIX returns flat array of keyword objects
         const rawKeywords = competitorData?.answer || [];
-        console.log(`[Content Gap] Raw keywords count: ${rawKeywords.length}`);
+        console.log(`[Content Gap] Processing ${rawKeywords.length} keywords`);
         
-        const competitorKeywords = rawKeywords
-          .filter((item: any) => {
-            const pos = parseInt(item.position) || 100;
-            return pos <= 10; // Only top 10 positions
-          })
-          .map((item: any) => ({
-            keyword: item.kw || item.keyword,
-            position: parseInt(item.position) || 0,
-            traffic: parseInt(item.traffic) || 0,
-            competitorUrl: item.url || ''
-          }));
+        const competitorKeywords = rawKeywords.map((item: any) => ({
+          keyword: item.kw || item.keyword || '',
+          position: parseInt(item.position) || 0,
+          traffic: parseInt(item.traffic) || 0,
+          competition: parseFloat(item.competition) || 0,
+          competitorUrl: item.url || ''
+        })).filter((kw: any) => kw.keyword); // Filter out empty keywords
         
-        console.log(`[Content Gap] After filtering (top 10): ${competitorKeywords.length} keywords`);
+        console.log(`[Content Gap] Processed ${competitorKeywords.length} valid keywords`);
         
-        // Return competitor keywords for frontend comparison with local data
+        // Return competitor keywords for frontend comparison
         return new Response(
           JSON.stringify({ 
             answer: [{
               competitorDomain: requestBody.competitorDomain,
               keywords: competitorKeywords,
+              rawCount: rawKeywords.length,
               analyzedAt: new Date().toISOString()
             }]
           }),
