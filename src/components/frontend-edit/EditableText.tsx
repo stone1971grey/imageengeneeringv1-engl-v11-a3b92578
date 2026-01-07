@@ -87,7 +87,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         try {
           await performSave(editValue, true);
           setLastSavedValue(editValue);
-          toast.success('Auto-gespeichert', { 
+          toast.success('Auto-saved', { 
             duration: 2000,
             description: fieldLabel || sectionKey
           });
