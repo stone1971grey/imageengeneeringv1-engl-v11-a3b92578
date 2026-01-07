@@ -61,7 +61,7 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   const [savedCompetitors, setSavedCompetitors] = useState<SavedCompetitor[]>([]);
   const [activeTab, setActiveTab] = useState<string>('add-new');
   const [ownKeywords, setOwnKeywords] = useState<OwnKeyword[]>([]);
-  const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [filter, setFilter] = useState<'all' | 'pos1' | 'pos2to5' | 'pos6to10'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Get current competitor's keywords based on active tab
@@ -420,7 +420,11 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   // Filter and search keywords
   const filteredKeywords = useMemo(() => {
     return gapKeywords.filter(kw => {
-      if (filter !== 'all' && kw.opportunity !== filter) return false;
+      // Position-based filter
+      if (filter === 'pos1' && kw.competitorPosition !== 1) return false;
+      if (filter === 'pos2to5' && (kw.competitorPosition < 2 || kw.competitorPosition > 5)) return false;
+      if (filter === 'pos6to10' && (kw.competitorPosition < 6 || kw.competitorPosition > 10)) return false;
+      
       if (searchQuery) {
         return kw.keyword.toLowerCase().includes(searchQuery.toLowerCase()) ||
                kw.competitorUrl?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -429,13 +433,13 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     });
   }, [gapKeywords, filter, searchQuery]);
   
-  // Statistics
+  // Statistics - Position distribution
   const stats = useMemo(() => {
     return {
       total: gapKeywords.length,
-      high: gapKeywords.filter(k => k.opportunity === 'high').length,
-      medium: gapKeywords.filter(k => k.opportunity === 'medium').length,
-      low: gapKeywords.filter(k => k.opportunity === 'low').length,
+      pos1: gapKeywords.filter(k => k.competitorPosition === 1).length,
+      pos2to5: gapKeywords.filter(k => k.competitorPosition >= 2 && k.competitorPosition <= 5).length,
+      pos6to10: gapKeywords.filter(k => k.competitorPosition >= 6 && k.competitorPosition <= 10).length,
       totalTraffic: gapKeywords.reduce((sum, k) => sum + k.traffic, 0)
     };
   }, [gapKeywords]);
@@ -667,27 +671,27 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                       </div>
                     </div>
                     
-                    {/* Statistics */}
+                    {/* Statistics - Position Distribution */}
                     <div className="grid grid-cols-5 gap-3">
                       <Card className="p-3 bg-muted/20 text-center">
                         <div className="text-2xl font-bold text-[#00a1ff]">{stats.total}</div>
-                        <div className="text-xs text-muted-foreground">Total Gaps</div>
+                        <div className="text-xs text-muted-foreground">Total Keywords</div>
                       </Card>
-                      <Card className="p-3 bg-green-500/10 text-center cursor-pointer hover:bg-green-500/20 transition-colors" onClick={() => setFilter('high')}>
-                        <div className="text-2xl font-bold text-green-400">{stats.high}</div>
-                        <div className="text-xs text-muted-foreground">High Priority</div>
+                      <Card className="p-3 bg-green-500/10 text-center">
+                        <div className="text-2xl font-bold text-green-400">{stats.pos1}</div>
+                        <div className="text-xs text-muted-foreground">Position 1</div>
                       </Card>
-                      <Card className="p-3 bg-yellow-500/10 text-center cursor-pointer hover:bg-yellow-500/20 transition-colors" onClick={() => setFilter('medium')}>
-                        <div className="text-2xl font-bold text-yellow-400">{stats.medium}</div>
-                        <div className="text-xs text-muted-foreground">Medium</div>
+                      <Card className="p-3 bg-yellow-500/10 text-center">
+                        <div className="text-2xl font-bold text-yellow-400">{stats.pos2to5}</div>
+                        <div className="text-xs text-muted-foreground">Position 2-5</div>
                       </Card>
-                      <Card className="p-3 bg-muted/20 text-center cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setFilter('low')}>
-                        <div className="text-2xl font-bold text-gray-400">{stats.low}</div>
-                        <div className="text-xs text-muted-foreground">Low</div>
+                      <Card className="p-3 bg-orange-500/10 text-center">
+                        <div className="text-2xl font-bold text-orange-400">{stats.pos6to10}</div>
+                        <div className="text-xs text-muted-foreground">Position 6-10</div>
                       </Card>
                       <Card className="p-3 bg-muted/20 text-center">
                         <div className="text-2xl font-bold text-foreground">{stats.totalTraffic.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">Est. Traffic</div>
+                        <div className="text-xs text-muted-foreground">Est. Traffic (Σ)</div>
                       </Card>
                     </div>
                     
@@ -703,15 +707,15 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                         />
                       </div>
                       <Select value={filter} onValueChange={(v) => setFilter(v as any)}>
-                        <SelectTrigger className="w-[150px]">
+                        <SelectTrigger className="w-[180px]">
                           <Filter className="h-4 w-4 mr-2" />
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All ({stats.total})</SelectItem>
-                          <SelectItem value="high">High ({stats.high})</SelectItem>
-                          <SelectItem value="medium">Medium ({stats.medium})</SelectItem>
-                          <SelectItem value="low">Low ({stats.low})</SelectItem>
+                          <SelectItem value="pos1">Position 1 ({stats.pos1})</SelectItem>
+                          <SelectItem value="pos2to5">Position 2-5 ({stats.pos2to5})</SelectItem>
+                          <SelectItem value="pos6to10">Position 6-10 ({stats.pos6to10})</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
