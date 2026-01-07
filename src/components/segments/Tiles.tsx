@@ -372,14 +372,14 @@ const Tiles: React.FC<TilesProps> = ({
                   {isEditing ? (
                     // Edit mode: Editable image or icon with selector
                     hasImage ? (
-                      <div className="w-full max-h-[200px] overflow-hidden flex-shrink-0">
+                      <div className="w-full h-[200px] overflow-hidden flex-shrink-0">
                         <EditableImage
                           src={tile.imageUrl || ''}
                           alt={tile.metadata?.altText || tile.title}
                           sectionKey={`${segmentKey}-tile-${idx}-image`}
                           pageSlug={pageSlug}
                           language={language}
-                          className="w-full h-full max-h-[200px] object-cover"
+                          className="w-full h-[200px] object-cover"
                           onUpdate={() => {
                             setHasChanges(true);
                             onContentUpdate?.();
@@ -431,11 +431,11 @@ const Tiles: React.FC<TilesProps> = ({
                   ) : (
                     // View mode
                     hasImage ? (
-                      <div className="w-full max-h-[200px] overflow-hidden flex-shrink-0">
+                      <div className="w-full h-[200px] overflow-hidden flex-shrink-0">
                         <img 
                           src={tile.imageUrl} 
                           alt={tile.metadata?.altText || tile.title}
-                          className="w-full h-full max-h-[200px] object-cover hover:scale-105 transition-transform duration-300"
+                          className="w-full h-[200px] object-cover hover:scale-105 transition-transform duration-300"
                         />
                       </div>
                     ) : hasIcon && Icon ? (
