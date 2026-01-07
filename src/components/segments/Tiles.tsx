@@ -379,7 +379,8 @@ const Tiles: React.FC<TilesProps> = ({
                           sectionKey={`${segmentKey}-tile-${idx}-image`}
                           pageSlug={pageSlug}
                           language={language}
-                          className="w-full h-[200px] object-cover"
+                          className="w-full h-[200px]"
+                          imgClassName="w-full h-[200px] object-cover"
                           onUpdate={() => {
                             setHasChanges(true);
                             onContentUpdate?.();

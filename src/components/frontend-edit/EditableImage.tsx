@@ -201,7 +201,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   if (!editContext?.isEditMode) {
     return (
       <div className={className}>
-        <img src={src} alt={alt} className={imgClassName} />
+        <img src={src} alt={alt} className={cn("w-full h-full object-cover", imgClassName)} />
       </div>
     );
   }
