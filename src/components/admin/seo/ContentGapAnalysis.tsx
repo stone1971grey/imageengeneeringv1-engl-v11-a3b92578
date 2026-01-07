@@ -5,11 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  ChevronDown, Loader2, Target, TrendingUp, Search, AlertCircle, 
-  CheckCircle2, ExternalLink, Filter, Sparkles, Plus, RefreshCw, X, Trash2
+  Loader2, Target, Search, AlertCircle, Sparkles,
+  CheckCircle2, ExternalLink, Filter, Plus, RefreshCw, X, Trash2
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,11 +52,6 @@ interface SavedCompetitor {
 }
 
 export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapAnalysisProps) => {
-  const [isOpen, setIsOpen] = useState(() => {
-    const cached = localStorage.getItem('seo-content-gap-open');
-    return cached !== null ? cached === 'true' : false;
-  });
-  
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCompetitors, setIsLoadingCompetitors] = useState(false);
   const [isLoadingSaved, setIsLoadingSaved] = useState(false);
@@ -78,11 +72,6 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   const gapKeywords = useMemo(() => {
     return currentCompetitor?.keywords || [];
   }, [currentCompetitor]);
-  
-  // Persist open state
-  useEffect(() => {
-    localStorage.setItem('seo-content-gap-open', String(isOpen));
-  }, [isOpen]);
   
   // Load saved competitors from database
   const loadSavedCompetitors = async () => {
@@ -188,15 +177,15 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     }
   };
   
-  // Load data on open
+  // Load data on mount
   useEffect(() => {
-    if (isOpen && domain) {
+    if (domain) {
       loadSavedCompetitors();
       if (sistrixCompetitors.length === 0) {
         loadSistrixCompetitors();
       }
     }
-  }, [isOpen, domain]);
+  }, [domain]);
   
   // Combine SISTRIX suggestions with passed competitors (excluding already saved ones)
   const allCompetitors = useMemo(() => {
@@ -463,30 +452,18 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   };
   
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden bg-gradient-to-br from-[#00a1ff]/5 to-transparent">
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-muted/30 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
-              <Target className="h-4 w-4 text-white" />
-            </div>
-            <div className="text-left">
-              <span className="font-semibold text-foreground">Content Gap Analysis</span>
-              <p className="text-xs text-muted-foreground">Find keyword opportunities from competitors</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {savedCompetitors.length > 0 && (
-              <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30">
-                {savedCompetitors.length} Competitor{savedCompetitors.length !== 1 ? 's' : ''}
-              </Badge>
-            )}
-            <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </div>
-        </CollapsibleTrigger>
-        
-        <CollapsibleContent>
-          <div className="p-4 pt-0 space-y-4">
+    <div className="space-y-4">
+      {/* Header with count */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Find keyword opportunities from competitors
+        </p>
+        {savedCompetitors.length > 0 && (
+          <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] border-[#00a1ff]/30">
+            {savedCompetitors.length} Competitor{savedCompetitors.length !== 1 ? 's' : ''}
+          </Badge>
+        )}
+      </div>
             {/* Loading State */}
             {isLoadingSaved ? (
               <div className="flex items-center justify-center py-8">
@@ -815,16 +792,13 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
               </Tabs>
             )}
             
-            {/* Empty State for no saved competitors */}
-            {!isLoadingSaved && savedCompetitors.length === 0 && activeTab === 'add-new' && (
-              <div className="text-center py-4 text-muted-foreground">
-                <p className="text-sm">Add your first competitor above to start analyzing content gaps</p>
-              </div>
-            )}
-          </div>
-        </CollapsibleContent>
-      </div>
-    </Collapsible>
+      {/* Empty State for no saved competitors */}
+      {!isLoadingSaved && savedCompetitors.length === 0 && activeTab === 'add-new' && (
+        <div className="text-center py-4 text-muted-foreground">
+          <p className="text-sm">Add your first competitor above to start analyzing content gaps</p>
+        </div>
+      )}
+    </div>
   );
 };
 
