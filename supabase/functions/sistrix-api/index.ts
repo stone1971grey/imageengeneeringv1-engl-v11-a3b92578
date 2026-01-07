@@ -285,7 +285,7 @@ serve(async (req) => {
         competitorParams.append('country', country);
         competitorParams.append('mobile', 'false');
         competitorParams.append('to_pos', '10'); // Positions 1-10
-        competitorParams.append('limit', '100'); // Up to 100 keywords
+        competitorParams.append('limit', '250'); // Up to 250 keywords
         
         const competitorUrl = `${SISTRIX_BASE_URL}/keyword.domain.seo?${competitorParams.toString()}`;
         console.log(`[Content Gap] API URL: ${competitorUrl.replace(SISTRIX_API_KEY, 'HIDDEN')}`);
