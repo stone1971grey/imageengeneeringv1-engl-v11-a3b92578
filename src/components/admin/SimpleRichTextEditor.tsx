@@ -1,7 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
-import { Bold, List, Link as LinkIcon } from 'lucide-react';
+import Underline from '@tiptap/extension-underline';
+import { Bold, Italic, UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useCallback } from 'react';
 
@@ -39,6 +40,7 @@ export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey 
           class: 'text-blue-400 underline',
         },
       }),
+      Underline,
     ],
     content: value || '',
     onUpdate: ({ editor }) => {
@@ -98,11 +100,41 @@ export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey 
           type="button"
           variant="ghost"
           size="sm"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`h-8 w-8 p-0 ${editor.isActive('italic') ? 'bg-gray-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-600'}`}
+          title="Kursiv (Ctrl+I)"
+        >
+          <Italic className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`h-8 w-8 p-0 ${editor.isActive('underline') ? 'bg-gray-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-600'}`}
+          title="Unterstrichen (Ctrl+U)"
+        >
+          <UnderlineIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`h-8 w-8 p-0 ${editor.isActive('bulletList') ? 'bg-gray-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-600'}`}
           title="Aufzählung"
         >
           <List className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`h-8 w-8 p-0 ${editor.isActive('orderedList') ? 'bg-gray-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-600'}`}
+          title="Nummerierte Liste"
+        >
+          <ListOrdered className="h-4 w-4" />
         </Button>
         <Button
           type="button"
