@@ -160,16 +160,25 @@ const Tiles: React.FC<TilesProps> = ({
   // ========= KERNFUNKTION: Sofortiges Speichern =========
   // Diese Funktion MUSS zuerst definiert werden, da sie von anderen Funktionen aufgerufen wird
   const performAutoSave = useCallback(async (): Promise<boolean> => {
+    // KRITISCH: Prüfe ob alle notwendigen Props vorhanden sind
+    if (!pageSlug || !segmentKey) {
+      console.error('[Tiles] ❌ KRITISCH: Fehlende Props!', { pageSlug, segmentKey, language });
+      toast.error('Auto-Save fehlgeschlagen: Fehlende Segment-Konfiguration');
+      return false;
+    }
+    
     if (saveInProgressRef.current) {
       console.log('[Tiles] Save bereits aktiv, überspringe...');
       return false;
     }
     
     saveInProgressRef.current = true;
-    console.log('[Tiles] SPEICHERE...', { 
-      items: localItemsRef.current.length, 
-      columns: localColumnsRef.current,
-      segmentKey 
+    console.log('[Tiles] 🔄 SPEICHERE...', { 
+      pageSlug,
+      segmentKey,
+      language,
+      itemCount: localItemsRef.current.length, 
+      columns: localColumnsRef.current
     });
     
     try {
@@ -194,13 +203,34 @@ const Tiles: React.FC<TilesProps> = ({
         return false;
       }
 
+      // Debug: Zeige alle Segmente
+      console.log('[Tiles] Geladene Segmente:', segments.map(s => ({
+        id: s.id,
+        segment_key: s.segment_key,
+        type: s.type
+      })));
+      
       const segmentIndex = segments.findIndex((seg: any) => {
-        const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
-        return segId === segmentKey;
+        // Prüfe alle möglichen ID-Felder
+        const possibleIds = [
+          String(seg.id || ''),
+          String(seg.segmentId || ''),
+          String(seg.segment_id || ''),
+          String(seg.segment_key || '')
+        ];
+        const match = possibleIds.includes(segmentKey);
+        if (match) {
+          console.log('[Tiles] ✅ Segment gefunden:', { searchKey: segmentKey, matchedIn: possibleIds });
+        }
+        return match;
       });
 
       if (segmentIndex === -1) {
-        console.error('[Tiles] Segment nicht gefunden. Suche nach:', segmentKey, 'Verfügbare IDs:', segments.map(s => s.id));
+        console.error('[Tiles] ❌ Segment nicht gefunden!', { 
+          gesucht: segmentKey, 
+          verfuegbar: segments.map(s => ({ id: s.id, segment_key: s.segment_key, type: s.type }))
+        });
+        toast.error(`Segment ${segmentKey} nicht gefunden`);
         return false;
       }
 
@@ -213,24 +243,42 @@ const Tiles: React.FC<TilesProps> = ({
       segments[segmentIndex].data.items = localItemsRef.current;
       segments[segmentIndex].data.columns = localColumnsRef.current;
 
-      console.log('[Tiles] Speichere Segment-Daten:', {
-        index: segmentIndex,
+      // Debug: Zeige was gespeichert wird
+      const dataToSave = segments[segmentIndex].data;
+      console.log('[Tiles] 📝 Speichere Daten:', {
+        segmentIndex,
+        dataToSave: JSON.stringify(dataToSave).substring(0, 200) + '...',
         itemCount: localItemsRef.current.length,
         columns: localColumnsRef.current
       });
 
       const { data: { user } } = await supabase.auth.getUser();
-      const { error: updateError } = await supabase
+      
+      if (!user) {
+        console.error('[Tiles] ❌ Kein User eingeloggt!');
+        toast.error('Nicht eingeloggt - bitte neu anmelden');
+        return false;
+      }
+      
+      const newContentValue = JSON.stringify(segments);
+      console.log('[Tiles] Sende Update an Supabase...', {
+        rowId: pageSegmentsData.id,
+        contentLength: newContentValue.length,
+        userId: user.id
+      });
+      
+      const { error: updateError, data: updateData } = await supabase
         .from('page_content')
         .update({
-          content_value: JSON.stringify(segments),
+          content_value: newContentValue,
           updated_at: new Date().toISOString(),
-          updated_by: user?.id
+          updated_by: user.id
         })
-        .eq('id', pageSegmentsData.id);
+        .eq('id', pageSegmentsData.id)
+        .select();
 
       if (!updateError) {
-        console.log('[Tiles] ✅ GESPEICHERT');
+        console.log('[Tiles] ✅ ERFOLGREICH GESPEICHERT!', { updateData });
         toast.success('Gespeichert', { duration: 1500 });
         
         // KRITISCH: Setze Flag um Props-Überschreibung zu verhindern
@@ -243,7 +291,8 @@ const Tiles: React.FC<TilesProps> = ({
         setHasChanges(false);
         return true;
       } else {
-        console.error('[Tiles] Update-Fehler:', updateError);
+        console.error('[Tiles] ❌ Update-Fehler:', updateError);
+        toast.error(`Speichern fehlgeschlagen: ${updateError.message}`);
       }
       return false;
     } catch (e) {
