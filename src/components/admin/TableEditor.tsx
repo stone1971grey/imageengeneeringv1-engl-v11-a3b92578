@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,6 +25,77 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
+  
+  // Auto-Save Refs
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleRef = useRef(title);
+  const subtextRef = useRef(subtext);
+  const headersRef = useRef(headers);
+  const rowsRef = useRef(rows);
+  
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { subtextRef.current = subtext; }, [subtext]);
+  useEffect(() => { headersRef.current = headers; }, [headers]);
+  useEffect(() => { rowsRef.current = rows; }, [rows]);
+  
+  // Auto-Save Funktion
+  const performAutoSave = async () => {
+    console.log('[TableEditor] 🔄 Auto-Save startet...');
+    try {
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (!existingData) return;
+      
+      let segments = JSON.parse(existingData.content_value || '[]');
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+      
+      if (segmentIndex === -1) return;
+      
+      segments[segmentIndex].data = {
+        title: titleRef.current,
+        subtext: subtextRef.current,
+        headers: headersRef.current,
+        rows: rowsRef.current
+      };
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq("id", existingData.id);
+      
+      console.log('[TableEditor] ✅ Auto-Save erfolgreich');
+      toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+    } catch (error) {
+      console.error('[TableEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  };
+  
+  const triggerAutoSave = () => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(performAutoSave, 1000);
+  };
+  
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, segmentId, language]);
 
   useEffect(() => {
     loadContent();
@@ -224,8 +295,14 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
   };
 
   const addColumn = () => {
-    setHeaders([...headers, `Column ${headers.length + 1}`]);
-    setRows(rows.map(row => [...row, '']));
+    const newHeaders = [...headers, `Column ${headers.length + 1}`];
+    const newRows = rows.map(row => [...row, '']);
+    setHeaders(newHeaders);
+    setRows(newRows);
+    headersRef.current = newHeaders;
+    rowsRef.current = newRows;
+    toast.info('➕ Spalte hinzugefügt', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const removeColumn = (columnIndex: number) => {
@@ -233,18 +310,29 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
       toast.error('Table must have at least one column');
       return;
     }
-    setHeaders(headers.filter((_, i) => i !== columnIndex));
-    setRows(rows.map(row => row.filter((_, i) => i !== columnIndex)));
+    const newHeaders = headers.filter((_, i) => i !== columnIndex);
+    const newRows = rows.map(row => row.filter((_, i) => i !== columnIndex));
+    setHeaders(newHeaders);
+    setRows(newRows);
+    headersRef.current = newHeaders;
+    rowsRef.current = newRows;
+    triggerAutoSave();
   };
 
   const updateHeader = (index: number, value: string) => {
     const newHeaders = [...headers];
     newHeaders[index] = value;
     setHeaders(newHeaders);
+    headersRef.current = newHeaders;
+    triggerAutoSave();
   };
 
   const addRow = () => {
-    setRows([...rows, Array(headers.length).fill('')]);
+    const newRows = [...rows, Array(headers.length).fill('')];
+    setRows(newRows);
+    rowsRef.current = newRows;
+    toast.info('➕ Zeile hinzugefügt', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const removeRow = (rowIndex: number) => {
@@ -252,7 +340,10 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
       toast.error('Table must have at least one row');
       return;
     }
-    setRows(rows.filter((_, i) => i !== rowIndex));
+    const newRows = rows.filter((_, i) => i !== rowIndex);
+    setRows(newRows);
+    rowsRef.current = newRows;
+    triggerAutoSave();
   };
 
   const updateCell = (rowIndex: number, cellIndex: number, value: string) => {
@@ -260,6 +351,8 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
     newRows[rowIndex] = [...newRows[rowIndex]];
     newRows[rowIndex][cellIndex] = value;
     setRows(newRows);
+    rowsRef.current = newRows;
+    triggerAutoSave();
   };
 
   if (isLoading) {
@@ -292,7 +385,11 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                titleRef.current = e.target.value;
+                triggerAutoSave();
+              }}
               placeholder="e.g., Technical Specifications"
               className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-xl text-white placeholder:text-gray-400 h-12"
             />
@@ -303,7 +400,11 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
             <Textarea
               id="subtext"
               value={subtext}
-              onChange={(e) => setSubtext(e.target.value)}
+              onChange={(e) => {
+                setSubtext(e.target.value);
+                subtextRef.current = e.target.value;
+                triggerAutoSave();
+              }}
               placeholder="Optional description text below the title"
               rows={2}
               className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-white placeholder:text-gray-400"

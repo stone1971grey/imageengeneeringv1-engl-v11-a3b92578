@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,92 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
   const [uploading, setUploading] = useState(false);
+  
+  // Auto-Save Refs
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleRef = useRef(title);
+  const subtextRef = useRef(subtext);
+  const layoutRef = useRef(layout);
+  const heroImageUrlRef = useRef(heroImageUrl);
+  const heroImageMetadataRef = useRef(heroImageMetadata);
+  const itemsRef = useRef(items);
+  
+  // Keep refs in sync
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { subtextRef.current = subtext; }, [subtext]);
+  useEffect(() => { layoutRef.current = layout; }, [layout]);
+  useEffect(() => { heroImageUrlRef.current = heroImageUrl; }, [heroImageUrl]);
+  useEffect(() => { heroImageMetadataRef.current = heroImageMetadata; }, [heroImageMetadata]);
+  useEffect(() => { itemsRef.current = items; }, [items]);
+  
+  // Auto-Save Funktion
+  const performAutoSave = async () => {
+    console.log('[ImageTextEditor] 🔄 Auto-Save startet...');
+    try {
+      const { data: existingData, error: loadError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (loadError || !existingData) {
+        console.error('[ImageTextEditor] Keine page_segments gefunden');
+        return;
+      }
+      
+      let segments = JSON.parse(existingData.content_value || '[]');
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+      
+      if (segmentIndex === -1) {
+        console.error('[ImageTextEditor] Segment nicht gefunden:', segmentId);
+        return;
+      }
+      
+      segments[segmentIndex].data = {
+        ...segments[segmentIndex].data,
+        title: titleRef.current,
+        subtext: subtextRef.current,
+        layout: layoutRef.current,
+        heroImageUrl: heroImageUrlRef.current,
+        heroImageMetadata: heroImageMetadataRef.current,
+        items: itemsRef.current
+      };
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq("id", existingData.id);
+      
+      console.log('[ImageTextEditor] ✅ Auto-Save erfolgreich');
+      toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+    } catch (error) {
+      console.error('[ImageTextEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  };
+  
+  const triggerAutoSave = () => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(performAutoSave, 1000);
+  };
+  
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, segmentId, language]);
 
   useEffect(() => {
     loadContent();
@@ -490,21 +576,31 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
   };
 
   const handleAddItem = () => {
-    setItems([...items, { 
+    const newItems = [...items, { 
       title: 'New Item', 
       description: 'Add description here...',
       imageUrl: ''
-    }]);
+    }];
+    setItems(newItems);
+    itemsRef.current = newItems;
+    toast.info('🔄 Item hinzugefügt...', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const handleDeleteItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    itemsRef.current = newItems;
+    toast.info('🗑️ Item gelöscht', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const handleItemChange = (index: number, field: keyof ImageTextItem, value: any) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     setItems(newItems);
+    itemsRef.current = newItems;
+    triggerAutoSave();
   };
 
   const formatFileSize = (kb: number) => {

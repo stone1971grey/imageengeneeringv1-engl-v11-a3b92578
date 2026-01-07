@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +29,74 @@ const FAQEditor = ({ pageSlug, segmentId, language, onSave }: FAQEditorProps) =>
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
+  
+  // Auto-Save Refs
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleRef = useRef(title);
+  const subtextRef = useRef(subtext);
+  const itemsRef = useRef(items);
+  
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { subtextRef.current = subtext; }, [subtext]);
+  useEffect(() => { itemsRef.current = items; }, [items]);
+  
+  // Auto-Save Funktion
+  const performAutoSave = async () => {
+    console.log('[FAQEditor] 🔄 Auto-Save startet...');
+    try {
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (!existingData) return;
+      
+      let segments = JSON.parse(existingData.content_value || '[]');
+      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+      
+      if (segmentIndex === -1) return;
+      
+      segments[segmentIndex].data = {
+        title: titleRef.current,
+        subtext: subtextRef.current,
+        items: itemsRef.current
+      };
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq("id", existingData.id);
+      
+      console.log('[FAQEditor] ✅ Auto-Save erfolgreich');
+      toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+    } catch (error) {
+      console.error('[FAQEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  };
+  
+  const triggerAutoSave = () => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(performAutoSave, 1000);
+  };
+  
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, segmentId, language]);
 
   useEffect(() => {
     loadContent();
@@ -214,7 +282,11 @@ const FAQEditor = ({ pageSlug, segmentId, language, onSave }: FAQEditorProps) =>
   };
 
   const addItem = () => {
-    setItems([...items, { question: '', answer: '' }]);
+    const newItems = [...items, { question: '', answer: '' }];
+    setItems(newItems);
+    itemsRef.current = newItems;
+    toast.info('➕ FAQ hinzugefügt', { duration: 1500 });
+    triggerAutoSave();
   };
 
   const removeItem = (index: number) => {
@@ -222,13 +294,18 @@ const FAQEditor = ({ pageSlug, segmentId, language, onSave }: FAQEditorProps) =>
       toast.error('FAQ must have at least one item');
       return;
     }
-    setItems(items.filter((_, i) => i !== index));
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    itemsRef.current = newItems;
+    triggerAutoSave();
   };
 
   const updateItem = (index: number, field: 'question' | 'answer', value: string) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     setItems(newItems);
+    itemsRef.current = newItems;
+    triggerAutoSave();
   };
 
   if (isLoading) {
