@@ -34,7 +34,10 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedValue, setLastSavedValue] = useState(value);
   const containerRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const saveInProgressRef = useRef(false);
 
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
@@ -74,8 +77,70 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     if (editor && value !== editor.getHTML() && !isEditing) {
       editor.commands.setContent(value || '');
       setEditValue(value);
+      setLastSavedValue(value);
     }
   }, [value, editor, isEditing]);
+
+  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    autoSaveTimerRef.current = setInterval(async () => {
+      if (editValue !== lastSavedValue && !saveInProgressRef.current) {
+        console.log('[EditableRichText] Auto-saving...');
+        saveInProgressRef.current = true;
+        
+        try {
+          const success = await performSave(editValue, true);
+          if (success) {
+            setLastSavedValue(editValue);
+            toast.success('Auto-saved', { 
+              duration: 2000,
+              description: fieldLabel || 'Rich Text'
+            });
+          }
+        } catch (error) {
+          console.error('[EditableRichText] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 10000);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, editValue, lastSavedValue, fieldLabel]);
+
+  // BEFOREUNLOAD: Warn on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isEditing && editValue !== lastSavedValue) {
+        console.log('[EditableRichText] Attempting save on page leave');
+        performSave(editValue, true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    if (isEditing) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isEditing, editValue, lastSavedValue]);
 
   // Update editor editable state
   useEffect(() => {
@@ -121,21 +186,13 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }, [editor]);
 
-  const handleSave = useCallback(async () => {
-    if (editValue === value) {
-      setIsEditing(false);
-      return;
-    }
-
-    setIsSaving(true);
-
+  // Core save function - reusable for manual save and auto-save
+  const performSave = useCallback(async (valueToSave: string, isAutoSave: boolean = false): Promise<boolean> => {
     try {
       const lastDashIndex = sectionKey.lastIndexOf('-');
       if (lastDashIndex === -1) {
         console.error('[EditableRichText] Invalid sectionKey format:', sectionKey);
-        toast.error('Error saving');
-        setIsSaving(false);
-        return;
+        return false;
       }
       
       const fieldName = sectionKey.substring(lastDashIndex + 1);
@@ -143,7 +200,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableRichText] Saving field:', fieldName, 'for segmentKey:', segmentKey, 'segmentId:', segmentId);
+      console.log('[EditableRichText]', isAutoSave ? 'Auto-saving' : 'Saving', 'field:', fieldName);
 
       // Try to find page_segments JSON
       let { data: pageSegmentsData, error: loadError } = await supabase
@@ -156,9 +213,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
 
       if (loadError) {
         console.error('[EditableRichText] Error loading page_segments:', loadError);
-        toast.error('Error loading content');
-        setIsSaving(false);
-        return;
+        return false;
       }
 
       if (pageSegmentsData) {
@@ -167,9 +222,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           segments = JSON.parse(pageSegmentsData.content_value || '[]');
         } catch (e) {
           console.error('[EditableRichText] Error parsing page_segments:', e);
-          toast.error('Error parsing content');
-          setIsSaving(false);
-          return;
+          return false;
         }
 
         const segmentIndex = segments.findIndex((seg: any) => {
@@ -179,15 +232,13 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
 
         if (segmentIndex === -1) {
           console.error('[EditableRichText] Segment not found');
-          toast.error('Segment not found');
-          setIsSaving(false);
-          return;
+          return false;
         }
 
         if (!segments[segmentIndex].data) {
           segments[segmentIndex].data = {};
         }
-        segments[segmentIndex].data[fieldName] = editValue;
+        segments[segmentIndex].data[fieldName] = valueToSave;
 
         const { error: updateError } = await supabase
           .from('page_content')
@@ -199,13 +250,11 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
 
         if (updateError) {
           console.error('[EditableRichText] Error updating page_segments:', updateError);
-          toast.error('Error saving');
-          setIsSaving(false);
-          return;
+          return false;
         }
       } else {
         // Fallback to individual segment
-        let { data: segmentData, error: segmentError } = await supabase
+        let { data: segmentData } = await supabase
           .from('page_content')
           .select('id, content_value')
           .eq('page_slug', pageSlug)
@@ -225,21 +274,18 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         }
         
         if (!segmentData) {
-          toast.error('Content not found');
-          setIsSaving(false);
-          return;
+          console.error('[EditableRichText] Content not found');
+          return false;
         }
         
         let contentObj: any = {};
         try {
           contentObj = JSON.parse(segmentData.content_value || '{}');
         } catch (e) {
-          toast.error('Error parsing content');
-          setIsSaving(false);
-          return;
+          return false;
         }
         
-        contentObj[fieldName] = editValue;
+        contentObj[fieldName] = valueToSave;
         
         const { error: updateError } = await supabase
           .from('page_content')
@@ -250,22 +296,41 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           .eq('id', segmentData.id);
         
         if (updateError) {
-          toast.error('Error saving');
-          setIsSaving(false);
-          return;
+          console.error('[EditableRichText] Error updating segment:', updateError);
+          return false;
         }
       }
 
-      toast.success('Saved!');
-      onUpdate?.(editValue);
-      setIsEditing(false);
+      return true;
     } catch (error) {
       console.error('[EditableRichText] Save error:', error);
-      toast.error('Error saving');
+      return false;
+    }
+  }, [pageSlug, sectionKey, language]);
+
+  // Manual save handler
+  const handleSave = useCallback(async () => {
+    if (editValue === value) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const success = await performSave(editValue, false);
+      if (success) {
+        toast.success('Saved!');
+        setLastSavedValue(editValue);
+        onUpdate?.(editValue);
+        setIsEditing(false);
+      } else {
+        toast.error('Error saving');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [editValue, value, pageSlug, sectionKey, language, onUpdate]);
+  }, [editValue, value, performSave, onUpdate]);
 
   const handleCancel = useCallback(() => {
     if (editor) {

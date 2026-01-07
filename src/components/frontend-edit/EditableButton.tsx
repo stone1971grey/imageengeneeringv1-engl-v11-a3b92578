@@ -61,8 +61,13 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
   const [editLink, setEditLink] = useState(link);
   const [editStyle, setEditStyle] = useState(normalizeStyle(initialButtonStyle));
   const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedText, setLastSavedText] = useState(text);
+  const [lastSavedLink, setLastSavedLink] = useState(link);
+  const [lastSavedStyle, setLastSavedStyle] = useState(normalizeStyle(initialButtonStyle));
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const saveInProgressRef = useRef(false);
 
   const isSegmentEditing = segmentEdit?.isSegmentEditing || (editContext?.isEditMode && editContext?.canEdit) || false;
 
@@ -71,6 +76,9 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     setEditText(text);
     setEditLink(link);
     setEditStyle(normalizeStyle(initialButtonStyle));
+    setLastSavedText(text);
+    setLastSavedLink(link);
+    setLastSavedStyle(normalizeStyle(initialButtonStyle));
   }, [text, link, initialButtonStyle]);
 
   // Focus input when editing starts
@@ -98,6 +106,74 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     };
   }, [isEditing]);
 
+  // Check if values changed since last save
+  const hasChanges = useCallback(() => {
+    return editText !== lastSavedText || editLink !== lastSavedLink || editStyle !== lastSavedStyle;
+  }, [editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
+
+  // AUTO-SAVE: Trigger save every 10 seconds while editing if value changed
+  useEffect(() => {
+    if (!isEditing) {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+      return;
+    }
+
+    autoSaveTimerRef.current = setInterval(async () => {
+      if (hasChanges() && !saveInProgressRef.current) {
+        console.log('[EditableButton] Auto-saving...');
+        saveInProgressRef.current = true;
+        
+        try {
+          const success = await performSave(true);
+          if (success) {
+            setLastSavedText(editText);
+            setLastSavedLink(editLink);
+            setLastSavedStyle(editStyle);
+            toast.success('Auto-saved', { 
+              duration: 2000,
+              description: 'Button'
+            });
+          }
+        } catch (error) {
+          console.error('[EditableButton] Auto-save error:', error);
+        } finally {
+          saveInProgressRef.current = false;
+        }
+      }
+    }, 10000);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearInterval(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
+  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
+
+  // BEFOREUNLOAD: Warn on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isEditing && hasChanges()) {
+        console.log('[EditableButton] Attempting save on page leave');
+        performSave(true);
+        e.preventDefault();
+        e.returnValue = 'Unsaved changes will be lost';
+        return e.returnValue;
+      }
+    };
+
+    if (isEditing) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isEditing, editText, editLink, editStyle, lastSavedText, lastSavedLink, lastSavedStyle]);
+
   // Get button style based on style value (matching ProductHeroGallery)
   const getComputedButtonStyle = (styleValue: string): React.CSSProperties => {
     const normalized = normalizeStyle(styleValue);
@@ -112,20 +188,14 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
     }
   };
 
-  const handleSave = useCallback(async () => {
-    if (editText === text && editLink === link && editStyle === normalizeStyle(initialButtonStyle)) {
-      setIsEditing(false);
-      return;
-    }
-
-    setIsSaving(true);
-
+  // Core save function - reusable for manual save and auto-save
+  const performSave = useCallback(async (isAutoSave: boolean = false): Promise<boolean> => {
     try {
       const segmentKey = sectionKey;
       const segmentKeyParts = segmentKey.split('-');
       const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
       
-      console.log('[EditableButton] Saving button for segmentKey:', segmentKey, 'segmentId:', segmentId);
+      console.log('[EditableButton]', isAutoSave ? 'Auto-saving' : 'Saving', 'button for segmentKey:', segmentKey);
 
       // Load page_segments JSON
       let { data: pageSegmentsData, error: loadError } = await supabase
@@ -138,9 +208,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
 
       if (loadError) {
         console.error('[EditableButton] Error loading page_segments:', loadError);
-        toast.error('Error loading content');
-        setIsSaving(false);
-        return;
+        return false;
       }
 
       if (pageSegmentsData) {
@@ -149,37 +217,29 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           segments = JSON.parse(pageSegmentsData.content_value || '[]');
         } catch (e) {
           console.error('[EditableButton] Error parsing page_segments:', e);
-          toast.error('Error parsing content');
-          setIsSaving(false);
-          return;
+          return false;
         }
 
-        // Find the segment by matching id
         const segmentIndex = segments.findIndex((seg: any) => {
           const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
           return segId === segmentId || segmentKey === `${seg.type}-${segId}`;
         });
 
         if (segmentIndex === -1) {
-          console.error('[EditableButton] Segment not found. segmentId:', segmentId, 'segmentKey:', segmentKey);
-          toast.error('Segment not found');
-          setIsSaving(false);
-          return;
+          console.error('[EditableButton] Segment not found');
+          return false;
         }
 
-        // Update fields
         if (!segments[segmentIndex].data) {
           segments[segmentIndex].data = {};
         }
         segments[segmentIndex].data[textFieldName] = editText;
         segments[segmentIndex].data[linkFieldName] = editLink;
         
-        // Save style if styleFieldName is provided
         if (styleFieldName) {
           segments[segmentIndex].data[styleFieldName] = editStyle;
         }
 
-        // Save the updated page_segments JSON
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
@@ -190,27 +250,45 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
 
         if (updateError) {
           console.error('[EditableButton] Error updating page_segments:', updateError);
-          toast.error('Error saving');
-          setIsSaving(false);
-          return;
+          return false;
         }
       } else {
         console.error('[EditableButton] page_segments not found');
-        toast.error('Content not found');
-        setIsSaving(false);
-        return;
+        return false;
       }
 
-      toast.success('Button saved!');
-      onUpdate?.();
-      setIsEditing(false);
+      return true;
     } catch (error) {
       console.error('[EditableButton] Save error:', error);
-      toast.error('Error saving');
+      return false;
+    }
+  }, [editText, editLink, editStyle, pageSlug, sectionKey, language, textFieldName, linkFieldName, styleFieldName]);
+
+  // Manual save handler
+  const handleSave = useCallback(async () => {
+    if (editText === text && editLink === link && editStyle === normalizeStyle(initialButtonStyle)) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const success = await performSave(false);
+      if (success) {
+        toast.success('Button saved!');
+        setLastSavedText(editText);
+        setLastSavedLink(editLink);
+        setLastSavedStyle(editStyle);
+        onUpdate?.();
+        setIsEditing(false);
+      } else {
+        toast.error('Error saving');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [editText, editLink, editStyle, text, link, initialButtonStyle, pageSlug, sectionKey, language, textFieldName, linkFieldName, styleFieldName, onUpdate]);
+  }, [editText, editLink, editStyle, text, link, initialButtonStyle, performSave, onUpdate]);
 
   const handleCancel = useCallback(() => {
     setEditText(text);
