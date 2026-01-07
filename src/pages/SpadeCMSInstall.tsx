@@ -8,6 +8,7 @@ import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Setting
 import { toast } from "sonner";
 import { PresetSelector } from "@/components/install/PresetSelector";
 import { ConfigDashboard, DataIsolationDashboard } from "@/components/admin/config";
+import { OnboardingWizard, TenantStatusOverview } from "@/components/admin/onboarding";
 
 // ============================================================================
 // SPADE CMS INSTALLATION - COMPLETE EXPORT FILES
@@ -1854,6 +1855,14 @@ const SpadeCMSInstall = () => {
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Checkliste
             </TabsTrigger>
+            <TabsTrigger value="wizard" className="data-[state=active]:bg-zinc-700">
+              <Zap className="h-4 w-4 mr-2" />
+              Wizard
+            </TabsTrigger>
+            <TabsTrigger value="status" className="data-[state=active]:bg-zinc-700">
+              <Shield className="h-4 w-4 mr-2" />
+              Status
+            </TabsTrigger>
           </TabsList>
 
           {/* PRESETS TAB - NEW */}
@@ -2202,6 +2211,16 @@ const SpadeCMSInstall = () => {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* WIZARD TAB - NEW */}
+          <TabsContent value="wizard" className="space-y-6">
+            <OnboardingWizard />
+          </TabsContent>
+
+          {/* STATUS TAB - NEW */}
+          <TabsContent value="status" className="space-y-6">
+            <TenantStatusOverview />
           </TabsContent>
         </Tabs>
 

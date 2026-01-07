@@ -201,10 +201,12 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Setup-Wizard im Dashboard', status: 'planned' },
-      { label: 'Automatische DB-Migration', status: 'planned' },
-      { label: 'Interaktive Checkliste', status: 'planned' },
-      { label: 'Tenant-Statusübersicht', status: 'planned' },
+      { label: 'Interaktiver Setup-Wizard', status: 'done' },
+      { label: 'Phasen-basierte Checkliste', status: 'done' },
+      { label: 'Fortschritts-Persistierung (localStorage)', status: 'done' },
+      { label: 'Tenant-Status-Übersicht', status: 'done' },
+      { label: 'Live-Systemprüfung', status: 'done' },
+      { label: 'Schnellzugriff-Aktionen', status: 'done' },
     ]
   },
   {
