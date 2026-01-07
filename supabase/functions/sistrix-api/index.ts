@@ -292,6 +292,12 @@ serve(async (req) => {
         const competitorResp = await fetch(competitorUrl);
         const competitorData = await competitorResp.json();
         
+        console.log(`[Content Gap] Raw SISTRIX response keys:`, Object.keys(competitorData || {}));
+        console.log(`[Content Gap] Answer length:`, competitorData?.answer?.length || 0);
+        if (competitorData?.answer?.[0]) {
+          console.log(`[Content Gap] First answer sample:`, JSON.stringify(competitorData.answer[0]).substring(0, 300));
+        }
+        
         if (!competitorResp.ok || competitorData.status === 'error') {
           console.error('[Content Gap] Competitor fetch error:', competitorData);
           return new Response(
@@ -300,7 +306,11 @@ serve(async (req) => {
           );
         }
         
-        const competitorKeywords = (competitorData?.answer || [])
+        // SISTRIX returns keyword data in different formats
+        const rawKeywords = competitorData?.answer || [];
+        console.log(`[Content Gap] Raw keywords count: ${rawKeywords.length}`);
+        
+        const competitorKeywords = rawKeywords
           .filter((item: any) => {
             const pos = parseInt(item.position) || 100;
             return pos <= 10; // Only top 10 positions
@@ -312,7 +322,7 @@ serve(async (req) => {
             competitorUrl: item.url || ''
           }));
         
-        console.log(`[Content Gap] Found ${competitorKeywords.length} top competitor keywords`);
+        console.log(`[Content Gap] After filtering (top 10): ${competitorKeywords.length} keywords`);
         
         // Return competitor keywords for frontend comparison with local data
         return new Response(
