@@ -4,11 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Loader2, Target, Search, AlertCircle, Sparkles,
-  CheckCircle2, ExternalLink, Filter, Plus, RefreshCw, X, Trash2
+  CheckCircle2, ExternalLink, Filter, Plus, RefreshCw, X, Trash2,
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,6 +64,13 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   const [ownKeywords, setOwnKeywords] = useState<OwnKeyword[]>([]);
   const [filter, setFilter] = useState<'all' | 'pos1' | 'pos2to5' | 'pos6to10'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(() => {
+    const cached = localStorage.getItem('content-gap-page-size');
+    return cached ? parseInt(cached) : 25;
+  });
   
   // Get current competitor's keywords based on active tab
   const currentCompetitor = useMemo(() => {
@@ -433,6 +441,24 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
     });
   }, [gapKeywords, filter, searchQuery]);
   
+  // Reset page when filter/search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchQuery, activeTab]);
+  
+  // Persist page size
+  useEffect(() => {
+    localStorage.setItem('content-gap-page-size', String(pageSize));
+  }, [pageSize]);
+  
+  // Paginated keywords
+  const paginatedKeywords = useMemo(() => {
+    const startIdx = (currentPage - 1) * pageSize;
+    return filteredKeywords.slice(startIdx, startIdx + pageSize);
+  }, [filteredKeywords, currentPage, pageSize]);
+  
+  const totalPages = Math.ceil(filteredKeywords.length / pageSize);
+  
   // Statistics - Position distribution
   const stats = useMemo(() => {
     return {
@@ -720,8 +746,8 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                       </Select>
                     </div>
                     
-                    {/* Keyword List - Enhanced with URL */}
-                    <ScrollArea className="h-[400px] rounded-lg border border-border">
+                    {/* Keyword List - Full height without scrolling */}
+                    <div className="rounded-lg border border-border">
                       <div className="p-2 space-y-2">
                         {/* Table Header */}
                         <div className="grid grid-cols-12 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border bg-muted/30 rounded-t-md">
@@ -731,7 +757,7 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                           <div className="col-span-7">Competitor URL</div>
                         </div>
                         
-                        {filteredKeywords.map((kw, idx) => (
+                        {paginatedKeywords.map((kw, idx) => (
                           <div 
                             key={`${kw.keyword}-${idx}`}
                             className="grid grid-cols-12 gap-2 items-center p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
@@ -783,14 +809,83 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
                           </div>
                         ))}
                         
-                        {filteredKeywords.length === 0 && (
+                        {paginatedKeywords.length === 0 && (
                           <div className="text-center py-8 text-muted-foreground">
                             <Target className="h-12 w-12 mx-auto mb-3 opacity-30" />
                             <p>No keywords match your filter</p>
                           </div>
                         )}
                       </div>
-                    </ScrollArea>
+                      
+                      {/* Pagination */}
+                      {filteredKeywords.length > pageSize && (
+                        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>Show</span>
+                            <Select 
+                              value={String(pageSize)} 
+                              onValueChange={(v) => {
+                                setPageSize(parseInt(v));
+                                setCurrentPage(1);
+                              }}
+                            >
+                              <SelectTrigger className="w-20 h-8">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="10">10</SelectItem>
+                                <SelectItem value="25">25</SelectItem>
+                                <SelectItem value="50">50</SelectItem>
+                                <SelectItem value="100">100</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <span>of {filteredKeywords.length}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentPage(1)}
+                              disabled={currentPage === 1}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ChevronsLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                              disabled={currentPage === 1}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <span className="px-3 text-sm">
+                              {currentPage} / {totalPages}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                              disabled={currentPage === totalPages}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCurrentPage(totalPages)}
+                              disabled={currentPage === totalPages}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ChevronsRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </TabsContent>
                 ))}
               </Tabs>

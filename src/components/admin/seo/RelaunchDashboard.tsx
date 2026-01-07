@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   ChevronDown, 
@@ -1633,40 +1633,10 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className="border border-[#00a1ff]/30 rounded-lg overflow-hidden bg-gradient-to-r from-[#00a1ff]/10 to-[#0066cc]/10">
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-[#00a1ff]/20 hover:bg-[#00a1ff]/30 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
-              <SistrixIcon className="h-4 w-4 text-white" />
-            </div>
-            <div className="text-left">
-              <h3 className="font-bold text-foreground">SEO Relaunch Dashboard</h3>
-              <p className="text-xs text-muted-foreground">
-                URL migration & redirect planning with SISTRIX data
-                {mappings.length > 0 && (
-                  <span className="ml-2 text-[#00a1ff]">
-                    • Showing data for: {country.toUpperCase()}
-                  </span>
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {stats.total > 0 && (
-              <div className="flex gap-2 text-xs">
-                <Badge variant="outline" className="border-amber-500/50 text-amber-400">{stats.pending} pending</Badge>
-                <Badge variant="outline" className="border-green-500/50 text-green-400">{stats.approved} approved</Badge>
-              </div>
-            )}
-            <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </div>
-        </CollapsibleTrigger>
-        
-        <CollapsibleContent>
-          <div className="p-4 space-y-4">
-            {/* Domain Display & Controls */}
-            <Card className="p-4 bg-muted/20 border-border space-y-4">
+    <TooltipProvider>
+      <div className="space-y-4">
+        {/* Domain Display & Controls */}
+        <Card className="p-4 bg-muted/20 border-border space-y-4">
               {/* Row 1: Domain, Country, Checkbox, API Buttons */}
               <div className="flex gap-4 items-end flex-wrap">
                 <div className="flex-1 min-w-[200px]">
@@ -1969,7 +1939,6 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
             )}
             
             {/* Mappings Table */}
-            <TooltipProvider>
             {paginatedMappings.length > 0 ? (
               <div className="border border-border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
@@ -2619,10 +2588,7 @@ export const RelaunchDashboard = ({ editorLanguage = 'en' }: RelaunchDashboardPr
                 <p className="text-muted-foreground">No results match your filter</p>
               </Card>
             )}
-            </TooltipProvider>
-          </div>
-        </CollapsibleContent>
       </div>
-    </Collapsible>
+    </TooltipProvider>
   );
 };
