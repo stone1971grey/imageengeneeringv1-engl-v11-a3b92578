@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ChevronDown, Loader2, Target, TrendingUp, Search, AlertCircle, 
-  CheckCircle2, ExternalLink, Filter, ArrowUpRight, Sparkles 
+  CheckCircle2, ExternalLink, Filter, ArrowUpRight, Sparkles, Plus, RefreshCw
 } from "lucide-react";
 import { SistrixIcon } from "@/components/icons/SistrixIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +36,12 @@ interface OwnKeyword {
   search_volume: number | null;
 }
 
+interface SistrixCompetitor {
+  domain: string;
+  visibility: number;
+  competition: number;
+}
+
 export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapAnalysisProps) => {
   const [isOpen, setIsOpen] = useState(() => {
     const cached = localStorage.getItem('seo-content-gap-open');
@@ -43,7 +49,10 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   });
   
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCompetitors, setIsLoadingCompetitors] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>('');
+  const [customCompetitor, setCustomCompetitor] = useState<string>('');
+  const [sistrixCompetitors, setSistrixCompetitors] = useState<SistrixCompetitor[]>([]);
   const [gapKeywords, setGapKeywords] = useState<GapKeyword[]>([]);
   const [ownKeywords, setOwnKeywords] = useState<OwnKeyword[]>([]);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
@@ -54,6 +63,93 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
   useEffect(() => {
     localStorage.setItem('seo-content-gap-open', String(isOpen));
   }, [isOpen]);
+  
+  // Load SISTRIX suggested competitors
+  const loadSistrixCompetitors = async () => {
+    if (!domain) return;
+    
+    setIsLoadingCompetitors(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('sistrix-api', {
+        body: { 
+          action: 'competitors.seo',
+          domain,
+          country
+        }
+      });
+      
+      if (error) throw error;
+      
+      const answer = data?.answer || [];
+      const competitorData = answer
+        .slice(0, 15) // Top 15 competitors
+        .map((item: any) => ({
+          domain: item.domain,
+          visibility: parseFloat(item.visibility) || 0,
+          competition: parseFloat(item.competition) || 0
+        }))
+        .filter((c: SistrixCompetitor) => c.domain && c.domain !== domain);
+      
+      setSistrixCompetitors(competitorData);
+      console.log(`[Content Gap] Loaded ${competitorData.length} SISTRIX competitors`);
+    } catch (e) {
+      console.error('[Content Gap] Error loading SISTRIX competitors:', e);
+      toast.error('Failed to load competitor suggestions');
+    } finally {
+      setIsLoadingCompetitors(false);
+    }
+  };
+  
+  // Load competitors on open
+  useEffect(() => {
+    if (isOpen && domain && sistrixCompetitors.length === 0) {
+      loadSistrixCompetitors();
+    }
+  }, [isOpen, domain]);
+  
+  // Combine SISTRIX suggestions with passed competitors (deduplicated)
+  const allCompetitors = useMemo(() => {
+    const seen = new Set<string>();
+    const result: { domain: string; visibilityIndex: number; source: 'sistrix' | 'passed' }[] = [];
+    
+    // Add SISTRIX suggestions first
+    sistrixCompetitors.forEach(c => {
+      if (!seen.has(c.domain)) {
+        seen.add(c.domain);
+        result.push({ domain: c.domain, visibilityIndex: c.visibility, source: 'sistrix' });
+      }
+    });
+    
+    // Add passed competitors
+    competitors.forEach(c => {
+      if (!seen.has(c.domain)) {
+        seen.add(c.domain);
+        result.push({ domain: c.domain, visibilityIndex: c.visibilityIndex, source: 'passed' });
+      }
+    });
+    
+    return result;
+  }, [sistrixCompetitors, competitors]);
+  
+  // Handle custom competitor add
+  const handleAddCustomCompetitor = () => {
+    if (!customCompetitor.trim()) return;
+    
+    // Clean up domain
+    let cleanDomain = customCompetitor.trim()
+      .replace(/^https?:\/\//, '')
+      .replace(/^www\./, '')
+      .replace(/\/.*$/, '');
+    
+    if (!cleanDomain.includes('.')) {
+      toast.error('Please enter a valid domain (e.g., example.com)');
+      return;
+    }
+    
+    setSelectedCompetitor(cleanDomain);
+    setCustomCompetitor('');
+    toast.success(`Custom competitor set: ${cleanDomain}`);
+  };
   
   // Load own keywords from relaunch_url_mappings (no API cost)
   const loadOwnKeywords = async () => {
@@ -224,47 +320,116 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
           <div className="p-4 pt-0 space-y-4">
             {/* Competitor Selection */}
             <Card className="p-4 bg-muted/20 border-border">
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    Select Competitor to Analyze
-                  </Label>
-                  {competitors.length > 0 ? (
+              <div className="space-y-4">
+                {/* SISTRIX Suggested Competitors */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <SistrixIcon className="h-4 w-4" />
+                      SISTRIX Competitor Suggestions
+                    </Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={loadSistrixCompetitors}
+                      disabled={isLoadingCompetitors}
+                      className="h-7 text-xs"
+                    >
+                      {isLoadingCompetitors ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <RefreshCw className="h-3 w-3 mr-1" />
+                      )}
+                      Refresh
+                    </Button>
+                  </div>
+                  
+                  {allCompetitors.length > 0 ? (
                     <Select value={selectedCompetitor} onValueChange={setSelectedCompetitor}>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Choose a competitor..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {competitors.map((comp) => (
+                        {allCompetitors.map((comp) => (
                           <SelectItem key={comp.domain} value={comp.domain}>
                             <div className="flex items-center gap-2">
                               <span>{comp.domain}</span>
                               <Badge variant="outline" className="text-xs">
                                 VI: {comp.visibilityIndex.toFixed(2)}
                               </Badge>
+                              {comp.source === 'sistrix' && (
+                                <Badge className="bg-[#00a1ff]/20 text-[#00a1ff] text-xs border-[#00a1ff]/30">
+                                  SISTRIX
+                                </Badge>
+                              )}
                             </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                  ) : isLoadingCompetitors ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading competitor suggestions...
+                    </div>
                   ) : (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md">
                       <AlertCircle className="h-4 w-4" />
-                      Load competitors first using the Competitors section above
+                      No competitors found. Use the custom URL field below.
                     </div>
                   )}
                 </div>
+                
+                {/* Custom Competitor Input */}
+                <div>
+                  <Label className="text-sm font-medium text-foreground mb-2 block">
+                    Or enter competitor URL manually
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="competitor-domain.com"
+                      value={customCompetitor}
+                      onChange={(e) => setCustomCompetitor(e.target.value)}
+                      className="flex-1 bg-background"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddCustomCompetitor();
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={handleAddCustomCompetitor}
+                      disabled={!customCompetitor.trim()}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Selected Competitor Display */}
+                {selectedCompetitor && (
+                  <div className="flex items-center gap-2 p-2 bg-[#00a1ff]/10 rounded-md border border-[#00a1ff]/30">
+                    <Target className="h-4 w-4 text-[#00a1ff]" />
+                    <span className="text-sm font-medium">Selected:</span>
+                    <Badge className="bg-[#00a1ff] text-white">{selectedCompetitor}</Badge>
+                  </div>
+                )}
+                
+                {/* Analyze Button */}
                 <Button
                   onClick={analyzeGap}
                   disabled={!selectedCompetitor || isLoading}
-                  className="h-10 bg-[#00a1ff] hover:bg-[#0088dd] text-white px-6"
+                  className="w-full h-10 bg-[#00a1ff] hover:bg-[#0088dd] text-white"
                 >
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : (
                     <Sparkles className="h-4 w-4 mr-2" />
                   )}
-                  Analyze Gap
+                  Analyze Content Gap
                 </Button>
               </div>
               
