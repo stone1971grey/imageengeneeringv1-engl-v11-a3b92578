@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -242,12 +242,10 @@ const NewsListSegmentEditorComponent = ({
 
       <div className="space-y-2">
         <Label htmlFor="description">Section Description</Label>
-        <Textarea
-          id="description"
+        <SimpleRichTextEditor
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(value) => setDescription(value)}
           placeholder={normalizedLang === 'en' ? "Stay updated with the latest developments..." : "Enter translated description..."}
-          rows={4}
         />
       </div>
 

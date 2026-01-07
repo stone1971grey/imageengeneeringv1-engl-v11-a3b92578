@@ -2,7 +2,7 @@ import { useState, useEffect, memo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { toast } from "sonner";
@@ -393,13 +393,10 @@ const VideoSegmentEditorComponent = ({
 
       <div>
         <Label htmlFor="video-caption">Video Caption (Optional)</Label>
-        <Textarea
-          id="video-caption"
+        <SimpleRichTextEditor
           value={localData.caption || ''}
-          onChange={(e) => handleChange('caption', e.target.value)}
+          onChange={(value) => handleChange('caption', value)}
           placeholder="e.g., See how Arcturus delivers maximum illuminance..."
-          className="mt-2"
-          rows={3}
         />
       </div>
 

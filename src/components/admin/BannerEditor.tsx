@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { SimpleRichTextEditor } from '@/components/admin/SimpleRichTextEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Save, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -169,11 +169,10 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
       {/* Subtext */}
       <div>
         <Label className="text-white text-lg font-semibold mb-2 block">Subtext (Optional)</Label>
-        <Textarea
+        <SimpleRichTextEditor
           value={data.subtext || ''}
-          onChange={(e) => onChange({ ...data, subtext: e.target.value })}
+          onChange={(value) => onChange({ ...data, subtext: value })}
           placeholder="Enter optional subtext"
-          className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400 min-h-[80px]"
         />
       </div>
 
