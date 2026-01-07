@@ -554,21 +554,33 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                       console.log('=== TILE IMAGE UPLOAD COMPLETE ===');
                     }}
                     onMediaSelect={(url, metadata) => {
-                      if (!url) {
-                        toast.error('Keine Bild-URL erhalten');
-                        return;
-                      }
-                      
-                      // Update tile with image URL
+                      // Update tile with image URL (empty URL clears the image)
                       const newTiles = [...tiles];
                       newTiles[index] = { 
                         ...newTiles[index], 
-                        imageUrl: url,
-                        metadata: metadata || newTiles[index].metadata
+                        imageUrl: url || '',
+                        altText: url ? newTiles[index].altText : '', // Clear alt text when image is removed
+                        metadata: url ? (metadata || newTiles[index].metadata) : undefined
                       };
                       setTiles(newTiles);
                       
-                      toast.success(`Bild für Tile ${index + 1} ausgewählt`);
+                      if (url) {
+                        toast.success(`Bild für Tile ${index + 1} ausgewählt`);
+                      } else {
+                        toast.success(`Bild von Tile ${index + 1} entfernt`);
+                      }
+                    }}
+                    onClear={() => {
+                      // Handle clear/delete action
+                      const newTiles = [...tiles];
+                      newTiles[index] = { 
+                        ...newTiles[index], 
+                        imageUrl: '',
+                        altText: '',
+                        metadata: undefined
+                      };
+                      setTiles(newTiles);
+                      toast.success(`Bild von Tile ${index + 1} entfernt`);
                     }}
                   />
                 )}
