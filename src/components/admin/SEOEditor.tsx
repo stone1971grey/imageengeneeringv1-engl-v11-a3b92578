@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertCircle, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown, Link2, Trash2, Link as LinkIcon, Plus, Check, ExternalLink, Sparkles, Info, FileText, Type, AlignLeft } from "lucide-react";
 import { SistrixIcon } from "../icons/SistrixIcon";
-import { SistrixEnterpriseTab } from "./seo/SistrixEnterpriseTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -124,7 +123,7 @@ export const SEOEditor = ({
   const showSocialTab = seoPermissions?.social ?? true; // Always show social by default
   const showAdvancedTab = seoPermissions?.advanced ?? isAdvancedMode;
   const showReadabilityTab = seoPermissions?.advanced ?? isAdvancedMode; // Bundled with Advanced
-  const showEnterpriseTab = seoPermissions?.enterprise ?? isAdvancedMode;
+  // Enterprise tab removed - now accessed via separate Enterprise SEO button
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -7568,9 +7567,9 @@ export const SEOEditor = ({
       </Collapsible>
 
       {/* Tabs for different sections - visibility controlled by seoPermissions */}
-      <Tabs defaultValue={initialTab || (showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "enterprise")} className="w-full">
+      <Tabs defaultValue={initialTab || (showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "readability")} className="w-full">
         <TabsList className={`grid w-full mb-6 bg-muted h-12`} style={{ 
-          gridTemplateColumns: `repeat(${[showBasicsTab, showSocialTab, showAdvancedTab, showReadabilityTab, showEnterpriseTab].filter(Boolean).length}, 1fr)` 
+          gridTemplateColumns: `repeat(${[showBasicsTab, showSocialTab, showAdvancedTab, showReadabilityTab].filter(Boolean).length}, 1fr)` 
         }}>
           {showBasicsTab && (
             <TabsTrigger value="basics" className="text-base font-medium py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">Basics</TabsTrigger>
