@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,71 @@ const VideoSegmentEditorComponent = ({
     videoUrl: '',
     caption: ''
   });
+  
+  // Auto-Save Refs
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const localDataRef = useRef(localData);
+  
+  useEffect(() => { localDataRef.current = localData; }, [localData]);
+  
+  // Auto-Save Funktion
+  const performAutoSave = async () => {
+    console.log('[VideoSegmentEditor] 🔄 Auto-Save startet...');
+    try {
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", currentPageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+      
+      if (!existingData) return;
+      
+      let segments = JSON.parse(existingData.content_value || '[]');
+      const segmentIndex = segments.findIndex((seg: any) => 
+        String(seg.id || seg.segment_key || '') === String(segmentId)
+      );
+      
+      if (segmentIndex === -1) return;
+      
+      segments[segmentIndex].data = {
+        ...segments[segmentIndex].data,
+        ...localDataRef.current
+      };
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(segments),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq("id", existingData.id);
+      
+      console.log('[VideoSegmentEditor] ✅ Auto-Save erfolgreich');
+      toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+    } catch (error) {
+      console.error('[VideoSegmentEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  };
+  
+  const triggerAutoSave = () => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(performAutoSave, 1000);
+  };
+  
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        performAutoSave();
+      }
+    };
+  }, [currentPageSlug, segmentId, language]);
 
   useEffect(() => {
     loadContent();
@@ -118,6 +183,8 @@ const VideoSegmentEditorComponent = ({
       [field]: value
     };
     setLocalData(newData);
+    localDataRef.current = newData;
+    triggerAutoSave();
   };
 
   const handleTranslate = async () => {

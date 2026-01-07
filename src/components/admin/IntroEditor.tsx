@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
@@ -26,6 +26,78 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
   const [isSaving, setIsSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
+  
+  // Auto-Save Refs
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleRef = useRef(title);
+  const descriptionRef = useRef(description);
+  
+  useEffect(() => { titleRef.current = title; }, [title]);
+  useEffect(() => { descriptionRef.current = description; }, [description]);
+  
+  // Auto-Save Funktion
+  const performAutoSave = async () => {
+    console.log('[IntroEditor] 🔄 Auto-Save startet...');
+    try {
+      const { data: segmentsRow } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+      
+      if (segmentsRow?.content_value) {
+        const segments = JSON.parse(segmentsRow.content_value);
+        const updatedSegments = segments.map((seg: any) => {
+          if (String(seg.id || seg.segment_key) === String(segmentKey)) {
+            return {
+              ...seg,
+              data: {
+                ...(seg.data || {}),
+                title: titleRef.current,
+                description: descriptionRef.current,
+                headline: titleRef.current,
+                introText: descriptionRef.current,
+              },
+            };
+          }
+          return seg;
+        });
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(updatedSegments),
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
+          })
+          .eq('id', segmentsRow.id);
+        
+        console.log('[IntroEditor] ✅ Auto-Save erfolgreich');
+        toast.success('✅ Änderungen gespeichert', { duration: 1500 });
+      }
+    } catch (error) {
+      console.error('[IntroEditor] Auto-Save Fehler:', error);
+      toast.error('Auto-Save fehlgeschlagen');
+    }
+  };
+  
+  const triggerAutoSave = () => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(performAutoSave, 1000);
+  };
+  
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, segmentKey, language]);
 
   useEffect(() => {
     loadContent();
@@ -314,10 +386,14 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
+    titleRef.current = value;
+    triggerAutoSave();
   };
 
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
+    descriptionRef.current = value;
+    triggerAutoSave();
   };
 
   if (isLoading) {
