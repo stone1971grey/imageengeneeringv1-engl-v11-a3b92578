@@ -103,10 +103,12 @@ export const CMSPageOverview = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (isOpen) {
+    // Only load pages when dialog is open AND we have the current user ID
+    // This ensures Latest Edit query correctly filters by user
+    if (isOpen && currentUserId) {
       loadPages();
     }
-  }, [isOpen]);
+  }, [isOpen, currentUserId]);
 
   useEffect(() => {
     let result = pages;
