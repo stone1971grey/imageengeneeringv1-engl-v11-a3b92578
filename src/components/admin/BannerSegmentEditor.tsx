@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Languages, ChevronUp, ChevronDown } from "lucide-react";
@@ -707,11 +707,10 @@ const BannerSegmentEditorComponent = ({
         {/* Subtext */}
         <div>
           <Label className="font-medium">Subtext (Optional)</Label>
-          <Textarea
+          <SimpleRichTextEditor
             value={currentData.subtext || ''}
-            onChange={(e) => handleChange({ ...currentData, subtext: e.target.value })}
+            onChange={(value) => handleChange({ ...currentData, subtext: value })}
             placeholder="Enter optional subtext"
-            className="mt-2 min-h-[80px]"
           />
         </div>
 

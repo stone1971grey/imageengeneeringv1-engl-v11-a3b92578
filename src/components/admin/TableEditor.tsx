@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { SimpleRichTextEditor } from '@/components/admin/SimpleRichTextEditor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Trash2, Plus } from 'lucide-react';
@@ -397,17 +398,14 @@ const TableEditor = ({ pageSlug, segmentId, language, onSave }: TableEditorProps
 
           <div>
             <Label htmlFor="subtext" className="text-white text-base">Subtext (optional)</Label>
-            <Textarea
-              id="subtext"
+            <SimpleRichTextEditor
               value={subtext}
-              onChange={(e) => {
-                setSubtext(e.target.value);
-                subtextRef.current = e.target.value;
+              onChange={(value) => {
+                setSubtext(value);
+                subtextRef.current = value;
                 triggerAutoSave();
               }}
               placeholder="Optional description text below the title"
-              rows={2}
-              className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-white placeholder:text-gray-400"
             />
           </div>
         </div>

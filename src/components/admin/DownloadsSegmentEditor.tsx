@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -241,12 +241,10 @@ const DownloadsSegmentEditorComponent = ({
 
         <div>
           <Label className="text-white">Description</Label>
-          <Textarea
+          <SimpleRichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(value) => setDescription(value)}
             placeholder="Optional description for the downloads section"
-            className="bg-[#1a1a1a] border-gray-600 text-white mt-1"
-            rows={3}
           />
         </div>
 

@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -276,11 +276,10 @@ const EventsSegmentEditorComponent = ({
         
         <div className="space-y-2">
           <Label className="text-white">Section Description</Label>
-          <Textarea
+          <SimpleRichTextEditor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(value) => setDescription(value)}
             placeholder="Join our expert-led workshops and training sessions..."
-            className="bg-[#2a2a2a] border-gray-600 text-white min-h-[80px]"
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { SimpleRichTextEditor } from "@/components/admin/SimpleRichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, GripVertical, Languages } from "lucide-react";
@@ -386,12 +386,10 @@ const IndustriesSegmentEditorComponent = ({
 
                 <div>
                   <Label className="text-xs">Description</Label>
-                  <Textarea
+                  <SimpleRichTextEditor
                     value={item.description}
-                    onChange={(e) => handleItemUpdate(index, 'description', e.target.value)}
+                    onChange={(value) => handleItemUpdate(index, 'description', value)}
                     placeholder="Short description..."
-                    rows={2}
-                    className="mt-1 resize-none"
                   />
                 </div>
 
