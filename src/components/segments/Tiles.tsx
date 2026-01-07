@@ -108,6 +108,7 @@ const Tiles: React.FC<TilesProps> = ({
   const localColumnsRef = useRef(localColumns);
   const hasChangesRef = useRef(hasChanges);
   const saveInProgressRef = useRef(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
@@ -122,13 +123,6 @@ const Tiles: React.FC<TilesProps> = ({
   useEffect(() => {
     setLocalColumns(columns);
   }, [columns]);
-  
-  // Enable save button when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setHasChanges(true);
-    }
-  }, [isEditing]);
 
   const displayTitle = title || (isEditing ? '[Click to add title]' : '');
   const displayDescription = description || (isEditing ? '[Click to add description]' : '');
@@ -373,21 +367,29 @@ const Tiles: React.FC<TilesProps> = ({
     };
   }, [isEditing, performAutoSave]);
 
-  // PERIODIC AUTO-SAVE: Save every 3 seconds while editing if there are changes
+  // IMMEDIATE AUTO-SAVE: Save 1 second after any change (debounced)
   useEffect(() => {
-    if (!isEditing) return;
+    if (!isEditing || !hasChanges) return;
 
-    const intervalId = setInterval(async () => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout for 1 second
+    saveTimeoutRef.current = setTimeout(async () => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[Tiles] Periodic auto-save triggered...');
+        console.log('[Tiles] Immediate auto-save triggered (1s after change)...');
         await performAutoSave();
       }
-    }, 3000); // 3 seconds for faster saves
+    }, 1000); // 1 second after change
 
     return () => {
-      clearInterval(intervalId);
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
-  }, [isEditing, performAutoSave]);
+  }, [isEditing, hasChanges, localItems, localColumns, performAutoSave]);
 
   // CRITICAL: Save when tab loses focus (user switches tabs or minimizes)
   useEffect(() => {
@@ -430,6 +432,9 @@ const Tiles: React.FC<TilesProps> = ({
   // Save on unmount (component leaving DOM)
   useEffect(() => {
     return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
       if (hasChangesRef.current && !saveInProgressRef.current) {
         console.log('[Tiles] Saving on unmount...');
         performAutoSave();

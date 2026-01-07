@@ -49,6 +49,7 @@ const FAQ: React.FC<FAQProps> = ({
   const localItemsRef = useRef(localItems);
   const hasChangesRef = useRef(hasChanges);
   const saveInProgressRef = useRef(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
@@ -58,13 +59,6 @@ const FAQ: React.FC<FAQProps> = ({
   useEffect(() => {
     setLocalItems(items);
   }, [items]);
-  
-  // Enable save button when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setHasChanges(true);
-    }
-  }, [isEditing]);
 
   // Auto-save when leaving edit mode
   useEffect(() => {
@@ -348,21 +342,29 @@ const FAQ: React.FC<FAQProps> = ({
     };
   }, [isEditing, performAutoSave]);
 
-  // PERIODIC AUTO-SAVE: Save every 3 seconds while editing if there are changes
+  // IMMEDIATE AUTO-SAVE: Save 1 second after any change (debounced)
   useEffect(() => {
-    if (!isEditing) return;
+    if (!isEditing || !hasChanges) return;
 
-    const intervalId = setInterval(async () => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout for 1 second
+    saveTimeoutRef.current = setTimeout(async () => {
       if (hasChangesRef.current && !saveInProgressRef.current) {
-        console.log('[FAQ] Periodic auto-save triggered...');
+        console.log('[FAQ] Immediate auto-save triggered (1s after change)...');
         await performAutoSave();
       }
-    }, 3000); // 3 seconds for faster saves
+    }, 1000); // 1 second after change
 
     return () => {
-      clearInterval(intervalId);
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
-  }, [isEditing, performAutoSave]);
+  }, [isEditing, hasChanges, localItems, performAutoSave]);
 
   // CRITICAL: Save when tab loses focus (user switches tabs or minimizes)
   useEffect(() => {
@@ -405,6 +407,9 @@ const FAQ: React.FC<FAQProps> = ({
   // Save on unmount
   useEffect(() => {
     return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
       if (hasChangesRef.current && !saveInProgressRef.current) {
         console.log('[FAQ] Saving on unmount...');
         performAutoSave();
