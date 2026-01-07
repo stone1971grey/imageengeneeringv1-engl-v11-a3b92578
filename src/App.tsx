@@ -64,6 +64,7 @@ import SegmentDebugView from "./pages/SegmentDebugView";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import AftermarketDownload from "./pages/AftermarketDownload";
+import SpadeCMSInstall from "./pages/SpadeCMSInstall";
 import { MauticTracker } from "./components/MauticTracker";
 
 const queryClient = new QueryClient();
