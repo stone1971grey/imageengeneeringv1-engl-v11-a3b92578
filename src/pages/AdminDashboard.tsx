@@ -47,6 +47,7 @@ import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { TilesSegmentEditor } from '@/components/admin/TilesSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
+import { SistrixEnterpriseTab } from '@/components/admin/seo/SistrixEnterpriseTab';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import NewsListSegmentEditor from '@/components/admin/NewsListSegmentEditor';
@@ -366,7 +367,6 @@ const AdminDashboard = () => {
   const [footerButtonText, setFooterButtonText] = useState<string>("");
   const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
   const [isSEOEditorOpen, setIsSEOEditorOpen] = useState(false);
-  const [seoEditorInitialTab, setSeoEditorInitialTab] = useState<string | undefined>(undefined);
   const [isEnterpriseSEOOpen, setIsEnterpriseSEOOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isContentAutomationOpen, setIsContentAutomationOpen] = useState(false);
@@ -1511,7 +1511,6 @@ const AdminDashboard = () => {
           onCopyPageClick={() => setIsCopyPageDialogOpen(true)}
           isSEOEditorOpen={isSEOEditorOpen}
           setIsSEOEditorOpen={setIsSEOEditorOpen}
-          setSeoEditorInitialTab={setSeoEditorInitialTab}
           isEnterpriseSEOOpen={isEnterpriseSEOOpen}
           setIsEnterpriseSEOOpen={setIsEnterpriseSEOOpen}
           isGlossaryOpen={isGlossaryOpen}
@@ -1613,13 +1612,12 @@ const AdminDashboard = () => {
                 pageSegments={pageSegments}
                 editorLanguage={editorLanguage}
                 seoPermissions={isAdmin ? undefined : seoPermissions}
-                initialTab={seoEditorInitialTab}
               />
             </CardContent>
           </Card>
         )}
 
-        {/* Enterprise SEO Dashboard - Domain-wide SISTRIX data */}
+        {/* Enterprise SEO Panel - SISTRIX Features Only */}
         {isEnterpriseSEOOpen && (
           <Card className="mb-8 relative border-[#00a1ff]/30 bg-gradient-to-br from-[#00a1ff]/5 to-transparent">
             <Button
@@ -1630,21 +1628,11 @@ const AdminDashboard = () => {
             >
               <X className="h-5 w-5" />
             </Button>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-[#00a1ff]">
-                <div className="w-8 h-8 bg-[#00a1ff] rounded-lg flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width={16} height={16} fill="white">
-                    <path d="M448 449L301.2 300.2c20-27.9 31.9-62.2 31.9-99.2 0-93.1-74.7-168.9-166.5-168.9C74.7 32 0 107.8 0 200.9s74.7 168.9 166.5 168.9c39.8 0 76.3-14.2 105-37.9l146 148.1 30.5-30zM166.5 330.8c-70.6 0-128.1-58.3-128.1-129.9S95.9 71 166.5 71s128.1 58.3 128.1 129.9-57.4 129.9-128.1 129.9zm-25.8-72.4v-54h51.5v54h-51.5zm0-83.8v-54h51.5v54h-51.5z" />
-                  </svg>
-                </div>
-                Enterprise SEO
-              </CardTitle>
-              <CardDescription className="text-lg text-muted-foreground">
-                Domain-wide SEO analytics powered by SISTRIX
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RelaunchDashboard editorLanguage={editorLanguage} />
+            <CardContent className="pt-6">
+              <SistrixEnterpriseTab 
+                pageSlug={selectedPage || 'home'}
+                editorLanguage={editorLanguage}
+              />
             </CardContent>
           </Card>
         )}
