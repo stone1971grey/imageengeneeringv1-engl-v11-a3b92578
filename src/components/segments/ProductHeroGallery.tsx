@@ -287,12 +287,14 @@ const ProductHeroGallery = ({
       }
       segments[segmentIndex].data[fieldKey] = value;
       
-      // Save back to database
+      // Save back to database with updated_by
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({ 
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageData.id);
       
@@ -362,12 +364,14 @@ const ProductHeroGallery = ({
       // Also update the title field for backward compatibility
       segments[segmentIndex].data.images[imageIndex].title = newAltText;
       
-      // Save back to database
+      // Save back to database with updated_by
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({ 
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageData.id);
       

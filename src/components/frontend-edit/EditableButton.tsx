@@ -144,11 +144,13 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
           segments[segmentIndex].data[styleFieldName] = currentStyle;
         }
 
+        const { data: { user } } = await supabase.auth.getUser();
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
             content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', pageSegmentsData.id);
 

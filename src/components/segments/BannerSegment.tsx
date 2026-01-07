@@ -609,11 +609,14 @@ const BannerSegment = ({
         }
         segments[segmentIndex].data.images = editImages;
 
+        // Include updated_by for proper tracking
+        const { data: { user } } = await supabase.auth.getUser();
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
             content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', pageSegmentsData.id);
 
@@ -680,11 +683,14 @@ const BannerSegment = ({
       }
       segments[segmentIndex].data.images = editImagesRef.current;
 
+      // Include updated_by for proper tracking
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 

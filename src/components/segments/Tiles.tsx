@@ -239,12 +239,14 @@ const Tiles: React.FC<TilesProps> = ({
       segments[segmentIndex].data.items = localItems;
       segments[segmentIndex].data.columns = localColumns;
 
-      // Save
+      // Save - include updated_by for proper tracking
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 
@@ -311,11 +313,14 @@ const Tiles: React.FC<TilesProps> = ({
       segments[segmentIndex].data.items = localItemsRef.current;
       segments[segmentIndex].data.columns = localColumnsRef.current;
 
+      // Include updated_by for proper tracking
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 
