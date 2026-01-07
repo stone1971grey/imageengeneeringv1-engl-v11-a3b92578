@@ -95,7 +95,15 @@ const Tiles: React.FC<TilesProps> = ({
 }) => {
   const editContext = useFrontendEditOptional();
   const segmentEdit = useSegmentEdit();
-  const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
+  
+  // ROBUSTE isEditing-Logik (aus Memory: frontend-editing-resilient-is-editing-logic)
+  // Prüfe auch URL-Parameter als Fallback
+  const urlHasEditParam = typeof window !== 'undefined' && window.location.search.includes('edit=true');
+  const isEditing = segmentEdit?.isSegmentEditing || 
+                    (editContext?.isEditMode && editContext?.canEdit) || 
+                    editContext?.isEditMode ||
+                    urlHasEditParam ||
+                    false;
 
   // DEBUG: Detaillierte Logs bei jedem Render
   console.log('[Tiles] 🎯 RENDER', { 
@@ -103,8 +111,10 @@ const Tiles: React.FC<TilesProps> = ({
     pageSlug, 
     language,
     isEditing,
+    urlHasEditParam,
     hasEditContext: !!editContext,
     editContextMode: editContext?.isEditMode,
+    editContextCanEdit: editContext?.canEdit,
     hasSegmentEdit: !!segmentEdit,
     segmentEditMode: segmentEdit?.isSegmentEditing,
     itemsCount: items?.length || 0
@@ -536,6 +546,16 @@ const Tiles: React.FC<TilesProps> = ({
 
   return (
     <section id={id} className="pt-8 pb-16 bg-gray-50">
+      {/* DEBUG BOX - wird immer angezeigt wenn ?edit=true */}
+      {urlHasEditParam && (
+        <div className="container mx-auto px-6 mb-4">
+          <div className="bg-blue-100 border border-blue-400 text-blue-800 px-4 py-2 rounded text-sm">
+            <strong>🔍 Tiles Debug:</strong> segmentKey={segmentKey}, isEditing={String(isEditing)}, 
+            items={localItems.length}, urlEdit={String(urlHasEditParam)}, 
+            editContext={String(!!editContext)}, segmentEdit={String(!!segmentEdit)}
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-6">
         {/* Header */}
         {(displayTitle || isEditing) && (
