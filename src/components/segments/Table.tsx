@@ -177,11 +177,13 @@ const Table = ({
       segments[segmentIndex].data.headers = localHeaders;
       segments[segmentIndex].data.rows = localRows;
 
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 

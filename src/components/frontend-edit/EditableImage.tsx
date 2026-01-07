@@ -100,12 +100,14 @@ export const EditableImage: React.FC<EditableImageProps> = ({
         .maybeSingle();
 
       if (existing) {
+        const { data: { user } } = await supabase.auth.getUser();
         await supabase
           .from('page_content')
           .update({
             content_value: newSrc,
             content_status: 'approved',
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', existing.id);
       } else {
@@ -152,12 +154,14 @@ export const EditableImage: React.FC<EditableImageProps> = ({
         .maybeSingle();
 
       if (existing) {
+        const { data: { user } } = await supabase.auth.getUser();
         await supabase
           .from('page_content')
           .update({
             content_value: url,
             content_status: 'approved',
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', existing.id);
       } else {

@@ -104,11 +104,13 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         }
         segments[segmentIndex].data[fieldName] = valueToSave;
 
+        const { data: { user } } = await supabase.auth.getUser();
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
             content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', pageSegmentsData.id);
 
@@ -153,11 +155,13 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         
         contentObj[fieldName] = valueToSave;
         
+        const { data: { user: userFallback } } = await supabase.auth.getUser();
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
             content_value: JSON.stringify(contentObj),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: userFallback?.id
           })
           .eq('id', segmentData.id);
         

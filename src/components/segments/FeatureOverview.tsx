@@ -118,11 +118,13 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
           }
           segments[segmentIndex].data.items = localItems;
 
+          const { data: { user } } = await supabase.auth.getUser();
           await supabase
             .from('page_content')
             .update({
               content_value: JSON.stringify(segments),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
+              updated_by: user?.id
             })
             .eq('id', pageSegmentsData.id);
 
@@ -272,12 +274,14 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
       }
       segments[segmentIndex].data.items = localItems;
 
-      // Save
+      // Save with updated_by
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 

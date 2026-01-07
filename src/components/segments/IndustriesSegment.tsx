@@ -211,11 +211,13 @@ const IndustriesSegment = ({
         segments[segmentIndex].data.columns = editColumns;
         segments[segmentIndex].data.items = editItems;
 
+        const { data: { user } } = await supabase.auth.getUser();
         const { error: updateError } = await supabase
           .from('page_content')
           .update({
             content_value: JSON.stringify(segments),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
           })
           .eq('id', pageSegmentsData.id);
 
@@ -283,11 +285,13 @@ const IndustriesSegment = ({
       segments[segmentIndex].data.columns = editColumnsRef.current;
       segments[segmentIndex].data.items = editItemsRef.current;
 
+      const { data: { user } } = await supabase.auth.getUser();
       const { error: updateError } = await supabase
         .from('page_content')
         .update({
           content_value: JSON.stringify(segments),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
         })
         .eq('id', pageSegmentsData.id);
 
