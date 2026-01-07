@@ -373,6 +373,8 @@ const Tiles: React.FC<TilesProps> = ({
   };
 
   const handleAddItem = async () => {
+    // SOFORT Toast zeigen - Beweis dass Klick funktioniert
+    toast.info('🔄 Kachel wird hinzugefügt...', { duration: 2000 });
     console.log('[Tiles] === ADD TILE CLICKED ===');
     
     const newItems = [...localItems, { 
@@ -393,8 +395,12 @@ const Tiles: React.FC<TilesProps> = ({
     const saved = await performAutoSave();
     console.log('[Tiles] Add Tile - Save Result:', saved);
     
-    if (!saved) {
-      toast.error('Speichern fehlgeschlagen - siehe Konsole');
+    if (saved) {
+      toast.success(`✅ Kachel hinzugefügt und gespeichert! (${newItems.length} Kacheln total)`, { 
+        duration: 4000 
+      });
+    } else {
+      toast.error('❌ Speichern fehlgeschlagen - siehe Details oben', { duration: 5000 });
     }
   };
 
