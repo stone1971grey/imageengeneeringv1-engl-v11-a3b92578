@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { 
   Camera, 
@@ -100,12 +100,30 @@ const IndustriesSegment = ({
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Refs for auto-save on navigation
+  const editColumnsRef = useRef(editColumns);
+  const editItemsRef = useRef(editItems);
+  const hasChangesRef = useRef(hasChanges);
+  const saveInProgressRef = useRef(false);
+
+  // Keep refs in sync
+  useEffect(() => { editColumnsRef.current = editColumns; }, [editColumns]);
+  useEffect(() => { editItemsRef.current = editItems; }, [editItems]);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
+
   // Sync with props
   useEffect(() => {
     setEditColumns(columns);
     setEditItems(items);
     setHasChanges(false);
   }, [columns, items]);
+
+  // Enable save button when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setHasChanges(true);
+    }
+  }, [isEditing]);
 
   // Enable save button when entering edit mode
   useEffect(() => {
@@ -232,6 +250,94 @@ const IndustriesSegment = ({
       setIsSaving(false);
     }
   }, [hasChanges, segmentKey, pageSlug, language, editColumns, editItems, onContentUpdate]);
+
+  // AUTO-SAVE: Save when clicking on links (before navigation)
+  useEffect(() => {
+    const performAutoSave = async () => {
+      if (!hasChangesRef.current || saveInProgressRef.current) return;
+      
+      saveInProgressRef.current = true;
+      console.log('[IndustriesSegment] Auto-saving before navigation...');
+      
+      try {
+        const segmentKeyParts = segmentKey.split('-');
+        const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
+
+        const { data: pageSegmentsData, error: loadError } = await supabase
+          .from('page_content')
+          .select('id, content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+
+        if (loadError || !pageSegmentsData) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsData.content_value || '[]');
+        } catch (e) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        const segmentIndex = segments.findIndex((seg: any) => {
+          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+          return segId === segmentId;
+        });
+
+        if (segmentIndex === -1) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        if (!segments[segmentIndex].data) {
+          segments[segmentIndex].data = {};
+        }
+        segments[segmentIndex].data.columns = editColumnsRef.current;
+        segments[segmentIndex].data.items = editItemsRef.current;
+
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsData.id);
+
+        if (!updateError) {
+          console.log('[IndustriesSegment] Auto-saved successfully');
+          toast.success('Auto-saved', { duration: 2000, description: 'Industries' });
+          hasChangesRef.current = false;
+        }
+      } catch (e) {
+        console.error('[IndustriesSegment] Auto-save error:', e);
+      } finally {
+        saveInProgressRef.current = false;
+      }
+    };
+
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, true);
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, language, segmentKey]);
 
   const handleCancel = () => {
     setEditColumns(columns);

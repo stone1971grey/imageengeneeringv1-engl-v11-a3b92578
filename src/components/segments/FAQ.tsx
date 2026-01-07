@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
@@ -44,6 +44,15 @@ const FAQ: React.FC<FAQProps> = ({
   const [localItems, setLocalItems] = useState<FAQItem[]>(items);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Refs for auto-save on navigation
+  const localItemsRef = useRef(localItems);
+  const hasChangesRef = useRef(hasChanges);
+  const saveInProgressRef = useRef(false);
+
+  // Keep refs in sync
+  useEffect(() => { localItemsRef.current = localItems; }, [localItems]);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
 
   // Sync local items with props
   useEffect(() => {
@@ -242,6 +251,90 @@ const FAQ: React.FC<FAQProps> = ({
       setIsSaving(false);
     }
   }, [hasChanges, localItems, pageSlug, language, segmentKey, onContentUpdate]);
+
+  // AUTO-SAVE: Save when clicking on links (before navigation)
+  useEffect(() => {
+    const performAutoSave = async () => {
+      if (!hasChangesRef.current || saveInProgressRef.current) return;
+      
+      saveInProgressRef.current = true;
+      console.log('[FAQ] Auto-saving before navigation...');
+      
+      try {
+        const { data: pageSegmentsData, error: loadError } = await supabase
+          .from('page_content')
+          .select('id, content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+
+        if (loadError || !pageSegmentsData) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsData.content_value || '[]');
+        } catch (e) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        const segmentIndex = segments.findIndex((seg: any) => {
+          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+          return segId === segmentKey;
+        });
+
+        if (segmentIndex === -1) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        if (!segments[segmentIndex].data) {
+          segments[segmentIndex].data = {};
+        }
+        segments[segmentIndex].data.items = localItemsRef.current;
+
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsData.id);
+
+        if (!updateError) {
+          console.log('[FAQ] Auto-saved successfully');
+          toast.success('Auto-saved', { duration: 2000, description: 'FAQ' });
+          hasChangesRef.current = false;
+        }
+      } catch (e) {
+        console.error('[FAQ] Auto-save error:', e);
+      } finally {
+        saveInProgressRef.current = false;
+      }
+    };
+
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, true);
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, language, segmentKey]);
 
   return (
     <section id={id} className="pt-[50px] pb-16 bg-background">

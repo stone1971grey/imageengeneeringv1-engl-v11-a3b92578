@@ -478,6 +478,15 @@ const BannerSegment = ({
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Refs for auto-save on navigation
+  const editImagesRef = useRef(editImages);
+  const hasChangesRef = useRef(hasChanges);
+  const saveInProgressRef = useRef(false);
+
+  // Keep refs in sync
+  useEffect(() => { editImagesRef.current = editImages; }, [editImages]);
+  useEffect(() => { hasChangesRef.current = hasChanges; }, [hasChanges]);
+
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -632,6 +641,93 @@ const BannerSegment = ({
       setIsSaving(false);
     }
   }, [hasChanges, segmentKey, pageSlug, language, editImages, onContentUpdate]);
+
+  // AUTO-SAVE: Save when clicking on links (before navigation)
+  useEffect(() => {
+    const performAutoSave = async () => {
+      if (!hasChangesRef.current || saveInProgressRef.current) return;
+      
+      saveInProgressRef.current = true;
+      console.log('[BannerSegment] Auto-saving before navigation...');
+      
+      try {
+        const segmentKeyParts = segmentKey.split('-');
+        const segmentId = segmentKeyParts[segmentKeyParts.length - 1];
+
+        const { data: pageSegmentsData, error: loadError } = await supabase
+          .from('page_content')
+          .select('id, content_value')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+
+        if (loadError || !pageSegmentsData) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsData.content_value || '[]');
+        } catch (e) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        const segmentIndex = segments.findIndex((seg: any) => {
+          const segId = String(seg.id || seg.segmentId || seg.segment_id || '');
+          return segId === segmentId;
+        });
+
+        if (segmentIndex === -1) {
+          saveInProgressRef.current = false;
+          return;
+        }
+
+        if (!segments[segmentIndex].data) {
+          segments[segmentIndex].data = {};
+        }
+        segments[segmentIndex].data.images = editImagesRef.current;
+
+        const { error: updateError } = await supabase
+          .from('page_content')
+          .update({
+            content_value: JSON.stringify(segments),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageSegmentsData.id);
+
+        if (!updateError) {
+          console.log('[BannerSegment] Auto-saved successfully');
+          toast.success('Auto-saved', { duration: 2000, description: 'Banner' });
+          hasChangesRef.current = false;
+        }
+      } catch (e) {
+        console.error('[BannerSegment] Auto-save error:', e);
+      } finally {
+        saveInProgressRef.current = false;
+      }
+    };
+
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href && hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, true);
+      if (hasChangesRef.current && !saveInProgressRef.current) {
+        performAutoSave();
+      }
+    };
+  }, [pageSlug, language, segmentKey]);
 
   const handleCancel = () => {
     const imagesWithIds = images.map((img, idx) => ({
