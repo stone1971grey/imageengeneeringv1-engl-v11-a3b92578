@@ -92,6 +92,89 @@ export type Database = {
         }
         Relationships: []
       }
+      content_gap_competitors: {
+        Row: {
+          analyzed_at: string | null
+          competitor_domain: string
+          country: string
+          created_at: string
+          created_by: string | null
+          domain: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          analyzed_at?: string | null
+          competitor_domain: string
+          country?: string
+          created_at?: string
+          created_by?: string | null
+          domain: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          analyzed_at?: string | null
+          competitor_domain?: string
+          country?: string
+          created_at?: string
+          created_by?: string | null
+          domain?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_gap_keywords: {
+        Row: {
+          competition: number | null
+          competitor_id: string
+          competitor_position: number | null
+          competitor_url: string | null
+          created_at: string
+          id: string
+          keyword: string
+          opportunity: string | null
+          our_position: number | null
+          search_volume: number | null
+          traffic: number | null
+        }
+        Insert: {
+          competition?: number | null
+          competitor_id: string
+          competitor_position?: number | null
+          competitor_url?: string | null
+          created_at?: string
+          id?: string
+          keyword: string
+          opportunity?: string | null
+          our_position?: number | null
+          search_volume?: number | null
+          traffic?: number | null
+        }
+        Update: {
+          competition?: number | null
+          competitor_id?: string
+          competitor_position?: number | null
+          competitor_url?: string | null
+          created_at?: string
+          id?: string
+          keyword?: string
+          opportunity?: string | null
+          our_position?: number | null
+          search_volume?: number | null
+          traffic?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_gap_keywords_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "content_gap_competitors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       download_requests: {
         Row: {
           category_tag: string | null
