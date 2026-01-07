@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -22,17 +22,33 @@ import { DESIGN_ICON_OPTIONS } from '@/components/admin/dashboard/AdminConstants
 import { LucideIcon } from "lucide-react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
-// Collapsible Section Component for grouped buttons
+// Collapsible Section Component for grouped buttons with localStorage persistence
 interface CollapsibleSectionProps {
   title: string;
   icon: LucideIcon;
   children: React.ReactNode;
   defaultOpen?: boolean;
   colorClass?: string;
+  storageKey?: string; // Unique key for localStorage persistence
 }
 
-const CollapsibleSection = ({ title, icon: Icon, children, defaultOpen = false, colorClass = "bg-gray-800" }: CollapsibleSectionProps) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+const CollapsibleSection = ({ title, icon: Icon, children, defaultOpen = false, colorClass = "bg-gray-800", storageKey }: CollapsibleSectionProps) => {
+  // Generate a storage key based on title if not provided
+  const persistKey = storageKey || `admin-section-${title.toLowerCase().replace(/\s+/g, '-')}`;
+  
+  // Initialize state from localStorage
+  const [isOpen, setIsOpen] = useState(() => {
+    const cached = localStorage.getItem(persistKey);
+    if (cached !== null) {
+      return cached === 'true';
+    }
+    return defaultOpen;
+  });
+  
+  // Persist state changes to localStorage
+  useEffect(() => {
+    localStorage.setItem(persistKey, String(isOpen));
+  }, [isOpen, persistKey]);
   
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
