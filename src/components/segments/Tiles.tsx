@@ -97,6 +97,19 @@ const Tiles: React.FC<TilesProps> = ({
   const segmentEdit = useSegmentEdit();
   const isEditing = segmentEdit?.isSegmentEditing || editContext?.isEditMode || false;
 
+  // DEBUG: Detaillierte Logs bei jedem Render
+  console.log('[Tiles] 🎯 RENDER', { 
+    segmentKey, 
+    pageSlug, 
+    language,
+    isEditing,
+    hasEditContext: !!editContext,
+    editContextMode: editContext?.isEditMode,
+    hasSegmentEdit: !!segmentEdit,
+    segmentEditMode: segmentEdit?.isSegmentEditing,
+    itemsCount: items?.length || 0
+  });
+
   // Local state for items editing
   const [localItems, setLocalItems] = useState<TileItem[]>(items);
   const [localColumns, setLocalColumns] = useState<'2' | '3' | '4'>(columns);
@@ -143,6 +156,7 @@ const Tiles: React.FC<TilesProps> = ({
 
   // Hide if no content and not editing
   if (!title && !description && localItems.length === 0 && !isEditing) {
+    console.log('[Tiles] ⚠️ VERSTECKT - keine Inhalte und nicht im Edit-Modus');
     return null;
   }
 
