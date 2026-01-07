@@ -24,7 +24,7 @@ export interface RoadmapVersion {
 // ============================================
 // CURRENT VERSION
 // ============================================
-export const CMS_VERSION = '1.1.2';
+export const CMS_VERSION = '1.2';
 
 // ============================================
 // ROADMAP VERSIONS
@@ -94,11 +94,11 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   
-  // Current Version
+  // Released Version
   {
     key: 'v1.1',
-    label: '🍾 v1.1 – Advanced AI SEO Suite & Further Development',
-    status: 'current',
+    label: 'v1.1 – Advanced AI SEO Suite',
+    status: 'released',
     features: [
       { label: 'Smart Focus Keyword', status: 'done' },
       { label: 'Smart Title Generator', status: 'done' },
@@ -117,68 +117,38 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   
-  // Roadmap Versions (Admin Only)
-  // v1.2-v1.5: Multi-Tenancy (Complete)
+  // Current Version
   {
     key: 'v1.2',
-    label: 'v1.2 – Tenant Foundation',
-    status: 'complete',
-    isAdminOnly: true,
+    label: '🍾 v1.2 – Multi-Tenancy',
+    status: 'current',
     features: [
+      // Template System
       { label: 'Projekt-Starter Presets', status: 'done' },
       { label: 'News-Portal Template', status: 'done' },
       { label: 'Produkt-Katalog Template', status: 'done' },
       { label: 'Corporate Website Template', status: 'done' },
       { label: 'Minimal Starter Template', status: 'done' },
-      { label: 'Preset-Auswahl im Setup', status: 'done' },
-    ]
-  },
-  {
-    key: 'v1.3',
-    label: 'v1.3 – Configuration Layer',
-    status: 'complete',
-    isAdminOnly: true,
-    features: [
+      // Configuration Layer
       { label: 'siteConfig Zod-Validierung', status: 'done' },
       { label: 'Feature-Flag Management UI', status: 'done' },
       { label: 'Branding-Preview', status: 'done' },
-      { label: 'Integrations-Übersicht', status: 'done' },
       { label: 'Config Dashboard', status: 'done' },
-    ]
-  },
-  {
-    key: 'v1.4',
-    label: 'v1.4 – Data Isolation',
-    status: 'complete',
-    isAdminOnly: true,
-    features: [
+      // Data Isolation
       { label: 'Config-Schutzmechanismus', status: 'done' },
-      { label: 'Ordnerstruktur-Dokumentation', status: 'done' },
-      { label: 'Sync-Kategorisierung (Protected/Partial/Safe)', status: 'done' },
-      { label: 'Tenant-Backup SQL Generator', status: 'done' },
-      { label: 'Tenant-Restore SQL Generator', status: 'done' },
-      { label: 'Data Isolation Dashboard', status: 'done' },
-    ]
-  },
-  {
-    key: 'v1.5',
-    label: 'v1.5 – Tenant Onboarding',
-    status: 'complete',
-    isAdminOnly: true,
-    features: [
+      { label: 'Sync-Kategorisierung', status: 'done' },
+      { label: 'Tenant-Backup/Restore SQL', status: 'done' },
+      // Onboarding
       { label: 'Interaktiver Setup-Wizard', status: 'done' },
-      { label: 'Phasen-basierte Checkliste', status: 'done' },
-      { label: 'Fortschritts-Persistierung (localStorage)', status: 'done' },
       { label: 'Tenant-Status-Übersicht', status: 'done' },
       { label: 'Live-Systemprüfung', status: 'done' },
-      { label: 'Schnellzugriff-Aktionen', status: 'done' },
     ]
   },
   
-  // v1.6-v1.8: Planned Features
+  // Roadmap Versions (Admin Only)
   {
-    key: 'v1.6',
-    label: 'v1.6 – Frontend Editing',
+    key: 'v1.3',
+    label: 'v1.3 – Frontend Editing',
     status: 'planned',
     isAdminOnly: true,
     features: [
@@ -188,8 +158,8 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.7',
-    label: 'v1.7 – Content Automation',
+    key: 'v1.4',
+    label: 'v1.4 – Content Automation',
     status: 'planned',
     isAdminOnly: true,
     features: [
@@ -197,8 +167,8 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.8',
-    label: 'v1.8 – Enterprise SEO',
+    key: 'v1.5',
+    label: 'v1.5 – Enterprise SEO',
     status: 'planned',
     isAdminOnly: true,
     features: [
@@ -213,8 +183,8 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v1.9',
-    label: 'v1.9 – Mautic Vision',
+    key: 'v1.6',
+    label: 'v1.6 – Mautic Vision',
     status: 'planned',
     isAdminOnly: true,
     features: [
@@ -222,8 +192,8 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     ]
   },
   {
-    key: 'v2.0',
-    label: 'v2.0 – Plugin-Architektur',
+    key: 'v1.7',
+    label: 'v1.7 – Plugin-Architektur',
     status: 'planned',
     isAdminOnly: true,
     features: [
