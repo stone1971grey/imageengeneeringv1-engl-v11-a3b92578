@@ -199,6 +199,24 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
       setEditValue(newValue);
       editValueRef.current = newValue;
     },
+    // CRITICAL: Save on blur (when user clicks away or navigates)
+    onBlur: () => {
+      const currentValue = editValueRef.current;
+      const lastSaved = lastSavedValueRef.current;
+      
+      if (currentValue !== lastSaved && !saveInProgressRef.current) {
+        console.log('[EditableRichText] Saving on blur...');
+        saveInProgressRef.current = true;
+        performSave(currentValue, true).then((success) => {
+          if (success) {
+            setLastSavedValue(currentValue);
+            lastSavedValueRef.current = currentValue;
+            toast.success('Auto-saved', { duration: 2000, description: fieldLabel || 'Rich Text' });
+          }
+          saveInProgressRef.current = false;
+        });
+      }
+    },
     editorProps: {
       attributes: {
         class: 'prose prose-sm max-w-none focus:outline-none p-3 text-black',
