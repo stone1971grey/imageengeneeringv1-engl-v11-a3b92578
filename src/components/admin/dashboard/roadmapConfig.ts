@@ -24,7 +24,7 @@ export interface RoadmapVersion {
 // ============================================
 // CURRENT VERSION
 // ============================================
-export const CMS_VERSION = '1.1.1';
+export const CMS_VERSION = '1.1.2';
 
 // ============================================
 // ROADMAP VERSIONS
@@ -126,6 +126,7 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     features: [
       { label: 'Frontend Editing', status: 'planned' },
       { label: 'Editor Activity Panel', status: 'done' },
+      { label: 'Segment Auto-Save', status: 'done' },
     ]
   },
   {
