@@ -1,7 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
-import { Bold, Italic, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
+import Underline from '@tiptap/extension-underline';
+import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useCallback } from 'react';
 
@@ -34,6 +35,7 @@ export const FrontendRichTextEditor = ({
           class: 'text-blue-600 underline hover:text-blue-800',
         },
       }),
+      Underline,
     ],
     content: value || '',
     onUpdate: ({ editor }) => {
@@ -96,6 +98,16 @@ export const FrontendRichTextEditor = ({
           title="Italic (Ctrl+I)"
         >
           <Italic className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`h-8 w-8 p-0 ${editor.isActive('underline') ? 'bg-[#f9dc24] text-black' : 'text-gray-600 hover:text-black hover:bg-gray-200'}`}
+          title="Underline (Ctrl+U)"
+        >
+          <UnderlineIcon className="h-4 w-4" />
         </Button>
         <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
         <Button

@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from './EditableSegment';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Check, X, Loader2, Bold, Link as LinkIcon } from 'lucide-react';
+import { Check, X, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface EditableRichTextProps {
@@ -178,7 +179,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     }
   }, [pageSlug, sectionKey, language]);
 
-  // Tiptap editor - only bold and link, no lists
+  // Tiptap editor - full formatting: bold, italic, underline, lists, links
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -186,9 +187,6 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
         codeBlock: false,
         blockquote: false,
         horizontalRule: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
       }),
       Link.configure({
         openOnClick: false,
@@ -196,6 +194,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           class: 'text-blue-600 underline hover:text-blue-800',
         },
       }),
+      Underline,
     ],
     content: value || '',
     onUpdate: ({ editor }) => {
@@ -529,7 +528,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     <div ref={containerRef} className="relative">
       {/* Rich Text Editor */}
       <div className="border-2 border-[#f9dc24] rounded-lg bg-white overflow-hidden shadow-lg">
-        {/* Toolbar - only Bold and Link */}
+        {/* Toolbar - Full Rich Text: Bold, Italic, Underline, Lists, Links */}
         <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
           <Button
             type="button"
@@ -545,6 +544,67 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
             title="Fett (Ctrl+B)"
           >
             <Bold className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={cn(
+              "h-8 w-8 p-0",
+              editor.isActive('italic') 
+                ? "bg-[#f9dc24] text-black" 
+                : "text-gray-600 hover:text-black hover:bg-gray-200"
+            )}
+            title="Kursiv (Ctrl+I)"
+          >
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={cn(
+              "h-8 w-8 p-0",
+              editor.isActive('underline') 
+                ? "bg-[#f9dc24] text-black" 
+                : "text-gray-600 hover:text-black hover:bg-gray-200"
+            )}
+            title="Unterstrichen (Ctrl+U)"
+          >
+            <UnderlineIcon className="h-4 w-4" />
+          </Button>
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={cn(
+              "h-8 w-8 p-0",
+              editor.isActive('bulletList') 
+                ? "bg-[#f9dc24] text-black" 
+                : "text-gray-600 hover:text-black hover:bg-gray-200"
+            )}
+            title="Aufzählungsliste"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={cn(
+              "h-8 w-8 p-0",
+              editor.isActive('orderedList') 
+                ? "bg-[#f9dc24] text-black" 
+                : "text-gray-600 hover:text-black hover:bg-gray-200"
+            )}
+            title="Nummerierte Liste"
+          >
+            <ListOrdered className="h-4 w-4" />
           </Button>
           <div className="w-px h-6 bg-gray-300 mx-1" />
           <Button
