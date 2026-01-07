@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Settings, Shield, Zap, BookOpen, CheckCircle2, AlertTriangle, Info, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { PresetSelector } from "@/components/install/PresetSelector";
-import { ConfigDashboard } from "@/components/admin/config";
+import { ConfigDashboard, DataIsolationDashboard } from "@/components/admin/config";
 
 // ============================================================================
 // SPADE CMS INSTALLATION - COMPLETE EXPORT FILES
@@ -1844,7 +1844,11 @@ const SpadeCMSInstall = () => {
             </TabsTrigger>
             <TabsTrigger value="config" className="data-[state=active]:bg-zinc-700">
               <Settings className="h-4 w-4 mr-2" />
-              Config Check
+              Config
+            </TabsTrigger>
+            <TabsTrigger value="isolation" className="data-[state=active]:bg-zinc-700">
+              <Shield className="h-4 w-4 mr-2" />
+              Data Isolation
             </TabsTrigger>
             <TabsTrigger value="checklist" className="data-[state=active]:bg-zinc-700">
               <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -2112,6 +2116,11 @@ const SpadeCMSInstall = () => {
           {/* CONFIG CHECK TAB - NEW */}
           <TabsContent value="config" className="space-y-6">
             <ConfigDashboard />
+          </TabsContent>
+
+          {/* DATA ISOLATION TAB - NEW */}
+          <TabsContent value="isolation" className="space-y-6">
+            <DataIsolationDashboard />
           </TabsContent>
 
           {/* CHECKLIST TAB */}

@@ -187,9 +187,12 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Tenant-spezifische Backups', status: 'planned' },
-      { label: 'Saubere Ordnerstruktur-Trennung', status: 'planned' },
-      { label: 'Config-Schutzmechanismus', status: 'planned' },
+      { label: 'Config-Schutzmechanismus', status: 'done' },
+      { label: 'Ordnerstruktur-Dokumentation', status: 'done' },
+      { label: 'Sync-Kategorisierung (Protected/Partial/Safe)', status: 'done' },
+      { label: 'Tenant-Backup SQL Generator', status: 'done' },
+      { label: 'Tenant-Restore SQL Generator', status: 'done' },
+      { label: 'Data Isolation Dashboard', status: 'done' },
     ]
   },
   {
