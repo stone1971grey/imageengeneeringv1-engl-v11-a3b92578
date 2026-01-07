@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { 
   History, RotateCcw, Eye, Calendar, User, Layers, Globe, 
   FileText, Search, Download, Filter, Clock, ChevronDown,
-  ChevronRight, ArrowUpDown, TrendingUp, AlertCircle
+  ChevronRight, ArrowUpDown, TrendingUp, AlertCircle, ExternalLink, Settings
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -35,6 +35,11 @@ interface EditorProfile {
   email: string;
   username: string | null;
   full_name: string | null;
+}
+
+interface PageInfo {
+  page_slug: string;
+  page_id: number;
 }
 
 interface EditorActivityPanelProps {
@@ -63,6 +68,7 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
   const [loading, setLoading] = useState(true);
   const [editors, setEditors] = useState<EditorProfile[]>([]);
   const [pages, setPages] = useState<string[]>([]);
+  const [pageInfoMap, setPageInfoMap] = useState<Record<string, PageInfo>>({});
   
   // Filters
   const [selectedEditor, setSelectedEditor] = useState<string>("all");
@@ -86,6 +92,7 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
     if (open) {
       loadEditors();
       loadPages();
+      loadPageInfos();
       loadBackups();
     }
   }, [open]);
@@ -129,6 +136,24 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
       setPages(uniquePages);
     } catch (error) {
       console.error("Error loading pages:", error);
+    }
+  };
+
+  const loadPageInfos = async () => {
+    try {
+      const { data } = await supabase
+        .from("page_registry")
+        .select("page_slug, page_id");
+      
+      if (data) {
+        const map: Record<string, PageInfo> = {};
+        data.forEach(p => {
+          map[p.page_slug] = { page_slug: p.page_slug, page_id: p.page_id };
+        });
+        setPageInfoMap(map);
+      }
+    } catch (error) {
+      console.error("Error loading page infos:", error);
     }
   };
 
@@ -691,11 +716,46 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                                   </Badge>
                                 </div>
                                 
-                                {/* Page & Segment with IDs */}
+                                {/* Page ID, Page Slug & Segment with Links */}
                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <Badge variant="outline" className="text-xs border-blue-500 text-blue-400 font-mono">
-                                    Page: {entry.page_slug}
-                                  </Badge>
+                                  {/* Page ID Badge */}
+                                  {pageInfoMap[entry.page_slug] && (
+                                    <Badge className="bg-[#f9dc24] text-gray-900 text-xs font-bold">
+                                      #{pageInfoMap[entry.page_slug].page_id}
+                                    </Badge>
+                                  )}
+                                  
+                                  {/* Page Slug with Links */}
+                                  <div className="flex items-center gap-1">
+                                    <Badge variant="outline" className="text-xs border-blue-500 text-blue-400 font-mono">
+                                      {entry.page_slug}
+                                    </Badge>
+                                    
+                                    {/* Frontend Link */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(`/en/${entry.page_slug}?edit=true`, '_blank');
+                                      }}
+                                      className="p-1 rounded hover:bg-gray-700 text-green-400 hover:text-green-300 transition-colors"
+                                      title="Open in Frontend (Edit Mode)"
+                                    >
+                                      <ExternalLink className="h-3.5 w-3.5" />
+                                    </button>
+                                    
+                                    {/* Backend Link */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(`/admin?page=${entry.page_slug}`, '_blank');
+                                      }}
+                                      className="p-1 rounded hover:bg-gray-700 text-blue-400 hover:text-blue-300 transition-colors"
+                                      title="Open in Admin Dashboard"
+                                    >
+                                      <Settings className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                  
                                   <span className="text-gray-500">→</span>
                                   <Badge variant="outline" className="text-xs border-purple-500 text-purple-400 font-mono">
                                     {entry.section_key}
