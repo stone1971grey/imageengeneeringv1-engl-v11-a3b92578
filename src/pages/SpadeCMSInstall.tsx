@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Settings, Shield, Zap, BookOpen, CheckCircle2, AlertTriangle, Info } from "lucide-react";
+import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Settings, Shield, Zap, BookOpen, CheckCircle2, AlertTriangle, Info, Layers } from "lucide-react";
 import { toast } from "sonner";
+import { PresetSelector } from "@/components/install/PresetSelector";
 
 // ============================================================================
 // SPADE CMS INSTALLATION - COMPLETE EXPORT FILES
@@ -1822,8 +1823,12 @@ const SpadeCMSInstall = () => {
         </Card>
 
         {/* Tabs for different sections */}
-        <Tabs defaultValue="files" className="space-y-6">
+        <Tabs defaultValue="presets" className="space-y-6">
           <TabsList className="bg-zinc-800 border-zinc-700">
+            <TabsTrigger value="presets" className="data-[state=active]:bg-zinc-700">
+              <Layers className="h-4 w-4 mr-2" />
+              Templates
+            </TabsTrigger>
             <TabsTrigger value="files" className="data-[state=active]:bg-zinc-700">
               <FileCode className="h-4 w-4 mr-2" />
               Dateien
@@ -1841,6 +1846,11 @@ const SpadeCMSInstall = () => {
               Checkliste
             </TabsTrigger>
           </TabsList>
+
+          {/* PRESETS TAB - NEW */}
+          <TabsContent value="presets" className="space-y-6">
+            <PresetSelector />
+          </TabsContent>
 
           {/* FILES TAB */}
           <TabsContent value="files" className="space-y-6">

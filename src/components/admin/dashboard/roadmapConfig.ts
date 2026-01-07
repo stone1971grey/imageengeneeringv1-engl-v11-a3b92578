@@ -160,11 +160,12 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Projekt-Starter Presets', status: 'planned' },
-      { label: 'News-Portal Template', status: 'planned' },
-      { label: 'Produkt-Katalog Template', status: 'planned' },
-      { label: 'Corporate Website Template', status: 'planned' },
-      { label: 'Preset-Auswahl im Setup', status: 'planned' },
+      { label: 'Projekt-Starter Presets', status: 'done' },
+      { label: 'News-Portal Template', status: 'done' },
+      { label: 'Produkt-Katalog Template', status: 'done' },
+      { label: 'Corporate Website Template', status: 'done' },
+      { label: 'Minimal Starter Template', status: 'done' },
+      { label: 'Preset-Auswahl im Setup', status: 'done' },
     ]
   },
   {
