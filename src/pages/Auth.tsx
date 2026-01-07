@@ -108,28 +108,33 @@ const Auth = () => {
 
     let emailToUse = loginIdentifier;
 
-    // Check if input is a username (no @ symbol) - need to look up the email
+    // Check if input is a username (no @ symbol) - use secure Edge Function for lookup
     if (!loginIdentifier.includes('@')) {
-      const { data: profile, error: lookupError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('username', loginIdentifier)
-        .maybeSingle();
+      try {
+        const { data, error: lookupError } = await supabase.functions.invoke('lookup-username', {
+          body: { username: loginIdentifier }
+        });
 
-      if (lookupError) {
-        console.error('Username lookup error:', lookupError);
+        if (lookupError) {
+          console.error('Username lookup error:', lookupError);
+          toast.error("Fehler bei der Benutzersuche");
+          setLoading(false);
+          return;
+        }
+
+        if (!data?.found || !data?.email) {
+          toast.error("Benutzername nicht gefunden");
+          setLoading(false);
+          return;
+        }
+
+        emailToUse = data.email;
+      } catch (err) {
+        console.error('Username lookup exception:', err);
         toast.error("Fehler bei der Benutzersuche");
         setLoading(false);
         return;
       }
-
-      if (!profile) {
-        toast.error("Benutzername nicht gefunden");
-        setLoading(false);
-        return;
-      }
-
-      emailToUse = profile.email;
     }
 
     const { error } = await supabase.auth.signInWithPassword({
