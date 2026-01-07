@@ -67,6 +67,8 @@ interface SEOEditorProps {
     advanced: boolean;
     enterprise: boolean;
   };
+  /** Initial tab to open (e.g., 'enterprise' for direct access) */
+  initialTab?: string;
 }
 
 export const SEOEditor = ({ 
@@ -77,7 +79,8 @@ export const SEOEditor = ({
   pageSegments = [],
   accessLevel = 'advanced', // Default to advanced for now (full program)
   editorLanguage = 'en', // Default to English
-  seoPermissions // Optional: if not provided, uses accessLevel logic
+  seoPermissions, // Optional: if not provided, uses accessLevel logic
+  initialTab // Optional: if provided, opens this tab initially
 }: SEOEditorProps) => {
   
   // Helper to check if advanced features are available
@@ -7565,7 +7568,7 @@ export const SEOEditor = ({
       </Collapsible>
 
       {/* Tabs for different sections - visibility controlled by seoPermissions */}
-      <Tabs defaultValue={showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "enterprise"} className="w-full">
+      <Tabs defaultValue={initialTab || (showBasicsTab ? "basics" : showSocialTab ? "social" : showAdvancedTab ? "advanced" : "enterprise")} className="w-full">
         <TabsList className={`grid w-full mb-6 bg-muted h-12`} style={{ 
           gridTemplateColumns: `repeat(${[showBasicsTab, showSocialTab, showAdvancedTab, showReadabilityTab, showEnterpriseTab].filter(Boolean).length}, 1fr)` 
         }}>

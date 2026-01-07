@@ -76,6 +76,7 @@ interface AdminHeaderProps {
   onCopyPageClick: () => void;
   isSEOEditorOpen: boolean;
   setIsSEOEditorOpen: (open: boolean) => void;
+  setSeoEditorInitialTab?: (tab: string | undefined) => void;
   isEnterpriseSEOOpen?: boolean;
   setIsEnterpriseSEOOpen?: (open: boolean) => void;
   isGlossaryOpen: boolean;
@@ -114,6 +115,7 @@ export const AdminHeader = ({
   onCopyPageClick,
   isSEOEditorOpen,
   setIsSEOEditorOpen,
+  setSeoEditorInitialTab,
   isEnterpriseSEOOpen,
   setIsEnterpriseSEOOpen,
   isGlossaryOpen,
@@ -453,11 +455,19 @@ export const AdminHeader = ({
               </Button>
             )}
             {/* Enterprise SEO - Admin or Editor with enterprise permission */}
-            {(isAdmin || (isEditor && seoPermissions?.enterprise)) && setIsEnterpriseSEOOpen && (
+            {(isAdmin || (isEditor && seoPermissions?.enterprise)) && setSeoEditorInitialTab && (
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[#00a1ff] hover:bg-[#0088dd] text-white shadow-soft hover:shadow-lg"
-                onClick={() => setIsEnterpriseSEOOpen(!isEnterpriseSEOOpen)}
+                className={`flex items-center gap-2 bg-[#00a1ff] hover:bg-[#0088dd] text-white shadow-soft hover:shadow-lg ${!selectedPage ? 'opacity-50' : ''}`}
+                onClick={() => {
+                  if (selectedPage) {
+                    setSeoEditorInitialTab('enterprise');
+                    setIsSEOEditorOpen(true);
+                  } else {
+                    toast.info('Select a page first to access Enterprise SEO');
+                  }
+                }}
+                title={!selectedPage ? 'Select a page first' : 'Open SEO Editor with Enterprise Tab'}
               >
                 <SistrixIcon className="h-4 w-4" />
                 Enterprise SEO
