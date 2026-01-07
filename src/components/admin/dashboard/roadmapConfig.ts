@@ -146,7 +146,7 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
       { label: 'SISTRIX Integration', status: 'done' },
       { label: 'Relaunch Dashboard', status: 'done' },
       { label: 'Visibility Tracking', status: 'done' },
-      { label: 'Content Gap Analysis', status: 'planned' },
+      { label: 'Content Gap Analysis', status: 'done' },
       { label: 'Link Analysis Dashboard', status: 'planned' },
       { label: 'Ranking Alerts', status: 'planned' },
       { label: 'Competitor Analysis', status: 'planned' },

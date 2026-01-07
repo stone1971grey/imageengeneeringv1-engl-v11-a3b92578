@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { RelaunchDashboard } from "./RelaunchDashboard";
 import VisibilityIndexWidget from "./VisibilityIndexWidget";
+import { ContentGapAnalysis } from "./ContentGapAnalysis";
 
 interface SistrixEnterpriseTabProps {
   pageSlug: string;
@@ -340,6 +341,13 @@ export const SistrixEnterpriseTab = ({ pageSlug, editorLanguage = 'en' }: Sistri
       
       {/* Relaunch Dashboard - Primary Feature */}
       <RelaunchDashboard editorLanguage={editorLanguage} />
+      
+      {/* Content Gap Analysis - NEW! */}
+      <ContentGapAnalysis 
+        domain={domain || 'image-engineering.de'} 
+        country={country} 
+        competitors={competitors.map(c => ({ domain: c.domain, visibilityIndex: c.visibilityIndex }))}
+      />
       
       {/* Header with SISTRIX Branding */}
       <div className="p-4 bg-gradient-to-r from-[#00a1ff]/20 to-[#0066cc]/20 border border-[#00a1ff]/30 rounded-lg">

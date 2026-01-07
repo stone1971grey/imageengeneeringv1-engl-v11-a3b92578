@@ -259,6 +259,73 @@ serve(async (req) => {
         params.append('country', country);
         break;
 
+      case 'content-gap':
+        // Content Gap Analysis: Find keywords competitors rank for but we don't
+        // Strategy: Use local relaunch_url_mappings data + competitor top keywords
+        if (!domain) {
+          return new Response(
+            JSON.stringify({ error: 'Domain is required for content-gap' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (!requestBody.competitorDomain) {
+          return new Response(
+            JSON.stringify({ error: 'competitorDomain is required for content-gap' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        console.log(`[Content Gap] Analyzing gap between ${domain} and ${requestBody.competitorDomain}`);
+        
+        // Fetch competitor's top keywords (positions 1-10, limit 50 to save credits)
+        const competitorParams = new URLSearchParams();
+        competitorParams.append('api_key', SISTRIX_API_KEY);
+        competitorParams.append('format', 'json');
+        competitorParams.append('domain', requestBody.competitorDomain);
+        competitorParams.append('country', country);
+        competitorParams.append('mobile', 'false');
+        competitorParams.append('limit', '50');
+        
+        const competitorUrl = `${SISTRIX_BASE_URL}/keyword.domain.seo?${competitorParams.toString()}`;
+        console.log(`[Content Gap] Fetching competitor keywords from ${requestBody.competitorDomain}`);
+        
+        const competitorResp = await fetch(competitorUrl);
+        const competitorData = await competitorResp.json();
+        
+        if (!competitorResp.ok || competitorData.status === 'error') {
+          console.error('[Content Gap] Competitor fetch error:', competitorData);
+          return new Response(
+            JSON.stringify({ error: 'Failed to fetch competitor keywords', details: competitorData }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        const competitorKeywords = (competitorData?.answer || [])
+          .filter((item: any) => {
+            const pos = parseInt(item.position) || 100;
+            return pos <= 10; // Only top 10 positions
+          })
+          .map((item: any) => ({
+            keyword: item.kw || item.keyword,
+            position: parseInt(item.position) || 0,
+            traffic: parseInt(item.traffic) || 0,
+            competitorUrl: item.url || ''
+          }));
+        
+        console.log(`[Content Gap] Found ${competitorKeywords.length} top competitor keywords`);
+        
+        // Return competitor keywords for frontend comparison with local data
+        return new Response(
+          JSON.stringify({ 
+            answer: [{
+              competitorDomain: requestBody.competitorDomain,
+              keywords: competitorKeywords,
+              analyzedAt: new Date().toISOString()
+            }]
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
       default:
         return new Response(
           JSON.stringify({ error: `Unknown action: ${action}` }),
