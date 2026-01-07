@@ -160,7 +160,11 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Template/Boilerplate System', status: 'planned' },
+      { label: 'Projekt-Starter Presets', status: 'planned' },
+      { label: 'News-Portal Template', status: 'planned' },
+      { label: 'Produkt-Katalog Template', status: 'planned' },
+      { label: 'Corporate Website Template', status: 'planned' },
+      { label: 'Preset-Auswahl im Setup', status: 'planned' },
     ]
   },
   {
@@ -169,7 +173,10 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Tenant Configuration Layer', status: 'planned' },
+      { label: 'siteConfig Validierung', status: 'planned' },
+      { label: 'Feature-Flag Management UI', status: 'planned' },
+      { label: 'Branding-Editor', status: 'planned' },
+      { label: 'Module Aktivierung/Deaktivierung', status: 'planned' },
     ]
   },
   {
@@ -178,7 +185,9 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Multi-Tenant Data Isolation', status: 'planned' },
+      { label: 'Tenant-spezifische Backups', status: 'planned' },
+      { label: 'Saubere Ordnerstruktur-Trennung', status: 'planned' },
+      { label: 'Config-Schutzmechanismus', status: 'planned' },
     ]
   },
   {
@@ -187,7 +196,10 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
     status: 'planned',
     isAdminOnly: true,
     features: [
-      { label: 'Tenant Onboarding Pipeline', status: 'planned' },
+      { label: 'Setup-Wizard im Dashboard', status: 'planned' },
+      { label: 'Automatische DB-Migration', status: 'planned' },
+      { label: 'Interaktive Checkliste', status: 'planned' },
+      { label: 'Tenant-Statusübersicht', status: 'planned' },
     ]
   },
   {
