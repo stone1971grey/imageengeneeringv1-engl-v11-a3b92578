@@ -366,6 +366,7 @@ const AdminDashboard = () => {
   const [footerButtonText, setFooterButtonText] = useState<string>("");
   const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
   const [isSEOEditorOpen, setIsSEOEditorOpen] = useState(false);
+  const [seoEditorInitialTab, setSeoEditorInitialTab] = useState<string | undefined>(undefined);
   const [isEnterpriseSEOOpen, setIsEnterpriseSEOOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isContentAutomationOpen, setIsContentAutomationOpen] = useState(false);
@@ -1510,6 +1511,7 @@ const AdminDashboard = () => {
           onCopyPageClick={() => setIsCopyPageDialogOpen(true)}
           isSEOEditorOpen={isSEOEditorOpen}
           setIsSEOEditorOpen={setIsSEOEditorOpen}
+          setSeoEditorInitialTab={setSeoEditorInitialTab}
           isEnterpriseSEOOpen={isEnterpriseSEOOpen}
           setIsEnterpriseSEOOpen={setIsEnterpriseSEOOpen}
           isGlossaryOpen={isGlossaryOpen}
@@ -1611,6 +1613,7 @@ const AdminDashboard = () => {
                 pageSegments={pageSegments}
                 editorLanguage={editorLanguage}
                 seoPermissions={isAdmin ? undefined : seoPermissions}
+                initialTab={seoEditorInitialTab}
               />
             </CardContent>
           </Card>
