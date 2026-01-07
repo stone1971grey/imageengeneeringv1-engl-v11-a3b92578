@@ -148,6 +148,7 @@ export const ROADMAP_VERSIONS: RoadmapVersion[] = [
       { label: 'Relaunch Dashboard', status: 'done' },
       { label: 'Visibility Tracking', status: 'done' },
       { label: 'Content Gap Analysis', status: 'done' },
+      { label: 'SEO Language Variants', status: 'planned' },
       { label: 'Link Analysis Dashboard', status: 'planned' },
       { label: 'Ranking Alerts', status: 'planned' },
       { label: 'Competitor Analysis', status: 'planned' },
