@@ -370,14 +370,33 @@ const Tiles: React.FC<TilesProps> = ({
   };
 
   const handleItemChange = (index: number, field: keyof TileItem, newValue: any) => {
+    console.log('[Tiles] 🔄 handleItemChange CALLED:', { index, field, newValue, currentItems: localItems.length });
+    
     const updatedItems = [...localItems];
     updatedItems[index] = { ...updatedItems[index], [field]: newValue };
+    
+    console.log('[Tiles] 📝 Updated item:', { 
+      index, 
+      field, 
+      oldValue: localItems[index]?.[field], 
+      newValue,
+      updatedItem: updatedItems[index]
+    });
+    
     setLocalItems(updatedItems);
     localItemsRef.current = updatedItems;
     hasChangesRef.current = true;
     setHasChanges(true);
-    // Debounced speichern (500ms nach letzter Änderung)
-    triggerDebouncedSave();
+    
+    // Für Icon-Änderungen: SOFORT speichern (nicht debounced)
+    if (field === 'icon') {
+      console.log('[Tiles] 🎯 ICON CHANGE - triggering immediate save');
+      toast.info(`Icon "${newValue}" wird gespeichert...`, { duration: 2000 });
+      performAutoSave();
+    } else {
+      // Debounced speichern (500ms nach letzter Änderung)
+      triggerDebouncedSave();
+    }
   };
 
   const handleAddItem = async () => {
