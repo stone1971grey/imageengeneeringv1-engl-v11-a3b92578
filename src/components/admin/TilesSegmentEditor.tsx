@@ -639,31 +639,61 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                 <Label className="text-white">Icon (Optional)</Label>
               <Select
                   value={tile.icon || "none"}
-                  onValueChange={(value) => {
+                  onValueChange={async (value) => {
                     const newIconValue = value === 'none' ? '' : value;
-                    console.log('[TilesSegmentEditor] 🎨 ICON CHANGE:', {
-                      tileIndex: index,
-                      oldIcon: tile.icon,
-                      newIcon: newIconValue,
-                      value: value
-                    });
                     
-                    // FIX: Update icon AND clear imageUrl in ONE operation to prevent state race condition
+                    // FIX: Update icon AND clear imageUrl in ONE operation
                     const newTiles = [...tiles];
                     newTiles[index] = { 
                       ...newTiles[index], 
                       icon: newIconValue,
-                      // Clear image when icon is selected
                       imageUrl: value !== 'none' ? '' : newTiles[index].imageUrl
                     };
-                    
-                    console.log('[TilesSegmentEditor] 🎨 New tile data:', newTiles[index]);
                     
                     setTiles(newTiles);
                     tilesRef.current = newTiles;
                     
-                    // Trigger auto-save
-                    triggerAutoSave();
+                    // SOFORT SPEICHERN (nicht debounced) - wie bei handleAddTile
+                    try {
+                      const { data: existingData, error: loadError } = await supabase
+                        .from("page_content")
+                        .select("*")
+                        .eq("page_slug", pageSlug)
+                        .eq("section_key", "page_segments")
+                        .eq("language", language)
+                        .maybeSingle();
+                      
+                      if (loadError) throw loadError;
+                      
+                      let segments = existingData?.content_value ? JSON.parse(existingData.content_value) : [];
+                      const segmentIndex = segments.findIndex((seg: any) => String(seg.id) === String(segmentId));
+                      
+                      if (segmentIndex !== -1) {
+                        segments[segmentIndex].data = {
+                          ...segments[segmentIndex].data,
+                          title,
+                          description,
+                          columns,
+                          items: newTiles
+                        };
+                        
+                        const { data: { user } } = await supabase.auth.getUser();
+                        
+                        await supabase
+                          .from("page_content")
+                          .update({
+                            content_value: JSON.stringify(segments),
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          })
+                          .eq("id", existingData.id);
+                        
+                        toast.success('✅ Icon gespeichert', { duration: 1500 });
+                      }
+                    } catch (error) {
+                      console.error('Icon save error:', error);
+                      toast.error('Icon speichern fehlgeschlagen');
+                    }
                   }}
                 >
                   <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
