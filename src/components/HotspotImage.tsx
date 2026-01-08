@@ -19,7 +19,7 @@ export default function HotspotImage({
   src,
   alt = "",
   markers,
-  dotColor = "bg-blue-500",
+  dotColor = "bg-brand-secondary",
   onHoverChange,
 }: Props) {
   const [active, setActive] = useState<string | number | null>(null);

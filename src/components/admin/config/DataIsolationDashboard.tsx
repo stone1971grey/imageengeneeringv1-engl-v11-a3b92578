@@ -38,10 +38,10 @@ const SYNC_TYPE_CONFIG = {
   partial: {
     label: 'Prüfen',
     icon: FolderSync,
-    color: 'text-yellow-400',
-    bgColor: 'bg-yellow-500/10',
-    borderColor: 'border-yellow-500/20',
-    badgeColor: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    color: 'text-brand-primary',
+    bgColor: 'bg-brand-primary/10',
+    borderColor: 'border-brand-primary/20',
+    badgeColor: 'bg-brand-primary/20 text-brand-primary border-brand-primary/30',
   },
   safe: {
     label: 'Sicher',

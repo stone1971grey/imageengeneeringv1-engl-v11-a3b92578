@@ -358,7 +358,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             sectionKey="footer_cta_description"
             pageSlug={pageSlug}
             language={language}
-            className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+            className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-brand-primary [&_a]:underline [&_a]:hover:text-white"
             as="p"
             multiline
             onUpdate={() => { handleContentChange(); loadFooterContent(); }}
@@ -367,7 +367,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
         ) : (
           hasCMSContent && footerContent.footer_cta_description ? (
             <p 
-              className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+              className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-brand-primary [&_a]:underline [&_a]:hover:text-white"
               dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(footerContent.footer_cta_description) }}
             />
           ) : (
@@ -435,7 +435,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                   sectionKey="footer_contact_description"
                   pageSlug={pageSlug}
                   language={language}
-                  className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                  className="text-white leading-relaxed [&_a]:text-brand-primary [&_a]:underline [&_a]:hover:text-white"
                   as="p"
                   multiline
                   onUpdate={() => { handleContentChange(); loadFooterContent(); }}
@@ -444,7 +444,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
               ) : (
                 hasCMSContent && footerContent.footer_contact_description ? (
                   <p 
-                    className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
+                    className="text-white leading-relaxed [&_a]:text-brand-primary [&_a]:underline [&_a]:hover:text-white"
                     dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(footerContent.footer_contact_description) }}
                   />
                 ) : (
@@ -458,21 +458,21 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
             <div className="space-y-4">              
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
+                  <Phone className="h-5 w-5 mr-3 text-brand-primary" />
                   <span className="text-foreground">{t.footer.phoneDE}</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
+                  <Phone className="h-5 w-5 mr-3 text-brand-primary" />
                   <span className="text-foreground">{t.footer.phoneUSA}</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
+                  <Phone className="h-5 w-5 mr-3 text-brand-primary" />
                   <span className="text-foreground">{t.footer.phoneChina}</span>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <Clock className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
+                <Clock className="h-5 w-5 mr-3 text-brand-primary" />
                 <span className="text-foreground">{t.footer.officeHours}</span>
               </div>
 
@@ -481,14 +481,14 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                 {hasCMSContent && footerContent.footer_button_text ? (
                   <a href={footerContent.footer_button_url || "/contact"}>
                     <Button 
-                      className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       {footerContent.footer_button_text}
                     </Button>
                   </a>
                 ) : (
                   <a href="/contact">
-                    <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <Button className="bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                       {t.footer.button[pageType]}
                     </Button>
                   </a>
@@ -536,7 +536,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                           <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-primary text-brand-primary-foreground font-medium hover:bg-brand-primary-hover transition-colors"
                           >
                             <Upload className="h-3 w-3" />
                           </button>
@@ -544,7 +544,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                           <button
                             type="button"
                             onClick={() => setShowMediaDialog(true)}
-                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-secondary text-brand-secondary-foreground font-medium hover:opacity-90 transition-colors"
                           >
                             <FolderOpen className="h-3 w-3" />
                           </button>

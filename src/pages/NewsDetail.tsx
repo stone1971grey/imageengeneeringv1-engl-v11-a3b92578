@@ -385,7 +385,7 @@ const NewsDetail = () => {
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 {article.category && (
-                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1.5 font-medium">
+                  <Badge className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover text-sm px-3 py-1.5 font-medium">
                     {article.category}
                   </Badge>
                 )}
@@ -471,7 +471,7 @@ const NewsDetail = () => {
                       <div className="p-6 flex flex-col flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           {item.category && (
-                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1">
+                            <Badge className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover text-sm px-3 py-1">
                               {item.category}
                             </Badge>
                           )}
@@ -486,7 +486,7 @@ const NewsDetail = () => {
                           {item.teaser}
                         </p>
                         <Link to={`/${language}/news/${item.slug}`} className="w-full block">
-                          <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
+                          <Button className="w-full bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover transition-colors duration-300 mt-auto">
                             {language === 'de' ? 'Mehr lesen' : language === 'ja' ? '続きを読む' : language === 'ko' ? '더 읽기' : language === 'zh' ? '阅读更多' : 'Read more'}
                           </Button>
                         </Link>

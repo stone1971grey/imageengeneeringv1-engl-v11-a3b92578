@@ -478,9 +478,9 @@ export const EditableText: React.FC<EditableTextProps> = ({
   const getStatusStyles = () => {
     if (contentStatus === 'draft') {
       return {
-        border: 'border-l-4 border-l-yellow-400 pl-3',
-        bg: 'bg-yellow-400/10',
-        indicator: { icon: Edit3, color: 'text-yellow-500', label: 'Draft' }
+        border: 'border-l-4 border-l-brand-primary pl-3',
+        bg: 'bg-brand-primary/10',
+        indicator: { icon: Edit3, color: 'text-brand-primary', label: 'Draft' }
       };
     }
     if (contentStatus === 'pending') {

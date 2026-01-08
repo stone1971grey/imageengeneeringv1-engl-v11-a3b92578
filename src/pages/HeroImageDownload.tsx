@@ -33,7 +33,7 @@ const HeroImageDownload = () => {
             </div>
             <button
               onClick={() => handleDownload(downloadsHero, 'downloads-hero.jpg')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-brand-secondary hover:opacity-90 text-brand-secondary-foreground font-bold py-3 px-6 rounded-lg transition-colors"
             >
               Download Downloads Hero
             </button>
@@ -53,7 +53,7 @@ const HeroImageDownload = () => {
             </div>
             <button
               onClick={() => handleDownload(whitepaperHero, 'whitepaper-hero.jpg')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-brand-secondary hover:opacity-90 text-brand-secondary-foreground font-bold py-3 px-6 rounded-lg transition-colors"
             >
               Download Whitepaper Hero
             </button>
