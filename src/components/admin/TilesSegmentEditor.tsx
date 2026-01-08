@@ -512,18 +512,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
   };
 
   const handleTileChange = (index: number, field: keyof TileItem, value: any) => {
-    console.log('[TilesSegmentEditor] 🔄 handleTileChange:', { index, field, value });
     const newTiles = [...tiles];
     newTiles[index] = { ...newTiles[index], [field]: value };
     setTiles(newTiles);
     tilesRef.current = newTiles;
-    
-    // Für Icon-Änderungen: Zeige Toast zur Bestätigung
-    if (field === 'icon') {
-      console.log('[TilesSegmentEditor] 🎨 ICON CHANGE:', value);
-      toast.info(`Icon "${value || 'None'}" ausgewählt - wird gespeichert...`, { duration: 2000 });
-    }
-    
     // Debounced Auto-Save
     triggerAutoSave();
   };
@@ -651,22 +643,12 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                 <Select
                   value={tile.icon || "none"}
                   onValueChange={(value) => {
-                    console.log('[TilesSegmentEditor] 🎨 Icon Select onValueChange:', { value, index });
                     const newIconValue = value === 'none' ? '' : value;
-                    
-                    // Update both icon and imageUrl in a single batch to avoid race conditions
-                    const newTiles = [...tiles];
-                    newTiles[index] = { 
-                      ...newTiles[index], 
-                      icon: newIconValue,
-                      // Clear image when icon is selected
-                      ...(value !== 'none' ? { imageUrl: '' } : {})
-                    };
-                    setTiles(newTiles);
-                    tilesRef.current = newTiles;
-                    
-                    toast.info(`Icon "${newIconValue || 'None'}" ausgewählt`, { duration: 2000 });
-                    triggerAutoSave();
+                    handleTileChange(index, 'icon', newIconValue);
+                    // Clear image when icon is selected
+                    if (value !== 'none') {
+                      handleTileChange(index, 'imageUrl', '');
+                    }
                   }}
                 >
                   <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
