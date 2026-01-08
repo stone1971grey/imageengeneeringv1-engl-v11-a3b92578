@@ -622,7 +622,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('2')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '2' 
-                    ? 'bg-[#f9dc24] text-black' 
+                    ? 'bg-brand-primary text-brand-primary-foreground' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -633,7 +633,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('3')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '3' 
-                    ? 'bg-[#f9dc24] text-black' 
+                    ? 'bg-brand-primary text-brand-primary-foreground' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -644,7 +644,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('4')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '4' 
-                    ? 'bg-[#f9dc24] text-black' 
+                    ? 'bg-brand-primary text-brand-primary-foreground' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >

@@ -102,6 +102,22 @@ export default {
 					DEFAULT: 'hsl(var(--yellow))',
 					foreground: 'hsl(var(--yellow-foreground))'
 				},
+				brand: {
+					primary: 'hsl(var(--brand-primary))',
+					'primary-foreground': 'hsl(var(--brand-primary-foreground))',
+					'primary-hover': 'hsl(var(--brand-primary-hover))',
+					secondary: 'hsl(var(--brand-secondary))',
+					'secondary-foreground': 'hsl(var(--brand-secondary-foreground))'
+				},
+				cta: {
+					DEFAULT: 'hsl(var(--cta-button))',
+					foreground: 'hsl(var(--cta-button-foreground))',
+					hover: 'hsl(var(--cta-button-hover))'
+				},
+				editor: {
+					accent: 'hsl(var(--editor-accent))',
+					'accent-foreground': 'hsl(var(--editor-accent-foreground))'
+				},
 				training: {
 					button: 'hsl(var(--training-button))',
 					bg: 'hsl(var(--training-bg))'

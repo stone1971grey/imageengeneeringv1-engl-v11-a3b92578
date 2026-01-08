@@ -328,7 +328,7 @@ registerSegment(CustomGalleryPlugin);
 ## Roadmap-Zeitleiste
 
 ```
-Q1 2026
+Q1 2026 - v1.2
 ├── Template-Extraktion
 │   ├── Core-Code identifizieren
 │   ├── Demo-Content entfernen
@@ -338,6 +338,23 @@ Q1 2026
 │   ├── tenant.config.ts Schema definieren
 │   ├── Config-Loader implementieren
 │   └── Feature-Flags einbauen
+│
+Q1 2026 - v1.3 (Design Layer Architecture)
+├── Theme-Token-System
+│   ├── --brand-primary, --brand-secondary Tokens
+│   ├── --cta-button, --editor-accent Tokens
+│   └── Tailwind classes: bg-brand-primary, bg-cta
+│
+├── Design-Layer Refactoring
+│   ├── Hardcoded #f9dc24 → bg-brand-primary
+│   ├── Button variants mit Tokens
+│   ├── UI-Komponenten (Checkbox, Input) tokenisiert
+│   └── THEME_CUSTOMIZATION.md Dokumentation
+│
+├── Remix-Ready Template
+│   ├── Theme-Austausch durch 1 CSS-Datei
+│   ├── Keine Component-Änderungen nötig
+│   └── Corporate Design in <5 min anwendbar
 │
 Q2 2026
 ├── Erster Pilot-Mandant
