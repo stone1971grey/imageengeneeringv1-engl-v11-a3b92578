@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface NewsSegmentProps {
   id?: string;
@@ -500,7 +501,7 @@ const NewsSegment = ({
               <h2 className="text-4xl font-bold text-white mb-4">{sectionTitle}</h2>
               <div 
                 className="text-xl text-white/80 max-w-3xl mx-auto"
-                dangerouslySetInnerHTML={{ __html: sectionDescription }}
+                dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(sectionDescription) }}
               />
             </>
           )}

@@ -504,7 +504,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 subtext && (
                   <div 
                     className="text-xl text-gray-600 max-w-3xl mx-auto"
-                    dangerouslySetInnerHTML={{ __html: subtext }}
+                    dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
                   />
                 )
               )

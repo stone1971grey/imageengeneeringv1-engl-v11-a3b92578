@@ -23,6 +23,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 import {
   DndContext,
   closestCenter,
@@ -885,7 +886,7 @@ const BannerSegment = ({
             subtext && (
               <div 
                 className="text-lg text-gray-700 mb-8"
-                dangerouslySetInnerHTML={{ __html: subtext }}
+                dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
               />
             )
           )}

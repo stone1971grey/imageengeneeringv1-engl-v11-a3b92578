@@ -8,6 +8,7 @@ import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface FAQItem {
   question: string;
@@ -472,7 +473,7 @@ const FAQ: React.FC<FAQProps> = ({
             subtext && (
               <div 
                 className="text-xl text-muted-foreground mb-12 max-w-3xl text-center mx-auto"
-                dangerouslySetInnerHTML={{ __html: subtext }}
+                dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
               />
             )
           )

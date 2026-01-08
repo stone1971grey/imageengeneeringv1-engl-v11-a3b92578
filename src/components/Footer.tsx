@@ -8,6 +8,7 @@ import { useFrontendEditOptional } from "@/contexts/FrontendEditContext";
 import { EditableText } from "@/components/frontend-edit/EditableText";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
 import { toast } from "sonner";
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
 import teamStefan from "@/assets/team-stefan-color.jpg";
@@ -367,7 +368,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
           hasCMSContent && footerContent.footer_cta_description ? (
             <p 
               className="text-xl text-white max-w-4xl mx-auto leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-              dangerouslySetInnerHTML={{ __html: footerContent.footer_cta_description }}
+              dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(footerContent.footer_cta_description) }}
             />
           ) : (
             <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
@@ -444,7 +445,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                 hasCMSContent && footerContent.footer_contact_description ? (
                   <p 
                     className="text-white leading-relaxed [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-                    dangerouslySetInnerHTML={{ __html: footerContent.footer_contact_description }}
+                    dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(footerContent.footer_contact_description) }}
                   />
                 ) : (
                   <p className="text-white leading-relaxed">
@@ -582,7 +583,7 @@ const Footer = ({ segmentId, pageSlug: propPageSlug, onRegisterRef, onContentUpd
                   hasCMSContent && footerContent.footer_team_quote ? (
                     <blockquote 
                       className="text-lg text-white leading-relaxed mb-4 [&_a]:text-[#f9dc24] [&_a]:underline [&_a]:hover:text-white"
-                      dangerouslySetInnerHTML={{ __html: `"${footerContent.footer_team_quote}"` }}
+                      dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(`"${footerContent.footer_team_quote}"`) }}
                     />
                   ) : (
                     <blockquote className="text-lg text-white leading-relaxed mb-4">

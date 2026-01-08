@@ -7,6 +7,7 @@ import { Plus, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface TableProps {
   id: string;
@@ -254,7 +255,7 @@ const Table = ({
                 subtext && (
                   <div 
                     className="text-xl text-gray-600 max-w-2xl mx-auto"
-                    dangerouslySetInnerHTML={{ __html: subtext }}
+                    dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
                   />
                 )
               )
