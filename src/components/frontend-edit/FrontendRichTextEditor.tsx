@@ -4,7 +4,8 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { LinkEditorDialog } from './LinkEditorDialog';
 
 interface FrontendRichTextEditorProps {
   value: string;
@@ -21,6 +22,9 @@ export const FrontendRichTextEditor = ({
   className = '',
   minHeight = '150px'
 }: FrontendRichTextEditorProps) => {
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [currentLinkUrl, setCurrentLinkUrl] = useState('');
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -55,20 +59,33 @@ export const FrontendRichTextEditor = ({
     }
   }, [value, editor]);
 
-  const setLink = useCallback(() => {
+  const openLinkDialog = useCallback(() => {
+    if (!editor) return;
+    const previousUrl = editor.getAttributes('link').href || '';
+    setCurrentLinkUrl(previousUrl);
+    setLinkDialogOpen(true);
+  }, [editor]);
+
+  const handleLinkSubmit = useCallback((url: string) => {
     if (!editor) return;
     
-    const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('Enter URL:', previousUrl);
-
-    if (url === null) return;
-
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    // Set target="_blank" for external links
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+    editor.chain().focus().extendMarkRange('link').setLink({ 
+      href: url,
+      target: isExternal ? '_blank' : null,
+      rel: isExternal ? 'noopener noreferrer' : null
+    }).run();
+  }, [editor]);
+
+  const handleLinkRemove = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().extendMarkRange('link').unsetLink().run();
   }, [editor]);
 
   if (!editor) {
@@ -135,12 +152,20 @@ export const FrontendRichTextEditor = ({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={setLink}
+          onClick={openLinkDialog}
           className={`h-8 w-8 p-0 ${editor.isActive('link') ? 'bg-[#f9dc24] text-black' : 'text-gray-600 hover:text-black hover:bg-gray-200'}`}
           title="Insert Link"
         >
           <LinkIcon className="h-4 w-4" />
         </Button>
+        
+        <LinkEditorDialog
+          open={linkDialogOpen}
+          onOpenChange={setLinkDialogOpen}
+          currentUrl={currentLinkUrl}
+          onSubmit={handleLinkSubmit}
+          onRemove={handleLinkRemove}
+        />
       </div>
       
       {/* Editor */}
