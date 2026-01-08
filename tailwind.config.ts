@@ -107,7 +107,13 @@ export default {
 					bg: 'hsl(var(--icon-highlight-bg))',
 					border: 'hsl(var(--icon-highlight-border))'
 				},
-				'edit-highlight': 'hsl(var(--edit-highlight))',
+				'edit-highlight': 'hsl(var(--edit-highlight) / 0.1)',
+				'light-dark': {
+					DEFAULT: 'hsl(var(--light-dark))',
+					foreground: 'hsl(var(--light-dark-foreground))',
+					border: 'hsl(var(--light-dark-border))',
+					muted: 'hsl(var(--light-dark-muted))'
+				},
 				training: {
 					button: 'hsl(var(--training-button))',
 					bg: 'hsl(var(--training-bg))'
