@@ -48,6 +48,7 @@ import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { TilesSegmentEditor } from '@/components/admin/TilesSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import { SistrixEnterpriseTab } from '@/components/admin/seo/SistrixEnterpriseTab';
+import { autoSyncSegmentsOnLoad } from '@/components/admin/dashboard/segmentSyncUtils';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import NewsListSegmentEditor from '@/components/admin/NewsListSegmentEditor';
@@ -1010,7 +1011,7 @@ const AdminDashboard = () => {
     let finalTabOrder = result.tabOrder;
     
     if (user) {
-      const { autoSyncSegmentsOnLoad } = await import('@/components/admin/dashboard/segmentSyncUtils');
+      // Use static import to prevent chunk loading errors after builds
       const syncResult = await autoSyncSegmentsOnLoad(
         querySlug,
         result.pageSegments,
