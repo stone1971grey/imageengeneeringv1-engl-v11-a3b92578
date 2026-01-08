@@ -518,7 +518,7 @@ export const EditableButton: React.FC<EditableButtonProps> = ({
             size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-1 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground font-medium"
+            className="flex-1 bg-[#f9dc24] hover:bg-[#e5c820] text-black font-medium"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

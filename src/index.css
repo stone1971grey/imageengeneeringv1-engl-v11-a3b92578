@@ -122,36 +122,13 @@ All colors MUST be HSL.
     /* Custom explore button */
     --explore-button: 52 95% 56%;
     
-    /* ========================================
-       THEME TOKENS - TENANT CUSTOMIZABLE
-       Replace these values for custom branding
-       ======================================== */
-    
-    /* Brand Primary - Main accent color (default: Spade Yellow #f9dc24) */
-    --brand-primary: 52 95% 56%;
-    --brand-primary-foreground: 0 0% 0%;
-    --brand-primary-hover: 52 95% 48%;
-    
-    /* Brand Secondary - Supporting color */
-    --brand-secondary: 211 77% 28%;
-    --brand-secondary-foreground: 0 0% 100%;
-    
-    /* CTA Button - Call-to-action styling */
-    --cta-button: var(--brand-primary);
-    --cta-button-foreground: var(--brand-primary-foreground);
-    --cta-button-hover: var(--brand-primary-hover);
-    
-    /* Editor Accent - Admin/Editor UI highlight */
-    --editor-accent: 211 77% 42%;
-    --editor-accent-foreground: 0 0% 100%;
-    
-    /* Legacy aliases (for backwards compatibility) */
-    --orange: var(--brand-primary);
-    --orange-foreground: var(--brand-primary-foreground);
-    --orange-accent: var(--brand-primary);
-    --orange-accent-foreground: var(--brand-primary-foreground);
-    --yellow: var(--brand-primary);
-    --yellow-foreground: var(--brand-primary-foreground);
+    /* Standard Yellow #f9dc24 (previously orange #f5743a) */
+    --orange: 52 95% 56%;
+    --orange-foreground: 0 0% 0%;
+    --orange-accent: 52 95% 56%;
+    --orange-accent-foreground: 0 0% 0%;
+    --yellow: 52 95% 56%;
+    --yellow-foreground: 0 0% 0%;
 
     --radius: 0.5rem;
 

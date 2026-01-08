@@ -162,7 +162,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
           value={data.title || ''}
           onChange={(e) => onChange({ ...data, title: e.target.value })}
           placeholder="Enter banner title"
-          className="bg-white border-2 border-gray-300 focus:border-brand-primary text-xl text-black placeholder:text-gray-400 h-12"
+          className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
         />
       </div>
 
@@ -183,7 +183,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
           <Button
             type="button"
             onClick={handleAddImage}
-            className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Image
@@ -224,7 +224,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                     <Button
                       type="button"
                       onClick={() => document.getElementById(`image-upload-${index}`)?.click()}
-                      className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover flex items-center gap-2"
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
                       disabled={uploadingIndex === index}
                     >
                       <Upload className="h-4 w-4" />
@@ -249,7 +249,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                     value={image.alt || ''}
                     onChange={(e) => handleImageChange(index, 'alt', e.target.value)}
                     placeholder="Descriptive alt text"
-                    className="bg-white border-2 border-gray-300 focus:border-brand-primary text-black placeholder:text-gray-400"
+                    className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -269,7 +269,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
               value={data.buttonText || ''}
               onChange={(e) => onChange({ ...data, buttonText: e.target.value })}
               placeholder="e.g. Learn More"
-              className="bg-white border-2 border-gray-300 focus:border-brand-primary text-black placeholder:text-gray-400"
+              className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400"
             />
           </div>
 
@@ -279,7 +279,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
               value={data.buttonLink || ''}
               onChange={(e) => onChange({ ...data, buttonLink: e.target.value.trim() })}
               placeholder="https://example.com or /path"
-              className="bg-white border-2 border-gray-300 focus:border-brand-primary text-black placeholder:text-gray-400"
+              className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400"
             />
           </div>
 
@@ -305,7 +305,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
       <div className="pt-4 border-t border-gray-600">
         <Button
           onClick={onSave}
-          className="w-full bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
           Save Changes
         </Button>

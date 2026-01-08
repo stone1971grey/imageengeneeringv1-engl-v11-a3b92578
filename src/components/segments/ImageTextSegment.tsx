@@ -522,7 +522,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 onClick={() => handleLayoutChange('1-col')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localLayout === '1-col' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -533,7 +533,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 onClick={() => handleLayoutChange('2-col')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localLayout === '2-col' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -544,7 +544,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                 onClick={() => handleLayoutChange('3-col')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localLayout === '3-col' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -612,7 +612,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                           <button
                             type="button"
                             onClick={() => fileInputRefs.current[idx]?.click()}
-                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-brand-primary text-brand-primary-foreground font-medium hover:bg-brand-primary-hover transition-colors shadow-sm"
+                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors shadow-sm"
                           >
                             <Upload className="h-4 w-4" />
                             Upload
@@ -624,7 +624,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                               setActiveItemIndex(idx);
                               setShowMediaDialog(true);
                             }}
-                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-brand-secondary text-brand-secondary-foreground font-medium hover:opacity-90 transition-colors shadow-sm"
+                            className="flex items-center gap-1 px-4 py-2 text-sm rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors shadow-sm"
                           >
                             <FolderOpen className="h-4 w-4" />
                             Media
@@ -655,7 +655,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                           type="text"
                           value={item.title}
                           onChange={(e) => handleItemChange(idx, 'title', e.target.value)}
-                          className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-brand-primary outline-none py-2 hover:bg-brand-primary/10 transition-colors"
+                          className="text-2xl font-bold text-gray-900 w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-2 hover:bg-[#f9dc24]/10 transition-colors"
                           placeholder="Item title..."
                         />
                       </div>
@@ -704,7 +704,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
               size="sm"
               onClick={handleCancel}
               disabled={isSaving}
-              className="bg-black text-brand-primary hover:bg-gray-900 border-black"
+              className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
             >
               Cancel
             </Button>
@@ -712,7 +712,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
               size="sm"
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -9,22 +9,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover",
+        default: "bg-[hsl(var(--orange))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--orange))]/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-muted hover:text-foreground",
+          "border border-input bg-background hover:bg-[#626262] hover:text-white",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-muted",
+          "bg-secondary text-secondary-foreground hover:bg-[#626262] hover:text-white",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        decision: "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover shadow-soft hover:shadow-lg transition-all duration-300",
-        contact: "bg-brand-secondary text-brand-secondary-foreground hover:bg-brand-secondary/80 shadow-lg hover:shadow-xl transition-all duration-300",
-        technical: "bg-gray-900 text-white hover:bg-gray-700 transition-all duration-300",
-        academia: "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover shadow-soft hover:shadow-lg transition-all duration-300",
-        explore: "bg-brand-secondary text-brand-secondary-foreground hover:bg-brand-secondary/80 shadow-soft hover:shadow-lg transition-all duration-300",
-        cta: "bg-cta text-cta-foreground hover:bg-cta-hover shadow-lg hover:shadow-xl transition-all duration-300",
-        editor: "bg-editor-accent text-editor-accent-foreground hover:bg-editor-accent/80 transition-all duration-300",
+        decision: "bg-[hsl(var(--orange))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--orange))]/90 shadow-soft hover:shadow-lg transition-all duration-300",
+        contact: "bg-[#103e7c] text-white hover:bg-[#0d3369] shadow-lg hover:shadow-xl transition-all duration-300",
+        technical: "bg-gray-900 text-white hover:bg-[#626262] hover:text-white transition-all duration-300",
+        academia: "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 shadow-soft hover:shadow-lg transition-all duration-300",
+        explore: "bg-[#103e7c] text-white hover:bg-[#0d3369] shadow-soft hover:shadow-lg transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",

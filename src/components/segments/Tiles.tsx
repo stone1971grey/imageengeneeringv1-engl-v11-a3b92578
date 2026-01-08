@@ -559,7 +559,7 @@ const Tiles: React.FC<TilesProps> = ({
   }, [performAutoSave]);
 
   return (
-    <section id={id} className="pt-8 pb-16 bg-muted">
+    <section id={id} className="pt-8 pb-16 bg-gray-50">
       {/* DEBUG BOX - wird immer angezeigt wenn ?edit=true */}
       {urlHasEditParam && (
         <div className="container mx-auto px-6 mb-4">
@@ -622,7 +622,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('2')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '2' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -633,7 +633,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('3')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '3' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -644,7 +644,7 @@ const Tiles: React.FC<TilesProps> = ({
                 onClick={() => handleColumnsChange('4')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   localColumns === '4' 
-                    ? 'bg-brand-primary text-brand-primary-foreground' 
+                    ? 'bg-[#f9dc24] text-black' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -695,15 +695,15 @@ const Tiles: React.FC<TilesProps> = ({
                       </div>
                     ) : hasIcon && Icon ? (
                       <div className="flex flex-col items-center pt-8 gap-2 flex-shrink-0">
-                        <div className="p-4 bg-brand-primary/10 rounded-full border-2 border-brand-primary/20">
-                          <Icon className="h-8 w-8 text-foreground" />
+                        <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20">
+                          <Icon className="h-8 w-8 text-gray-900" />
                         </div>
                         {/* Icon Selector Dropdown */}
                         <div className="relative">
                           <select
                             value={tile.icon || ''}
                             onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
-                            className="appearance-none bg-background border border-border rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-brand-primary focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
+                            className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
                           >
                             <option value="">No Icon</option>
                             {iconOptions.map((iconName) => (
@@ -722,7 +722,7 @@ const Tiles: React.FC<TilesProps> = ({
                           <select
                             value={tile.icon || ''}
                             onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
-                            className="appearance-none bg-background border border-border rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-brand-primary focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
+                            className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-[#f9dc24] focus:border-[#f9dc24] focus:ring-1 focus:ring-[#f9dc24] outline-none"
                           >
                             <option value="">No Icon</option>
                             {iconOptions.map((iconName) => (
@@ -747,8 +747,8 @@ const Tiles: React.FC<TilesProps> = ({
                       </div>
                     ) : hasIcon && Icon ? (
                       <div className="flex justify-center pt-8 flex-shrink-0">
-                        <div className="p-4 bg-brand-primary/10 rounded-full border-2 border-brand-primary/20 hover:bg-brand-primary/20 hover:border-brand-primary/40 transition-all duration-300">
-                          <Icon className="h-8 w-8 text-foreground" />
+                        <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
+                          <Icon className="h-8 w-8 text-gray-900" />
                         </div>
                       </div>
                     ) : null
@@ -763,7 +763,7 @@ const Tiles: React.FC<TilesProps> = ({
                             type="text"
                             value={tile.title}
                             onChange={(e) => handleItemChange(idx, 'title', e.target.value)}
-                            className="text-2xl font-bold text-foreground w-full text-center bg-transparent border-b border-dashed border-border focus:border-brand-primary outline-none py-1 hover:bg-brand-primary/10 transition-colors"
+                            className="text-2xl font-bold text-gray-900 w-full text-center bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
                             placeholder="Tile title..."
                           />
                           {/* Plain Text Description Editor */}
@@ -771,7 +771,7 @@ const Tiles: React.FC<TilesProps> = ({
                             value={stripHtml(tile.description || '')}
                             onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
                             placeholder="Tile description..."
-                            className="w-full min-h-[120px] text-muted-foreground leading-relaxed text-center bg-transparent border border-dashed border-border focus:border-brand-primary outline-none p-2 hover:bg-brand-primary/10 transition-colors resize-none rounded"
+                            className="w-full min-h-[120px] text-gray-600 leading-relaxed text-center bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-2 hover:bg-[#f9dc24]/10 transition-colors resize-none rounded"
                           />
                           
                           {/* Button Editor with Style Selector */}
@@ -783,18 +783,18 @@ const Tiles: React.FC<TilesProps> = ({
                               <div
                                 className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                                   tile.ctaStyle === 'technical'
-                                    ? 'bg-foreground text-background'
-                                    : 'bg-brand-primary text-brand-primary-foreground'
+                                    ? 'bg-gray-800 text-white'
+                                    : 'bg-[#f9dc24] text-gray-900'
                                 }`}
                               >
                                 <input
                                   type="text"
                                   value={tile.ctaText || ''}
                                   onChange={(e) => handleItemChange(idx, 'ctaText', e.target.value)}
-                                    className={`bg-transparent border-none outline-none text-center font-semibold w-full min-w-[80px] placeholder:opacity-60 ${
-                                      tile.ctaStyle === 'technical'
-                                        ? 'text-background placeholder:text-background/60'
-                                        : 'text-brand-primary-foreground placeholder:text-brand-primary-foreground/60'
+                                  className={`bg-transparent border-none outline-none text-center font-semibold w-full min-w-[80px] placeholder:opacity-60 ${
+                                    tile.ctaStyle === 'technical'
+                                      ? 'text-white placeholder:text-white/60'
+                                      : 'text-gray-900 placeholder:text-gray-900/60'
                                   }`}
                                   placeholder="Button text..."
                                 />
@@ -808,7 +808,7 @@ const Tiles: React.FC<TilesProps> = ({
                                 type="text"
                                 value={tile.ctaLink || ''}
                                 onChange={(e) => handleItemChange(idx, 'ctaLink', e.target.value)}
-                                className="flex-1 bg-foreground text-background text-sm px-3 py-2 rounded border border-border placeholder:text-muted-foreground"
+                                className="flex-1 bg-gray-900 text-white text-sm px-3 py-2 rounded border border-gray-600 placeholder:text-gray-400"
                                 placeholder="/page-url or https://..."
                               />
                             </div>
@@ -820,17 +820,19 @@ const Tiles: React.FC<TilesProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => handleItemChange(idx, 'ctaStyle', 'standard')}
-                                  className={`rounded transition-all border border-border bg-brand-primary ${
+                                  className={`rounded transition-all border border-gray-400 ${
                                     (tile.ctaStyle || 'standard') === 'standard' ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
                                   }`}
-                                  title="Brand Primary (Standard)"
+                                  style={{ backgroundColor: '#f9dc24' }}
+                                  title="Yellow (Standard)"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => handleItemChange(idx, 'ctaStyle', 'technical')}
-                                  className={`rounded transition-all border border-border bg-foreground ${
+                                  className={`rounded transition-all border border-gray-400 ${
                                     tile.ctaStyle === 'technical' ? 'w-10 h-10' : 'w-7 h-7 hover:w-8 hover:h-8'
                                   }`}
+                                  style={{ backgroundColor: '#1f2937' }}
                                   title="Dark (Technical)"
                                 />
                               </div>
@@ -857,8 +859,8 @@ const Tiles: React.FC<TilesProps> = ({
                             rel="noopener noreferrer"
                             className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                               tile.ctaStyle === "technical"
-                                ? "bg-foreground text-background hover:bg-foreground/90"
-                                : "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+                                ? "bg-gray-800 text-white hover:bg-gray-900"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
                             }`}
                           >
                             {tile.ctaText}
@@ -868,8 +870,8 @@ const Tiles: React.FC<TilesProps> = ({
                             to={tile.ctaLink}
                             className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                               tile.ctaStyle === "technical"
-                                ? "bg-foreground text-background hover:bg-foreground/90"
-                                : "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+                                ? "bg-gray-800 text-white hover:bg-gray-900"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
                             }`}
                           >
                             {tile.ctaText}
@@ -891,7 +893,7 @@ const Tiles: React.FC<TilesProps> = ({
               variant="outline"
               size="sm"
               onClick={handleAddItem}
-              className="bg-foreground text-background hover:bg-foreground/90 border-foreground"
+              className="bg-[#000000] text-white hover:bg-[#1a1a1a] hover:text-white border-[#000000]"
             >
               <Plus className="h-4 w-4 mr-2 text-white" />
               Add Tile
@@ -907,7 +909,7 @@ const Tiles: React.FC<TilesProps> = ({
               size="sm"
               onClick={handleCancel}
               disabled={isSaving}
-              className="bg-foreground text-brand-primary hover:bg-foreground/90 border-foreground"
+              className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
             >
               Cancel
             </Button>
@@ -915,7 +917,7 @@ const Tiles: React.FC<TilesProps> = ({
               size="sm"
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

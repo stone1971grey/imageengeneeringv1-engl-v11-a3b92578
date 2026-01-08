@@ -133,11 +133,11 @@ const FullHero = ({
   const getButtonStyle = (color: 'yellow' | 'black' | 'white') => {
     switch (color) {
       case 'yellow':
-        return 'bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover';
+        return { backgroundColor: '#f9dc24', color: '#000000' };
       case 'black':
-        return 'bg-black text-white hover:bg-gray-900';
+        return { backgroundColor: '#000000', color: '#ffffff' };
       case 'white':
-        return 'bg-white text-black hover:bg-gray-100';
+        return { backgroundColor: '#ffffff', color: '#000000' };
     }
   };
 
@@ -331,7 +331,8 @@ const FullHero = ({
                 ) : (
                   <Button
                     size="lg"
-                    className={`border-0 px-12 py-4 w-full md:w-auto ${getButtonStyle(button1Color)}`}
+                    className="border-0 px-12 py-4 w-full md:w-auto"
+                    style={getButtonStyle(button1Color)}
                     onClick={() => handleButtonClick(button1Link)}
                   >
                     {button1Text}
@@ -357,7 +358,8 @@ const FullHero = ({
                 ) : (
                   <Button
                     size="lg"
-                    className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40' : 'border-0'} ${getButtonStyle(button2Color)}`}
+                    className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
+                    style={getButtonStyle(button2Color)}
                     onClick={() => handleButtonClick(button2Link)}
                   >
                     {button2Text}
