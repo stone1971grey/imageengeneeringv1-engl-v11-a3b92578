@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import downloadsHero from "@/assets/downloads-hero.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { storeMauticEmail } from "@/lib/mauticTracking";
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -447,7 +448,7 @@ export default function Downloads() {
               <CardContent className="space-y-6">
                 <div 
                   className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
-                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                  dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(selectedItem.fullDescription) }}
                 />
                 
                 <div className="pt-6 border-t border-border">
@@ -621,7 +622,7 @@ export default function Downloads() {
               <CardContent className="space-y-6">
                 <div 
                   className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
-                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                  dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(selectedItem.fullDescription) }}
                 />
                 
                 <div className="pt-6 border-t border-border">
@@ -795,7 +796,7 @@ export default function Downloads() {
               <CardContent className="space-y-6">
                 <div 
                   className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
-                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                  dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(selectedItem.fullDescription) }}
                 />
                 
                 <div className="pt-6 border-t border-border">
