@@ -44,7 +44,7 @@ const Intro = ({
   const headingLabel = headingLevel === 'h1' ? 'Intro Title (H1)' : 'Intro Title (H2)';
 
   return (
-    <section className="pt-6 pb-2 bg-white">
+    <section className="pt-6 pb-2 bg-light-card">
       <div className="container mx-auto px-6">
         <div className="text-center mb-6">
           {isEditing ? (
@@ -54,7 +54,7 @@ const Intro = ({
                 sectionKey={`${segmentKey}-title`}
                 pageSlug={pageSlug}
                 language={language}
-                className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight"
+                className="text-2xl md:text-3xl font-bold text-light-foreground mb-8 tracking-tight"
                 as={headingLevel}
                 onUpdate={onContentUpdate}
                 fieldLabel={headingLabel}
@@ -65,7 +65,7 @@ const Intro = ({
                   sectionKey={`${segmentKey}-description`}
                   pageSlug={pageSlug}
                   language={language}
-                  className="text-xl text-black max-w-2xl mx-auto font-light"
+                  className="text-xl text-light-foreground max-w-2xl mx-auto font-light"
                   onUpdate={onContentUpdate}
                   fieldLabel="Intro Description"
                 />
@@ -74,13 +74,13 @@ const Intro = ({
           ) : (
             <>
               {title && (
-                <HeadingTag className="text-2xl md:text-3xl font-bold text-black mb-8 tracking-tight">
+                <HeadingTag className="text-2xl md:text-3xl font-bold text-light-foreground mb-8 tracking-tight">
                   {title}
                 </HeadingTag>
               )}
               {description && (
                 <div 
-                  className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line"
+                  className="text-xl text-light-foreground max-w-2xl mx-auto font-light whitespace-pre-line"
                   dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(description) }}
                 />
               )}
