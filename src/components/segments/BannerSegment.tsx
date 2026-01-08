@@ -193,7 +193,7 @@ const SortableImageItem = ({
         style={style}
         className={cn(
           "bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
-          isEditing && "cursor-pointer hover:ring-2 hover:ring-[#f9dc24]"
+          isEditing && "cursor-pointer hover:ring-2 hover:ring-brand-primary"
         )}
       >
         {isEditing && (
@@ -251,7 +251,7 @@ const SortableImageItem = ({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-primary text-brand-primary-foreground font-medium hover:bg-brand-primary-hover transition-colors"
               >
                 <Upload className="h-3 w-3" />
               </button>
@@ -261,7 +261,7 @@ const SortableImageItem = ({
                   e.stopPropagation();
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-secondary text-brand-secondary-foreground font-medium hover:opacity-90 transition-colors"
               >
                 <FolderOpen className="h-3 w-3" />
               </button>
@@ -283,7 +283,7 @@ const SortableImageItem = ({
               value={image.alt || ''}
               onChange={(e) => onAltChange(index, e.target.value)}
               placeholder="Alt text..."
-              className="w-full text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-[#f9dc24] outline-none"
+              className="w-full text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-brand-primary outline-none"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
@@ -399,7 +399,7 @@ const AddImageButton = ({
 
   return (
     <>
-      <div className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] transition-colors">
+      <div className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-brand-primary transition-colors">
         {isUploading ? (
           <div className="flex flex-col items-center">
             <Loader2 className="h-6 w-6 mb-1 animate-spin" />
@@ -416,7 +416,7 @@ const AddImageButton = ({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-primary text-brand-primary-foreground font-medium hover:bg-brand-primary-hover transition-colors"
               >
                 <Upload className="h-3 w-3" />
               </button>
@@ -426,7 +426,7 @@ const AddImageButton = ({
                   e.stopPropagation();
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-brand-secondary text-brand-secondary-foreground font-medium hover:opacity-90 transition-colors"
               >
                 <FolderOpen className="h-3 w-3" />
               </button>
@@ -1010,7 +1010,7 @@ const BannerSegment = ({
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
+                className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />

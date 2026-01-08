@@ -268,17 +268,16 @@ const Table = ({
             <div className="overflow-x-auto">
               {/* Header Row */}
               <div 
-                className="grid min-w-[800px] text-black" 
+                className="grid min-w-[800px] text-brand-primary-foreground bg-brand-primary" 
                 style={{ 
-                  gridTemplateColumns: `repeat(${columnCount}, 1fr)${isEditing ? ' auto' : ''}`,
-                  background: '#f9dc24' 
+                  gridTemplateColumns: `repeat(${columnCount}, 1fr)${isEditing ? ' auto' : ''}`
                 }}
               >
                 {localHeaders.map((header, index) => (
                   <div 
                     key={index}
                     className={`p-4 text-center font-semibold text-lg relative group ${
-                      index > 0 ? 'border-l border-yellow-600' : ''
+                      index > 0 ? 'border-l border-brand-primary-hover' : ''
                     }`}
                   >
                     {isEditing ? (
@@ -287,7 +286,7 @@ const Table = ({
                           type="text"
                           value={header}
                           onChange={(e) => handleHeaderChange(index, e.target.value)}
-                          className="w-full text-center bg-transparent border-b-2 border-dashed border-yellow-700 focus:border-black outline-none py-1 font-semibold placeholder:text-yellow-700/60"
+                          className="w-full text-center bg-transparent border-b-2 border-dashed border-brand-primary-hover focus:border-black outline-none py-1 font-semibold placeholder:text-brand-primary-hover/60"
                           placeholder="Column header..."
                         />
                         {localHeaders.length > 1 && (
@@ -309,7 +308,7 @@ const Table = ({
                   <button
                     type="button"
                     onClick={handleAddColumn}
-                    className="p-4 flex items-center justify-center hover:bg-yellow-400 transition-colors border-l border-yellow-600"
+                    className="p-4 flex items-center justify-center hover:bg-brand-primary-hover transition-colors border-l border-brand-primary-hover"
                     title="Add column"
                   >
                     <Plus className="h-5 w-5" />
@@ -342,7 +341,7 @@ const Table = ({
                           <textarea
                             value={cell}
                             onChange={(e) => handleCellChange(rowIndex, cellIndex, e.target.value)}
-                            className={`w-full bg-transparent border border-dashed border-gray-300 focus:border-[#f9dc24] outline-none p-2 hover:bg-[#f9dc24]/10 transition-colors resize-none min-h-[60px] ${
+                            className={`w-full bg-transparent border border-dashed border-gray-300 focus:border-brand-primary outline-none p-2 hover:bg-brand-primary/10 transition-colors resize-none min-h-[60px] ${
                               cellIndex === 0 ? 'font-medium' : 'text-sm'
                             }`}
                             placeholder="Cell content..."
@@ -392,7 +391,7 @@ const Table = ({
                 size="sm"
                 onClick={handleCancel}
                 disabled={isSaving}
-                className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
+                className="bg-black text-brand-primary hover:bg-gray-900 border-black"
               >
                 Cancel
               </Button>
@@ -400,7 +399,7 @@ const Table = ({
                 size="sm"
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
               >
                 {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Save

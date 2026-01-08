@@ -296,24 +296,24 @@ export const EditableImage: React.FC<EditableImageProps> = ({
             <div className="flex flex-col gap-3 min-w-[280px]">
               <p className="text-sm text-gray-600 font-medium text-center mb-1">Select image source</p>
               
-              {/* Upload from Computer - Yellow */}
+              {/* Upload from Computer - Brand Primary */}
               <button
                 onClick={() => {
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-primary text-brand-primary-foreground font-medium hover:bg-brand-primary-hover transition-colors"
               >
                 <Upload className="h-5 w-5" />
                 Upload from Computer
               </button>
               
-              {/* Select from Media Management - Blue */}
+              {/* Select from Media Management - Brand Secondary */}
               <button
                 onClick={() => {
                   setShowOptions(false);
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-brand-secondary text-brand-secondary-foreground font-medium hover:opacity-90 transition-colors"
               >
                 <FolderOpen className="h-5 w-5" />
                 Select from Media
