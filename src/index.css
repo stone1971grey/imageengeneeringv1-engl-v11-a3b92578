@@ -129,6 +129,13 @@ All colors MUST be HSL.
     --orange-accent-foreground: 0 0% 0%;
     --yellow: 52 95% 56%;
     --yellow-foreground: 0 0% 0%;
+    
+    /* Design Layer v1.3 - Semantic Tokens for Remix-Ready Components */
+    /* These tokens enable theming without modifying component code */
+    --yellow-muted: 52 95% 56%;           /* Same as yellow, used for borders/focus */
+    --icon-highlight-bg: 52 95% 90%;      /* Light yellow background for icons */
+    --icon-highlight-border: 52 95% 75%;  /* Subtle yellow border for icons */
+    --edit-highlight: 52 95% 56%;         /* Highlight color for edit mode elements */
 
     --radius: 0.5rem;
 

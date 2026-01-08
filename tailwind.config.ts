@@ -100,8 +100,14 @@ export default {
 				},
 				yellow: {
 					DEFAULT: 'hsl(var(--yellow))',
-					foreground: 'hsl(var(--yellow-foreground))'
+					foreground: 'hsl(var(--yellow-foreground))',
+					muted: 'hsl(var(--yellow-muted))'
 				},
+				'icon-highlight': {
+					bg: 'hsl(var(--icon-highlight-bg))',
+					border: 'hsl(var(--icon-highlight-border))'
+				},
+				'edit-highlight': 'hsl(var(--edit-highlight))',
 				training: {
 					button: 'hsl(var(--training-button))',
 					bg: 'hsl(var(--training-bg))'
