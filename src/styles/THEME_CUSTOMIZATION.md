@@ -119,6 +119,18 @@ When setting up a new tenant project:
 
 ---
 
+## Refactoring Status (v1.3.0)
+
+**Completed Components:**
+- FullHero, ActionHero, Intro segments
+- Table, BannerSegment, ImageTextSegment
+- DynamicCMSPage (buttons, loading states)
+- EditModeToggle, EditableButton, EditableImage
+- Button, Checkbox UI components
+- Tiles segment
+
+**Pending:** ~100 admin/editor components with hardcoded colors (iterative updates)
+
 ## Version History
 
 - **v1.3.0** - Design Layer Architecture introduced

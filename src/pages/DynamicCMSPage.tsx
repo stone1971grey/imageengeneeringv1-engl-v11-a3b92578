@@ -70,7 +70,7 @@ class PageErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundary
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+                className="px-6 py-3 bg-brand-primary text-brand-primary-foreground rounded-lg font-semibold hover:bg-brand-primary-hover transition-colors"
               >
                 Refresh Page
               </button>
@@ -1099,7 +1099,7 @@ const DynamicCMSPage = () => {
                       className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-base transition-all duration-200 ${
                         segment.data.hero_cta_style === 'technical'
                           ? 'bg-gray-800 text-white hover:bg-gray-900'
-                          : 'bg-[#f9dc24] text-gray-900 hover:bg-yellow-400'
+                          : 'bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover'
                       }`}
                     >
                       {segment.data.hero_cta_text}
@@ -1599,7 +1599,7 @@ const DynamicCMSPage = () => {
       <PageErrorBoundary>
         <div className="min-h-screen flex items-center justify-center bg-white">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-brand-primary mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg">Loading page...</p>
           </div>
         </div>
@@ -1621,7 +1621,7 @@ const DynamicCMSPage = () => {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              className="px-6 py-3 bg-brand-primary text-brand-primary-foreground rounded-lg font-semibold hover:bg-brand-primary-hover transition-colors"
             >
               Refresh Page
             </button>
@@ -1641,7 +1641,7 @@ const DynamicCMSPage = () => {
             <p className="text-xl text-gray-600 mb-8">Page not found</p>
             <Link
               to="/"
-              className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-brand-primary text-brand-primary-foreground rounded-lg font-semibold hover:bg-brand-primary-hover transition-colors"
             >
               Back to Home
             </Link>
@@ -1674,7 +1674,7 @@ const DynamicCMSPage = () => {
               <div className="flex flex-col gap-3">
                 <Link
                   to="/auth"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-brand-primary text-brand-primary-foreground rounded-lg font-semibold hover:bg-brand-primary-hover transition-colors"
                 >
                   Sign In to Preview
                 </Link>
@@ -1835,7 +1835,7 @@ const DynamicCMSPage = () => {
             <div className="mt-8">
               <Link
                 to="/en/admin-dashboard"
-                className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-brand-primary text-brand-primary-foreground rounded-lg font-semibold hover:bg-brand-primary-hover transition-colors"
               >
                 Go to Admin Dashboard
               </Link>
