@@ -344,7 +344,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
             subtext && (
               <div 
                 className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto"
-                dangerouslySetInnerHTML={{ __html: subtext }}
+                dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
               />
             )
           )

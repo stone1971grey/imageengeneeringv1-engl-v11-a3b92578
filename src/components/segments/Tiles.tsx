@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Utility to strip HTML tags from text (safety measure for legacy data)
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
+
 const stripHtml = (text: string): string => {
   if (!text) return '';
   return text
@@ -602,7 +604,7 @@ const Tiles: React.FC<TilesProps> = ({
                 description && (
                   <div 
                     className="text-xl text-gray-600 max-w-3xl mx-auto"
-                    dangerouslySetInnerHTML={{ __html: stripHtml(description) }}
+                    dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(stripHtml(description)) }}
                   />
                 )
               )
