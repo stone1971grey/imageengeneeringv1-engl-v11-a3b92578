@@ -2,6 +2,7 @@ import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
 import { useSegmentEdit } from '@/components/frontend-edit/EditableSegment';
 import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface IntroProps {
   title?: string;
@@ -80,7 +81,7 @@ const Intro = ({
               {description && (
                 <div 
                   className="text-xl text-black max-w-2xl mx-auto font-light whitespace-pre-line"
-                  dangerouslySetInnerHTML={{ __html: description }}
+                  dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(description) }}
                 />
               )}
             </>
