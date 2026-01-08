@@ -3,6 +3,7 @@ import { EditableText } from '@/components/frontend-edit/EditableText';
 import { EditableRichText } from '@/components/frontend-edit/EditableRichText';
 import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { useFrontendEditOptional } from '@/contexts/FrontendEditContext';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface ActionHeroProps {
   id?: string;
@@ -93,7 +94,7 @@ const ActionHero = ({
               </h1>
               <div 
                 className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-2"
-                dangerouslySetInnerHTML={{ __html: description }}
+                dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(description) }}
               />
             </>
           )}

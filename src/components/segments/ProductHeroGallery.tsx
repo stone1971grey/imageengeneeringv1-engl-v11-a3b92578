@@ -11,6 +11,7 @@ import { EditableImage } from '@/components/frontend-edit/EditableImage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { syncAltTextToMediaManagement } from '@/utils/syncAltTextToMediaManagement';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 // Simple inline editable component for image title/alt text
 const EditableImageTitle: React.FC<{
@@ -653,7 +654,7 @@ const ProductHeroGallery = ({
         ) : (
           <div 
             className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl [&>p]:mb-4 [&>p:last-child]:mb-0"
-            dangerouslySetInnerHTML={{ __html: data.description }}
+            dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(data.description) }}
           />
         )}
       </div>

@@ -7,6 +7,7 @@ import { Plus, Trash2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface FeatureItem {
   title: string;
@@ -393,7 +394,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
                         {item.description && (
                           <div 
                             className="text-gray-600 leading-relaxed whitespace-pre-line [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8]"
-                            dangerouslySetInnerHTML={{ __html: item.description }}
+                            dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(item.description) }}
                           />
                         )}
                       </>
