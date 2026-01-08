@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Settings, Shield, Zap, BookOpen, CheckCircle2, AlertTriangle, Info, Layers } from "lucide-react";
+import { Check, Copy, Download, FileCode, FolderOpen, Package, Database, Settings, Shield, Zap, BookOpen, CheckCircle2, AlertTriangle, Info, Layers, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { PresetSelector } from "@/components/install/PresetSelector";
+import { ExportKitGenerator } from "@/components/install/ExportKitGenerator";
 import { ConfigDashboard, DataIsolationDashboard } from "@/components/admin/config";
 import { OnboardingWizard, TenantStatusOverview } from "@/components/admin/onboarding";
 
@@ -1858,8 +1859,12 @@ const SpadeCMSInstall = () => {
         </Card>
 
         {/* Tabs for different sections */}
-        <Tabs defaultValue="presets" className="space-y-6">
-          <TabsList className="bg-zinc-800 border-zinc-700">
+        <Tabs defaultValue="export-kit" className="space-y-6">
+          <TabsList className="bg-zinc-800 border-zinc-700 flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="export-kit" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+              <Rocket className="h-4 w-4 mr-2" />
+              Export-Kit
+            </TabsTrigger>
             <TabsTrigger value="presets" className="data-[state=active]:bg-zinc-700">
               <Layers className="h-4 w-4 mr-2" />
               Templates
@@ -1898,7 +1903,12 @@ const SpadeCMSInstall = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* PRESETS TAB - NEW */}
+          {/* EXPORT-KIT TAB - For existing projects */}
+          <TabsContent value="export-kit" className="space-y-6">
+            <ExportKitGenerator />
+          </TabsContent>
+
+          {/* PRESETS TAB - For new projects */}
           <TabsContent value="presets" className="space-y-6">
             <PresetSelector />
           </TabsContent>
