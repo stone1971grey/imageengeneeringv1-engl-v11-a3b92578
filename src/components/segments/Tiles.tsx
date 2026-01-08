@@ -559,7 +559,7 @@ const Tiles: React.FC<TilesProps> = ({
   }, [performAutoSave]);
 
   return (
-    <section id={id} className="pt-8 pb-16 bg-gray-50">
+    <section id={id} className="pt-8 pb-16 bg-light-background">
       {/* DEBUG BOX - wird immer angezeigt wenn ?edit=true */}
       {urlHasEditParam && (
         <div className="container mx-auto px-6 mb-4">
