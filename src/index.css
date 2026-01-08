@@ -136,6 +136,12 @@ All colors MUST be HSL.
     --icon-highlight-bg: 52 95% 90%;      /* Light yellow background for icons */
     --icon-highlight-border: 52 95% 75%;  /* Subtle yellow border for icons */
     --edit-highlight: 52 95% 56%;         /* Highlight color for edit mode elements */
+    
+    /* Dark surface tokens (for dark buttons/inputs in light mode) */
+    --light-dark: 221 39% 11%;            /* Dark surface background (gray-900) */
+    --light-dark-foreground: 0 0% 100%;   /* Text on dark surfaces */
+    --light-dark-border: 220 13% 30%;     /* Border on dark surfaces (gray-600) */
+    --light-dark-muted: 218 11% 65%;      /* Muted text on dark surfaces (gray-400) */
 
     --radius: 0.5rem;
 
