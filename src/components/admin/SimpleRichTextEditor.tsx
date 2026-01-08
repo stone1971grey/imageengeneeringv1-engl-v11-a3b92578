@@ -4,7 +4,8 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import { Bold, Italic, UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { LinkEditorDialog } from '@/components/frontend-edit/LinkEditorDialog';
 
 interface SimpleRichTextEditorProps {
   value: string;
@@ -26,6 +27,9 @@ const saveEditorSize = (key: string, height: number) => {
 };
 
 export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey }: SimpleRichTextEditorProps) => {
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [currentLinkUrl, setCurrentLinkUrl] = useState('');
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -37,7 +41,7 @@ export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey 
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-400 underline',
+          class: 'text-[#2563eb] underline hover:text-[#1d4ed8]',
         },
       }),
       Underline,
@@ -60,20 +64,32 @@ export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey 
     }
   }, [value, editor]);
 
-  const setLink = useCallback(() => {
+  const openLinkDialog = useCallback(() => {
+    if (!editor) return;
+    const previousUrl = editor.getAttributes('link').href || '';
+    setCurrentLinkUrl(previousUrl);
+    setLinkDialogOpen(true);
+  }, [editor]);
+
+  const handleLinkSubmit = useCallback((url: string) => {
     if (!editor) return;
     
-    const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('URL eingeben:', previousUrl);
-
-    if (url === null) return;
-
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+    editor.chain().focus().extendMarkRange('link').setLink({ 
+      href: url,
+      target: isExternal ? '_blank' : null,
+      rel: isExternal ? 'noopener noreferrer' : null
+    }).run();
+  }, [editor]);
+
+  const handleLinkRemove = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().extendMarkRange('link').unsetLink().run();
   }, [editor]);
 
   if (!editor) {
@@ -140,12 +156,20 @@ export const SimpleRichTextEditor = ({ value, onChange, placeholder, storageKey 
           type="button"
           variant="ghost"
           size="sm"
-          onClick={setLink}
+          onClick={openLinkDialog}
           className={`h-8 w-8 p-0 ${editor.isActive('link') ? 'bg-gray-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-600'}`}
           title="Link einfügen"
         >
           <LinkIcon className="h-4 w-4" />
         </Button>
+        
+        <LinkEditorDialog
+          open={linkDialogOpen}
+          onOpenChange={setLinkDialogOpen}
+          currentUrl={currentLinkUrl}
+          onSubmit={handleLinkSubmit}
+          onRemove={handleLinkRemove}
+        />
       </div>
       
       {/* Editor */}

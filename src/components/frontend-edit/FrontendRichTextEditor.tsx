@@ -36,7 +36,7 @@ export const FrontendRichTextEditor = ({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline hover:text-blue-800',
+          class: 'text-[#2563eb] underline hover:text-[#1d4ed8]',
         },
       }),
       Underline,
