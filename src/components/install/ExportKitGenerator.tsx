@@ -68,7 +68,7 @@ interface TenantConfig {
   
   // Features
   enableNews: boolean;
-  enableNewsletter: boolean;
+  enableNewsletterMautic: boolean; // Newsletter via Mautic
   enableEvents: boolean;
   enableDownloads: boolean;
   enableProducts: boolean;
@@ -109,11 +109,11 @@ const DEFAULT_CONFIG: TenantConfig = {
   youtube: "",
   
   enableNews: true,
-  enableNewsletter: true,
+  enableNewsletterMautic: true, // Newsletter via Mautic
   enableEvents: true,
   enableDownloads: true,
   enableProducts: false,
-  enableSeoTools: false,
+  enableSeoTools: true, // Default on - core feature
   enableGlossary: false,
   enableContact: true,
   
@@ -151,7 +151,7 @@ export const ExportKitGenerator = () => {
     const tenantId = toSlug(config.projectName || 'mein-projekt');
     const enabledModules = [
       config.enableNews && 'news',
-      config.enableNewsletter && 'newsletter',
+      config.enableNewsletterMautic && 'newsletter (Mautic)',
       config.enableEvents && 'events',
       config.enableDownloads && 'downloads',
       config.enableProducts && 'products',
@@ -546,7 +546,7 @@ CREATE POLICY "Products viewable when published" ON products FOR SELECT USING (p
 CREATE POLICY "Admins can manage products" ON products FOR ALL TO authenticated USING (has_role('admin', auth.uid()));
 \`\`\`` : ''}
 
-${config.enableNewsletter ? `### 7. Newsletter-Modul
+${config.enableNewsletterMautic ? `### 7. Newsletter-Modul (Mautic)
 \`\`\`sql
 CREATE TABLE public.newsletter_subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -650,7 +650,7 @@ export const siteConfig = {
   features: {
     modules: {
       news: ${config.enableNews},
-      newsletter: ${config.enableNewsletter},
+      newsletterMautic: ${config.enableNewsletterMautic},
       events: ${config.enableEvents},
       downloads: ${config.enableDownloads},
       products: ${config.enableProducts},
@@ -797,7 +797,7 @@ Nach der Installation:
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { key: 'enableNews', label: 'News-Artikel', icon: '📰' },
-                { key: 'enableNewsletter', label: 'Newsletter', icon: '📧' },
+                { key: 'enableNewsletterMautic', label: 'Newsletter (Mautic)', icon: '📧' },
                 { key: 'enableEvents', label: 'Events', icon: '📅' },
                 { key: 'enableDownloads', label: 'Downloads', icon: '📥' },
                 { key: 'enableProducts', label: 'Produkte', icon: '📦' },
