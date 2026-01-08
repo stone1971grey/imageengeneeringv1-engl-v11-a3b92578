@@ -736,10 +736,7 @@ const Tiles: React.FC<TilesProps> = ({
                         <div className="relative">
                           <select
                             value={tile.icon || ''}
-                            onChange={(e) => {
-                              console.log('[Tiles] 🎨 SELECT onChange FIRED (hasIcon path)!', { idx, value: e.target.value });
-                              handleItemChange(idx, 'icon', e.target.value);
-                            }}
+                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
                             className="appearance-none bg-background border border-border rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-brand-primary focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
                           >
                             <option value="">No Icon</option>
@@ -758,10 +755,7 @@ const Tiles: React.FC<TilesProps> = ({
                         <div className="relative">
                           <select
                             value={tile.icon || ''}
-                            onChange={(e) => {
-                              console.log('[Tiles] 🎨 SELECT onChange FIRED!', { idx, value: e.target.value });
-                              handleItemChange(idx, 'icon', e.target.value);
-                            }}
+                            onChange={(e) => handleItemChange(idx, 'icon', e.target.value === '' ? '' : e.target.value)}
                             className="appearance-none bg-background border border-border rounded-md px-3 py-1.5 pr-8 text-sm cursor-pointer hover:border-brand-primary focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
                           >
                             <option value="">No Icon</option>
