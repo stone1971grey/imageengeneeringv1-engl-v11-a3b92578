@@ -61,11 +61,12 @@ const transformHtmlWithLinkIcons = (html: string): string => {
       finalAttrs += ' target="_blank" rel="noopener noreferrer"';
     }
     
-    // For anchor links, ensure they scroll smoothly and don't navigate away
-    // We'll use onclick handler to ensure proper scroll behavior
+    // For anchor links, ensure they scroll smoothly with offset for navigation
+    // Use scrollTo with calculated offset instead of scrollIntoView to account for fixed header
     if (type === 'anchor') {
       const anchorId = href.replace('#', '');
-      const scrollScript = `onclick="event.preventDefault();document.getElementById('${anchorId}')?.scrollIntoView({behavior:'smooth',block:'start'});return false;"`;
+      // Calculate scroll position with 100px offset for navigation bar
+      const scrollScript = `onclick="event.preventDefault();var el=document.getElementById('${anchorId}');if(el){var y=el.getBoundingClientRect().top+window.pageYOffset-100;window.scrollTo({top:y,behavior:'smooth'});}return false;"`;
       if (!attrs.includes('onclick=')) {
         finalAttrs += ` ${scrollScript}`;
       }
