@@ -56,15 +56,15 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
   };
 
   return (
-    <nav className="fixed top-[64px] md:top-[85px] left-0 right-0 z-30 bg-[#F7F9FB] pt-4 md:pt-6 pb-3 md:pb-4 border-b border-gray-100">
+    <nav className="fixed top-[64px] md:top-[85px] left-0 right-0 z-30 bg-light-muted pt-4 md:pt-6 pb-3 md:pb-4 border-b border-light-border">
       <div className="container mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+        <div className="bg-light-card rounded-lg shadow-sm border border-light-border p-4">
           <div className="flex flex-wrap gap-6 justify-center text-lg">
             {data.links.map((link, index) => (
               <a
                 key={index}
                 href={`#${link.anchor}`}
-                className="text-gray-700 hover:text-gray-900 font-medium transition-colors scroll-smooth"
+                className="text-light-muted-foreground hover:text-light-foreground font-medium transition-colors scroll-smooth"
                 onClick={(e) => handleClick(e, link.anchor)}
               >
                 {link.label}

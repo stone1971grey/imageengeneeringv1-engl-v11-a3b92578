@@ -183,9 +183,9 @@ const Specification = ({
   }, [hasChanges, localRows, pageSlug, language, segmentKey, onContentUpdate]);
 
   return (
-    <section id={id} className="pt-[20px] pb-20 bg-gray-50">
+    <section id={id} className="pt-[20px] pb-20 bg-light-muted">
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-10 hover:shadow-xl transition-shadow duration-300">
+        <div className="max-w-7xl mx-auto bg-light-card rounded-xl shadow-lg border border-light-border p-10 hover:shadow-xl transition-shadow duration-300">
           {(displayTitle || isEditing) && (
             isEditing ? (
               <EditableText
@@ -193,13 +193,13 @@ const Specification = ({
                 sectionKey={`${segmentKey}-title`}
                 pageSlug={pageSlug}
                 language={language}
-                className="text-2xl font-semibold text-[#2D2D2D] mb-6"
+                className="text-2xl font-semibold text-light-foreground mb-6"
                 as="h2"
                 onUpdate={onContentUpdate}
                 fieldLabel="Specification Title"
               />
             ) : (
-              title && <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">{title}</h2>
+              title && <h2 className="text-2xl font-semibold text-light-foreground mb-6">{title}</h2>
             )
           )}
           
@@ -207,9 +207,9 @@ const Specification = ({
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Specification</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Value</th>
+                  <tr className="border-b border-light-border">
+                    <th className="text-left py-3 px-4 font-semibold text-light-foreground">Specification</th>
+                    <th className="text-left py-3 px-4 font-semibold text-light-foreground">Value</th>
                     {isEditing && <th className="w-12"></th>}
                   </tr>
                 </thead>
@@ -217,28 +217,28 @@ const Specification = ({
                   {localRows.map((row, index) => (
                     <tr 
                       key={index} 
-                      className={index !== localRows.length - 1 ? "border-b border-gray-100" : ""}
+                      className={index !== localRows.length - 1 ? "border-b border-light-border/50" : ""}
                     >
-                      <td className="py-3 px-4 text-[#555] whitespace-pre-line">
+                      <td className="py-3 px-4 text-light-muted-foreground whitespace-pre-line">
                         {isEditing ? (
                           <input
                             type="text"
                             value={row.specification}
                             onChange={(e) => handleRowChange(index, 'specification', e.target.value)}
-                            className="w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
+                            className="w-full bg-transparent border-b border-dashed border-light-border focus:border-yellow outline-none py-1 hover:bg-yellow/10 transition-colors"
                             placeholder="Specification name..."
                           />
                         ) : (
                           row.specification
                         )}
                       </td>
-                      <td className="py-3 px-4 text-[#555] whitespace-pre-line">
+                      <td className="py-3 px-4 text-light-muted-foreground whitespace-pre-line">
                         {isEditing ? (
                           <input
                             type="text"
                             value={row.value}
                             onChange={(e) => handleRowChange(index, 'value', e.target.value)}
-                            className="w-full bg-transparent border-b border-dashed border-gray-300 focus:border-[#f9dc24] outline-none py-1 hover:bg-[#f9dc24]/10 transition-colors"
+                            className="w-full bg-transparent border-b border-dashed border-light-border focus:border-yellow outline-none py-1 hover:bg-yellow/10 transition-colors"
                             placeholder="Value..."
                           />
                         ) : (
@@ -251,7 +251,7 @@ const Specification = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteRow(index)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 p-1 h-auto"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -268,34 +268,34 @@ const Specification = ({
                     variant="outline"
                     size="sm"
                     onClick={handleAddRow}
-                    className="bg-[#000000] text-white hover:bg-[#1a1a1a] hover:text-white border-[#000000]"
+                    className="bg-light-dark text-light-dark-foreground hover:bg-light-dark/90 hover:text-light-dark-foreground border-light-dark"
                   >
-                    <Plus className="h-4 w-4 mr-2 text-white" />
+                    <Plus className="h-4 w-4 mr-2 text-light-dark-foreground" />
                     Add Row
                   </Button>
                 </div>
               )}
             </div>
           ) : (
-            !isEditing && <p className="text-gray-500">No specifications available.</p>
+            !isEditing && <p className="text-light-muted-foreground">No specifications available.</p>
           )}
           
           {/* Description/Links section - renders HTML content including internal links */}
           {(description || isEditing) && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="mt-6 pt-6 border-t border-light-border">
               {isEditing ? (
                 <EditableRichText
                   value={description || ''}
                   sectionKey={`${segmentKey}-description`}
                   pageSlug={pageSlug}
                   language={language}
-                  className="text-[#555] [&_a]:inline-block [&_a]:font-semibold [&_a]:text-[#2D2D2D] [&_a]:underline [&_a]:decoration-2 [&_a]:bg-[#f9dc24]/60 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-[#f9dc24]/90 [&_a]:transition-colors"
+                  className="text-light-muted-foreground [&_a]:inline-block [&_a]:font-semibold [&_a]:text-light-foreground [&_a]:underline [&_a]:decoration-2 [&_a]:bg-yellow/60 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-yellow/90 [&_a]:transition-colors"
                   onUpdate={onContentUpdate}
                   fieldLabel="Specification Description"
                 />
               ) : (
                 <div 
-                  className="text-[#555] [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8]"
+                  className="text-light-muted-foreground [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/80"
                   dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(description || '') }}
                 />
               )}
@@ -304,13 +304,13 @@ const Specification = ({
 
           {/* Save/Cancel buttons - always visible in edit mode */}
           {isEditing && (
-            <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="mt-6 pt-4 border-t border-light-border flex justify-end gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
                 disabled={isSaving}
-                className="bg-black text-[#f9dc24] hover:bg-gray-900 border-black"
+                className="bg-light-dark text-yellow hover:bg-light-dark/90 border-light-dark"
               >
                 Cancel
               </Button>
@@ -318,7 +318,7 @@ const Specification = ({
                 size="sm"
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                className="bg-yellow text-light-dark hover:bg-yellow/90"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
