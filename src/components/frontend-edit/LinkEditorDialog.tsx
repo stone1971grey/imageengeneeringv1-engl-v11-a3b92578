@@ -194,34 +194,37 @@ export const LinkEditorDialog = ({
           </div>
         </Tabs>
 
-        <DialogFooter className="flex gap-2 mt-4">
-          {hasExistingLink && (
+        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4 sm:justify-between">
+          {hasExistingLink ? (
             <Button
               type="button"
               variant="outline"
               onClick={handleRemove}
-              className="flex items-center gap-1.5 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+              className="flex items-center gap-1.5 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 w-full sm:w-auto"
             >
               <Trash2 className="h-4 w-4" />
               Entfernen
             </Button>
+          ) : (
+            <div className="hidden sm:block" />
           )}
-          <div className="flex-1" />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="border-gray-300 hover:bg-gray-100"
-          >
-            Abbrechen
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            className="bg-[#f9dc24] text-black hover:bg-[#e5c820] font-medium"
-          >
-            Link setzen
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="border-gray-300 hover:bg-gray-100 flex-1 sm:flex-none"
+            >
+              Abbrechen
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              className="bg-[#f9dc24] text-black hover:bg-[#e5c820] font-medium flex-1 sm:flex-none"
+            >
+              Link setzen
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

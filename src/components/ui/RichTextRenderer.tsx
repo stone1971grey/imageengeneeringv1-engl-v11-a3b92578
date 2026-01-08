@@ -61,6 +61,16 @@ const transformHtmlWithLinkIcons = (html: string): string => {
       finalAttrs += ' target="_blank" rel="noopener noreferrer"';
     }
     
+    // For anchor links, ensure they scroll smoothly and don't navigate away
+    // We'll use onclick handler to ensure proper scroll behavior
+    if (type === 'anchor') {
+      const anchorId = href.replace('#', '');
+      const scrollScript = `onclick="event.preventDefault();document.getElementById('${anchorId}')?.scrollIntoView({behavior:'smooth',block:'start'});return false;"`;
+      if (!attrs.includes('onclick=')) {
+        finalAttrs += ` ${scrollScript}`;
+      }
+    }
+    
     // Style the link with unified blue color
     const style = 'color:#2563eb;text-decoration:underline;';
     
