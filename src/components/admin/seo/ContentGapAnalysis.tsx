@@ -475,7 +475,7 @@ export const ContentGapAnalysis = ({ domain, country, competitors }: ContentGapA
       case 'high':
         return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">High</Badge>;
       case 'medium':
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Medium</Badge>;
+        return <Badge className="bg-brand-primary/20 text-brand-primary border-brand-primary/30">Medium</Badge>;
       case 'low':
         return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">Low</Badge>;
     }

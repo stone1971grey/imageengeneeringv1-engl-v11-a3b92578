@@ -89,18 +89,18 @@ export const ConfigValidator = () => {
         {/* Warnings */}
         {warnings.length > 0 && (
           <div className="space-y-2">
-            <h4 className="font-medium text-yellow-400 flex items-center gap-2">
+            <h4 className="font-medium text-brand-primary flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
               Warnungen ({warnings.length})
             </h4>
             {warnings.map((warning, index) => (
-              <Alert key={index} className="bg-yellow-500/10 border-yellow-500/20">
-                <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                <AlertTitle className="text-sm font-mono text-yellow-400">{warning.path}</AlertTitle>
+              <Alert key={index} className="bg-brand-primary/10 border-brand-primary/20">
+                <AlertTriangle className="h-4 w-4 text-brand-primary" />
+                <AlertTitle className="text-sm font-mono text-brand-primary">{warning.path}</AlertTitle>
                 <AlertDescription className="text-sm text-muted-foreground">
                   {warning.message}
                   {warning.suggestion && (
-                    <p className="mt-1 text-xs text-yellow-400/80">
+                    <p className="mt-1 text-xs text-brand-primary/80">
                       💡 {warning.suggestion}
                     </p>
                   )}

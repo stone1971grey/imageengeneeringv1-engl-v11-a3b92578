@@ -1138,7 +1138,7 @@ export const UserManagement = () => {
                             setEditSeoEnterprise(user.seoEnterprise ?? false);
                             setShowEditUserDialog(true);
                           }}
-                          className="h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-yellow-500 hover:bg-zinc-800 rounded-md transition-colors border border-zinc-700 hover:border-yellow-500"
+                          className="h-9 w-9 flex items-center justify-center text-zinc-400 hover:text-brand-primary hover:bg-zinc-800 rounded-md transition-colors border border-zinc-700 hover:border-brand-primary"
                           title="Edit user"
                         >
                           <Pencil className="h-4 w-4" />
@@ -1244,15 +1244,15 @@ export const UserManagement = () => {
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className={`text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 ${existingUserMatch ? 'border-yellow-500 ring-2 ring-yellow-500/30' : ''}`}
+                className={`text-base h-12 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 ${existingUserMatch ? 'border-brand-primary ring-2 ring-brand-primary/30' : ''}`}
               />
               <p className="text-sm text-zinc-400">For communication and as a fallback for login.</p>
               {existingUserMatch && (
-                <div className="bg-yellow-900/30 border-2 border-yellow-600 rounded-lg p-4 mt-2">
-                  <p className="text-base font-bold text-yellow-400 mb-2">
+                <div className="bg-brand-primary/10 border-2 border-brand-primary rounded-lg p-4 mt-2">
+                  <p className="text-base font-bold text-brand-primary mb-2">
                     ⚠️ This user already exists:
                   </p>
-                  <div className="bg-zinc-800 rounded-lg p-3 border border-yellow-600/50">
+                  <div className="bg-zinc-800 rounded-lg p-3 border border-brand-primary/50">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-base font-bold text-white">{existingUserMatch.full_name || 'No name'}</p>
@@ -1271,7 +1271,7 @@ export const UserManagement = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-yellow-500 text-yellow-400 hover:bg-yellow-500/20"
+                        className="border-brand-primary text-brand-primary hover:bg-brand-primary/20"
                         onClick={() => {
                           // Filter to only include valid CONTENT_EDITORS ids
                           const validEditorIds = CONTENT_EDITORS.map(e => e.id);

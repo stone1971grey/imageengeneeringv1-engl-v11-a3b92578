@@ -705,7 +705,7 @@ export const EditorActivityPanel = ({ open, onOpenChange }: EditorActivityPanelP
                                       impact.level === "major" 
                                         ? "border-red-500 text-red-400" 
                                         : impact.level === "moderate" 
-                                        ? "border-yellow-500 text-yellow-400"
+                                        ? "border-brand-primary text-brand-primary"
                                         : "border-gray-500 text-gray-400"
                                     }`}
                                   >
