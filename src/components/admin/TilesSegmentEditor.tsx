@@ -124,7 +124,8 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
       console.log('[TilesSegmentEditor] Speichere:', {
         title: titleRef.current,
         itemsCount: tilesRef.current.length,
-        firstItem: tilesRef.current[0]
+        firstItem: tilesRef.current[0],
+        allItems: tilesRef.current.map((t, i) => ({ index: i, icon: t.icon, title: t.title }))
       });
       
       const { data: { user } } = await supabase.auth.getUser();
@@ -288,44 +289,39 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
       if (data?.content_value) {
         const segments = JSON.parse(data.content_value);
-        const tilesSegment = segments.find((seg: any) => seg.id === segmentId);
+        // FIX: Always use String() for ID comparison
+        const tilesSegment = segments.find((seg: any) => String(seg.id) === String(segmentId));
         
         if (tilesSegment?.data) {
-          // Check if we have actual content BEFORE setting state
-          const hasTitle = tilesSegment.data.title && tilesSegment.data.title.trim() !== '';
-          const hasDesc = tilesSegment.data.description && tilesSegment.data.description.trim() !== '';
-          const hasItems = tilesSegment.data.items && tilesSegment.data.items.length > 0;
+          // Load ALL items - the data exists for this language, use it
+          setTitle(stripHtml(tilesSegment.data.title || ''));
+          setDescription(stripHtml(tilesSegment.data.description || ''));
+          setColumns(tilesSegment.data.columns || '3');
           
-          if (hasTitle || hasDesc || hasItems) {
-            setTitle(stripHtml(tilesSegment.data.title || ''));
-            setDescription(stripHtml(tilesSegment.data.description || ''));
-            setColumns(tilesSegment.data.columns || '3');
-            
-            // Load alt texts from Media Management for each tile with an image
-            // Also strip HTML from tile descriptions
-            const tilesWithAltTexts = await Promise.all(
-              (tilesSegment.data.items || []).map(async (tile: TileItem) => {
-                const strippedTile = {
-                  ...tile,
-                  description: stripHtml(tile.description || ''),
-                  title: stripHtml(tile.title || '')
+          // Load alt texts from Media Management for each tile with an image
+          // Also strip HTML from tile descriptions
+          const tilesWithAltTexts = await Promise.all(
+            (tilesSegment.data.items || []).map(async (tile: TileItem) => {
+              const strippedTile = {
+                ...tile,
+                description: stripHtml(tile.description || ''),
+                title: stripHtml(tile.title || '')
+              };
+              if (tile.imageUrl) {
+                const altFromMapping = await loadAltTextFromMapping(tile.imageUrl, 'page-images', language);
+                const { count } = await getSegmentCountForImage(tile.imageUrl, 'page-images');
+                return {
+                  ...strippedTile,
+                  altText: altFromMapping || tile.altText || '',
+                  segmentCount: count
                 };
-                if (tile.imageUrl) {
-                  const altFromMapping = await loadAltTextFromMapping(tile.imageUrl, 'page-images', language);
-                  const { count } = await getSegmentCountForImage(tile.imageUrl, 'page-images');
-                  return {
-                    ...strippedTile,
-                    altText: altFromMapping || tile.altText || '',
-                    segmentCount: count
-                  };
-                }
-                return strippedTile;
-              })
-            );
-            
-            setTiles(tilesWithAltTexts);
-            loadedContent = true;
-          }
+              }
+              return strippedTile;
+            })
+          );
+          
+          setTiles(tilesWithAltTexts);
+          loadedContent = true;
         }
       }
 
@@ -341,7 +337,8 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
         if (enData?.content_value) {
           const enSegments = JSON.parse(enData.content_value);
-          const enTilesSegment = enSegments.find((seg: any) => seg.id === segmentId);
+          // FIX: Always use String() for ID comparison
+          const enTilesSegment = enSegments.find((seg: any) => String(seg.id) === String(segmentId));
           
           if (enTilesSegment?.data) {
             setTitle(stripHtml(enTilesSegment.data.title || ''));
@@ -644,6 +641,13 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                   value={tile.icon || "none"}
                   onValueChange={(value) => {
                     const newIconValue = value === 'none' ? '' : value;
+                    console.log('[TilesSegmentEditor] 🎨 ICON CHANGE:', {
+                      tileIndex: index,
+                      oldIcon: tile.icon,
+                      newIcon: newIconValue,
+                      value: value
+                    });
+                    
                     // FIX: Update icon AND clear imageUrl in ONE operation to prevent state race condition
                     const newTiles = [...tiles];
                     newTiles[index] = { 
@@ -652,8 +656,13 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                       // Clear image when icon is selected
                       imageUrl: value !== 'none' ? '' : newTiles[index].imageUrl
                     };
+                    
+                    console.log('[TilesSegmentEditor] 🎨 New tile data:', newTiles[index]);
+                    
                     setTiles(newTiles);
                     tilesRef.current = newTiles;
+                    
+                    // Trigger auto-save
                     triggerAutoSave();
                   }}
                 >
