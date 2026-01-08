@@ -640,15 +640,21 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               {/* Icon Selection */}
               <div>
                 <Label className="text-white">Icon (Optional)</Label>
-                <Select
+              <Select
                   value={tile.icon || "none"}
                   onValueChange={(value) => {
                     const newIconValue = value === 'none' ? '' : value;
-                    handleTileChange(index, 'icon', newIconValue);
-                    // Clear image when icon is selected
-                    if (value !== 'none') {
-                      handleTileChange(index, 'imageUrl', '');
-                    }
+                    // FIX: Update icon AND clear imageUrl in ONE operation to prevent state race condition
+                    const newTiles = [...tiles];
+                    newTiles[index] = { 
+                      ...newTiles[index], 
+                      icon: newIconValue,
+                      // Clear image when icon is selected
+                      imageUrl: value !== 'none' ? '' : newTiles[index].imageUrl
+                    };
+                    setTiles(newTiles);
+                    tilesRef.current = newTiles;
+                    triggerAutoSave();
                   }}
                 >
                   <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
