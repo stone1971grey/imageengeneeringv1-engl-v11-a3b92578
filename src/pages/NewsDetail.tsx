@@ -9,6 +9,7 @@ import { ArrowLeft, Calendar, User, X, ChevronLeft, ChevronRight, ZoomIn } from 
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
+import { transformHtmlWithLinkIcons } from "@/components/ui/RichTextRenderer";
 
 interface ContentBlock {
   id: string;
@@ -437,7 +438,7 @@ const NewsDetail = () => {
                     <div 
                       className="[&_h1]:text-gray-900 [&_h2]:text-gray-900 [&_h3]:text-gray-800 [&_h4]:text-gray-800 [&_p]:text-gray-700 [&_li]:text-gray-700 [&_span]:text-gray-700 [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8] [&_strong]:text-gray-900 [&_blockquote]:text-gray-600"
                       style={{ color: '#374151' }}
-                      dangerouslySetInnerHTML={{ __html: parsed.html || '' }}
+                      dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(parsed.html || '') }}
                     />
                   </div>
                 );

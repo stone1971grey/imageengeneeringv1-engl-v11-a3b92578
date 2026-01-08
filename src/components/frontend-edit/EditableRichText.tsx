@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Check, X, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LinkEditorDialog } from './LinkEditorDialog';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface EditableRichTextProps {
   value: string;
@@ -501,7 +502,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     return (
       <div 
         className={cn(className, "whitespace-pre-line")}
-        dangerouslySetInnerHTML={{ __html: value }}
+        dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(value) }}
       />
     );
   }

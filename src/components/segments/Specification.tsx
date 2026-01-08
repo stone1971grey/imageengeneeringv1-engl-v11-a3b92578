@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { transformHtmlWithLinkIcons } from '@/components/ui/RichTextRenderer';
 
 interface SpecificationRow {
   specification: string;
@@ -294,8 +295,8 @@ const Specification = ({
                 />
               ) : (
                 <div 
-                  className="text-[#555] [&_a]:inline-block [&_a]:font-semibold [&_a]:text-[#2D2D2D] [&_a]:underline [&_a]:decoration-2 [&_a]:bg-[#f9dc24]/60 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-[#f9dc24]/90 [&_a]:transition-colors"
-                  dangerouslySetInnerHTML={{ __html: description || '' }}
+                  className="text-[#555] [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8]"
+                  dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(description || '') }}
                 />
               )}
             </div>
