@@ -678,35 +678,20 @@ const Tiles: React.FC<TilesProps> = ({
                   {isEditing ? (
                     // Edit mode: Editable image or icon with selector
                     hasImage ? (
-                      <div className="flex flex-col flex-shrink-0">
-                        <div className="w-full h-[200px] overflow-hidden">
-                          <EditableImage
-                            src={tile.imageUrl || ''}
-                            alt={tile.metadata?.altText || tile.title}
-                            sectionKey={`${segmentKey}-tile-${idx}-image`}
-                            pageSlug={pageSlug}
-                            language={language}
-                            className="w-full h-[200px]"
-                            imgClassName="w-full h-[200px] object-cover"
-                            onUpdate={() => {
-                              setHasChanges(true);
-                              onContentUpdate?.();
-                            }}
-                          />
-                        </div>
-                        {/* Option to remove image and use icon instead */}
-                        <div className="flex justify-center gap-2 py-2 bg-muted/50">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleItemChange(idx, 'imageUrl', '');
-                              toast.info('Bild entfernt - wähle jetzt ein Icon');
-                            }}
-                            className="text-xs text-muted-foreground hover:text-foreground underline"
-                          >
-                            Bild entfernen & Icon nutzen
-                          </button>
-                        </div>
+                      <div className="w-full h-[200px] overflow-hidden flex-shrink-0">
+                        <EditableImage
+                          src={tile.imageUrl || ''}
+                          alt={tile.metadata?.altText || tile.title}
+                          sectionKey={`${segmentKey}-tile-${idx}-image`}
+                          pageSlug={pageSlug}
+                          language={language}
+                          className="w-full h-[200px]"
+                          imgClassName="w-full h-[200px] object-cover"
+                          onUpdate={() => {
+                            setHasChanges(true);
+                            onContentUpdate?.();
+                          }}
+                        />
                       </div>
                     ) : hasIcon && Icon ? (
                       <div className="flex flex-col items-center pt-8 gap-2 flex-shrink-0">
