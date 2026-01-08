@@ -593,6 +593,206 @@ Bitte erstelle diese Storage Buckets:
 
 ---
 
+## 🎨 DESIGN SYSTEM & FONTS
+
+### index.html - Fonts einbinden
+Füge im \`<head>\` ein:
+\`\`\`html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+\`\`\`
+
+### tailwind.config.ts - Font-Konfiguration
+Erweitere \`theme.extend.fontFamily\`:
+\`\`\`typescript
+fontFamily: {
+  'inter': ['Inter', 'sans-serif'],
+  'sans': ['Inter', 'sans-serif'],
+},
+\`\`\`
+
+### index.css - CSS-Variablen (Auth Dark Theme)
+Füge diese Variablen in \`:root\` hinzu:
+\`\`\`css
+/* Spade CMS Auth Dark Theme */
+--auth-background: 220 20% 6%;
+--auth-card: 220 25% 8%;
+--auth-border: 220 15% 15%;
+--auth-input: 220 15% 15%;
+--auth-muted: 215 20% 65%;
+--spade-yellow: 52 95% 56%;
+--spade-blue: 211 77% 28%;
+\`\`\`
+
+---
+
+## 🔐 AUTH-KOMPONENTE
+
+Erstelle \`src/pages/Auth.tsx\`:
+\`\`\`typescript
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { User, Session } from "@supabase/supabase-js";
+import { Eye, EyeOff } from "lucide-react";
+import { siteConfig } from "@/config/siteConfig";
+
+// Spade CMS Logo (als Data-URL oder importieren)
+const SPADE_CMS_LOGO = "https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/cms-media/spade-cms-logo.png";
+const CMS_VERSION = "1.2.6";
+
+const Auth = () => {
+  const [loginIdentifier, setLoginIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          setTimeout(() => navigate("/admin-dashboard"), 0);
+        }
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) navigate("/admin-dashboard");
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!loginIdentifier || !password) {
+      toast.error("Bitte alle Felder ausfüllen");
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginIdentifier,
+      password,
+    });
+
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Erfolgreich eingeloggt!");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+        <CardHeader className="space-y-4">
+          {/* Spade CMS Logo + Version */}
+          <div className="flex justify-center">
+            <div className="bg-white rounded-xl px-6 py-4 shadow-lg flex items-center justify-between gap-6 w-full">
+              <img src={SPADE_CMS_LOGO} alt="SpadeCMS" className="h-20 w-auto" />
+              <Badge 
+                variant="outline" 
+                className="bg-[#4B7BF5] text-white border-[#4B7BF5] text-[10px] font-semibold px-2 py-0.5"
+              >
+                v{CMS_VERSION}
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="border-t border-zinc-700 my-4" />
+          
+          {/* Tenant Logo */}
+          <div className="flex justify-center">
+            <img 
+              src={siteConfig.branding.logos.primary} 
+              alt={siteConfig.tenant.name} 
+              className="h-16 w-auto"
+            />
+          </div>
+          
+          <CardTitle className="text-2xl text-center text-white">Login</CardTitle>
+          <CardDescription className="text-center text-zinc-400">
+            Melden Sie sich an, um auf das Admin-Panel zuzugreifen
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="loginIdentifier" className="text-zinc-300">E-Mail</Label>
+              <Input
+                id="loginIdentifier"
+                type="email"
+                placeholder="email@beispiel.de"
+                value={loginIdentifier}
+                onChange={(e) => setLoginIdentifier(e.target.value)}
+                disabled={loading}
+                required
+                className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-zinc-300">Passwort</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+              disabled={loading}
+            >
+              {loading ? "Bitte warten..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Auth;
+\`\`\`
+
+---
+
 ## 🔐 SECRETS (Falls benötigt)
 
 ${config.enableResend ? `- **RESEND_API_KEY**: Für E-Mail-Versand (in Lovable Settings → Secrets)` : ''}
@@ -679,28 +879,43 @@ export const getPageTitle = (title?: string) => title ? siteConfig.seo.titleTemp
 
 ---
 
+## 🛤️ ROUTING SETUP
+
+Füge in deinem Router (z.B. \`App.tsx\` oder \`main.tsx\`) diese Route hinzu:
+\`\`\`typescript
+import Auth from "@/pages/Auth";
+
+// In deinem Router:
+<Route path="/auth" element={<Auth />} />
+\`\`\`
+
+---
+
 ## 🚀 NÄCHSTE SCHRITTE
 
 Nach der Installation:
 
-1. **Admin-User anlegen**: Registriere dich über \`/auth\` und setze deine Rolle auf 'admin':
+1. **Datenbank-Migration ausführen**: Führe das obige SQL-Script aus.
+
+2. **Auto-Confirm aktivieren**: In Lovable Cloud → Auth Settings → "Confirm Email" deaktivieren für schnelleres Testen.
+
+3. **Ersten User registrieren**: Öffne \`/auth\`, registriere dich, und mache dich zum Admin:
    \`\`\`sql
    UPDATE user_roles SET role = 'admin' WHERE user_id = 'DEINE_USER_ID';
    \`\`\`
 
-2. **Erste Seite erstellen**:
-   \`\`\`sql
-   INSERT INTO page_registry (page_id, page_slug, page_title, status, nav_visible)
-   VALUES (1, 'home', 'Startseite', 'published', true);
-   \`\`\`
+4. **Tenant-Logo hochladen**: Lade dein Logo in den \`cms-media\` Bucket und aktualisiere den Pfad in \`siteConfig.ts\`.
 
-3. **Logo hochladen**: Lade dein Logo nach \`public/logos/${tenantId}-logo.svg\`
-
-4. **Testen**: Öffne \`/auth\` und logge dich ein. Du solltest zum Admin-Dashboard weitergeleitet werden.
+5. **Testen**: Öffne \`/auth\` und logge dich ein. Du solltest zum Admin-Dashboard weitergeleitet werden.
 
 ---
 
-**Wichtig**: Das bestehende Design und die vorhandenen Seiten sollen erhalten bleiben! Das CMS wird als Backend-Layer integriert, nicht als Ersatz für das Frontend.
+## ⚠️ WICHTIGE HINWEISE
+
+- **Design bleibt erhalten**: Das bestehende Frontend-Design wird NICHT überschrieben!
+- **CMS als Backend-Layer**: Das Spade CMS integriert sich als Backend, nicht als Ersatz.
+- **Spade CMS Branding**: Die Auth-Seite zeigt immer das Spade CMS Logo (h-20) + dein Tenant-Logo (h-16).
+- **Version**: ${`v1.2.6`} - Multi-Tenancy Ready
 `;
   };
 
