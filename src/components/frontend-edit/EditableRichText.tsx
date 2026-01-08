@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Check, X, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LinkEditorDialog } from './LinkEditorDialog';
 
 interface EditableRichTextProps {
   value: string;
@@ -36,6 +37,8 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
   const [editValue, setEditValue] = useState(value);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedValue, setLastSavedValue] = useState(value);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [currentLinkUrl, setCurrentLinkUrl] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const saveInProgressRef = useRef(false);
@@ -191,7 +194,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline hover:text-blue-800',
+          class: 'text-[#2563eb] underline hover:text-[#1d4ed8]',
         },
       }),
       Underline,
@@ -421,20 +424,32 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
     };
   }, [isEditing, editValue, value]);
 
-  const setLink = useCallback(() => {
+  const openLinkDialog = useCallback(() => {
+    if (!editor) return;
+    const previousUrl = editor.getAttributes('link').href || '';
+    setCurrentLinkUrl(previousUrl);
+    setLinkDialogOpen(true);
+  }, [editor]);
+
+  const handleLinkSubmit = useCallback((url: string) => {
     if (!editor) return;
     
-    const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('URL eingeben:', previousUrl);
-
-    if (url === null) return;
-
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+    editor.chain().focus().extendMarkRange('link').setLink({ 
+      href: url,
+      target: isExternal ? '_blank' : null,
+      rel: isExternal ? 'noopener noreferrer' : null
+    }).run();
+  }, [editor]);
+
+  const handleLinkRemove = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().extendMarkRange('link').unsetLink().run();
   }, [editor]);
 
   // performSave is already defined above - using that definition
@@ -611,7 +626,7 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={setLink}
+            onClick={openLinkDialog}
             className={cn(
               "h-8 w-8 p-0",
               editor.isActive('link') 
@@ -622,6 +637,14 @@ export const EditableRichText: React.FC<EditableRichTextProps> = ({
           >
             <LinkIcon className="h-4 w-4" />
           </Button>
+          
+          <LinkEditorDialog
+            open={linkDialogOpen}
+            onOpenChange={setLinkDialogOpen}
+            currentUrl={currentLinkUrl}
+            onSubmit={handleLinkSubmit}
+            onRemove={handleLinkRemove}
+          />
           
           <div className="flex-1" />
           

@@ -392,7 +392,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
                         )}
                         {item.description && (
                           <div 
-                            className="text-gray-600 leading-relaxed whitespace-pre-line [&_a]:inline-block [&_a]:font-semibold [&_a]:text-[#2D2D2D] [&_a]:underline [&_a]:decoration-2 [&_a]:bg-[#f9dc24]/60 [&_a]:px-2 [&_a]:py-0.5 [&_a]:rounded [&_a]:hover:bg-[#f9dc24]/90 [&_a]:transition-colors"
+                            className="text-gray-600 leading-relaxed whitespace-pre-line [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8]"
                             dangerouslySetInnerHTML={{ __html: item.description }}
                           />
                         )}

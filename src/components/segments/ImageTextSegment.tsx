@@ -669,7 +669,7 @@ const ImageTextSegment: React.FC<ImageTextSegmentProps> = ({
                     <>
                       <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
                       <div 
-                        className="text-gray-600 leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1"
+                        className="text-gray-600 leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_a]:text-[#2563eb] [&_a]:underline hover:[&_a]:text-[#1d4ed8] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1"
                         dangerouslySetInnerHTML={{ __html: item.description || '' }}
                       />
                     </>

@@ -60,7 +60,7 @@ const RichTextEditor = ({ content, onChange, darkMode = false }: RichTextEditorP
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-[#0f407b] underline hover:text-[#0d3468]',
+          class: 'text-[#2563eb] underline hover:text-[#1d4ed8]',
         },
       }),
       Image.configure({
@@ -76,8 +76,8 @@ const RichTextEditor = ({ content, onChange, darkMode = false }: RichTextEditorP
     editorProps: {
       attributes: {
         class: darkMode 
-          ? 'prose prose-lg prose-invert max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-white prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-600 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-200 prose-p:leading-relaxed prose-a:text-[#60a5fa] prose-strong:text-white prose-ul:text-gray-200 prose-ol:text-gray-200 prose-blockquote:border-l-[#60a5fa] prose-blockquote:text-gray-300 prose-blockquote:italic'
-          : 'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-[#0f407b] prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-blockquote:border-l-[#0f407b] prose-blockquote:text-gray-600 prose-blockquote:italic',
+          ? 'prose prose-lg prose-invert max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-white prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-600 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-200 prose-p:leading-relaxed prose-a:text-[#2563eb] prose-strong:text-white prose-ul:text-gray-200 prose-ol:text-gray-200 prose-blockquote:border-l-[#2563eb] prose-blockquote:text-gray-300 prose-blockquote:italic'
+          : 'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-[#2563eb] prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-blockquote:border-l-[#2563eb] prose-blockquote:text-gray-600 prose-blockquote:italic',
       },
     },
   });
