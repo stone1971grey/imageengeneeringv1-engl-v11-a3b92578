@@ -190,12 +190,12 @@ const SortableImageItem = ({
           setNodeRef(node);
           (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
         }}
-        style={style}
-        className={cn(
-          "bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
-          isEditing && "cursor-pointer hover:ring-2 hover:ring-[#f9dc24]"
-        )}
-      >
+      style={style}
+      className={cn(
+        "bg-light-muted rounded-lg p-6 w-48 h-32 flex items-center justify-center relative group",
+        isEditing && "cursor-pointer hover:ring-2 hover:ring-yellow"
+      )}
+    >
         {isEditing && (
           <>
             {/* Drag handle - only this has dnd listeners */}
@@ -231,7 +231,7 @@ const SortableImageItem = ({
         )}
         
         {isUploading ? (
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-light-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
             <span className="text-sm">Uploading...</span>
           </div>
@@ -251,7 +251,7 @@ const SortableImageItem = ({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-yellow text-light-dark font-medium hover:bg-yellow/90 transition-colors"
               >
                 <Upload className="h-3 w-3" />
               </button>
@@ -261,7 +261,7 @@ const SortableImageItem = ({
                   e.stopPropagation();
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
               >
                 <FolderOpen className="h-3 w-3" />
               </button>
@@ -283,7 +283,7 @@ const SortableImageItem = ({
               value={image.alt || ''}
               onChange={(e) => onAltChange(index, e.target.value)}
               placeholder="Alt text..."
-              className="w-full text-xs px-2 py-1 border border-gray-300 rounded bg-white focus:border-[#f9dc24] outline-none"
+              className="w-full text-xs px-2 py-1 border border-light-border rounded bg-light-card focus:border-yellow outline-none"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
@@ -399,7 +399,7 @@ const AddImageButton = ({
 
   return (
     <>
-      <div className="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-[#f9dc24] transition-colors">
+      <div className="w-48 h-32 border-2 border-dashed border-light-border rounded-lg flex flex-col items-center justify-center text-light-muted-foreground hover:border-yellow transition-colors">
         {isUploading ? (
           <div className="flex flex-col items-center">
             <Loader2 className="h-6 w-6 mb-1 animate-spin" />
@@ -416,7 +416,7 @@ const AddImageButton = ({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#f9dc24] text-black font-medium hover:bg-[#e5c820] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-yellow text-light-dark font-medium hover:bg-yellow/90 transition-colors"
               >
                 <Upload className="h-3 w-3" />
               </button>
@@ -426,7 +426,7 @@ const AddImageButton = ({
                   e.stopPropagation();
                   setShowMediaDialog(true);
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-[#1e6bb8] text-white font-medium hover:bg-[#1a5d9e] transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
               >
                 <FolderOpen className="h-3 w-3" />
               </button>
@@ -835,19 +835,19 @@ const BannerSegment = ({
     switch (style) {
       case 'technical':
       case 'black':
-        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-gray-800 text-white hover:bg-gray-900';
+        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-light-dark text-light-dark-foreground hover:bg-light-dark/90';
       case 'outline-white':
       case 'white':
-        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-white text-black border border-gray-300 hover:bg-black hover:text-white';
+        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-light-card text-light-dark border border-light-border hover:bg-light-dark hover:text-light-dark-foreground';
       default:
-        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90';
+        return 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-yellow text-light-dark hover:bg-yellow/90';
     }
   };
 
   return (
     <section
       id={id}
-      className="pt-[50px] pb-16 bg-gray-100"
+      className="pt-[50px] pb-16 bg-light-muted"
     >
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -858,14 +858,14 @@ const BannerSegment = ({
               sectionKey={`${segmentKey}-title`}
               pageSlug={pageSlug}
               language={language}
-              className="text-4xl font-bold text-gray-900 mb-4"
+              className="text-4xl font-bold text-light-foreground mb-4"
               as="h2"
               onUpdate={onContentUpdate}
               fieldLabel="Banner Title"
             />
           ) : (
             title && (
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl font-bold text-light-foreground mb-4">
                 {title}
               </h2>
             )
@@ -878,14 +878,14 @@ const BannerSegment = ({
               sectionKey={`${segmentKey}-subtext`}
               pageSlug={pageSlug}
               language={language}
-              className="text-lg text-gray-700 mb-8"
+              className="text-lg text-light-muted-foreground mb-8"
               onUpdate={onContentUpdate}
               fieldLabel="Banner Description"
             />
           ) : (
             subtext && (
               <div 
-                className="text-lg text-gray-700 mb-8"
+                className="text-lg text-light-muted-foreground mb-8"
                 dangerouslySetInnerHTML={{ __html: transformHtmlWithLinkIcons(subtext) }}
               />
             )
@@ -940,7 +940,7 @@ const BannerSegment = ({
                 <div className="flex flex-wrap justify-center items-center gap-8">
                   {displayImages.map((image, index) => 
                     image.url ? (
-                      <div key={image.id || index} className="bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center">
+                      <div key={image.id || index} className="bg-light-muted rounded-lg p-6 w-48 h-32 flex items-center justify-center">
                         <img
                           src={image.url}
                           alt={image.alt || 'Banner image'}
@@ -1002,7 +1002,7 @@ const BannerSegment = ({
                 onClick={handleCancel}
                 variant="outline"
                 disabled={isSaving}
-                className="bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="bg-light-card border-light-border text-light-muted-foreground hover:bg-light-muted"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -1010,7 +1010,7 @@ const BannerSegment = ({
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#f9dc24] text-black hover:bg-[#e5c91f]"
+                className="bg-yellow text-light-dark hover:bg-yellow/90"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
