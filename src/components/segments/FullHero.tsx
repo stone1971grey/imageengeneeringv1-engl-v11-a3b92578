@@ -133,11 +133,11 @@ const FullHero = ({
   const getButtonStyle = (color: 'yellow' | 'black' | 'white') => {
     switch (color) {
       case 'yellow':
-        return { backgroundColor: '#f9dc24', color: '#000000' };
+        return { backgroundColor: 'hsl(var(--yellow))', color: 'hsl(var(--light-dark))' };
       case 'black':
-        return { backgroundColor: '#000000', color: '#ffffff' };
+        return { backgroundColor: 'hsl(var(--light-dark))', color: 'hsl(var(--light-dark-foreground))' };
       case 'white':
-        return { backgroundColor: '#ffffff', color: '#000000' };
+        return { backgroundColor: 'hsl(var(--light-card))', color: 'hsl(var(--light-dark))' };
     }
   };
 
