@@ -46,7 +46,7 @@ export const WelcomeTab = ({ version, isAdmin = false }: WelcomeTabProps) => {
       <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden relative">
         {/* Version Badge - Top Right */}
         <div className="absolute top-6 right-6 z-10">
-          <span className="px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-brand-primary via-brand-primary-hover to-brand-primary text-brand-primary-foreground rounded-lg shadow-lg shadow-brand-primary/30 border border-brand-primary/50">
+          <span className="px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#f9dc24] via-yellow-300 to-[#f9dc24] text-gray-900 rounded-lg shadow-lg shadow-yellow-400/30 border border-yellow-400/50">
             Version {version}
           </span>
         </div>

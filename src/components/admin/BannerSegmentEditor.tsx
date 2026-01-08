@@ -745,7 +745,7 @@ const BannerSegmentEditorComponent = ({
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-white">Image {index + 1}</span>
                     {isUploading && (
-                      <span className="text-xs px-2 py-0.5 bg-brand-secondary text-brand-secondary-foreground rounded-full animate-pulse">
+                      <span className="text-xs px-2 py-0.5 bg-blue-500 text-white rounded-full animate-pulse">
                         Uploading...
                       </span>
                     )}

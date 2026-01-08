@@ -148,8 +148,8 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
       return { 
         label: `Import Stage ${importStage}`, 
         icon: Layers, 
-        bgClass: 'bg-brand-secondary', 
-        textClass: 'text-brand-secondary-foreground',
+        bgClass: 'bg-blue-500', 
+        textClass: 'text-blue-950',
         description: 'This content was updated in a subsequent import.'
       };
     }
@@ -262,13 +262,13 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
     }}>
       <div 
         ref={segmentRef}
-          className={cn(
-            "relative transition-all duration-200",
-            showIndicator && "border-l-4 pl-4",
-            isSegmentEditing && "border-l-4 pl-4 border-l-brand-primary bg-brand-primary/5",
-            !isSegmentEditing && getBorderColor(),
-            isHovered && isEditMode && !isSegmentEditing && "bg-gray-900/5 dark:bg-white/5 rounded-r-lg",
-            className
+        className={cn(
+          "relative transition-all duration-200",
+          showIndicator && "border-l-4 pl-4",
+          isSegmentEditing && "border-l-4 pl-4 border-l-[#f9dc24] bg-[#f9dc24]/5",
+          !isSegmentEditing && getBorderColor(),
+          isHovered && isEditMode && !isSegmentEditing && "bg-gray-900/5 dark:bg-white/5 rounded-r-lg",
+          className
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -325,7 +325,7 @@ export const EditableSegment: React.FC<EditableSegmentProps> = ({
           <div className="absolute -top-2 -left-1 z-20">
             <div className={cn(
               "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium shadow-lg",
-              "bg-brand-secondary text-brand-secondary-foreground"
+              "bg-blue-500 text-blue-950"
             )}>
               <Layers className="h-3 w-3" />
               <span>Import Stage {importStage}</span>

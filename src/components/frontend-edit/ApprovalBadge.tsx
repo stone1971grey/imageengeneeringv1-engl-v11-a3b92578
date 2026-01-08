@@ -25,9 +25,9 @@ export const ApprovalBadge: React.FC<ApprovalBadgeProps> = ({
           label: 'Entwurf',
           shortLabel: 'Entwurf',
           icon: Edit3,
-          bgClass: 'bg-brand-primary',
-          textClass: 'text-brand-primary-foreground',
-          borderClass: 'border-brand-primary'
+          bgClass: 'bg-yellow-500',
+          textClass: 'text-yellow-950',
+          borderClass: 'border-yellow-400'
         };
       case 'pending':
         return {

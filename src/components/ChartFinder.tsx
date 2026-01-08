@@ -110,7 +110,7 @@ const ChartFinder = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6">
             Chart
-            <span className="font-medium text-brand-secondary"> Finder</span>
+            <span className="font-medium text-blue-600"> Finder</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
             Finden Sie das perfekte Testchart für Ihre spezifische Anwendung. 
@@ -205,7 +205,7 @@ const ChartFinder = () => {
                   
                   {/* Content */}
                   <div className="p-6">
-                    <h3 className="text-xl font-medium text-gray-900 mb-3 group-hover:text-brand-secondary transition-colors">
+                    <h3 className="text-xl font-medium text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       {chart.title}
                     </h3>
                     <p className="text-gray-600 text-sm leading-relaxed mb-6">
@@ -214,7 +214,7 @@ const ChartFinder = () => {
                     
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-6">
-                      <span className="px-2 py-1 bg-brand-secondary/10 text-brand-secondary text-xs rounded-md font-medium">
+                      <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md font-medium">
                         {industries.find(i => i.value === chart.industry)?.label}
                       </span>
                       <span className="px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded-md font-medium">
@@ -223,7 +223,7 @@ const ChartFinder = () => {
                     </div>
                     
                     <Button 
-                      className="w-full bg-brand-secondary hover:opacity-90 text-brand-secondary-foreground border-0"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0"
                     >
                       Produkt ansehen
                     </Button>

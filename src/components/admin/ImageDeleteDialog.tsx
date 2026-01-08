@@ -114,7 +114,7 @@ export const ImageDeleteDialog = ({
             Cancel
           </Button>
           <Button
-            className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+            className="bg-yellow-500 text-black hover:bg-yellow-400"
             onClick={handleDeleteCurrentLanguage}
           >
             {language.toUpperCase()} only
@@ -239,7 +239,7 @@ export const SegmentImageDeleteDialog = ({
             Cancel
           </Button>
           <Button
-            className="bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+            className="bg-yellow-500 text-black hover:bg-yellow-400"
             onClick={handleDeleteCurrentLanguage}
           >
             {language.toUpperCase()} only

@@ -279,8 +279,8 @@ export const ShortcutEditor = ({
           )}
 
           {currentTargetSlug && !isShortcut && (
-            <div className="bg-brand-primary/10 border border-brand-primary/30 p-3 rounded-lg">
-              <p className="text-sm text-brand-primary">
+            <div className="bg-yellow-900/20 border border-yellow-600/30 p-3 rounded-lg">
+              <p className="text-sm text-yellow-200">
                 The shortcut will be removed when you save.
               </p>
             </div>

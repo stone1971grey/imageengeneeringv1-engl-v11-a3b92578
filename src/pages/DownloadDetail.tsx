@@ -16,7 +16,7 @@ interface DescriptionSection {
 }
 
 const DOWNLOAD_TYPES = {
-  whitepaper: { label: "White Paper", color: "bg-brand-primary text-brand-primary-foreground", icon: BookOpen },
+  whitepaper: { label: "White Paper", color: "bg-[#f9dc24] text-black", icon: BookOpen },
   conference: { label: "Conference Paper", color: "bg-purple-600", icon: Presentation },
   video: { label: "Video", color: "bg-red-600", icon: Video },
 };
@@ -206,7 +206,7 @@ const DownloadDetail = () => {
                         <div className="space-y-2 ml-4">
                           {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
                             <div key={i} className="flex items-start gap-3 text-muted-foreground">
-                              <span className="text-brand-primary mt-1">•</span>
+                              <span className="text-[#f9dc24] mt-1">•</span>
                               <span>{line.trim()}</span>
                             </div>
                           ))}
@@ -239,7 +239,7 @@ const DownloadDetail = () => {
                   rel="noopener noreferrer"
                   download
                 >
-                  <Button size="lg" className="w-full bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground">
+                  <Button size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
                     <Download className="w-5 h-5 mr-2" />
                     Download {download.download_type === 'video' ? 'Video' : 'PDF'}
                   </Button>

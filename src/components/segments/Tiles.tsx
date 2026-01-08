@@ -860,7 +860,7 @@ const Tiles: React.FC<TilesProps> = ({
                             className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                               tile.ctaStyle === "technical"
                                 ? "bg-gray-800 text-white hover:bg-gray-900"
-                                : "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
                             }`}
                           >
                             {tile.ctaText}
@@ -871,7 +871,7 @@ const Tiles: React.FC<TilesProps> = ({
                             className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                               tile.ctaStyle === "technical"
                                 ? "bg-gray-800 text-white hover:bg-gray-900"
-                                : "bg-brand-primary text-brand-primary-foreground hover:bg-brand-primary-hover"
+                                : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
                             }`}
                           >
                             {tile.ctaText}
