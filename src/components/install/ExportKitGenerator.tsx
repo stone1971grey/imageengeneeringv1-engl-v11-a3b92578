@@ -21,15 +21,10 @@ import {
   Check, 
   Rocket, 
   Settings, 
-  Palette, 
-  Mail, 
   Globe, 
   Package,
-  FileCode,
-  Database,
-  Shield,
-  Layers,
-  Eye
+  Eye,
+  FileCode
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -43,32 +38,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TenantConfig {
   projectName: string;
-  legalName: string;
-  tagline: string;
-  description: string;
-  
-  // Branding
-  primaryColor: string;
-  accentColor: string;
-  headingFont: string;
-  bodyFont: string;
-  
-  // Contact
-  email: string;
-  phone: string;
-  street: string;
-  city: string;
-  zip: string;
-  country: string;
-  
-  // Social
-  linkedin: string;
-  twitter: string;
-  youtube: string;
   
   // Features
   enableNews: boolean;
-  enableNewsletterMautic: boolean; // Newsletter via Mautic
+  enableNewsletterMautic: boolean;
   enableEvents: boolean;
   enableDownloads: boolean;
   enableProducts: boolean;
@@ -83,37 +56,17 @@ interface TenantConfig {
   // Integrations
   enableMautic: boolean;
   enableResend: boolean;
-  resendFromEmail: string;
 }
 
 const DEFAULT_CONFIG: TenantConfig = {
   projectName: "",
-  legalName: "",
-  tagline: "",
-  description: "",
-  
-  primaryColor: "220 70% 50%",
-  accentColor: "45 100% 50%",
-  headingFont: "Inter, sans-serif",
-  bodyFont: "Inter, sans-serif",
-  
-  email: "",
-  phone: "",
-  street: "",
-  city: "",
-  zip: "",
-  country: "Deutschland",
-  
-  linkedin: "",
-  twitter: "",
-  youtube: "",
   
   enableNews: true,
-  enableNewsletterMautic: true, // Newsletter via Mautic
+  enableNewsletterMautic: true,
   enableEvents: true,
   enableDownloads: true,
   enableProducts: false,
-  enableSeoTools: true, // Default on - core feature
+  enableSeoTools: true,
   enableGlossary: false,
   enableContact: true,
   
@@ -122,7 +75,6 @@ const DEFAULT_CONFIG: TenantConfig = {
   
   enableMautic: false,
   enableResend: true,
-  resendFromEmail: "",
 };
 
 // Convert project name to slug
@@ -173,25 +125,6 @@ Bitte installiere das **Spade CMS** auf diesem bestehenden Lovable-Projekt. Das 
 ### Tenant-Daten
 - **Projekt-ID:** ${tenantId}
 - **Name:** ${config.projectName || 'Mein Projekt'}
-- **Rechtlicher Name:** ${config.legalName || 'Mein Unternehmen GmbH'}
-- **Tagline:** ${config.tagline || 'Ihr Slogan hier'}
-- **Beschreibung:** ${config.description || 'Projektbeschreibung für SEO'}
-
-### Branding
-- **Primärfarbe (HSL):** ${config.primaryColor}
-- **Akzentfarbe (HSL):** ${config.accentColor}
-- **Heading-Font:** ${config.headingFont}
-- **Body-Font:** ${config.bodyFont}
-
-### Kontakt
-- **E-Mail:** ${config.email || 'info@beispiel.de'}
-- **Telefon:** ${config.phone || '+49 123 456789'}
-- **Adresse:** ${config.street || 'Musterstraße 1'}, ${config.zip || '10115'} ${config.city || 'Berlin'}, ${config.country}
-
-### Social Media
-${config.linkedin ? `- **LinkedIn:** ${config.linkedin}` : '- **LinkedIn:** (nicht konfiguriert)'}
-${config.twitter ? `- **Twitter:** ${config.twitter}` : '- **Twitter:** (nicht konfiguriert)'}
-${config.youtube ? `- **YouTube:** ${config.youtube}` : '- **YouTube:** (nicht konfiguriert)'}
 
 ### Aktivierte Module
 ${enabledModules.map(m => `- ✅ ${m}`).join('\n') || '- (keine Module ausgewählt)'}
@@ -202,7 +135,7 @@ ${enabledModules.map(m => `- ✅ ${m}`).join('\n') || '- (keine Module ausgewäh
 
 ### Integrationen
 ${config.enableMautic ? '- ✅ Mautic (Marketing Automation)' : '- ❌ Mautic'}
-${config.enableResend ? `- ✅ Resend (E-Mail: ${config.resendFromEmail || 'noreply@' + tenantId + '.de'})` : '- ❌ Resend'}
+${config.enableResend ? '- ✅ Resend (E-Mail-Versand)' : '- ❌ Resend'}
 
 ---
 
@@ -805,47 +738,11 @@ ${config.enableMautic ? `- **MAUTIC_BASE_URL**, **MAUTIC_USER**, **MAUTIC_PASS**
 Erstelle die Datei \`src/config/siteConfig.ts\`:
 
 \`\`\`typescript
+// Minimal siteConfig - Branding/Kontakt aus bestehendem Design übernehmen
 export const siteConfig = {
   tenant: {
     id: '${tenantId}',
     name: '${config.projectName || 'Mein Projekt'}',
-    legalName: '${config.legalName || 'Mein Unternehmen GmbH'}',
-    tagline: '${config.tagline || 'Ihr Slogan'}',
-  },
-  branding: {
-    logos: {
-      primary: '/logos/${tenantId}-logo.svg',
-      inverted: '/logos/${tenantId}-logo-dark.svg',
-      icon: '/favicon.svg',
-    },
-    colors: {
-      primary: '${config.primaryColor}',
-      accent: '${config.accentColor}',
-    },
-    fonts: {
-      heading: '${config.headingFont}',
-      body: '${config.bodyFont}',
-    },
-  },
-  contact: {
-    email: '${config.email || 'info@beispiel.de'}',
-    phone: '${config.phone}',
-    address: {
-      street: '${config.street}',
-      city: '${config.city}',
-      zip: '${config.zip}',
-      country: '${config.country}',
-    },
-  },
-  social: {
-    ${config.linkedin ? `linkedin: '${config.linkedin}',` : 'linkedin: null,'}
-    ${config.twitter ? `twitter: '${config.twitter}',` : 'twitter: null,'}
-    ${config.youtube ? `youtube: '${config.youtube}',` : 'youtube: null,'}
-  },
-  seo: {
-    defaultTitle: '${config.projectName || 'Mein Projekt'}',
-    titleTemplate: '%s | ${config.projectName || 'Mein Projekt'}',
-    defaultDescription: '${config.description || 'Projektbeschreibung'}',
   },
   features: {
     modules: {
@@ -864,7 +761,7 @@ export const siteConfig = {
   },
   integrations: {
     mautic: { enabled: ${config.enableMautic} },
-    resend: { enabled: ${config.enableResend}, fromEmail: '${config.resendFromEmail || 'noreply@' + tenantId + '.de'}' },
+    resend: { enabled: ${config.enableResend} },
   },
   storage: {
     mediaBucket: 'cms-media',
@@ -874,7 +771,6 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 export const isModuleEnabled = (module: keyof typeof siteConfig.features.modules) => siteConfig.features.modules[module];
-export const getPageTitle = (title?: string) => title ? siteConfig.seo.titleTemplate.replace('%s', title) : siteConfig.seo.defaultTitle;
 \`\`\`
 
 ---
@@ -959,43 +855,15 @@ Nach der Installation:
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-6 pb-6">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Projektname *</Label>
-                <Input
-                  value={config.projectName}
-                  onChange={e => updateConfig('projectName', e.target.value)}
-                  placeholder="z.B. Aftermarket Update"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Rechtlicher Name</Label>
-                <Input
-                  value={config.legalName}
-                  onChange={e => updateConfig('legalName', e.target.value)}
-                  placeholder="z.B. Aftermarket Update Media GmbH"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Tagline</Label>
-                <Input
-                  value={config.tagline}
-                  onChange={e => updateConfig('tagline', e.target.value)}
-                  placeholder="z.B. Das Fachportal für den Kfz-Teilehandel"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">SEO-Beschreibung</Label>
-                <Input
-                  value={config.description}
-                  onChange={e => updateConfig('description', e.target.value)}
-                  placeholder="Kurze Beschreibung für Suchmaschinen"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label className="text-zinc-300">Projektname *</Label>
+              <Input
+                value={config.projectName}
+                onChange={e => updateConfig('projectName', e.target.value)}
+                placeholder="z.B. Aftermarket Update"
+                className="bg-zinc-800 border-zinc-700 text-white max-w-md"
+              />
+              <p className="text-xs text-zinc-500">Wird als Tenant-ID verwendet (slug-Format)</p>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -1032,107 +900,6 @@ Nach der Installation:
           </AccordionContent>
         </AccordionItem>
 
-        {/* Branding */}
-        <AccordionItem value="branding" className="bg-zinc-900 border-zinc-800 rounded-lg">
-          <AccordionTrigger className="px-6 text-white hover:no-underline">
-            <div className="flex items-center gap-3">
-              <Palette className="h-5 w-5 text-pink-400" />
-              <span className="text-lg">Branding & Design</span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-6 pb-6">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Primärfarbe (HSL)</Label>
-                <Input
-                  value={config.primaryColor}
-                  onChange={e => updateConfig('primaryColor', e.target.value)}
-                  placeholder="z.B. 220 70% 50%"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-                <p className="text-xs text-zinc-500">Format: H S% L% (ohne Kommas)</p>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Akzentfarbe (HSL)</Label>
-                <Input
-                  value={config.accentColor}
-                  onChange={e => updateConfig('accentColor', e.target.value)}
-                  placeholder="z.B. 45 100% 50%"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Heading-Font</Label>
-                <Input
-                  value={config.headingFont}
-                  onChange={e => updateConfig('headingFont', e.target.value)}
-                  placeholder="z.B. Playfair Display, serif"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Body-Font</Label>
-                <Input
-                  value={config.bodyFont}
-                  onChange={e => updateConfig('bodyFont', e.target.value)}
-                  placeholder="z.B. Inter, sans-serif"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Contact */}
-        <AccordionItem value="contact" className="bg-zinc-900 border-zinc-800 rounded-lg">
-          <AccordionTrigger className="px-6 text-white hover:no-underline">
-            <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-yellow-400" />
-              <span className="text-lg">Kontakt & Social Media</span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-6 pb-6">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-zinc-300">E-Mail</Label>
-                <Input
-                  value={config.email}
-                  onChange={e => updateConfig('email', e.target.value)}
-                  placeholder="info@beispiel.de"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Telefon</Label>
-                <Input
-                  value={config.phone}
-                  onChange={e => updateConfig('phone', e.target.value)}
-                  placeholder="+49 123 456789"
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">LinkedIn</Label>
-                <Input
-                  value={config.linkedin}
-                  onChange={e => updateConfig('linkedin', e.target.value)}
-                  placeholder="https://linkedin.com/company/..."
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-zinc-300">Twitter</Label>
-                <Input
-                  value={config.twitter}
-                  onChange={e => updateConfig('twitter', e.target.value)}
-                  placeholder="https://twitter.com/..."
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
         {/* Integrations */}
         <AccordionItem value="integrations" className="bg-zinc-900 border-zinc-800 rounded-lg">
           <AccordionTrigger className="px-6 text-white hover:no-underline">
@@ -1153,17 +920,6 @@ Nach der Installation:
                   onCheckedChange={checked => updateConfig('enableResend', checked)}
                 />
               </div>
-              {config.enableResend && (
-                <div className="space-y-2 ml-4">
-                  <Label className="text-zinc-300">Absender E-Mail</Label>
-                  <Input
-                    value={config.resendFromEmail}
-                    onChange={e => updateConfig('resendFromEmail', e.target.value)}
-                    placeholder="noreply@deinprojekt.de"
-                    className="bg-zinc-800 border-zinc-700 text-white"
-                  />
-                </div>
-              )}
               <div className="flex items-center justify-between bg-zinc-800/50 p-4 rounded-lg">
                 <div>
                   <span className="text-white font-medium">Mautic (Marketing Automation)</span>
